@@ -73,5 +73,18 @@
   "weekly_reset_schedule": "Mondays at 11:28 UTC / 5:28 AM CST (6:28 AM CDT; next reset: Monday, Nov 2, 2026 at 5:28 AM CST)",
   "previous_exchange_rate_tokens_per_uc": 27024,
   "previous_exchange_rate_kb_per_uc": 105.6,
-  "budget_cap_uc": 29.05
+  "budget_cap_uc": 29.05,
+  "no_work_dates": [
+    "2026-10-28"
+  ],
+  "daily_cumulative_usage_caps_pct": {
+    "Monday": 10.0,
+    "Tuesday": 20.0,
+    "Wednesday": 30.0,
+    "Thursday": 40.0,
+    "Friday": 50.0,
+    "Saturday": 70.0,
+    "Sunday": 90.0
+  },
+  "daily_cap_rule": "Cumulative weekly account usage caps by day of week (Monday<=10%, Tuesday<=20%, Wednesday<=30%, Thursday<=40%, Friday<=50%, Saturday<=70%, Sunday<=90%). No work on Wednesday, Oct 28, 2026."
 }
