@@ -62,3 +62,33 @@
 ### `[t3u]` Course Correction [RESOLVED & VERIFIED]: Low-Key Lighting, 90/10 Saturation, World-Space UVs & Single Door Placards
 - Reduced `tonemap_exposure` to `0.78`, `ambient_light_energy` to `0.20`, `background_energy_multiplier` to `0.35`, `AtriumGoldenHourSunlight` to `0.42`, `AtriumSkyBounceFill` to `0.16`, localized warm task `OmniLight3D`s to `0.46–0.58` (`range 5.5m–7.5m`), and `emission_energy_multiplier` to `0.55`.
 - Removed column/floor neon strips, eliminated baked room numbers from architectural wall/floor regions of `residential_atrium_and_apartment_atlas_*.png`, applied world-space meter-scaled UVs (`make_world_uv_box`), and placed a single eye-level placard (`APT 201`, `APT 202`, `RM 1A`, `RM 1B`) beside each portal.
+
+---
+
+## Verification Pass (`b5ada5c` — Automated QA Probe & Portability Audit)
+
+- **Commit Verified:** `b5ada5c` (`feat: Aegis-7 (Cylinder Hab-7) playable F5 Preface build & portable Godot 4 project`)
+- **Automated Playtest Probe Results (`godot --headless` & `xvfb-run -a godot --rendering-driver opengl3`):**
+  1. **Portability & Default `F5` Boot (`BUG-01` & `BUG-02`) — PASS:**
+     - `project.godot:15` boots `res://scenes/preface/preface_playable_area.tscn` directly on `F5` and defines all 10 `[input]` actions (`move_forward`, `move_back`, `move_left`, `move_right`, `jump`, `sprint`, `interact`, `raise_wrist`, `toggle_view`, `toggle_lighting`).
+     - `find /workspace/game-project/godot -type l` returns **`0` symlinks** (`godot/assets/models`, `godot/assets/textures`, `godot/assets/renders` are self-contained real directories inside `godot/assets/`, and all 36 `assets/scripts/*.py` symlinks are relative `../src/*.py`).
+     - `rg -c "/workspace/game-project"` across `preface_playable_area.gd`, `pcba_python_puzzle_ui.gd`, `preface_service_call_test.gd`, and `player_camera.gd` returns **`0` hardcoded absolute paths**; all assets resolve cleanly via `res://` and `ProjectSettings.globalize_path()`.
+  2. **Player Controller, Floor/Stair Collisions & Raycasts (`BUG-03`) — PASS:**
+     - `PlayerBody` (`CharacterBody3D`) spawns in `APT 201` at `(-9.35, 4.25, 6.20)` and settles cleanly onto the floor collider by Frame 6 (`pos = (-9.35, 4.344, 6.20)`, `is_on_floor() = true`).
+     - Scene tree builds `23` `StaticBody3D` nodes (`22` architectural trimesh colliders + `1` `SectorSafetyFloorColliders` body) and `28` `CollisionShape3D` shapes.
+     - Downward physics raycasts hit solid floor/ramp colliders across all zones:
+       - `APT 201` (`-9.35, 6.0, 6.20`) -> `Hit = true` at `Y = 4.465m`
+       - `L2 Mezzanine Gallery` (`-2.40, 6.0, 2.60`) -> `Hit = true` at `Y = 4.405m`
+       - `East Stair-Ramp Connector` (`10.65, 5.0, -5.00`) -> `Hit = true` at `Y = 2.220m`
+       - `L1 Atrium Concourse` (`0.0, 2.0, -3.00`) -> `Hit = true` at `Y = 0.235m`
+     - Simulated `WASD` walk/sprint + `Space` jump (`velocity = (0, 4.8, -5.2)`), `InputEventMouseMotion` look (`yaw: 0.489 -> 0.201 rad`, `pitch: 0.016 rad`), `V`/`Tab` 1st/3rd-person toggle (`VIEW: 3RD-PERSON [ROSTOV #02]`), `1..4` showcase camera presets + `0` return-to-player, and `N` emergency lighting toggle (`LIGHTING: SOLAR FLARE EMERGENCY`) all verified passing.
+  3. **Live Looping `AnimationPlayer` Playback (`BUG-04`) — PASS:**
+     - All `11/11` `AnimationPlayer` instances report `speed_scale == 1.0` and `is_playing() == true` (`PlayingScale1: 11`) during live `F5` execution.
+  4. **Locked `#05` Hammerhead Bots, `D-03 // SCIENCE` (`Kelvin #0204`), Pickups & `#04` Wrist RFID Pulse (`BUG-05` & `BUG-06`) — PASS:**
+     - All 4 locked `#05` Hammerhead department bots spawn at their stations: `Hammerhead05_Sprocket_0419_Engineering`, `Hammerhead05_Sweep_0812_CivicSanitation`, `Hammerhead05_Kelvin_0204_Science`, and `Hammerhead05_Clover_0631_AgriBiosphere`.
+     - Pressing `R` spawns `Wrist04_RFIDPulseRing` and displays the live 13.56 MHz RFID telemetry scan (`SUPER-WIRE SPOOL 1.4m`, `BCI HEADBAND 1.7m`, `APT 201 WORKBENCH TERMINAL 1.9m`, `THERMAL JELLY CANISTER 2.0m`, `+5A BATTERY CELL 2.4m`).
+     - Pressing `E` at the Apt 201 workbench collects all 4 items and updates the HUD inventory from `BCI: 0/1 | JELLY: 0/1 | WIRE: 0/3 | BATT: 0/4` to `BCI: 1/1 | JELLY: 1/1 | WIRE: 1/3 | BATT: 1/4`.
+     - Pressing `E` beside `Kelvin #0204` displays: `KELVIN #0204 (D-03 // SCIENCE) — "Room 1B substation diagnostic rack: thermal drift +0.4K. Recommend thermal jelly."`
+  5. **Minor Notes (`BUG-07`):**
+     - Zero GDScript parse/runtime errors or missing resources during `F5` boot.
+     - *(Cosmetic / Non-Blocking)*: The 6 mirrored `.tscn` copies of `preface_playable_area.tscn` / `preface_playable_residential_sector.tscn` in `scenes/`, `scenes/preface/`, and `scenes/buildings/` still share `uid://c8hab7pref_play`, and `--headless` exit prints 3 benign engine dummy-renderer cleanup messages (`Parameter "m" is null` in `mesh_storage.h:120` when freeing glTF importer meshes). Neither affects `F5` gameplay or portability.

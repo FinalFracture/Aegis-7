@@ -271,21 +271,21 @@ def get_phase6b_materials() -> Dict[str, RichPBRMaterial]:
         ),
         "deck_slate_floor": RichPBRMaterial(
             name="Mat_Aegis_DeckSlateFloor",
-            base_color=hex_rgba("#525A65"),
+            base_color=hex_rgba("#626870"),
             metallic=0.14,
             roughness=0.68,
             albedo_tex=tex_path("mat_deck_floor_albedo.png"),
         ),
         "matte_wall_cladding": RichPBRMaterial(
             name="Mat_Aegis_MatteWallCladding",
-            base_color=hex_rgba("#8A9098"),
+            base_color=hex_rgba("#8E949C"),
             metallic=0.08,
             roughness=0.62,
             albedo_tex=tex_path("bulkhead_wainscoting.png"),
         ),
         "warm_wood_parquet": RichPBRMaterial(
             name="Mat_Aegis_WarmWalnutWood",
-            base_color=hex_rgba("#785A40"),
+            base_color=hex_rgba("#8A6A4E"),
             metallic=0.04,
             roughness=0.56,
             albedo_tex=tex_path("wood_parquet_warm.png"),
@@ -1243,6 +1243,8 @@ def build_preface_residential_two_story_sector(mats: Dict[str, RichPBRMaterial])
 
 
 def build_all_phase6b():
+    from generate_calm_residential_textures import generate_residential_atlas
+    generate_residential_atlas()
     mats = get_phase6b_materials()
 
     # 1. Promoted #04 Wrist Winner & Upgrade Pickups

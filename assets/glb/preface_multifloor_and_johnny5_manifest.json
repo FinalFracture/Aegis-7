@@ -520,8 +520,8 @@
   },
   "preface_residential_sector": {
     "filepath": "/workspace/game-project/godot/assets/models/environments/preface_residential_sector.glb",
-    "vertices": 33037,
-    "triangles": 16436,
+    "vertices": 32961,
+    "triangles": 16402,
     "nodes": [
       "PrefaceResidentialSector_Root",
       "Residential_Hallway_Atrium",

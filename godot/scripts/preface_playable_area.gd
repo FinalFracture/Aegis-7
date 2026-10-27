@@ -240,7 +240,7 @@ func _find_first_existing(paths: Array) -> String:
 	return ""
 
 
-func _load_glb_scene(path: String, emission_mult: float = 0.55) -> Node3D:
+func _load_glb_scene(path: String, emission_mult: float = 0.65) -> Node3D:
 	if path == "":
 		return null
 	var abs_path: String = _resolve_path(path)
@@ -346,7 +346,7 @@ func _assemble_open_doorless_sector() -> void:
 		ch.free()
 
 	var sector_path: String = _find_first_existing(SECTOR_GLB_PATHS)
-	var sector_node: Node3D = _load_glb_scene(sector_path, 0.55)
+	var sector_node: Node3D = _load_glb_scene(sector_path, 0.65)
 	if sector_node != null:
 		sector_node.name = "PrefaceResidentialSector_Doorless"
 		_arch_container.add_child(sector_node)
@@ -375,10 +375,10 @@ func _assemble_open_doorless_sector() -> void:
 		var vtex: Texture2D = _load_tex("vista_oneill_cylinder_interior.png")
 		if vtex != null:
 			vmat.albedo_texture = vtex
-			vmat.albedo_color = Color(0.58, 0.60, 0.62, 1.0)
+			vmat.albedo_color = Color(0.72, 0.75, 0.78, 1.0)
 			vmat.emission_enabled = true
 			vmat.emission_texture = vtex
-			vmat.emission_energy_multiplier = 0.32
+			vmat.emission_energy_multiplier = 0.45
 		vmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		vmat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		bdrop.material_override = vmat
@@ -413,11 +413,11 @@ func _populate_pickups_and_wrist_rig() -> void:
 	var bci_path: String = _find_first_existing(PICKUP_BCI_PATHS)
 	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
 
-	# Apt 201 engineering workbench (benchtop Y = 5.12m), organized left-to-right.
-	_spawn_pickup(wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-9.05, 5.12, 7.60), 1.10)
-	_spawn_pickup(bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-8.50, 5.12, 7.62), 1.15)
-	_spawn_pickup(jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-8.00, 5.12, 7.62), 1.10)
-	_spawn_pickup(batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.45, 5.12, 7.60), 1.10)
+	# Apt 201 engineering workbench (benchtop Y = 5.12m): staged on left half so CUE-001 scorch mark & 03:14 UTC note on right (-8.6..-9.5) are unobstructed!
+	_spawn_pickup(wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-8.28, 5.12, 7.55), 1.05)
+	_spawn_pickup(bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-7.95, 5.12, 7.58), 1.10)
+	_spawn_pickup(jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-7.64, 5.12, 7.58), 1.05)
+	_spawn_pickup(batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.35, 5.12, 7.55), 1.05)
 	# Alcove 2C engineering supply shelf, Apt 202 desk, Room 1A folding counter, Room 1B substation service bench.
 	_spawn_pickup(wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.85, 5.02, -4.95), 1.15)
 	_spawn_pickup(batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-11.05, 5.02, -4.95), 1.15)
@@ -425,12 +425,19 @@ func _populate_pickups_and_wrist_rig() -> void:
 	_spawn_pickup(wire_path, "Room1A_Laundry_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-6.15, 0.98, 7.25), 1.15)
 	_spawn_pickup(batt_path, "Room1B_Substation_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(7.20, 0.98, 7.10), 1.15)
 
-	# Workbench diagnostic terminal (query-only)
+	# Workbench diagnostic terminal (query-only — CUE-001 03:14 UTC Bus B-14 oscilloscope log)
 	var term: Node3D = Node3D.new()
 	term.name = "Workbench_DiagnosticTerminal"
 	term.position = Vector3(-9.17, 5.50, 8.05)
 	_props_container.add_child(term)
-	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
+	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH OSCILLOSCOPE", "collected": false, "pickup": false})
+
+	# Room 1B Sub-Bus B-14 Telemetry Relay Rack (query-only — CUE-003 broken seal 2026-10-19 // 03:14)
+	var sub_rack: Node3D = Node3D.new()
+	sub_rack.name = "Substation_TelemetryRack_B14"
+	sub_rack.position = Vector3(4.70, 1.15, 7.85)
+	_props_container.add_child(sub_rack)
+	_interactables.append({"node": sub_rack, "kind": "substation_rack", "label": "RM 1B SUB-BUS B-14 RELAY RACK", "collected": false, "pickup": false})
 
 	# #04 Bio-Luminescent Neural Tendon Smart-Sleeve (lower-left of 1st-person view)
 	if _camera != null:
@@ -519,13 +526,13 @@ func _populate_johnny5_bots_and_citizens() -> void:
 
 	# Each #05 Hammerhead stationed at its functional post.
 	_spawn_bot(BOT_SPROCKET_PATHS, "Hammerhead05_Sprocket_0419_Engineering", "SPROCKET #0419", "D-01 // ENGINEERING",
-		"Sector-4 service junction relay nominal. Exit bulkhead counterweight synced.", Vector3(-1.45, 0.06, -6.45), 35.0, ["DiagnosticPoint", "Idle"], 0.70)
+		"Sector-4 relay nominal. Note: Unlogged 48.2 kW / 412 Hz draw on Bus B-14 at 03:14 UTC traced to RM 1B.", Vector3(-1.45, 0.06, -6.45), 35.0, ["DiagnosticPoint", "Idle"], 0.70)
 	_spawn_bot(BOT_SWEEP_PATHS, "Hammerhead05_Sweep_0812_CivicSanitation", "SWEEP #0812", "D-02 // CIVIC & SANITATION",
-		"Mezzanine sanitation patrol 72% complete. Particulate index: low.", Vector3(-2.40, 4.29, 2.60), -65.0, ["WalkCycle", "Idle"], 0.35)
-	_spawn_bot(BOT_KELVIN_PATHS, "Hammerhead05_Kelvin_0204_Science", "KELVIN #0204", "D-03 // SCIENCE",
-		"Room 1B substation diagnostic rack: thermal drift +0.4K. Recommend thermal jelly.", Vector3(5.60, 0.06, 6.00), 45.0, ["DiagnosticProbe", "DiagnosticPoint", "Idle"], 0.65)
+		"Mezzanine patrol 72% complete. Logged single-tread rubber skid & cryo-coolant trace from East Stairwell into RM 1B.", Vector3(-2.40, 4.29, 2.60), -65.0, ["WalkCycle", "Idle"], 0.35)
+	_spawn_bot(BOT_KELVIN_PATHS, "Hammerhead05_Kelvin_0204_Science", "KELVIN #0204 [PUDDLE]", "D-03 // SCIENCE",
+		"Left tread actuator drag (-18% since 2026-10-19 03:14 UTC). Sub-Bus B-14 Hatch 04 sealed. [WARN: ID PUDDLE_0204 OVERWRITTEN].", Vector3(5.60, 0.06, 6.00), 45.0, ["DiagnosticProbe", "DiagnosticPoint", "Idle"], 0.65)
 	_spawn_bot(BOT_CLOVER_PATHS, "Hammerhead05_Clover_0631_AgriBiosphere", "CLOVER #0631", "D-04 // AGRI-BIOSPHERE",
-		"Atrium planter soil moisture 41%. Aeroponic herbs thriving.", Vector3(2.20, 0.06, -1.80), 90.0, ["Idle", "DiagnosticPoint"], 0.50)
+		"Atrium planter soil moisture 41%. Condenser line pressure steady after 03:14 UTC Bus B-14 brownout.", Vector3(2.20, 0.06, -1.80), 90.0, ["Idle", "DiagnosticPoint"], 0.50)
 
 	var comm_path: String = _find_first_existing(COMMUTER_PATHS)
 	for c_cfg: Dictionary in [
@@ -564,8 +571,8 @@ func _setup_sector_lighting() -> void:
 	_sun = DirectionalLight3D.new()
 	_sun.name = "AtriumGoldenHourSunlight"
 	_sun.rotation_degrees = Vector3(-38.0, 52.0, 0.0)
-	_sun.light_color = Color("#F2DEC4")
-	_sun.light_energy = 0.42
+	_sun.light_color = Color("#FFF3DC")
+	_sun.light_energy = 0.78
 	_sun.shadow_enabled = true
 	_sun.shadow_blur = 1.4
 	_sun.shadow_bias = 0.02
@@ -574,18 +581,19 @@ func _setup_sector_lighting() -> void:
 	_fill = DirectionalLight3D.new()
 	_fill.name = "AtriumSkyBounceFill"
 	_fill.rotation_degrees = Vector3(-28.0, -135.0, 0.0)
-	_fill.light_color = Color("#94A8BC")
-	_fill.light_energy = 0.16
+	_fill.light_color = Color("#C8DCF0")
+	_fill.light_energy = 0.34
 	_fill.shadow_enabled = false
 	_lights_container.add_child(_fill)
 
-	# Purposeful, low-energy, localized task lights over real functional zones only.
+	# Balanced mid-key localized task lights + subtle mid-atrium overhead fill light ([t4u]).
 	for l_cfg: Dictionary in [
-		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 6.15, 7.45), "col": Color("#F2D8B3"), "e": 0.56, "r": 6.0},
-		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(10.50, 6.15, 6.80), "col": Color("#F2D8B3"), "e": 0.48, "r": 5.5},
-		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 6.40, -1.60), "col": Color("#E8D2B0"), "e": 0.50, "r": 7.5},
-		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.10, 6.40), "col": Color("#F5DCBA"), "e": 0.46, "r": 6.5},
-		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(5.60, 3.10, 6.60), "col": Color("#E6E2D6"), "e": 0.58, "r": 6.5}
+		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 6.15, 7.45), "col": Color("#F5DFBC"), "e": 0.92, "r": 9.5},
+		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(10.50, 6.15, 6.80), "col": Color("#F5DFBC"), "e": 0.82, "r": 9.0},
+		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 6.40, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 10.5},
+		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.10, 6.40), "col": Color("#F5DFBC"), "e": 0.80, "r": 9.5},
+		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(5.60, 3.10, 6.60), "col": Color("#EAE6DC"), "e": 0.95, "r": 11.0},
+		{"name": "Atrium_Midhead_BounceFill", "pos": Vector3(0.0, 6.80, -1.50), "col": Color("#E8EDF2"), "e": 0.72, "r": 15.0}
 	]:
 		var omni: OmniLight3D = OmniLight3D.new()
 		omni.name = String(l_cfg["name"])
@@ -602,9 +610,9 @@ func _setup_sector_lighting() -> void:
 func _set_emergency_lighting(on: bool) -> void:
 	_emergency = on
 	if _sun != null:
-		_sun.light_energy = 0.05 if on else 0.42
+		_sun.light_energy = 0.05 if on else 0.78
 	if _fill != null:
-		_fill.light_energy = 0.04 if on else 0.16
+		_fill.light_energy = 0.04 if on else 0.34
 	for i: int in range(_task_lights.size()):
 		var l: OmniLight3D = _task_lights[i]
 		if on:
@@ -613,14 +621,14 @@ func _set_emergency_lighting(on: bool) -> void:
 			l.light_color = _task_base[i]["col"] as Color
 			l.light_energy = float(_task_base[i]["e"])
 	if _world_env != null and _world_env.environment != null:
-		_world_env.environment.ambient_light_energy = 0.07 if on else 0.20
+		_world_env.environment.ambient_light_energy = 0.07 if on else 0.36
 	_show_toast("SOLAR FLARE PROTOCOL // EMERGENCY LIGHTING ENGAGED" if on else "NOMINAL 5500K DAYLIGHT RESTORED", 3.0)
 
 
 # ------------------------------------------------------------------------------
 # Materials (BUG-07 guard + [t3u] emission)
 # ------------------------------------------------------------------------------
-func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.55) -> void:
+func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> void:
 	var stack: Array[Node] = [root]
 	var to_convert: Array[ImporterMeshInstance3D] = []
 	while not stack.is_empty():
@@ -1036,7 +1044,9 @@ func _interact() -> void:
 		for k: String in _inventory.keys():
 			total += int(_inventory_max[k])
 			have += int(_inventory[k])
-		_show_toast("WORKBENCH TERMINAL // Sector-4 bulkhead relay: JAMMED AT 40%%.\nUpgrade kit %d/%d gathered. Need: +5A cell + Super-Wire on [RESET]." % [have, total], 4.5)
+		_show_toast("OSCILLOSCOPE [2026-10-19 03:14 UTC] // 13.56MHz / 412Hz spike on BUS B-14 (48.2 kW).\nUnit #0204 re-keyed [PUDDLE -> KELVIN]; Coil C3 blown during A7-0204-MEM dump. Kit: %d/%d." % [have, total], 5.0)
+	elif kind == "substation_rack":
+		_show_toast("RM 1B RELAY RACK [SEAL BROKEN 2026-10-19 03:14 UTC] // Ghost Stencil: SEC-04 TELEMETRY RELAY.\nBus B-14 log purged; Unit #0204 flashed from D-04/HYDRO [PUDDLE] to D-03 SCIENCE [KELVIN].", 5.0)
 
 
 func _trigger_rfid_pulse() -> void:
