@@ -1,0 +1,17 @@
+# Godot 4+ editor cache & local import artifacts
+.godot/
+godot/.godot/
+*.translation
+
+# Rendered contact sheets & QA diagnostic screenshots (regenerable via scripts)
+assets/renders/
+godot/renders/
+
+# Temporary agent transcripts & OS artifacts
+context/transcripts/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.tmp
+*~

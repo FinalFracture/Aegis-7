@@ -1,0 +1,585 @@
+{
+  "candidates_r2": [
+    {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_bot_r2_01.glb",
+      "vertices": 8243,
+      "triangles": 5204,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.027,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.027,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept01_EngineeringAmberTrim",
+        "Mat_Emblem_District01_Engineering",
+        "Mat_Emissive_BotR2AmberLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_BotR2_AccordionRubberBellows",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_bot_r2_02.glb",
+      "vertices": 8189,
+      "triangles": 5248,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.09982,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.0998,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept01_EngineeringAmberTrim",
+        "Mat_Emblem_District01_Engineering",
+        "Mat_Emissive_BotR2AmberLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_bot_r2_03.glb",
+      "vertices": 7865,
+      "triangles": 5180,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.099,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.099,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept03_ScienceVioletTrim",
+        "Mat_Emblem_District03_Science",
+        "Mat_Emissive_BotR2ScienceVioletLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED",
+        "Mat_Emissive_BotR2AmberLED",
+        "Mat_Emissive_BotR2EmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_bot_r2_04.glb",
+      "vertices": 7786,
+      "triangles": 5128,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.073,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.073,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept04_BiosphereEmeraldTrim",
+        "Mat_Emblem_District04_Agri",
+        "Mat_Emissive_BotR2EmeraldLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED",
+        "Mat_Emissive_BotR2AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_bot_r2_05.glb",
+      "vertices": 8353,
+      "triangles": 5254,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.031,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.031,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept01_EngineeringAmberTrim",
+        "Mat_Emblem_District01_Engineering",
+        "Mat_Emissive_BotR2AmberLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    }
+  ],
+  "locked_winner_05_universal_liveries": {
+    "d01_sprocket_engineering": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_johnny5_sprocket_yellow.glb",
+      "vertices": 8353,
+      "triangles": 5254,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.031,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.031,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept01_EngineeringAmberTrim",
+        "Mat_Emblem_District01_Engineering",
+        "Mat_Emissive_BotR2AmberLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    },
+    "d02_sweep_civic": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_johnny5_bumper_teal.glb",
+      "vertices": 8653,
+      "triangles": 5438,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.031,
+        0.435
+      ],
+      "dimensions": [
+        0.775,
+        1.031,
+        0.7806
+      ],
+      "materials": [
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_Dept02_CivicTealTrim",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Emblem_District02_Civic",
+        "Mat_Emissive_BotR2CyanLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent"
+      ]
+    },
+    "d03_puddle_hydro": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_johnny5_puddle_cyan.glb",
+      "vertices": 8353,
+      "triangles": 5254,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.031,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.031,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept03_ScienceVioletTrim",
+        "Mat_Emblem_District03_Science",
+        "Mat_Emissive_BotR2ScienceVioletLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    },
+    "d04_clover_biosphere": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/bots/char_johnny5_clover_green.glb",
+      "vertices": 8353,
+      "triangles": 5254,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Chassis_Track_R",
+        "Torso_Core",
+        "Torso_Box_Core",
+        "RFID_Handshake_Ring",
+        "Neck_Gimbal_Spine",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Bridge",
+        "Head_Assembly",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Brow_Flap_R",
+        "Arm_Servo_L",
+        "Arm_Manipulator_L",
+        "Gripper_Claw_L",
+        "Arm_Servo_R",
+        "Arm_Manipulator_R",
+        "Gripper_Claw_R"
+      ],
+      "animations": [
+        "IdleCurious",
+        "TrackRoll",
+        "GreetAndPoint",
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "Celebrate"
+      ],
+      "min": [
+        -0.3875,
+        0.0,
+        -0.34559
+      ],
+      "max": [
+        0.3875,
+        1.031,
+        0.423
+      ],
+      "dimensions": [
+        0.775,
+        1.031,
+        0.7686
+      ],
+      "materials": [
+        "Mat_Universal_DeepStructuralSlate",
+        "Mat_Universal_BrushedMachinedSteel",
+        "Mat_UtilityBotR2_Atlas",
+        "Mat_Universal_TitaniumAlabaster",
+        "Mat_Dept04_BiosphereEmeraldTrim",
+        "Mat_Emblem_District04_Agri",
+        "Mat_Emissive_BotR2EmeraldLED",
+        "Mat_BotR2_CopperGoldCoil",
+        "Mat_Glass_UtilityBotR2Visor_Translucent",
+        "Mat_Emissive_BotR2CyanLED"
+      ]
+    }
+  }
+}

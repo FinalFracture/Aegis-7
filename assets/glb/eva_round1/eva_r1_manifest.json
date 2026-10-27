@@ -1,0 +1,172 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/eva_round1/eva_chamber_r1_01.glb",
+    "vertices": 5920,
+    "triangles": 5624,
+    "min": [
+      -1.125,
+      0.0,
+      -0.7978854775428772
+    ],
+    "max": [
+      1.125,
+      2.549999952316284,
+      0.7978854775428772
+    ],
+    "dimensions": [
+      2.25,
+      2.549999952316284,
+      1.5957709550857544
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_EVA_VisorGoldIridium",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_EVADecompression",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_EVAAirlock_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/eva_round1/eva_chamber_r1_02.glb",
+    "vertices": 6309,
+    "triangles": 5568,
+    "min": [
+      -1.1750000715255737,
+      0.0,
+      -0.8031846880912781
+    ],
+    "max": [
+      1.1750000715255737,
+      2.549999952316284,
+      0.8031846880912781
+    ],
+    "dimensions": [
+      2.3500001430511475,
+      2.549999952316284,
+      1.6063693761825562
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_EVA_VisorGoldIridium",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_EVADecompression",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_EVAAirlock_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/eva_round1/eva_chamber_r1_03.glb",
+    "vertices": 5049,
+    "triangles": 4572,
+    "min": [
+      -1.149999976158142,
+      0.0,
+      -0.75
+    ],
+    "max": [
+      1.149999976158142,
+      2.549999952316284,
+      0.75
+    ],
+    "dimensions": [
+      2.299999952316284,
+      2.549999952316284,
+      1.5
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_EVA_VisorGoldIridium",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_EVADecompression",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_EVAAirlock_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/eva_round1/eva_chamber_r1_04.glb",
+    "vertices": 5046,
+    "triangles": 4732,
+    "min": [
+      -1.1399999856948853,
+      0.0,
+      -0.7099999785423279
+    ],
+    "max": [
+      1.1399999856948853,
+      2.549999952316284,
+      0.7099999785423279
+    ],
+    "dimensions": [
+      2.2799999713897705,
+      2.549999952316284,
+      1.4199999570846558
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_EVA_VisorGoldIridium",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_EVADecompression",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_EVAAirlock_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/eva_round1/eva_chamber_r1_05.glb",
+    "vertices": 5475,
+    "triangles": 5186,
+    "min": [
+      -1.1749999523162842,
+      0.0,
+      -0.8206547498703003
+    ],
+    "max": [
+      1.1749999523162842,
+      2.5799999237060547,
+      0.8206547498703003
+    ],
+    "dimensions": [
+      2.3499999046325684,
+      2.5799999237060547,
+      1.6413094997406006
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_EVA_VisorGoldIridium",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_EVADecompression",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_EVAAirlock_Translucent"
+    ]
+  }
+]

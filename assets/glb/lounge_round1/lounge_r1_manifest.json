@@ -1,0 +1,172 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/lounge_round1/lounge_bar_r1_01.glb",
+    "vertices": 4567,
+    "triangles": 4226,
+    "min": [
+      -1.125,
+      0.0,
+      -0.6796166896820068
+    ],
+    "max": [
+      1.125,
+      1.9700000286102295,
+      0.6796166896820068
+    ],
+    "dimensions": [
+      2.25,
+      1.9700000286102295,
+      1.3592333793640137
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_LoungeCelestialBar",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_LoungeBar_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/lounge_round1/lounge_bar_r1_02.glb",
+    "vertices": 5047,
+    "triangles": 4446,
+    "min": [
+      -1.1749999523162842,
+      0.0,
+      -0.6796166896820068
+    ],
+    "max": [
+      1.1749999523162842,
+      2.049999952316284,
+      0.6796166896820068
+    ],
+    "dimensions": [
+      2.3499999046325684,
+      2.049999952316284,
+      1.3592333793640137
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_LoungeCelestialBar",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_LoungeBar_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/lounge_round1/lounge_bar_r1_03.glb",
+    "vertices": 4445,
+    "triangles": 4202,
+    "min": [
+      -1.1399999856948853,
+      0.0,
+      -0.6971167325973511
+    ],
+    "max": [
+      1.1399999856948853,
+      1.9700000286102295,
+      0.6971167325973511
+    ],
+    "dimensions": [
+      2.2799999713897705,
+      1.9700000286102295,
+      1.3942334651947021
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_LoungeCelestialBar",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_LoungeBar_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/lounge_round1/lounge_bar_r1_04.glb",
+    "vertices": 4475,
+    "triangles": 4184,
+    "min": [
+      -1.159999966621399,
+      0.0,
+      -0.6821167469024658
+    ],
+    "max": [
+      1.159999966621399,
+      2.059999942779541,
+      0.6821167469024658
+    ],
+    "dimensions": [
+      2.319999933242798,
+      2.059999942779541,
+      1.3642334938049316
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_LoungeCelestialBar",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_LoungeBar_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/lounge_round1/lounge_bar_r1_05.glb",
+    "vertices": 4375,
+    "triangles": 4138,
+    "min": [
+      -1.190000057220459,
+      0.0,
+      -0.6796166896820068
+    ],
+    "max": [
+      1.190000057220459,
+      1.940000057220459,
+      0.6796166896820068
+    ],
+    "dimensions": [
+      2.380000114440918,
+      1.940000057220459,
+      1.3592333793640137
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_LoungeCelestialBar",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_LoungeBar_Translucent"
+    ]
+  }
+]

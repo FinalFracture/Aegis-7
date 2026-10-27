@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7vanityr1"]
+
+[ext_resource type="Script" path="res://scripts/vanity_round1_showcase.gd" id="1_vanity_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vanity1"]
+sky_top_color = Color(0.04, 0.06, 0.09, 1)
+sky_horizon_color = Color(0.09, 0.12, 0.17, 1)
+ground_bottom_color = Color(0.03, 0.04, 0.06, 1)
+ground_horizon_color = Color(0.07, 0.09, 0.13, 1)
+
+[sub_resource type="Sky" id="Sky_vanity1"]
+sky_material = SubResource("ProceduralSkyMaterial_vanity1")
+
+[sub_resource type="Environment" id="Environment_vanity1"]
+background_mode = 1
+background_color = Color(0.06, 0.08, 0.11, 1)
+sky = SubResource("Sky_vanity1")
+ambient_light_source = 2
+ambient_light_color = Color(0.74, 0.84, 0.96, 1)
+ambient_light_energy = 0.36
+tonemap_mode = 2
+tonemap_exposure = 1.06
+tonemap_white = 1.25
+glow_enabled = true
+glow_intensity = 0.44
+glow_bloom = 0.08
+
+[node name="VanityRound1Showcase" type="Node3D"]
+script = ExtResource("1_vanity_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_vanity1")
+
+[node name="ShowcaseStage" type="Node3D" parent="."]
+
+[node name="CandidateHolder" type="Node3D" parent="."]
+
+[node name="ArchetypeLights" type="Node3D" parent="."]
+
+[node name="ShowcaseCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.939693, -0.0667652, 0.335472, 0, 0.980785, 0.19509, -0.34202, -0.183325, 0.921637, 0.85, 1.54, 2.45)
+current = true
+fov = 46.0

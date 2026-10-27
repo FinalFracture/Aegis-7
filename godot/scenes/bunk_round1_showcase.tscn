@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7bunkr1"]
+
+[ext_resource type="Script" path="res://scripts/bunk_round1_showcase.gd" id="1_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_r1"]
+sky_top_color = Color(0.05, 0.07, 0.10, 1)
+sky_horizon_color = Color(0.10, 0.13, 0.18, 1)
+ground_bottom_color = Color(0.04, 0.05, 0.07, 1)
+ground_horizon_color = Color(0.08, 0.10, 0.14, 1)
+
+[sub_resource type="Sky" id="Sky_r1"]
+sky_material = SubResource("ProceduralSkyMaterial_r1")
+
+[sub_resource type="Environment" id="Environment_r1"]
+background_mode = 1
+background_color = Color(0.07, 0.09, 0.12, 1)
+sky = SubResource("Sky_r1")
+ambient_light_source = 2
+ambient_light_color = Color(0.68, 0.78, 0.90, 1)
+ambient_light_energy = 0.28
+tonemap_mode = 2
+tonemap_exposure = 1.04
+tonemap_white = 1.25
+glow_enabled = true
+glow_intensity = 0.42
+glow_bloom = 0.08
+
+[node name="BunkRound1Showcase" type="Node3D"]
+script = ExtResource("1_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_r1")
+
+[node name="ShowcaseStage" type="Node3D" parent="."]
+
+[node name="CandidateHolder" type="Node3D" parent="."]
+
+[node name="ArchetypeLights" type="Node3D" parent="."]
+
+[node name="ShowcaseCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.913545, -0.111619, 0.391086, 0, 0.961262, 0.275637, -0.406737, -0.251807, 0.878156, 1.80, 1.58, 2.50)
+current = true
+fov = 43.0

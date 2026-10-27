@@ -1,0 +1,1 @@
+../src/render_asset_sheet.py

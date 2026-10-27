@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7scn0104"]
+
+[ext_resource type="Script" path="res://scripts/character_headshot_studio.gd" id="1_character_headshot_studio"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_headshot"]
+sky_top_color = Color(0.11, 0.20, 0.32, 1)
+sky_horizon_color = Color(0.85, 0.68, 0.45, 1)
+ground_bottom_color = Color(0.08, 0.12, 0.16, 1)
+ground_horizon_color = Color(0.24, 0.38, 0.44, 1)
+
+[sub_resource type="Sky" id="Sky_headshot"]
+sky_material = SubResource("ProceduralSkyMaterial_headshot")
+
+[sub_resource type="Environment" id="Environment_headshot"]
+background_mode = 2
+sky = SubResource("Sky_headshot")
+ambient_light_source = 3
+ambient_light_color = Color(0.95, 0.90, 0.84, 1)
+ambient_light_sky_contribution = 0.48
+ambient_light_energy = 0.44
+tonemap_mode = 2
+tonemap_exposure = 0.94
+tonemap_white = 1.38
+glow_enabled = true
+glow_intensity = 0.32
+glow_bloom = 0.04
+glow_hdr_threshold = 1.35
+
+[node name="CharacterHeadshotStudio" type="Node3D"]
+script = ExtResource("1_character_headshot_studio")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_headshot")
+
+[node name="PortraitBackdrop" type="Node3D" parent="."]
+
+[node name="CharacterContainer" type="Node3D" parent="."]
+
+[node name="PortraitLightingRig" type="Node3D" parent="."]
+
+[node name="PortraitCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 1.63, 0.62)
+current = true
+fov = 29.0
+near = 0.02
+far = 100.0

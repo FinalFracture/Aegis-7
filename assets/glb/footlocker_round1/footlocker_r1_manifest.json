@@ -1,0 +1,165 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/footlocker_round1/footlocker_r1_01.glb",
+    "vertices": 4343,
+    "triangles": 3836,
+    "min": [
+      -0.5539175271987915,
+      0.0,
+      -0.2849999964237213
+    ],
+    "max": [
+      0.5539175271987915,
+      0.8364020586013794,
+      0.2849999964237213
+    ],
+    "dimensions": [
+      1.107835054397583,
+      0.8364020586013794,
+      0.5699999928474426
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoManifest",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_CargoLid_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/footlocker_round1/footlocker_r1_02.glb",
+    "vertices": 5401,
+    "triangles": 4288,
+    "min": [
+      -0.5789175629615784,
+      0.0,
+      -0.34475529193878174
+    ],
+    "max": [
+      0.5789175629615784,
+      0.8369767665863037,
+      0.34475529193878174
+    ],
+    "dimensions": [
+      1.1578351259231567,
+      0.8369767665863037,
+      0.6895105838775635
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoManifest",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_CargoLid_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/footlocker_round1/footlocker_r1_03.glb",
+    "vertices": 4137,
+    "triangles": 4070,
+    "min": [
+      -0.5189175605773926,
+      0.0,
+      -0.32080480456352234
+    ],
+    "max": [
+      0.5189175605773926,
+      0.7803780436515808,
+      0.32080480456352234
+    ],
+    "dimensions": [
+      1.0378351211547852,
+      0.7803780436515808,
+      0.6416096091270447
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoManifest",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_CargoLid_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/footlocker_round1/footlocker_r1_04.glb",
+    "vertices": 3150,
+    "triangles": 2608,
+    "min": [
+      -0.5389175415039062,
+      0.0,
+      -0.29931575059890747
+    ],
+    "max": [
+      0.5389175415039062,
+      0.8057384490966797,
+      0.29931575059890747
+    ],
+    "dimensions": [
+      1.0778350830078125,
+      0.8057384490966797,
+      0.5986315011978149
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoManifest",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_CargoLid_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/footlocker_round1/footlocker_r1_05.glb",
+    "vertices": 3958,
+    "triangles": 3664,
+    "min": [
+      -0.5689175724983215,
+      0.0,
+      -0.2874999940395355
+    ],
+    "max": [
+      0.5689175724983215,
+      0.7917953729629517,
+      0.2874999940395355
+    ],
+    "dimensions": [
+      1.137835144996643,
+      0.7917953729629517,
+      0.574999988079071
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoManifest",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_CargoLid_Translucent"
+    ]
+  }
+]

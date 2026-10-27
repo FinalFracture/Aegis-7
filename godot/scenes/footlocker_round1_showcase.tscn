@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7footlockerr1"]
+
+[ext_resource type="Script" path="res://scripts/footlocker_round1_showcase.gd" id="1_footlocker_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_footlocker1"]
+sky_top_color = Color(0.04, 0.06, 0.09, 1)
+sky_horizon_color = Color(0.09, 0.12, 0.17, 1)
+ground_bottom_color = Color(0.03, 0.04, 0.06, 1)
+ground_horizon_color = Color(0.07, 0.09, 0.13, 1)
+
+[sub_resource type="Sky" id="Sky_footlocker1"]
+sky_material = SubResource("ProceduralSkyMaterial_footlocker1")
+
+[sub_resource type="Environment" id="Environment_footlocker1"]
+background_mode = 1
+background_color = Color(0.06, 0.08, 0.11, 1)
+sky = SubResource("Sky_footlocker1")
+ambient_light_source = 2
+ambient_light_color = Color(0.74, 0.84, 0.96, 1)
+ambient_light_energy = 0.38
+tonemap_mode = 2
+tonemap_exposure = 1.06
+tonemap_white = 1.25
+glow_enabled = true
+glow_intensity = 0.44
+glow_bloom = 0.08
+
+[node name="FootlockerRound1Showcase" type="Node3D"]
+script = ExtResource("1_footlocker_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_footlocker1")
+
+[node name="ShowcaseStage" type="Node3D" parent="."]
+
+[node name="CandidateHolder" type="Node3D" parent="."]
+
+[node name="ArchetypeLights" type="Node3D" parent="."]
+
+[node name="ShowcaseCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.913545, -0.163176, 0.372434, 0, 0.915909, 0.401386, -0.406737, -0.366684, 0.836723, 0.65, 1.06, 1.48)
+current = true
+fov = 45.0

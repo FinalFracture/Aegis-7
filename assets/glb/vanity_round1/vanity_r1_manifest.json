@@ -1,0 +1,176 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/vanity_round1/vanity_r1_01.glb",
+    "vertices": 4307,
+    "triangles": 4752,
+    "min": [
+      -0.4779999554157257,
+      0.0,
+      -0.2775000035762787
+    ],
+    "max": [
+      0.4779999554157257,
+      2.049999952316284,
+      0.2775000035762787
+    ],
+    "dimensions": [
+      0.9559999108314514,
+      2.049999952316284,
+      0.5550000071525574
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Mirror_SmartHUDCyan",
+      "Mat_OLED_HygienePanel",
+      "Mat_Fabric_OrbitalNavyTowel",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_UVCubby_Translucent",
+      "Mat_Glass_SonicShield_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/vanity_round1/vanity_r1_02.glb",
+    "vertices": 3950,
+    "triangles": 5472,
+    "min": [
+      -0.44999998807907104,
+      0.0,
+      -0.2709999978542328
+    ],
+    "max": [
+      0.44999998807907104,
+      2.0,
+      0.2709999978542328
+    ],
+    "dimensions": [
+      0.8999999761581421,
+      2.0,
+      0.5419999957084656
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Mirror_SmartHUDCyan",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_Fabric_OrbitalNavyTowel",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_OLED_HygienePanel",
+      "Mat_Glass_UVCubby_Translucent",
+      "Mat_Glass_SonicShield_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/vanity_round1/vanity_r1_03.glb",
+    "vertices": 4347,
+    "triangles": 4192,
+    "min": [
+      -0.5250000357627869,
+      0.0,
+      -0.28999999165534973
+    ],
+    "max": [
+      0.5250000357627869,
+      2.0799999237060547,
+      0.28999999165534973
+    ],
+    "dimensions": [
+      1.0500000715255737,
+      2.0799999237060547,
+      0.5799999833106995
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Mirror_SmartHUDCyan",
+      "Mat_OLED_HygienePanel",
+      "Mat_Fabric_OrbitalNavyTowel",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_UVCubby_Translucent",
+      "Mat_Glass_SonicShield_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/vanity_round1/vanity_r1_04.glb",
+    "vertices": 4255,
+    "triangles": 4750,
+    "min": [
+      -0.46000000834465027,
+      0.0,
+      -0.32499998807907104
+    ],
+    "max": [
+      0.46000000834465027,
+      2.0799999237060547,
+      0.32499998807907104
+    ],
+    "dimensions": [
+      0.9200000166893005,
+      2.0799999237060547,
+      0.6499999761581421
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Mirror_SmartHUDCyan",
+      "Mat_OLED_HygienePanel",
+      "Mat_Fabric_OrbitalNavyTowel",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_SonicShield_Translucent",
+      "Mat_Glass_UVCubby_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/vanity_round1/vanity_r1_05.glb",
+    "vertices": 4169,
+    "triangles": 4670,
+    "min": [
+      -0.5421891212463379,
+      0.0,
+      -0.30000001192092896
+    ],
+    "max": [
+      0.5421891212463379,
+      2.049999952316284,
+      0.30000001192092896
+    ],
+    "dimensions": [
+      1.0843782424926758,
+      2.049999952316284,
+      0.6000000238418579
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Mirror_SmartHUDCyan",
+      "Mat_OLED_HygienePanel",
+      "Mat_Fabric_OrbitalNavyTowel",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_UVSterilizerLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_UVCubby_Translucent",
+      "Mat_Glass_SonicShield_Translucent"
+    ]
+  }
+]

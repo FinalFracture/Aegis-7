@@ -1,0 +1,1585 @@
+{
+  "props_25": [
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_01/prop_01_r1_01.glb",
+      "vertices": 3202,
+      "triangles": 1972,
+      "min": [
+        -3.75,
+        0.0,
+        -1.3695671558380127
+      ],
+      "max": [
+        3.75,
+        5.739999771118164,
+        1.3695671558380127
+      ],
+      "dimensions": [
+        7.5,
+        5.739999771118164,
+        2.7391343116760254
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_01/prop_01_r1_02.glb",
+      "vertices": 3660,
+      "triangles": 2016,
+      "min": [
+        -4.014999866485596,
+        0.0,
+        -1.7300000190734863
+      ],
+      "max": [
+        4.014999866485596,
+        5.920000076293945,
+        1.7300000190734863
+      ],
+      "dimensions": [
+        8.029999732971191,
+        5.920000076293945,
+        3.4600000381469727
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_01/prop_01_r1_03.glb",
+      "vertices": 3366,
+      "triangles": 1952,
+      "min": [
+        -3.700000047683716,
+        0.0,
+        -1.8200000524520874
+      ],
+      "max": [
+        3.700000047683716,
+        5.519999980926514,
+        1.8200000524520874
+      ],
+      "dimensions": [
+        7.400000095367432,
+        5.519999980926514,
+        3.640000104904175
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_01/prop_01_r1_04.glb",
+      "vertices": 3562,
+      "triangles": 2016,
+      "min": [
+        -3.700000047683716,
+        0.0,
+        -1.4600000381469727
+      ],
+      "max": [
+        3.700000047683716,
+        5.699999809265137,
+        1.4600000381469727
+      ],
+      "dimensions": [
+        7.400000095367432,
+        5.699999809265137,
+        2.9200000762939453
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_01/prop_01_r1_05.glb",
+      "vertices": 3186,
+      "triangles": 2028,
+      "min": [
+        -3.799999952316284,
+        0.0,
+        -1.600000023841858
+      ],
+      "max": [
+        3.799999952316284,
+        5.659999847412109,
+        1.600000023841858
+      ],
+      "dimensions": [
+        7.599999904632568,
+        5.659999847412109,
+        3.200000047683716
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_02/prop_02_r1_01.glb",
+      "vertices": 2904,
+      "triangles": 1928,
+      "min": [
+        -0.9200000166893005,
+        0.0,
+        -0.8600000143051147
+      ],
+      "max": [
+        0.9200000166893005,
+        2.680000066757202,
+        0.8600000143051147
+      ],
+      "dimensions": [
+        1.840000033378601,
+        2.680000066757202,
+        1.7200000286102295
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_02/prop_02_r1_02.glb",
+      "vertices": 3002,
+      "triangles": 1960,
+      "min": [
+        -1.25,
+        0.0,
+        -0.8600000143051147
+      ],
+      "max": [
+        1.25,
+        2.6600000858306885,
+        0.8600000143051147
+      ],
+      "dimensions": [
+        2.5,
+        2.6600000858306885,
+        1.7200000286102295
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_02/prop_02_r1_03.glb",
+      "vertices": 2906,
+      "triangles": 1904,
+      "min": [
+        -1.399999976158142,
+        0.0,
+        -0.8600000143051147
+      ],
+      "max": [
+        1.399999976158142,
+        2.7200000286102295,
+        0.8600000143051147
+      ],
+      "dimensions": [
+        2.799999952316284,
+        2.7200000286102295,
+        1.7200000286102295
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_02/prop_02_r1_04.glb",
+      "vertices": 2803,
+      "triangles": 1972,
+      "min": [
+        -1.100000023841858,
+        0.0,
+        -1.100000023841858
+      ],
+      "max": [
+        1.100000023841858,
+        3.3949999809265137,
+        1.100000023841858
+      ],
+      "dimensions": [
+        2.200000047683716,
+        3.3949999809265137,
+        2.200000047683716
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_02/prop_02_r1_05.glb",
+      "vertices": 2904,
+      "triangles": 1916,
+      "min": [
+        -1.1725000143051147,
+        0.0,
+        -0.8600000143051147
+      ],
+      "max": [
+        1.1725000143051147,
+        2.799999952316284,
+        0.8600000143051147
+      ],
+      "dimensions": [
+        2.3450000286102295,
+        2.799999952316284,
+        1.7200000286102295
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_03/prop_03_r1_01.glb",
+      "vertices": 1851,
+      "triangles": 1952,
+      "min": [
+        -1.4199999570846558,
+        0.0,
+        -0.8710511922836304
+      ],
+      "max": [
+        1.4199999570846558,
+        2.390000104904175,
+        0.8710511922836304
+      ],
+      "dimensions": [
+        2.8399999141693115,
+        2.390000104904175,
+        1.7421023845672607
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_03/prop_03_r1_02.glb",
+      "vertices": 1932,
+      "triangles": 1908,
+      "min": [
+        -1.5700000524520874,
+        0.0,
+        -0.8949999809265137
+      ],
+      "max": [
+        1.5700000524520874,
+        2.839998483657837,
+        0.8949999809265137
+      ],
+      "dimensions": [
+        3.140000104904175,
+        2.839998483657837,
+        1.7899999618530273
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_03/prop_03_r1_03.glb",
+      "vertices": 1986,
+      "triangles": 2448,
+      "min": [
+        -1.600000023841858,
+        0.0,
+        -0.875
+      ],
+      "max": [
+        1.600000023841858,
+        2.3299999237060547,
+        0.875
+      ],
+      "dimensions": [
+        3.200000047683716,
+        2.3299999237060547,
+        1.75
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_03/prop_03_r1_04.glb",
+      "vertices": 2043,
+      "triangles": 1928,
+      "min": [
+        -1.350000023841858,
+        0.0,
+        -0.9449999928474426
+      ],
+      "max": [
+        1.350000023841858,
+        2.424999952316284,
+        0.9449999928474426
+      ],
+      "dimensions": [
+        2.700000047683716,
+        2.424999952316284,
+        1.8899999856948853
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_03/prop_03_r1_05.glb",
+      "vertices": 1920,
+      "triangles": 1952,
+      "min": [
+        -1.5,
+        0.0,
+        -0.9574999809265137
+      ],
+      "max": [
+        1.5,
+        2.2100000381469727,
+        0.9574999809265137
+      ],
+      "dimensions": [
+        3.0,
+        2.2100000381469727,
+        1.9149999618530273
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_04/prop_04_r1_01.glb",
+      "vertices": 2709,
+      "triangles": 2012,
+      "min": [
+        -1.75,
+        0.0,
+        -1.2999999523162842
+      ],
+      "max": [
+        1.75,
+        1.8899999856948853,
+        1.2999999523162842
+      ],
+      "dimensions": [
+        3.5,
+        1.8899999856948853,
+        2.5999999046325684
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Bench_CharcoalCushion"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_04/prop_04_r1_02.glb",
+      "vertices": 2557,
+      "triangles": 1976,
+      "min": [
+        -1.934999942779541,
+        0.0,
+        -1.2200000286102295
+      ],
+      "max": [
+        1.934999942779541,
+        2.390000104904175,
+        1.2200000286102295
+      ],
+      "dimensions": [
+        3.869999885559082,
+        2.390000104904175,
+        2.440000057220459
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Bench_CharcoalCushion"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_04/prop_04_r1_03.glb",
+      "vertices": 2362,
+      "triangles": 1992,
+      "min": [
+        -1.850000023841858,
+        0.0,
+        -1.25
+      ],
+      "max": [
+        1.850000023841858,
+        1.9900000095367432,
+        1.25
+      ],
+      "dimensions": [
+        3.700000047683716,
+        1.9900000095367432,
+        2.5
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Bench_CharcoalCushion"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_04/prop_04_r1_04.glb",
+      "vertices": 2843,
+      "triangles": 2016,
+      "min": [
+        -1.7999999523162842,
+        0.0,
+        -1.2999999523162842
+      ],
+      "max": [
+        1.7999999523162842,
+        2.259999990463257,
+        1.2999999523162842
+      ],
+      "dimensions": [
+        3.5999999046325684,
+        2.259999990463257,
+        2.5999999046325684
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Bench_CharcoalCushion"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_04/prop_04_r1_05.glb",
+      "vertices": 2845,
+      "triangles": 1992,
+      "min": [
+        -1.875,
+        0.0,
+        -1.225000023841858
+      ],
+      "max": [
+        1.875,
+        2.259999990463257,
+        1.225000023841858
+      ],
+      "dimensions": [
+        3.75,
+        2.259999990463257,
+        2.450000047683716
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Bench_CharcoalCushion"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_05/prop_05_r1_01.glb",
+      "vertices": 3266,
+      "triangles": 2164,
+      "min": [
+        -2.700000047683716,
+        0.0,
+        -2.862638473510742
+      ],
+      "max": [
+        2.700000047683716,
+        4.430371284484863,
+        2.862638473510742
+      ],
+      "dimensions": [
+        5.400000095367432,
+        4.430371284484863,
+        5.725276947021484
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_05/prop_05_r1_02.glb",
+      "vertices": 3412,
+      "triangles": 2212,
+      "min": [
+        -3.5769877433776855,
+        0.0,
+        -2.5999999046325684
+      ],
+      "max": [
+        3.5769877433776855,
+        5.080370903015137,
+        2.5999999046325684
+      ],
+      "dimensions": [
+        7.153975486755371,
+        5.080370903015137,
+        5.199999809265137
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_05/prop_05_r1_03.glb",
+      "vertices": 3031,
+      "triangles": 2188,
+      "min": [
+        -3.150299072265625,
+        0.0,
+        -2.687638521194458
+      ],
+      "max": [
+        3.150299072265625,
+        4.580370903015137,
+        2.687638521194458
+      ],
+      "dimensions": [
+        6.30059814453125,
+        4.580370903015137,
+        5.375277042388916
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_05/prop_05_r1_04.glb",
+      "vertices": 3189,
+      "triangles": 2176,
+      "min": [
+        -3.351987838745117,
+        0.0,
+        -2.5
+      ],
+      "max": [
+        3.351987838745117,
+        4.730370998382568,
+        2.5
+      ],
+      "dimensions": [
+        6.703975677490234,
+        4.730370998382568,
+        5.0
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/props/prop_05/prop_05_r1_05.glb",
+      "vertices": 3240,
+      "triangles": 2232,
+      "min": [
+        -2.8733110427856445,
+        0.0,
+        -2.762638568878174
+      ],
+      "max": [
+        2.8733110427856445,
+        4.88037109375,
+        2.762638568878174
+      ],
+      "dimensions": [
+        5.746622085571289,
+        4.88037109375,
+        5.525277137756348
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    }
+  ],
+  "buildings_district4_25": [
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_16/bldg_16_r1_01.glb",
+      "vertices": 7833,
+      "triangles": 4344,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        22.024999618530273,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        22.024999618530273,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_16/bldg_16_r1_02.glb",
+      "vertices": 8505,
+      "triangles": 4664,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        20.32499885559082,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        20.32499885559082,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_16/bldg_16_r1_03.glb",
+      "vertices": 9081,
+      "triangles": 4916,
+      "min": [
+        -6.369671821594238,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.369671821594238,
+        20.125,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.739343643188477,
+        20.125,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_16/bldg_16_r1_04.glb",
+      "vertices": 7833,
+      "triangles": 4344,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        19.924999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        19.924999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_16/bldg_16_r1_05.glb",
+      "vertices": 7593,
+      "triangles": 4252,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        20.524999618530273,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        20.524999618530273,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_17/bldg_17_r1_01.glb",
+      "vertices": 7055,
+      "triangles": 4676,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        19.424999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        19.424999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_17/bldg_17_r1_02.glb",
+      "vertices": 7727,
+      "triangles": 4996,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        17.724998474121094,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        17.724998474121094,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_17/bldg_17_r1_03.glb",
+      "vertices": 8879,
+      "triangles": 5524,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        17.524999618530273,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        17.524999618530273,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_17/bldg_17_r1_04.glb",
+      "vertices": 7055,
+      "triangles": 4676,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        17.32499885559082,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        17.32499885559082,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_17/bldg_17_r1_05.glb",
+      "vertices": 7391,
+      "triangles": 4860,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        17.924999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        17.924999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_18/bldg_18_r1_01.glb",
+      "vertices": 6661,
+      "triangles": 4212,
+      "min": [
+        -6.0,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.0,
+        20.82499885559082,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.0,
+        20.82499885559082,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_18/bldg_18_r1_02.glb",
+      "vertices": 7333,
+      "triangles": 4532,
+      "min": [
+        -6.0,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.0,
+        19.125,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.0,
+        19.125,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_18/bldg_18_r1_03.glb",
+      "vertices": 8485,
+      "triangles": 5060,
+      "min": [
+        -6.099999904632568,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.099999904632568,
+        18.924999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.199999809265137,
+        18.924999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_18/bldg_18_r1_04.glb",
+      "vertices": 6661,
+      "triangles": 4212,
+      "min": [
+        -6.0,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.0,
+        18.724998474121094,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.0,
+        18.724998474121094,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_18/bldg_18_r1_05.glb",
+      "vertices": 6997,
+      "triangles": 4396,
+      "min": [
+        -6.0,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.0,
+        19.32499885559082,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.0,
+        19.32499885559082,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_19/bldg_19_r1_01.glb",
+      "vertices": 7293,
+      "triangles": 4880,
+      "min": [
+        -6.0,
+        0.0,
+        -5.114999771118164
+      ],
+      "max": [
+        6.0,
+        20.125,
+        5.114999771118164
+      ],
+      "dimensions": [
+        12.0,
+        20.125,
+        10.229999542236328
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_19/bldg_19_r1_02.glb",
+      "vertices": 8037,
+      "triangles": 5328,
+      "min": [
+        -6.0,
+        0.0,
+        -5.114999771118164
+      ],
+      "max": [
+        6.0,
+        18.424999237060547,
+        5.114999771118164
+      ],
+      "dimensions": [
+        12.0,
+        18.424999237060547,
+        10.229999542236328
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_19/bldg_19_r1_03.glb",
+      "vertices": 9189,
+      "triangles": 5856,
+      "min": [
+        -6.059270858764648,
+        0.0,
+        -5.114999771118164
+      ],
+      "max": [
+        6.059270858764648,
+        18.224998474121094,
+        5.114999771118164
+      ],
+      "dimensions": [
+        12.118541717529297,
+        18.224998474121094,
+        10.229999542236328
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_19/bldg_19_r1_04.glb",
+      "vertices": 7365,
+      "triangles": 5008,
+      "min": [
+        -6.0,
+        0.0,
+        -5.114999771118164
+      ],
+      "max": [
+        6.0,
+        18.024999618530273,
+        5.114999771118164
+      ],
+      "dimensions": [
+        12.0,
+        18.024999618530273,
+        10.229999542236328
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_19/bldg_19_r1_05.glb",
+      "vertices": 7701,
+      "triangles": 5192,
+      "min": [
+        -6.0,
+        0.0,
+        -5.114999771118164
+      ],
+      "max": [
+        6.0,
+        18.625,
+        5.114999771118164
+      ],
+      "dimensions": [
+        12.0,
+        18.625,
+        10.229999542236328
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_20/bldg_20_r1_01.glb",
+      "vertices": 7926,
+      "triangles": 5008,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        23.424999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        23.424999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_20/bldg_20_r1_02.glb",
+      "vertices": 8598,
+      "triangles": 5328,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        21.724998474121094,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        21.724998474121094,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_20/bldg_20_r1_03.glb",
+      "vertices": 9174,
+      "triangles": 5580,
+      "min": [
+        -6.863335609436035,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.863335609436035,
+        21.524999618530273,
+        5.355000019073486
+      ],
+      "dimensions": [
+        13.72667121887207,
+        21.524999618530273,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_20/bldg_20_r1_04.glb",
+      "vertices": 7926,
+      "triangles": 5008,
+      "min": [
+        -6.25,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.25,
+        21.32499885559082,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.5,
+        21.32499885559082,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/buildings/bldg_20/bldg_20_r1_05.glb",
+      "vertices": 7686,
+      "triangles": 4916,
+      "min": [
+        -6.263335227966309,
+        0.0,
+        -5.355000019073486
+      ],
+      "max": [
+        6.263335227966309,
+        21.924999237060547,
+        5.355000019073486
+      ],
+      "dimensions": [
+        12.526670455932617,
+        21.924999237060547,
+        10.710000038146973
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Window_GridLitHabitat",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED"
+      ]
+    }
+  ]
+}

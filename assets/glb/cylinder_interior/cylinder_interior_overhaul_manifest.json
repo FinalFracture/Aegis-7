@@ -1,0 +1,953 @@
+{
+  "setpieces_25": [
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_01/interior_setpiece_01_r1_01.glb",
+      "vertices": 6798,
+      "triangles": 3952,
+      "min": [
+        -33.599998474121094,
+        0.0,
+        -12.123132705688477
+      ],
+      "max": [
+        33.599998474121094,
+        22.0,
+        12.123133659362793
+      ],
+      "dimensions": [
+        67.19999694824219,
+        22.0,
+        24.246265411376953
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_01/interior_setpiece_01_r1_02.glb",
+      "vertices": 7001,
+      "triangles": 4628,
+      "min": [
+        -33.599998474121094,
+        0.0,
+        -7.400000095367432
+      ],
+      "max": [
+        33.599998474121094,
+        24.25,
+        7.400000095367432
+      ],
+      "dimensions": [
+        67.19999694824219,
+        24.25,
+        14.800000190734863
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Signage_Aegis7BuildingMarquees",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_01/interior_setpiece_01_r1_03.glb",
+      "vertices": 7226,
+      "triangles": 4192,
+      "min": [
+        -33.599998474121094,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        33.599998474121094,
+        21.101055145263672,
+        15.495292663574219
+      ],
+      "dimensions": [
+        67.19999694824219,
+        21.101055145263672,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_01/interior_setpiece_01_r1_04.glb",
+      "vertices": 7414,
+      "triangles": 4316,
+      "min": [
+        -33.599998474121094,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        33.599998474121094,
+        22.100000381469727,
+        15.495292663574219
+      ],
+      "dimensions": [
+        67.19999694824219,
+        22.100000381469727,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_01/interior_setpiece_01_r1_05.glb",
+      "vertices": 7508,
+      "triangles": 4372,
+      "min": [
+        -33.599998474121094,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        33.599998474121094,
+        23.0,
+        15.495292663574219
+      ],
+      "dimensions": [
+        67.19999694824219,
+        23.0,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_02/interior_setpiece_02_r1_01.glb",
+      "vertices": 4549,
+      "triangles": 3940,
+      "min": [
+        -21.0,
+        0.0,
+        -16.0
+      ],
+      "max": [
+        21.0,
+        17.554370880126953,
+        16.0
+      ],
+      "dimensions": [
+        42.0,
+        17.554370880126953,
+        32.0
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_02/interior_setpiece_02_r1_02.glb",
+      "vertices": 4693,
+      "triangles": 4268,
+      "min": [
+        -21.0,
+        0.0,
+        -16.0
+      ],
+      "max": [
+        21.0,
+        17.554370880126953,
+        16.0
+      ],
+      "dimensions": [
+        42.0,
+        17.554370880126953,
+        32.0
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_02/interior_setpiece_02_r1_03.glb",
+      "vertices": 4883,
+      "triangles": 4136,
+      "min": [
+        -21.0,
+        0.0,
+        -16.57313346862793
+      ],
+      "max": [
+        21.0,
+        17.554370880126953,
+        16.57313346862793
+      ],
+      "dimensions": [
+        42.0,
+        17.554370880126953,
+        33.14626693725586
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_02/interior_setpiece_02_r1_04.glb",
+      "vertices": 5119,
+      "triangles": 4276,
+      "min": [
+        -21.0,
+        0.0,
+        -16.57313346862793
+      ],
+      "max": [
+        21.0,
+        17.554370880126953,
+        16.57313346862793
+      ],
+      "dimensions": [
+        42.0,
+        17.554370880126953,
+        33.14626693725586
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_02/interior_setpiece_02_r1_05.glb",
+      "vertices": 5355,
+      "triangles": 4416,
+      "min": [
+        -21.0,
+        0.0,
+        -16.57313346862793
+      ],
+      "max": [
+        21.0,
+        17.554370880126953,
+        16.57313346862793
+      ],
+      "dimensions": [
+        42.0,
+        17.554370880126953,
+        33.14626693725586
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Foliage_AeroponicHerbs",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_03/interior_setpiece_03_r1_01.glb",
+      "vertices": 5318,
+      "triangles": 3980,
+      "min": [
+        -27.0,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        27.0,
+        25.789945602416992,
+        15.495292663574219
+      ],
+      "dimensions": [
+        54.0,
+        25.789945602416992,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Emissive_AxialGoldenHourSunCore"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_03/interior_setpiece_03_r1_02.glb",
+      "vertices": 5462,
+      "triangles": 4308,
+      "min": [
+        -27.0,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        27.0,
+        25.789945602416992,
+        15.495292663574219
+      ],
+      "dimensions": [
+        54.0,
+        25.789945602416992,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Emissive_AxialGoldenHourSunCore"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_03/interior_setpiece_03_r1_03.glb",
+      "vertices": 5794,
+      "triangles": 4260,
+      "min": [
+        -27.0,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        27.0,
+        25.789945602416992,
+        15.495292663574219
+      ],
+      "dimensions": [
+        54.0,
+        25.789945602416992,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Emissive_AxialGoldenHourSunCore"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_03/interior_setpiece_03_r1_04.glb",
+      "vertices": 5888,
+      "triangles": 4316,
+      "min": [
+        -27.0,
+        0.0,
+        -15.495292663574219
+      ],
+      "max": [
+        27.0,
+        25.789945602416992,
+        15.495292663574219
+      ],
+      "dimensions": [
+        54.0,
+        25.789945602416992,
+        30.990585327148438
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Emissive_AxialGoldenHourSunCore"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_03/interior_setpiece_03_r1_05.glb",
+      "vertices": 6124,
+      "triangles": 4456,
+      "min": [
+        -27.0,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        27.0,
+        25.789945602416992,
+        17.14626693725586
+      ],
+      "dimensions": [
+        54.0,
+        25.789945602416992,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Emissive_AxialGoldenHourSunCore"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_04/interior_setpiece_04_r1_01.glb",
+      "vertices": 6503,
+      "triangles": 4040,
+      "min": [
+        -17.287500381469727,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        17.287500381469727,
+        30.100000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        34.57500076293945,
+        30.100000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_04/interior_setpiece_04_r1_02.glb",
+      "vertices": 6505,
+      "triangles": 4284,
+      "min": [
+        -19.387500762939453,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        19.387500762939453,
+        30.100000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        38.775001525878906,
+        30.100000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_04/interior_setpiece_04_r1_03.glb",
+      "vertices": 6837,
+      "triangles": 4236,
+      "min": [
+        -17.287500381469727,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        17.287500381469727,
+        30.100000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        34.57500076293945,
+        30.100000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_04/interior_setpiece_04_r1_04.glb",
+      "vertices": 6931,
+      "triangles": 4292,
+      "min": [
+        -17.287500381469727,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        17.287500381469727,
+        30.100000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        34.57500076293945,
+        30.100000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_04/interior_setpiece_04_r1_05.glb",
+      "vertices": 7167,
+      "triangles": 4432,
+      "min": [
+        -17.287500381469727,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        17.287500381469727,
+        30.100000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        34.57500076293945,
+        30.100000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_05/interior_setpiece_05_r1_01.glb",
+      "vertices": 6660,
+      "triangles": 4008,
+      "min": [
+        -19.0,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        19.0,
+        11.675000190734863,
+        17.14626693725586
+      ],
+      "dimensions": [
+        38.0,
+        11.675000190734863,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_05/interior_setpiece_05_r1_02.glb",
+      "vertices": 6804,
+      "triangles": 4336,
+      "min": [
+        -21.037500381469727,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        21.037500381469727,
+        12.950660705566406,
+        17.14626693725586
+      ],
+      "dimensions": [
+        42.07500076293945,
+        12.950660705566406,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_05/interior_setpiece_05_r1_03.glb",
+      "vertices": 6994,
+      "triangles": 4204,
+      "min": [
+        -19.0,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        19.0,
+        14.25,
+        17.14626693725586
+      ],
+      "dimensions": [
+        38.0,
+        14.25,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_05/interior_setpiece_05_r1_04.glb",
+      "vertices": 7230,
+      "triangles": 4344,
+      "min": [
+        -19.0,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        19.0,
+        11.675000190734863,
+        17.14626693725586
+      ],
+      "dimensions": [
+        38.0,
+        11.675000190734863,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/setpiece_05/interior_setpiece_05_r1_05.glb",
+      "vertices": 7324,
+      "triangles": 4400,
+      "min": [
+        -19.0,
+        0.0,
+        -17.14626693725586
+      ],
+      "max": [
+        19.0,
+        14.600000381469727,
+        17.14626693725586
+      ],
+      "dimensions": [
+        38.0,
+        14.600000381469727,
+        34.29253387451172
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit"
+      ]
+    }
+  ],
+  "valley_biome_shells_3": [
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/valley_a_civic_acropolis_terraces.glb",
+      "vertices": 6590,
+      "triangles": 3740,
+      "min": [
+        -190.0,
+        0.0,
+        -81.53703308105469
+      ],
+      "max": [
+        190.0,
+        50.47999572753906,
+        81.53703308105469
+      ],
+      "dimensions": [
+        380.0,
+        50.47999572753906,
+        163.07406616210938
+      ],
+      "materials": [
+        "Mat_Facade_AerospaceWhiteCladding",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_AmberLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Terrain_ParkPromenadePaving",
+        "Mat_Window_WarmAmberResidential_Lit",
+        "Mat_Metal_CopperAnodizedBridge"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/valley_b_meandering_river_biosphere.glb",
+      "vertices": 6844,
+      "triangles": 3748,
+      "min": [
+        -190.0,
+        0.0,
+        -99.90348052978516
+      ],
+      "max": [
+        190.0,
+        51.36138916015625,
+        99.90348052978516
+      ],
+      "dimensions": [
+        380.0,
+        51.36138916015625,
+        199.8069610595703
+      ],
+      "materials": [
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Glass_BiodomeEmerald_Translucent",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Biome_TerracedBotanicalCanopy",
+        "Mat_Water_RingRiver_Specular_Translucent",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Metal_CopperAnodizedBridge",
+        "Mat_Emissive_BioluminescentEmeraldLED"
+      ]
+    },
+    {
+      "filepath": "/workspace/game-project/assets/glb/cylinder_interior/valley_c_industrial_switchyard_port.glb",
+      "vertices": 6578,
+      "triangles": 3744,
+      "min": [
+        -190.0,
+        0.0,
+        -81.53703308105469
+      ],
+      "max": [
+        190.0,
+        55.155250549316406,
+        81.53703308105469
+      ],
+      "dimensions": [
+        380.0,
+        55.155250549316406,
+        163.07406616210938
+      ],
+      "materials": [
+        "Mat_Facade_TitaniumGunmetalHull",
+        "Mat_Facade_CarbonSlateSpandrel",
+        "Mat_Facade_BrushedSteelGantry",
+        "Mat_Accent_SafetyOrange",
+        "Mat_Glass_CurtainwallCyan_Translucent",
+        "Mat_Emissive_CyanLED",
+        "Mat_Terrain_BasaltTitaniumCliffRock",
+        "Mat_Window_CoolIndustrialTelemetry_Lit"
+      ]
+    }
+  ],
+  "overhauled_cylinder_02": {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_02.glb",
+    "vertices": 20228,
+    "triangles": 10172,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Biome_TerracedBotanicalCanopy",
+      "Mat_Water_RingRiver_Specular_Translucent",
+      "Mat_Terrain_BasaltTitaniumCliffRock",
+      "Mat_Terrain_ParkPromenadePaving",
+      "Mat_Window_WarmAmberResidential_Lit",
+      "Mat_Window_CoolIndustrialTelemetry_Lit",
+      "Mat_Emissive_AxialGoldenHourSunCore",
+      "Mat_Metal_CopperAnodizedBridge",
+      "Mat_Emissive_BioluminescentEmeraldLED"
+    ]
+  }
+}

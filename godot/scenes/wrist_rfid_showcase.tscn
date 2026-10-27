@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7scn0114"]
+
+[ext_resource type="Script" path="res://scripts/wrist_rfid_showcase.gd" id="1_wrist_rfid_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wrist_rfid"]
+sky_top_color = Color(0.10, 0.18, 0.28, 1)
+sky_horizon_color = Color(0.78, 0.64, 0.44, 1)
+ground_bottom_color = Color(0.06, 0.10, 0.14, 1)
+ground_horizon_color = Color(0.20, 0.34, 0.42, 1)
+
+[sub_resource type="Sky" id="Sky_wrist_rfid"]
+sky_material = SubResource("ProceduralSkyMaterial_wrist_rfid")
+
+[sub_resource type="Environment" id="Environment_wrist_rfid"]
+background_mode = 2
+sky = SubResource("Sky_wrist_rfid")
+ambient_light_source = 3
+ambient_light_color = Color(0.90, 0.92, 0.96, 1)
+ambient_light_sky_contribution = 0.45
+ambient_light_energy = 0.58
+tonemap_mode = 2
+tonemap_exposure = 1.02
+tonemap_white = 1.35
+glow_enabled = true
+glow_intensity = 0.48
+glow_bloom = 0.08
+glow_hdr_threshold = 1.15
+
+[node name="WristRfidShowcase" type="Node3D"]
+script = ExtResource("1_wrist_rfid_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wrist_rfid")
+
+[node name="ShowcaseStage" type="Node3D" parent="."]
+
+[node name="PropContainer" type="Node3D" parent="."]
+
+[node name="LightingRig" type="Node3D" parent="."]
+
+[node name="ShowcaseCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0.22, 0.36)
+current = true
+fov = 34.0
+near = 0.01
+far = 100.0

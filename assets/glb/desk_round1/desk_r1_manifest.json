@@ -1,0 +1,154 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/desk_round1/desk_r1_01.glb",
+    "vertices": 3456,
+    "triangles": 3856,
+    "min": [
+      -0.8999999761581421,
+      0.0,
+      -0.6619243621826172
+    ],
+    "max": [
+      0.8999999761581421,
+      1.899999976158142,
+      0.6619243621826172
+    ],
+    "dimensions": [
+      1.7999999523162842,
+      1.899999976158142,
+      1.3238487243652344
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalDark",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Steel_BrushedMachined",
+      "Mat_Carbon_SlateStructural",
+      "Mat_Glass_HoloVisor_Translucent",
+      "Mat_Emissive_CyanLED",
+      "Mat_Fabric_SlateGreyCushion"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/desk_round1/desk_r1_02.glb",
+    "vertices": 5308,
+    "triangles": 4874,
+    "min": [
+      -1.170480728149414,
+      0.0,
+      -0.7337765693664551
+    ],
+    "max": [
+      1.170480728149414,
+      1.6100000143051147,
+      0.7337765693664551
+    ],
+    "dimensions": [
+      2.340961456298828,
+      1.6100000143051147,
+      1.4675531387329102
+    ],
+    "materials": [
+      "Mat_Carbon_SlateStructural",
+      "Mat_Steel_BrushedMachined",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_OLED_TelemetryHUD",
+      "Mat_Titanium_GunmetalDark",
+      "Mat_Glass_HoloVisor_Translucent",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/desk_round1/desk_r1_03.glb",
+    "vertices": 3148,
+    "triangles": 4328,
+    "min": [
+      -0.8159999847412109,
+      0.0,
+      -0.7635330557823181
+    ],
+    "max": [
+      0.8159999847412109,
+      1.3600000143051147,
+      0.7635330557823181
+    ],
+    "dimensions": [
+      1.6319999694824219,
+      1.3600000143051147,
+      1.5270661115646362
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalDark",
+      "Mat_Emissive_CyanLED",
+      "Mat_Viewport_Glass_Translucent",
+      "Mat_Steel_BrushedMachined",
+      "Mat_Glass_HoloVisor_Translucent",
+      "Mat_Carbon_SlateStructural",
+      "Mat_Fabric_CharcoalFlightpad"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/desk_round1/desk_r1_04.glb",
+    "vertices": 3911,
+    "triangles": 4366,
+    "min": [
+      -0.8999999761581421,
+      0.0,
+      -0.7294242978096008
+    ],
+    "max": [
+      0.8999999761581421,
+      1.9900000095367432,
+      0.7294242978096008
+    ],
+    "dimensions": [
+      1.7999999523162842,
+      1.9900000095367432,
+      1.4588485956192017
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalDark",
+      "Mat_Accent_SignalOrange",
+      "Mat_Steel_BrushedMachined",
+      "Mat_Carbon_SlateStructural",
+      "Mat_Emissive_IceWhiteLED",
+      "Mat_Glass_HoloVisor_Translucent",
+      "Mat_Emissive_AmberLED",
+      "Mat_Fabric_CharcoalFlightpad"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/desk_round1/desk_r1_05.glb",
+    "vertices": 5260,
+    "triangles": 5260,
+    "min": [
+      -1.0,
+      0.0,
+      -0.7975000143051147
+    ],
+    "max": [
+      1.0,
+      2.240000009536743,
+      0.7975000143051147
+    ],
+    "dimensions": [
+      2.0,
+      2.240000009536743,
+      1.5950000286102295
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalDark",
+      "Mat_Steel_BrushedMachined",
+      "Mat_Viewport_Glass_Translucent",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Carbon_SlateStructural",
+      "Mat_Accent_SignalOrange",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_OLED_TelemetryHUD",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad"
+    ]
+  }
+]

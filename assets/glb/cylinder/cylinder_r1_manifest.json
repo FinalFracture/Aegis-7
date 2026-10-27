@@ -1,0 +1,173 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_01.glb",
+    "vertices": 18722,
+    "triangles": 9436,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Window_GridLitHabitat",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_02.glb",
+    "vertices": 23066,
+    "triangles": 11848,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Window_GridLitHabitat",
+      "Mat_Signage_Aegis7BuildingMarquees",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_03.glb",
+    "vertices": 18530,
+    "triangles": 9352,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Window_GridLitHabitat",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_04.glb",
+    "vertices": 19954,
+    "triangles": 10116,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Window_GridLitHabitat",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cylinder/cylinder_r1_05.glb",
+    "vertices": 23762,
+    "triangles": 11968,
+    "min": [
+      -400.0,
+      0.0,
+      -200.0
+    ],
+    "max": [
+      400.0,
+      400.0,
+      200.0
+    ],
+    "dimensions": [
+      800.0,
+      400.0,
+      400.0
+    ],
+    "materials": [
+      "Mat_Facade_TitaniumGunmetalHull",
+      "Mat_Facade_AerospaceWhiteCladding",
+      "Mat_Facade_CarbonSlateSpandrel",
+      "Mat_Facade_BrushedSteelGantry",
+      "Mat_Accent_SafetyOrange",
+      "Mat_Window_GridLitHabitat",
+      "Mat_Glass_CurtainwallCyan_Translucent",
+      "Mat_Glass_BiodomeEmerald_Translucent",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Emissive_CyanLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Emissive_UVVioletLED"
+    ]
+  }
+]

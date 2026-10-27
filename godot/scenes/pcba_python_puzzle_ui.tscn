@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8hab7pcbapuz01"]
+
+[ext_resource type="Script" path="res://scripts/pcba_python_puzzle_ui.gd" id="1_pcba_ui"]
+
+[node name="PcbaPythonPuzzleUI" type="CanvasLayer"]
+script = ExtResource("1_pcba_ui")

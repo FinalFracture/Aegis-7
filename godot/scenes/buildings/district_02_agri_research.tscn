@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7scn0101"]
+
+[ext_resource type="Script" path="res://scripts/district_02_agri_research.gd" id="1_district_02_agri_research"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_district_02_agri_research"]
+sky_top_color = Color(0.04, 0.08, 0.14, 1)
+sky_horizon_color = Color(0.10, 0.18, 0.28, 1)
+ground_bottom_color = Color(0.02, 0.03, 0.05, 1)
+ground_horizon_color = Color(0.06, 0.10, 0.16, 1)
+
+[sub_resource type="Sky" id="Sky_district_02_agri_research"]
+sky_material = SubResource("ProceduralSkyMaterial_district_02_agri_research")
+
+[sub_resource type="Environment" id="Environment_district_02_agri_research"]
+background_mode = 2
+sky = SubResource("Sky_district_02_agri_research")
+ambient_light_source = 2
+ambient_light_color = Color(0.70, 0.82, 0.96, 1)
+ambient_light_energy = 0.52
+tonemap_mode = 2
+tonemap_exposure = 1.06
+tonemap_white = 1.30
+glow_enabled = true
+glow_intensity = 0.42
+glow_bloom = 0.06
+
+[node name="District02AgriResearch" type="Node3D"]
+script = ExtResource("1_district_02_agri_research")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_district_02_agri_research")
+
+[node name="DistrictStage" type="Node3D" parent="."]
+
+[node name="DistrictBuildings" type="Node3D" parent="."]
+
+[node name="DistrictLighting" type="Node3D" parent="."]
+
+[node name="SceneCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96, 0.28, 0, -0.28, 0.96, 0, 22, 44)
+current = true
+fov = 50.0

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7bldgshow"]
+
+[ext_resource type="Script" path="res://scripts/building_exterior_showcase.gd" id="1_bldgshow"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_bldg"]
+sky_top_color = Color(0.04, 0.08, 0.14, 1)
+sky_horizon_color = Color(0.10, 0.18, 0.28, 1)
+ground_bottom_color = Color(0.02, 0.03, 0.05, 1)
+ground_horizon_color = Color(0.06, 0.10, 0.16, 1)
+
+[sub_resource type="Sky" id="Sky_bldg"]
+sky_material = SubResource("ProceduralSkyMaterial_bldg")
+
+[sub_resource type="Environment" id="Environment_bldg"]
+background_mode = 2
+sky = SubResource("Sky_bldg")
+ambient_light_source = 2
+ambient_light_color = Color(0.70, 0.82, 0.96, 1)
+ambient_light_energy = 0.52
+tonemap_mode = 2
+tonemap_exposure = 1.06
+tonemap_white = 1.30
+glow_enabled = true
+glow_intensity = 0.42
+glow_bloom = 0.06
+
+[node name="BuildingExteriorShowcase" type="Node3D"]
+script = ExtResource("1_bldgshow")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_bldg")
+
+[node name="ExteriorStage" type="Node3D" parent="."]
+
+[node name="BuildingContainer" type="Node3D" parent="."]
+
+[node name="LightingRig" type="Node3D" parent="."]
+
+[node name="ShowcaseCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.819152, -0.141761, 0.5558, 0, 0.969016, 0.246999, -0.573576, -0.202329, 0.793771, 14, 11, 19)
+current = true
+fov = 44.0

@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7cyl_interior"]
+
+[ext_resource type="Script" path="res://scripts/cylinder_interior_showcase.gd" id="1_cylinder_interior_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cylinder_interior"]
+sky_top_color = Color(0.137, 0.239, 0.357, 1)
+sky_horizon_color = Color(0.91, 0.722, 0.471, 1)
+ground_bottom_color = Color(0.118, 0.176, 0.22, 1)
+ground_horizon_color = Color(0.369, 0.549, 0.463, 1)
+
+[sub_resource type="Sky" id="Sky_cylinder_interior"]
+sky_material = SubResource("ProceduralSkyMaterial_cylinder_interior")
+
+[sub_resource type="Environment" id="Environment_cylinder_interior"]
+background_mode = 2
+sky = SubResource("Sky_cylinder_interior")
+ambient_light_source = 3
+ambient_light_color = Color(0.98, 0.9, 0.78, 1)
+ambient_light_sky_contribution = 0.55
+ambient_light_energy = 0.65
+tonemap_mode = 2
+tonemap_exposure = 1.05
+tonemap_white = 1.35
+ssr_enabled = true
+ssao_enabled = true
+ssao_radius = 2.5
+ssao_intensity = 1.8
+glow_enabled = true
+glow_intensity = 0.55
+glow_bloom = 0.12
+glow_hdr_threshold = 1.15
+fog_enabled = true
+fog_light_color = Color(0.58, 0.72, 0.84, 1)
+fog_light_energy = 0.42
+fog_sun_scatter = 0.38
+fog_density = 0.00115
+fog_sky_affect = 0.25
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0022
+volumetric_fog_albedo = Color(0.92, 0.86, 0.76, 1)
+volumetric_fog_emission = Color(0.1, 0.16, 0.22, 1)
+volumetric_fog_anisotropy = 0.55
+
+[node name="CylinderInteriorShowcase" type="Node3D"]
+script = ExtResource("1_cylinder_interior_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cylinder_interior")
+
+[node name="CylinderHullContainer" type="Node3D" parent="."]
+
+[node name="InteriorCityContainer" type="Node3D" parent="."]
+
+[node name="InteriorLighting" type="Node3D" parent="."]
+
+[node name="SceneCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -258, 114, -42)
+current = true
+fov = 62.0
+near = 0.5
+far = 8000.0

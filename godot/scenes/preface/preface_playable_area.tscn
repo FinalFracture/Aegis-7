@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://c8hab7pref_play"]
+
+[ext_resource type="Script" path="res://scripts/preface_playable_area.gd" id="1_preface_playable_area"]
+[ext_resource type="Script" path="res://scripts/pcba_python_puzzle_ui.gd" id="2_pcba_python_puzzle_ui"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pref_play"]
+sky_top_color = Color(0.08, 0.12, 0.17, 1)
+sky_horizon_color = Color(0.28, 0.26, 0.24, 1)
+ground_bottom_color = Color(0.05, 0.07, 0.09, 1)
+ground_horizon_color = Color(0.16, 0.19, 0.20, 1)
+
+[sub_resource type="Sky" id="Sky_pref_play"]
+sky_material = SubResource("ProceduralSkyMaterial_pref_play")
+
+[sub_resource type="Environment" id="Environment_pref_play"]
+background_mode = 2
+sky = SubResource("Sky_pref_play")
+ambient_light_source = 3
+ambient_light_color = Color(0.68, 0.72, 0.78, 1)
+ambient_light_sky_contribution = 0.20
+ambient_light_energy = 0.24
+tonemap_mode = 2
+tonemap_exposure = 0.74
+tonemap_white = 1.65
+glow_enabled = true
+glow_intensity = 0.16
+glow_bloom = 0.02
+glow_hdr_threshold = 1.35
+
+[node name="PrefacePlayableResidentialSector" type="Node3D"]
+script = ExtResource("1_preface_playable_area")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_pref_play")
+
+[node name="SectorArchitecture" type="Node3D" parent="."]
+
+[node name="InteractivePropsAndPickups" type="Node3D" parent="."]
+
+[node name="Johnny5BotsAndCitizens" type="Node3D" parent="."]
+
+[node name="SectorLightingRig" type="Node3D" parent="."]
+
+[node name="SceneCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 5.75, 4.8)
+current = true
+fov = 54.0
+near = 0.02
+far = 500.0
+
+[node name="PcbaPythonPuzzleUI" type="CanvasLayer" parent="."]
+script = ExtResource("2_pcba_python_puzzle_ui")
+visible = false

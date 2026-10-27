@@ -1,0 +1,172 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/cargo_round1/cargo_gantry_r1_01.glb",
+    "vertices": 7957,
+    "triangles": 5244,
+    "min": [
+      -1.274999976158142,
+      0.0,
+      -0.7382556796073914
+    ],
+    "max": [
+      1.274999976158142,
+      2.5999999046325684,
+      0.7382556796073914
+    ],
+    "dimensions": [
+      2.549999952316284,
+      2.5999999046325684,
+      1.4765113592147827
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoDroneLogistics",
+      "Mat_Emissive_CyanLiDARLED",
+      "Mat_Emissive_UVChargeLED",
+      "Mat_Emissive_AmberBeaconLED",
+      "Mat_Glass_CargoBay_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cargo_round1/cargo_gantry_r1_02.glb",
+    "vertices": 8341,
+    "triangles": 5420,
+    "min": [
+      -1.3250000476837158,
+      0.0,
+      -0.7382556796073914
+    ],
+    "max": [
+      1.3250000476837158,
+      2.5999999046325684,
+      0.7382556796073914
+    ],
+    "dimensions": [
+      2.6500000953674316,
+      2.5999999046325684,
+      1.4765113592147827
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoDroneLogistics",
+      "Mat_Emissive_CyanLiDARLED",
+      "Mat_Emissive_UVChargeLED",
+      "Mat_Emissive_AmberBeaconLED",
+      "Mat_Glass_CargoBay_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cargo_round1/cargo_gantry_r1_03.glb",
+    "vertices": 8040,
+    "triangles": 5356,
+    "min": [
+      -1.2999999523162842,
+      0.0,
+      -0.745755672454834
+    ],
+    "max": [
+      1.2999999523162842,
+      2.5999999046325684,
+      0.745755672454834
+    ],
+    "dimensions": [
+      2.5999999046325684,
+      2.5999999046325684,
+      1.491511344909668
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoDroneLogistics",
+      "Mat_Emissive_CyanLiDARLED",
+      "Mat_Emissive_UVChargeLED",
+      "Mat_Emissive_AmberBeaconLED",
+      "Mat_Glass_CargoBay_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cargo_round1/cargo_gantry_r1_04.glb",
+    "vertices": 7957,
+    "triangles": 5244,
+    "min": [
+      -1.274999976158142,
+      0.0,
+      -0.7407556772232056
+    ],
+    "max": [
+      1.274999976158142,
+      2.619999885559082,
+      0.7407556772232056
+    ],
+    "dimensions": [
+      2.549999952316284,
+      2.619999885559082,
+      1.4815113544464111
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoDroneLogistics",
+      "Mat_Emissive_CyanLiDARLED",
+      "Mat_Emissive_UVChargeLED",
+      "Mat_Emissive_AmberBeaconLED",
+      "Mat_Glass_CargoBay_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/cargo_round1/cargo_gantry_r1_05.glb",
+    "vertices": 7957,
+    "triangles": 5244,
+    "min": [
+      -1.3250000476837158,
+      0.0,
+      -0.7507556676864624
+    ],
+    "max": [
+      1.3250000476837158,
+      2.5999999046325684,
+      0.7507556676864624
+    ],
+    "dimensions": [
+      2.6500000953674316,
+      2.5999999046325684,
+      1.5015113353729248
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Fabric_OrbitalNavyPad",
+      "Mat_Fabric_CharcoalFlightpad",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_CargoDroneLogistics",
+      "Mat_Emissive_CyanLiDARLED",
+      "Mat_Emissive_UVChargeLED",
+      "Mat_Emissive_AmberBeaconLED",
+      "Mat_Glass_CargoBay_Translucent"
+    ]
+  }
+]

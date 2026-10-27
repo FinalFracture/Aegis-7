@@ -1,0 +1,1 @@
+../src/render_corridor_door_round1.py

@@ -1,0 +1,579 @@
+{
+  "wrist_winner_04": {
+    "filepath": "/workspace/game-project/godot/assets/models/props/wrist_rfid/prop_wrist_rfid_r1_04.glb",
+    "vertices": 4309,
+    "triangles": 4372,
+    "nodes": [
+      "WristRig_Root",
+      "Forearm_Base",
+      "Cuff_Aperture_Assembly",
+      "Spool_SuperWire_Cuff",
+      "Holo_Projection_Rings",
+      "Wrist_Joint",
+      "Battery_Vein_01",
+      "Battery_Vein_02",
+      "Battery_Vein_03",
+      "Battery_Vein_04",
+      "Battery_Vein_05",
+      "Thumb_Proximal",
+      "Index_Finger",
+      "Middle_Finger",
+      "Ring_Finger",
+      "Pinky_Finger"
+    ],
+    "animations": [
+      "WristRaiseInspect",
+      "RFIDPulse",
+      "Idle"
+    ],
+    "min": [
+      -0.082,
+      0.0,
+      -0.122
+    ],
+    "max": [
+      0.082,
+      0.38717,
+      0.20068
+    ],
+    "dimensions": [
+      0.164,
+      0.3872,
+      0.3227
+    ],
+    "materials": [
+      "Mat_Wrist04_NeuralTendonAndBCIAtlas",
+      "Mat_Aegis_GunmetalTitaniumHull",
+      "Mat_Emissive_UVVioletLED",
+      "Mat_Glass_Wrist04ElastomerHolo_Translucent",
+      "Mat_Aegis_BrushedSteelMachined",
+      "Mat_Emissive_CyanLED",
+      "Mat_Aegis_CopperGoldSuperconductor",
+      "Mat_Aegis_SignalOrangeHardware"
+    ]
+  },
+  "pickups": {
+    "super_wire_spool": {
+      "filepath": "/workspace/game-project/godot/assets/models/props/pickups/prop_super_wire_spool.glb",
+      "vertices": 1597,
+      "triangles": 2032,
+      "nodes": [
+        "SuperWireSpool_Root"
+      ],
+      "animations": [],
+      "min": [
+        -0.165,
+        0.0,
+        -0.165
+      ],
+      "max": [
+        0.165,
+        0.226,
+        0.165
+      ],
+      "dimensions": [
+        0.33,
+        0.226,
+        0.33
+      ],
+      "materials": [
+        "Mat_Wrist04_NeuralTendonAndBCIAtlas",
+        "Mat_Glass_Wrist04ElastomerHolo_Translucent",
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Aegis_SignalOrangeHardware",
+        "Mat_Emissive_CyanLED"
+      ]
+    },
+    "battery_charge": {
+      "filepath": "/workspace/game-project/godot/assets/models/props/pickups/prop_pickup_battery_charge.glb",
+      "vertices": 776,
+      "triangles": 976,
+      "nodes": [
+        "BatteryCharge_Root"
+      ],
+      "animations": [],
+      "min": [
+        -0.13,
+        0.0,
+        -0.13
+      ],
+      "max": [
+        0.13,
+        0.39,
+        0.13
+      ],
+      "dimensions": [
+        0.26,
+        0.39,
+        0.26
+      ],
+      "materials": [
+        "Mat_Residential_AtriumAndApartmentAtlas",
+        "Mat_Glass_ResidentialAtrium_Translucent",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Aegis_CaterpillarAmberYellow",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_EmeraldBioLED"
+      ]
+    },
+    "bci_headband": {
+      "filepath": "/workspace/game-project/godot/assets/models/props/pickups/prop_bci_headband.glb",
+      "vertices": 644,
+      "triangles": 932,
+      "nodes": [
+        "BCIHeadband_Root"
+      ],
+      "animations": [],
+      "min": [
+        -0.14,
+        0.0,
+        -0.12
+      ],
+      "max": [
+        0.14,
+        0.21266,
+        0.12
+      ],
+      "dimensions": [
+        0.28,
+        0.2127,
+        0.24
+      ],
+      "materials": [
+        "Mat_Wrist04_NeuralTendonAndBCIAtlas",
+        "Mat_Glass_Wrist04ElastomerHolo_Translucent",
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Emissive_CyanLED",
+        "Mat_Emissive_AmberLED",
+        "Mat_Emissive_UVVioletLED",
+        "Mat_Emissive_EmeraldBioLED"
+      ]
+    }
+  },
+  "johnny5_bots": {
+    "sprocket_maintenance": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/char_bot_johnny5.glb",
+      "vertices": 5937,
+      "triangles": 4572,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Track_Pod_Left",
+        "Chassis_Track_R",
+        "Track_Pod_Right",
+        "Torso_Box_Core",
+        "Torso_Chassis",
+        "RFID_Handshake_Ring",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Eyebrow_Shutter_Left",
+        "Brow_Flap_R",
+        "Eyebrow_Shutter_Right",
+        "Shoulder_Strut_L",
+        "Arm_Manipulator_L",
+        "Left_Forearm",
+        "Left_Pincer_Claw",
+        "Shoulder_Strut_R",
+        "Arm_Manipulator_R",
+        "Right_Forearm",
+        "Right_Pincer_Claw"
+      ],
+      "animations": [
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "DiagnosticProbe",
+        "Celebrate"
+      ],
+      "min": [
+        -0.318,
+        0.0,
+        -0.298
+      ],
+      "max": [
+        0.318,
+        1.085,
+        0.525
+      ],
+      "dimensions": [
+        0.636,
+        1.085,
+        0.823
+      ],
+      "materials": [
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Johnny5_UtilityBotAtlas",
+        "Mat_Emissive_AmberLED",
+        "Mat_Aegis_SignalOrangeHardware",
+        "Mat_Emissive_CyanLED",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Emissive_FaultRedLED",
+        "Mat_Glass_Johnny5OpticLens_Translucent",
+        "Mat_Aegis_CaterpillarAmberYellow"
+      ]
+    },
+    "sweep_janitorial": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/char_johnny5_bumper_teal.glb",
+      "vertices": 5773,
+      "triangles": 4552,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Track_Pod_Left",
+        "Chassis_Track_R",
+        "Track_Pod_Right",
+        "Torso_Box_Core",
+        "Torso_Chassis",
+        "RFID_Handshake_Ring",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Eyebrow_Shutter_Left",
+        "Brow_Flap_R",
+        "Eyebrow_Shutter_Right",
+        "Shoulder_Strut_L",
+        "Arm_Manipulator_L",
+        "Left_Forearm",
+        "Left_Pincer_Claw",
+        "Shoulder_Strut_R",
+        "Arm_Manipulator_R",
+        "Right_Forearm",
+        "Right_Pincer_Claw"
+      ],
+      "animations": [
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "DiagnosticProbe",
+        "Celebrate"
+      ],
+      "min": [
+        -0.318,
+        0.0,
+        -0.298
+      ],
+      "max": [
+        0.318,
+        1.085,
+        0.525
+      ],
+      "dimensions": [
+        0.636,
+        1.085,
+        0.823
+      ],
+      "materials": [
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Aegis_SanitationCivicTeal",
+        "Mat_Emissive_CyanLED",
+        "Mat_Johnny5_UtilityBotAtlas",
+        "Mat_Aegis_SignalOrangeHardware",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Emissive_FaultRedLED",
+        "Mat_Glass_Johnny5OpticLens_Translucent",
+        "Mat_Emissive_AmberLED",
+        "Mat_Aegis_CaterpillarAmberYellow"
+      ]
+    },
+    "clover_agri": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/char_johnny5_clover_green.glb",
+      "vertices": 5937,
+      "triangles": 4572,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Track_Pod_Left",
+        "Chassis_Track_R",
+        "Track_Pod_Right",
+        "Torso_Box_Core",
+        "Torso_Chassis",
+        "RFID_Handshake_Ring",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Eyebrow_Shutter_Left",
+        "Brow_Flap_R",
+        "Eyebrow_Shutter_Right",
+        "Shoulder_Strut_L",
+        "Arm_Manipulator_L",
+        "Left_Forearm",
+        "Left_Pincer_Claw",
+        "Shoulder_Strut_R",
+        "Arm_Manipulator_R",
+        "Right_Forearm",
+        "Right_Pincer_Claw"
+      ],
+      "animations": [
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "DiagnosticProbe",
+        "Celebrate"
+      ],
+      "min": [
+        -0.318,
+        0.0,
+        -0.298
+      ],
+      "max": [
+        0.318,
+        1.085,
+        0.525
+      ],
+      "dimensions": [
+        0.636,
+        1.085,
+        0.823
+      ],
+      "materials": [
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Johnny5_UtilityBotAtlas",
+        "Mat_Emissive_CyanLED",
+        "Mat_Aegis_SignalOrangeHardware",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Emissive_FaultRedLED",
+        "Mat_Glass_Johnny5OpticLens_Translucent",
+        "Mat_Emissive_AmberLED",
+        "Mat_Aegis_CaterpillarAmberYellow"
+      ]
+    },
+    "puddle_hydro": {
+      "filepath": "/workspace/game-project/godot/assets/models/characters/char_johnny5_puddle_cyan.glb",
+      "vertices": 5937,
+      "triangles": 4572,
+      "nodes": [
+        "Bot_Root",
+        "Chassis_Track_L",
+        "Track_Pod_Left",
+        "Chassis_Track_R",
+        "Track_Pod_Right",
+        "Torso_Box_Core",
+        "Torso_Chassis",
+        "RFID_Handshake_Ring",
+        "Neck_Telescope_Gimbal",
+        "Head_Binocular_Pod",
+        "Eye_Barrel_L",
+        "Eye_Barrel_R",
+        "Brow_Flap_L",
+        "Eyebrow_Shutter_Left",
+        "Brow_Flap_R",
+        "Eyebrow_Shutter_Right",
+        "Shoulder_Strut_L",
+        "Arm_Manipulator_L",
+        "Left_Forearm",
+        "Left_Pincer_Claw",
+        "Shoulder_Strut_R",
+        "Arm_Manipulator_R",
+        "Right_Forearm",
+        "Right_Pincer_Claw"
+      ],
+      "animations": [
+        "Idle",
+        "WalkCycle",
+        "DiagnosticPoint",
+        "DiagnosticProbe",
+        "Celebrate"
+      ],
+      "min": [
+        -0.318,
+        0.0,
+        -0.298
+      ],
+      "max": [
+        0.318,
+        1.085,
+        0.525
+      ],
+      "dimensions": [
+        0.636,
+        1.085,
+        0.823
+      ],
+      "materials": [
+        "Mat_Aegis_BrushedSteelMachined",
+        "Mat_Aegis_GunmetalTitaniumHull",
+        "Mat_Johnny5_UtilityBotAtlas",
+        "Mat_Emissive_CyanLED",
+        "Mat_Aegis_SignalOrangeHardware",
+        "Mat_Aegis_CopperGoldSuperconductor",
+        "Mat_Emissive_FaultRedLED",
+        "Mat_Glass_Johnny5OpticLens_Translucent",
+        "Mat_Emissive_AmberLED",
+        "Mat_Aegis_CaterpillarAmberYellow"
+      ]
+    }
+  },
+  "prop_door_pcba_terminal": {
+    "filepath": "/workspace/game-project/godot/assets/models/props/service_door/prop_door_pcba_terminal.glb",
+    "vertices": 4748,
+    "triangles": 3200,
+    "nodes": [
+      "Terminal_Housing_Root",
+      "Maint_Access_Hatch",
+      "PCBA_Board",
+      "J4_HEADER",
+      "Pin_GND",
+      "Pin_LOCK_HOLD",
+      "Pin_RESET",
+      "Pin_AUX_BUZZ",
+      "Fixed_Wire_Jumper",
+      "Loose_Wire_Lead",
+      "Python_Code_Screen",
+      "Code_Rotary_Dial"
+    ],
+    "animations": [
+      "HatchClosed",
+      "HatchOpen_LooseWire",
+      "WireConnected_ResetPin"
+    ],
+    "min": [
+      -0.57,
+      0.0,
+      -0.21
+    ],
+    "max": [
+      0.57,
+      1.61,
+      0.21
+    ],
+    "dimensions": [
+      1.14,
+      1.61,
+      0.42
+    ],
+    "materials": [
+      "Mat_Aegis_BrushedSteelMachined",
+      "Mat_Aegis_GunmetalTitaniumHull",
+      "Mat_Aegis_SignalOrangeHardware",
+      "Mat_Glass_ResidentialAtrium_Translucent",
+      "Mat_PCBA_CircuitBoardPanel",
+      "Mat_Aegis_CopperGoldSuperconductor",
+      "Mat_Aegis_CaterpillarAmberYellow",
+      "Mat_Emissive_EmeraldBioLED",
+      "Mat_Emissive_FaultRedLED",
+      "Mat_Aegis_AerospaceWhiteComposite",
+      "Mat_Emissive_CyanLED",
+      "Mat_UI_PythonCodeEditorScreen"
+    ]
+  },
+  "prop_service_door": {
+    "filepath": "/workspace/game-project/godot/assets/models/props/service_door/prop_service_door.glb",
+    "vertices": 2482,
+    "triangles": 1504,
+    "nodes": [
+      "Door_Frame_Root",
+      "Door_Leaf_Left",
+      "Door_Leaf_Right",
+      "Counterweight_Carriage",
+      "Panel_PCBA_Housing",
+      "Header_Node_01",
+      "Header_Node_02",
+      "Header_Node_03"
+    ],
+    "animations": [
+      "Cycle1_JamAt40",
+      "Cycle2_CounterweightSync",
+      "Cycle3_FullOpen"
+    ],
+    "min": [
+      -1.2,
+      0.0,
+      -0.2
+    ],
+    "max": [
+      1.76,
+      2.605,
+      0.74154
+    ],
+    "dimensions": [
+      2.96,
+      2.605,
+      0.9415
+    ],
+    "materials": [
+      "Mat_Glass_PrefaceViewportAndTransom_Translucent",
+      "Mat_Aegis_BrushedSteelMachined",
+      "Mat_Aegis_GunmetalTitaniumHull",
+      "Mat_Emissive_AmberLED",
+      "Mat_Preface_DualLeafServiceDoor",
+      "Mat_Aegis_AerospaceWhiteComposite",
+      "Mat_Aegis_SignalOrangeHardware",
+      "Mat_Emissive_FaultRedLED",
+      "Mat_Emissive_CyanLED",
+      "Mat_PCBA_CircuitBoardPanel",
+      "Mat_UI_PythonCodeEditorScreen"
+    ]
+  },
+  "preface_residential_sector": {
+    "filepath": "/workspace/game-project/godot/assets/models/environments/preface_residential_sector.glb",
+    "vertices": 33037,
+    "triangles": 16436,
+    "nodes": [
+      "PrefaceResidentialSector_Root",
+      "Residential_Hallway_Atrium",
+      "Atrium_Void",
+      "Upper_Mezzanine_Walkway",
+      "Tech_Apartment_Upper",
+      "apt_player_top_floor",
+      "Open_Portal_201",
+      "Apartment_Atrium_Window",
+      "Apartment_Bunk_Pod",
+      "Apartment_Workbench",
+      "Workbench_Player",
+      "Pickup_Super_Wire_Starter",
+      "Pickup_Battery_Cell_Starter",
+      "Pickup_BCI_Headband_Dock",
+      "Room_2B_Neighbor_Balcony_Suite",
+      "Open_Portal_202",
+      "Alcove_2C_Upper_Vent_Chase",
+      "Open_Arch_2C",
+      "Pickup_Super_Wire_Expansion",
+      "Pickup_Battery_Expansion",
+      "Stair_Ramp_Connector",
+      "Side_Room_East_Lounge",
+      "Room_1A_Laundry_Lounge",
+      "Open_Portal_1A",
+      "Side_Room_West_Storage",
+      "Room_1B_Bot_Substation",
+      "Open_Portal_1B",
+      "Ground_Service_Vestibule",
+      "Open_Portal_Sector_Exit"
+    ],
+    "animations": [],
+    "min": [
+      -14.0,
+      0.0,
+      -9.04
+    ],
+    "max": [
+      14.0,
+      8.91499,
+      9.0
+    ],
+    "dimensions": [
+      28.0,
+      8.915,
+      18.04
+    ],
+    "materials": [
+      "Mat_Residential_AtriumAndApartmentAtlas",
+      "Mat_Glass_ResidentialAtrium_Translucent",
+      "Mat_Aegis_BotanicalFoliage",
+      "Mat_Aegis_BrushedSteelMachined"
+    ]
+  }
+}

@@ -1,0 +1,169 @@
+[
+  {
+    "filepath": "/workspace/game-project/assets/glb/hydro_round1/hydro_column_r1_01.glb",
+    "vertices": 4815,
+    "triangles": 4434,
+    "min": [
+      -0.9500000476837158,
+      0.0,
+      -0.45500001311302185
+    ],
+    "max": [
+      0.9500000476837158,
+      2.4499998092651367,
+      0.45500001311302185
+    ],
+    "dimensions": [
+      1.9000000953674316,
+      2.4499998092651367,
+      0.9100000262260437
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_HydroBioscrubber",
+      "Mat_Emissive_UVGrowLED",
+      "Mat_Emissive_IceDaylightLED",
+      "Mat_Emissive_CyanBioLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_HydroCylinder_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/hydro_round1/hydro_column_r1_02.glb",
+    "vertices": 5406,
+    "triangles": 4962,
+    "min": [
+      -1.0,
+      0.0,
+      -0.4749999940395355
+    ],
+    "max": [
+      1.0,
+      2.4499998092651367,
+      0.4749999940395355
+    ],
+    "dimensions": [
+      2.0,
+      2.4499998092651367,
+      0.949999988079071
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_HydroBioscrubber",
+      "Mat_Emissive_UVGrowLED",
+      "Mat_Emissive_IceDaylightLED",
+      "Mat_Emissive_CyanBioLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_HydroCylinder_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/hydro_round1/hydro_column_r1_03.glb",
+    "vertices": 4405,
+    "triangles": 4274,
+    "min": [
+      -0.9750000238418579,
+      0.0,
+      -0.45500001311302185
+    ],
+    "max": [
+      0.9750000238418579,
+      2.4499998092651367,
+      0.45500001311302185
+    ],
+    "dimensions": [
+      1.9500000476837158,
+      2.4499998092651367,
+      0.9100000262260437
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_HydroBioscrubber",
+      "Mat_Emissive_UVGrowLED",
+      "Mat_Emissive_IceDaylightLED",
+      "Mat_Emissive_CyanBioLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_HydroCylinder_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/hydro_round1/hydro_column_r1_04.glb",
+    "vertices": 4638,
+    "triangles": 4610,
+    "min": [
+      -1.0099999904632568,
+      0.0,
+      -0.48000001907348633
+    ],
+    "max": [
+      1.0099999904632568,
+      2.4499998092651367,
+      0.48000001907348633
+    ],
+    "dimensions": [
+      2.0199999809265137,
+      2.4499998092651367,
+      0.9600000381469727
+    ],
+    "materials": [
+      "Mat_Carbon_SlateFrame",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_HydroBioscrubber",
+      "Mat_Emissive_UVGrowLED",
+      "Mat_Emissive_IceDaylightLED",
+      "Mat_Emissive_CyanBioLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_HydroCylinder_Translucent"
+    ]
+  },
+  {
+    "filepath": "/workspace/game-project/assets/glb/hydro_round1/hydro_column_r1_05.glb",
+    "vertices": 4431,
+    "triangles": 4258,
+    "min": [
+      -0.9900000095367432,
+      0.0,
+      -0.48000001907348633
+    ],
+    "max": [
+      0.9900000095367432,
+      2.4799997806549072,
+      0.48000001907348633
+    ],
+    "dimensions": [
+      1.9800000190734863,
+      2.4799997806549072,
+      0.9600000381469727
+    ],
+    "materials": [
+      "Mat_Titanium_GunmetalHull",
+      "Mat_Composite_AerospaceWhite",
+      "Mat_Foliage_AeroponicHerbs",
+      "Mat_Steel_MachinedGantry",
+      "Mat_Accent_SignalOrange",
+      "Mat_OLED_HydroBioscrubber",
+      "Mat_Emissive_UVGrowLED",
+      "Mat_Emissive_IceDaylightLED",
+      "Mat_Emissive_CyanBioLED",
+      "Mat_Emissive_AmberLED",
+      "Mat_Glass_HydroCylinder_Translucent"
+    ]
+  }
+]

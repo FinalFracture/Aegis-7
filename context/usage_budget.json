@@ -1,0 +1,77 @@
+{
+  "currency_name": "Usage Credits (UC)",
+  "definition": "1 UC = 1% Account Usage = 29,447 cumulative team context tokens (~115.0 KB raw transcript / ~45 messages), recalibrated on 2026-10-27 at the 25.0% weekly limit mark (25.5% live report = 28,869 tok/UC) from +736,168 post-reset tokens above the 1,274,265 baseline (up +2,423 tok/UC or +9.0% from the earlier 27,024 tok/UC rate; or 33,936 tok/UC if measured from the 1,162,036 pre-reset mark).",
+  "exchange_rate_tokens_per_uc": 29447,
+  "exchange_rate_kb_per_uc": 115.0,
+  "calibrated_at": "2026-10-27T12:39:00-05:00",
+  "start_account_usage_pct": 7.0,
+  "baseline_account_usage_pct": 0.0,
+  "target_pause_account_usage_pct": 29.05,
+  "sprint_budget_uc": 29.05,
+  "sprint_warn_uc": 28.05,
+  "sprint_budget_tokens": 855435,
+  "per_bot_allowance_tokens": 106929,
+  "per_bot_allowance_uc": 3.63,
+  "baseline_lifetime_tokens": 1274265,
+  "baseline_active_tokens": 240106,
+  "target_pause_lifetime_tokens": 2129700,
+  "baseline_by_bot": {
+    "Atlas": 42523,
+    "Vance": 26052,
+    "Sloane": 32644,
+    "Rook": 39348,
+    "Gage": 30145,
+    "Scribe": 0,
+    "Quinn": 0,
+    "Patch": 0
+  },
+  "retired_instances_tokens": {
+    "60544a5c-ba31-4517-bd12-0fbc8e8ff9f0": {
+      "name": "delete-Atlas (v1)",
+      "messages": 742,
+      "raw_kb": 1057.0,
+      "est_tokens": 270593
+    },
+    "1c40e57b-57c1-4cbf-9e29-cc227b9cc914": {
+      "name": "delete-Sloane (v1)",
+      "messages": 306,
+      "raw_kb": 624.7,
+      "est_tokens": 159934
+    },
+    "11c68e8e-c070-4e83-a926-21e9dfb70523": {
+      "name": "delete-Rook (v1)",
+      "messages": 377,
+      "raw_kb": 695.3,
+      "est_tokens": 178001
+    },
+    "6ec49577-c331-44b3-8b56-dee044ba1d84": {
+      "name": "delete-Gage (v1)",
+      "messages": 271,
+      "raw_kb": 503.7,
+      "est_tokens": 128937
+    },
+    "713ef1f9-ed46-4e44-835d-c732a5f11ecd": {
+      "name": "delete-Scribe (v1)",
+      "messages": 392,
+      "raw_kb": 650.8,
+      "est_tokens": 166600
+    },
+    "4ea864bb-316a-47d3-8dc0-bd12475470c8": {
+      "name": "delete-Scribe (v2)",
+      "messages": 318,
+      "raw_kb": 508.2,
+      "est_tokens": 130094
+    },
+    "49521640-e6fc-4f8f-b873-726f3f599220": {
+      "name": "delete-Scribe (v3)",
+      "messages": 336,
+      "raw_kb": 539.4,
+      "est_tokens": 138081
+    }
+  },
+  "sprint_name": "Playtesting, QA Bug-Hunt & Git F5 Packaging Sprint (+2.0 UC Authorized -> 29.05 UC Cap)",
+  "weekly_reset_schedule": "Mondays at 11:28 UTC / 5:28 AM CST (6:28 AM CDT; next reset: Monday, Nov 2, 2026 at 5:28 AM CST)",
+  "previous_exchange_rate_tokens_per_uc": 27024,
+  "previous_exchange_rate_kb_per_uc": 105.6,
+  "budget_cap_uc": 29.05
+}

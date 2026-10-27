@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7scn0105"]
+
+[ext_resource type="Script" path="res://scripts/character_walk_cycle_showcase.gd" id="1_character_walk_cycle_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_char_walk"]
+sky_top_color = Color(0.137, 0.239, 0.357, 1)
+sky_horizon_color = Color(0.91, 0.722, 0.471, 1)
+ground_bottom_color = Color(0.10, 0.15, 0.20, 1)
+ground_horizon_color = Color(0.35, 0.52, 0.46, 1)
+
+[sub_resource type="Sky" id="Sky_char_walk"]
+sky_material = SubResource("ProceduralSkyMaterial_char_walk")
+
+[sub_resource type="Environment" id="Environment_char_walk"]
+background_mode = 2
+sky = SubResource("Sky_char_walk")
+ambient_light_source = 3
+ambient_light_color = Color(0.95, 0.89, 0.80, 1)
+ambient_light_sky_contribution = 0.52
+ambient_light_energy = 0.64
+tonemap_mode = 2
+tonemap_exposure = 1.06
+tonemap_white = 1.35
+glow_enabled = true
+glow_intensity = 0.48
+glow_bloom = 0.09
+glow_hdr_threshold = 1.15
+
+[node name="CharacterWalkCycleShowcase" type="Node3D"]
+script = ExtResource("1_character_walk_cycle_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_char_walk")
+
+[node name="PromenadeStage" type="Node3D" parent="."]
+
+[node name="CharacterContainer" type="Node3D" parent="."]
+
+[node name="LightingRig" type="Node3D" parent="."]
+
+[node name="WalkCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.55, 1.05, 1.85)
+current = true
+fov = 34.0
+near = 0.05
+far = 1000.0
