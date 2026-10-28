@@ -356,8 +356,7 @@ def generate_status_md(metrics_by_name: dict, retired_metrics: list, budget: dic
             "- **Budget Config File:** `/workspace/game-project/context/usage_budget.json`",
             "- **Transcript Snapshots:** `/workspace/game-project/context/transcripts/<agent_id>_p*.txt` (populated via `ReadTranscript`)",
             "- **Handoff Templates & Snapshots:**",
-            "  - `/workspace/game-project/context/VISUAL_STORYTELLING_LEDGER.md` (Canonical Aegis-1 Dual-Layer Visual Storytelling & Forensic Cue Registry `CUE-001`..`CUE-007`)
-  - `/workspace/game-project/context/atlas-handoff-v4.md`",
+            "  - `/workspace/game-project/context/atlas-handoff-v4.md`",
             "  - `/workspace/game-project/context/sloane-handoff-v2.md`",
             "  - `/workspace/game-project/context/rook-handoff-v2.md`",
             "  - `/workspace/game-project/context/gage-handoff-v2.md`",

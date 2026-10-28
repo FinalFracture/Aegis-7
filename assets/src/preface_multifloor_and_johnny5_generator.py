@@ -78,20 +78,9 @@ def world_box_uv(
         uv[i, 1] = 0.04 + (v_raw - math.floor(v_raw)) * 0.92
     return p, n, uv, idx
 
-PICKUP_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "props/pickups"),
-    os.path.join(ASSETS_GLB_DIR, "props/pickups"),
-    os.path.join(GODOT_MODELS_DIR, "props/wrist_rfid"),
-    os.path.join(ASSETS_GLB_DIR, "props/wrist_rfid"),
-]
-PCBA_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "props/service_door"),
-    os.path.join(GODOT_MODELS_DIR, "props/pcba_terminal"),
-    os.path.join(ASSETS_GLB_DIR, "props/service_door"),
-    os.path.join(ASSETS_GLB_DIR, "props/pcba_terminal"),
-]
-for d in PICKUP_DIRS + PCBA_DIRS:
-    os.makedirs(d, exist_ok=True)
+PICKUP_DIRS = [GODOT_MODELS_DIR]
+PCBA_DIRS = [GODOT_MODELS_DIR]
+os.makedirs(GODOT_MODELS_DIR, exist_ok=True)
 
 
 # ==============================================================================

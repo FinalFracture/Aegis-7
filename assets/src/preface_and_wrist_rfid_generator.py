@@ -62,34 +62,18 @@ from character_aegis7_crew_generator import (
     get_character_materials,
 )
 
-TEX_DIR = "/workspace/game-project/assets/textures"
+TEX_DIR = "/workspace/game-project/godot/assets/textures"
 GODOT_MODELS_DIR = "/workspace/game-project/godot/assets/models"
-ASSETS_GLB_DIR = "/workspace/game-project/assets/glb"
-WINNERS_DIR = "/workspace/game-project/assets/glb/winners"
+ASSETS_GLB_DIR = GODOT_MODELS_DIR
+WINNERS_DIR = GODOT_MODELS_DIR
 
-WRIST_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "props/wrist_rfid"),
-    os.path.join(ASSETS_GLB_DIR, "props/wrist_rfid"),
-    os.path.join(ASSETS_GLB_DIR, "wrist_rfid"),
-]
-ENV_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "environments"),
-    os.path.join(ASSETS_GLB_DIR, "environments"),
-    os.path.join(ASSETS_GLB_DIR, "rooms"),
-]
-DOOR_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "props/service_door"),
-    os.path.join(ASSETS_GLB_DIR, "props/service_door"),
-]
-CHAR_DIRS = [
-    os.path.join(GODOT_MODELS_DIR, "characters"),
-    os.path.join(ASSETS_GLB_DIR, "characters"),
-    os.path.join(ASSETS_GLB_DIR, "character"),
-]
+WRIST_DIRS = [GODOT_MODELS_DIR]
+ENV_DIRS = [GODOT_MODELS_DIR]
+DOOR_DIRS = [GODOT_MODELS_DIR]
+CHAR_DIRS = [GODOT_MODELS_DIR]
 
-for d_list in [WRIST_DIRS, ENV_DIRS, DOOR_DIRS, CHAR_DIRS, [WINNERS_DIR]]:
-    for d in d_list:
-        os.makedirs(d, exist_ok=True)
+os.makedirs(TEX_DIR, exist_ok=True)
+os.makedirs(GODOT_MODELS_DIR, exist_ok=True)
 
 
 def tex_path(fname: str) -> str:

@@ -331,11 +331,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         "residential_atlas",
         make_world_uv_box((28.0, 0.12, 18.0), center=(0.0, 0.06, 0.0), bevel=0.0, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
     )
-    # CUE-002: Physical Drag / Single-Locked-Tread Skid & Cryo-Coolant Trail from East Stairwell (`X=8.8, Z=-3.4`)
-    # across the East Atrium into Room 1B Bot Substation (`X=4.65, Z=2.0 -> X=5.55, Z=6.1`) under `Kelvin #0204`!
-    b_atrium.add("residential_atlas", make_forensic_skid_strip((8.80, -3.40), (5.20, 0.85), y_height=0.123, width=0.88))
-    b_atrium.add("residential_atlas", make_forensic_skid_strip((5.20, 0.85), (4.65, 3.85), y_height=0.124, width=0.88))
-    b_atrium.add("residential_atlas", make_forensic_skid_strip((4.65, 3.85), (5.60, 6.20), y_height=0.125, width=0.92))
+    # Clean architectural atrium floor — no skid trails or decals ([t11u])
 
     # Roof Ceiling Structural Beams (`Y = 8.64m..8.80m`) with central architectural glass skylight
     b_atrium.add("residential_atlas", make_world_uv_box((28.0, 0.16, 4.5), center=(0.0, 8.72, 6.75), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
@@ -544,6 +540,8 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_room1b.add("residential_atlas", make_world_uv_box((2.65, 3.8, 0.18), center=(-2.425, 2.00, -2.75), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5))
     b_room1b.add("residential_atlas", make_world_uv_box((2.65, 3.8, 0.18), center=(2.425, 2.00, -2.75), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5))
     b_room1b.add("residential_atlas", make_world_uv_box((2.20, 1.15, 0.18), center=(0.0, 3.32, -2.75), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5))
+    # Recessed hex-grid metallic utility floor grating inside Room 1B service bay
+    b_room1b.add("residential_atlas", make_world_uv_box((5.20, 0.02, 3.40), center=(0.20, 0.125, 0.85), bevel=0.005, uv_rect=UV_FLOOR_SKID_TRAIL, tile_m=1.8))
     for bx_dock in [-1.8, 0.2]:
         b_room1b.add("residential_atlas", make_chamfered_oct_prism(1.22, 1.12, 0.12, center=(bx_dock, 0.16, 1.65), chamfer=0.14), UV_STEEL_TRIM)
         b_room1b.add("residential_atlas", make_world_uv_box((0.78, 1.85, 0.42), center=(bx_dock, 1.05, 2.35), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
@@ -609,7 +607,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         ("Open_Portal_Sector_Exit", "Ground_Service_Vestibule", (0.0, 0.12, -8.90), b_portal_exit),
     ]
 
-    primary_out = os.path.join(ENV_DIRS[0], "preface_residential_sector.glb")
+    primary_out = os.path.join(GODOT_MODELS_DIR, "preface_residential_sector.glb")
     info = export_hierarchy_with_animations_glb(
         primary_out,
         root_scene_name="PrefaceResidentialSector_OpenDoorways",
@@ -618,14 +616,4 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         animations_spec=[],
         auto_ground_root_y=True,
     )
-    extra_targets = [
-        os.path.join(GODOT_MODELS_DIR, "preface_residential_sector.glb"),
-    ]
-    for d in ENV_DIRS:
-        for fn in ["preface_residential_sector.glb", "preface_residential_two_story_block.glb"]:
-            extra_targets.append(os.path.join(d, fn))
-    for dst in extra_targets:
-        if os.path.abspath(dst) != os.path.abspath(primary_out):
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copyfile(primary_out, dst)
     return info

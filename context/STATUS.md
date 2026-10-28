@@ -1,27 +1,27 @@
 # Team Context, Token Health & 10% Usage Budget Status (`STATUS.md`)
 
-- **Last Checked:** 2026-10-27 12:39:50 CDT
+- **Last Checked:** 2026-10-27 22:24:57 CDT
 - **Managed By:** Scribe (`3b011c08-32f8-434e-8285-6cd66198bf29`)
 - **Project:** *Cylinder Hab-7* (O'Neill Cylinder Habitat — Unified Aegis-7 Standard)
 - **Per-Bot Rotation Cap:** **`150,000` estimated tokens** (~`600 KB` raw JSON transcript) | Warning at **`120,000` tokens** (`80%`)
 - **Weekly Account Usage Reset Schedule:** **Mondays at 11:28 UTC / 5:28 AM CST (6:28 AM CDT; next reset: Monday, Nov 2, 2026 at 5:28 AM CST)**
 - **Team Usage Currency (`UC`):** **`1 UC` = `1%` Account Usage = `29,447` team context tokens** (`~115.0 KB` transcript / `~45` messages, recalibrated at `25.0%` weekly usage (`25.5%` live = `28,869` tok/UC) from `+736,168` post-reset tokens (`+9.0%` vs old `27,024` tok/UC))
-- **Active Sprint (`Playtesting, QA Bug-Hunt & Git F5 Packaging Sprint (+2.0 UC Authorized -> 29.05 UC Cap)`):** **`29.1 UC` (`+855,435` new team context tokens)** (`0.0% -> 29.1%` post-reset account usage; hard pause at `2,129,700` lifetime project tokens)
+- **Active Sprint (`Godot 4.7 Upgrade, 7GB->59MB De-Bloat, Clean Shadows & Architectural PBR Sprint (+15.0 UC Authorized until 4:00 AM CT -> 42.02 UC Cap)`):** **`42.0 UC` (`+1,237,363` new team context tokens)** (`0.0% -> 42.0%` post-reset account usage; hard pause at `2,511,628` lifetime project tokens)
 
-## Team Usage Credit (`UC`) Budget Meter (Hard Pause at `29.1 UC` / `+855,435` Tokens)
+## Team Usage Credit (`UC`) Budget Meter (Hard Pause at `42.0 UC` / `+1,237,363` Tokens)
 
 | Metric | Value | Notes |
 | :--- | :--- | :--- |
-| **Sprint Budget Status** | **WITHIN BUDGET — 27.02 / 29.1 UC Used (2.03 UC / 59,720 tok remaining before pause)** | Hard pause at `29.1 UC` (`+855,435` net new tokens) |
+| **Sprint Budget Status** | **WITHIN BUDGET — 27.02 / 42.0 UC Used (15.00 UC / 441,648 tok remaining before pause)** | Hard pause at `42.0 UC` (`+1,237,363` net new tokens) |
 | **Cumulative Project Lifetime Tokens (All 22 Bots)** | **`2,069,980` tok** (`8,085.9 KB` / `4,838` msgs) | Active 8 bots: `0` tok + Retired 14 bots: `2,069,980` tok |
 | **Sprint Baseline (Post-Monday 06:27 CDT Weekly Reset)** | **`1,274,265` tok** | Active 6-bot baseline: `240,106` tok (`2026-10-26 11:17 CDT`) |
-| **Sprint Net New Tokens Burned** | **`+795,715` / `855,435` tok** (`93.0%`) | Remaining before pause: **`59,720` tok** |
-| **Sprint Usage Credits (`UC`) Burned** | **`27.02` / `29.05 UC`** | Remaining before pause: **`2.03 UC`** (Warn at `28.1 UC`) |
-| **Estimated Post-Reset Account Usage** | **`~27.02%`** (Target Pause Cap: **`29.1%`**) | Weekly usage reset Mondays at 11:28 UTC / 5:28 AM CST (`1 UC` = `29,447` tok at 25.0% / `28,869` tok at 25.5%) |
+| **Sprint Net New Tokens Burned** | **`+795,715` / `1,237,363` tok** (`64.3%`) | Remaining before pause: **`441,648` tok** |
+| **Sprint Usage Credits (`UC`) Burned** | **`27.02` / `42.02 UC`** | Remaining before pause: **`15.00 UC`** (Warn at `40.5 UC`) |
+| **Estimated Post-Reset Account Usage** | **`~27.02%`** (Target Pause Cap: **`42.0%`**) | Weekly usage reset Mondays at 11:28 UTC / 5:28 AM CST (`1 UC` = `29,447` tok at 25.0% / `28,869` tok at 25.5%) |
 
-## Live Bot Context & Sprint Allowance Table (`~142,572` tok / `4.84 UC` Allowance per Bot)
+## Live Bot Context & Sprint Allowance Table (`~206,227` tok / `7.00 UC` Allowance per Bot)
 
-| Bot Name | Agent ID | Role | Messages | Raw Transcript | Active Context Tokens | Load vs 150k Rotate Cap | Sprint Delta (`UC` Burned vs `4.84 UC` Share) | Rotation Status | Active Handoff File |
+| Bot Name | Agent ID | Role | Messages | Raw Transcript | Active Context Tokens | Load vs 150k Rotate Cap | Sprint Delta (`UC` Burned vs `7.00 UC` Share) | Rotation Status | Active Handoff File |
 | :--- | :--- | :--- | ---: | ---: | ---: | ---: | :--- | :--- | :--- |
 | **Atlas** | `3a664a65-34d6-47ae-a9f6-337906efe2a3` | Game PM | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/atlas-handoff-v4.md` |
 | **Vance** | `245e93a0-6301-45d6-b371-ad1e37a0dfd1` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/vance-handoff-v2.md` |
@@ -109,7 +109,6 @@
 - **Budget Config File:** `/workspace/game-project/context/usage_budget.json`
 - **Transcript Snapshots:** `/workspace/game-project/context/transcripts/<agent_id>_p*.txt` (populated via `ReadTranscript`)
 - **Handoff Templates & Snapshots:**
-  - `/workspace/game-project/context/VISUAL_STORYTELLING_LEDGER.md` (Canonical Aegis-1 Dual-Layer Visual Storytelling & Forensic Cue Registry `CUE-001`..`CUE-007`)
   - `/workspace/game-project/context/atlas-handoff-v4.md`
   - `/workspace/game-project/context/sloane-handoff-v2.md`
   - `/workspace/game-project/context/rook-handoff-v2.md`

@@ -21,9 +21,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 RES_OUT_DIRS = [
     "./godot/renders/preface",
-    "./godot/renders",
-    "./assets/renders/preface",
-    "./assets/renders",
 ]
 
 BOT_OUT_DIRS = [
@@ -236,8 +233,6 @@ def compose_open_residential_sheet():
 
     out_names = [
         "preface_open_residential_building_showcase_sheet.png",
-        "preface_playable_residential_showcase_sheet.png",
-        "preface_residential_sector_showcase_sheet.png",
     ]
     for d in RES_OUT_DIRS:
         os.makedirs(d, exist_ok=True)

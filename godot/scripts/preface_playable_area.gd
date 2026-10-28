@@ -413,11 +413,11 @@ func _populate_pickups_and_wrist_rig() -> void:
 	var bci_path: String = _find_first_existing(PICKUP_BCI_PATHS)
 	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
 
-	# Apt 201 engineering workbench (benchtop Y = 5.12m): staged on left half so CUE-001 scorch mark & 03:14 UTC note on right (-8.6..-9.5) are unobstructed!
-	_spawn_pickup(wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-8.28, 5.12, 7.55), 1.05)
-	_spawn_pickup(bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-7.95, 5.12, 7.58), 1.10)
-	_spawn_pickup(jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-7.64, 5.12, 7.58), 1.05)
-	_spawn_pickup(batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.35, 5.12, 7.55), 1.05)
+	# Apt 201 engineering workbench (benchtop Y = 5.12m), organized evenly across the ESD mat.
+	_spawn_pickup(wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-9.05, 5.12, 7.60), 1.10)
+	_spawn_pickup(bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-8.50, 5.12, 7.62), 1.15)
+	_spawn_pickup(jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-8.00, 5.12, 7.62), 1.10)
+	_spawn_pickup(batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.45, 5.12, 7.60), 1.10)
 	# Alcove 2C engineering supply shelf, Apt 202 desk, Room 1A folding counter, Room 1B substation service bench.
 	_spawn_pickup(wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.85, 5.02, -4.95), 1.15)
 	_spawn_pickup(batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-11.05, 5.02, -4.95), 1.15)
@@ -425,19 +425,12 @@ func _populate_pickups_and_wrist_rig() -> void:
 	_spawn_pickup(wire_path, "Room1A_Laundry_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-6.15, 0.98, 7.25), 1.15)
 	_spawn_pickup(batt_path, "Room1B_Substation_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(7.20, 0.98, 7.10), 1.15)
 
-	# Workbench diagnostic terminal (query-only — CUE-001 03:14 UTC Bus B-14 oscilloscope log)
+	# Workbench diagnostic terminal (query-only)
 	var term: Node3D = Node3D.new()
 	term.name = "Workbench_DiagnosticTerminal"
 	term.position = Vector3(-9.17, 5.50, 8.05)
 	_props_container.add_child(term)
-	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH OSCILLOSCOPE", "collected": false, "pickup": false})
-
-	# Room 1B Sub-Bus B-14 Telemetry Relay Rack (query-only — CUE-003 broken seal 2026-10-19 // 03:14)
-	var sub_rack: Node3D = Node3D.new()
-	sub_rack.name = "Substation_TelemetryRack_B14"
-	sub_rack.position = Vector3(4.70, 1.15, 7.85)
-	_props_container.add_child(sub_rack)
-	_interactables.append({"node": sub_rack, "kind": "substation_rack", "label": "RM 1B SUB-BUS B-14 RELAY RACK", "collected": false, "pickup": false})
+	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
 
 	# #04 Bio-Luminescent Neural Tendon Smart-Sleeve (lower-left of 1st-person view)
 	if _camera != null:
@@ -526,13 +519,13 @@ func _populate_johnny5_bots_and_citizens() -> void:
 
 	# Each #05 Hammerhead stationed at its functional post.
 	_spawn_bot(BOT_SPROCKET_PATHS, "Hammerhead05_Sprocket_0419_Engineering", "SPROCKET #0419", "D-01 // ENGINEERING",
-		"Sector-4 relay nominal. Note: Unlogged 48.2 kW / 412 Hz draw on Bus B-14 at 03:14 UTC traced to RM 1B.", Vector3(-1.45, 0.06, -6.45), 35.0, ["DiagnosticPoint", "Idle"], 0.70)
+		"Sector-4 service junction relay nominal. Exit bulkhead counterweight synced.", Vector3(-1.45, 0.06, -6.45), 35.0, ["DiagnosticPoint", "Idle"], 0.70)
 	_spawn_bot(BOT_SWEEP_PATHS, "Hammerhead05_Sweep_0812_CivicSanitation", "SWEEP #0812", "D-02 // CIVIC & SANITATION",
-		"Mezzanine patrol 72% complete. Logged single-tread rubber skid & cryo-coolant trace from East Stairwell into RM 1B.", Vector3(-2.40, 4.29, 2.60), -65.0, ["WalkCycle", "Idle"], 0.35)
-	_spawn_bot(BOT_KELVIN_PATHS, "Hammerhead05_Kelvin_0204_Science", "KELVIN #0204 [PUDDLE]", "D-03 // SCIENCE",
-		"Left tread actuator drag (-18% since 2026-10-19 03:14 UTC). Sub-Bus B-14 Hatch 04 sealed. [WARN: ID PUDDLE_0204 OVERWRITTEN].", Vector3(5.60, 0.06, 6.00), 45.0, ["DiagnosticProbe", "DiagnosticPoint", "Idle"], 0.65)
+		"Mezzanine sanitation patrol 72% complete. Particulate index: low.", Vector3(-2.40, 4.29, 2.60), -65.0, ["WalkCycle", "Idle"], 0.35)
+	_spawn_bot(BOT_KELVIN_PATHS, "Hammerhead05_Kelvin_0204_Science", "KELVIN #0204", "D-03 // SCIENCE",
+		"Room 1B substation diagnostic rack: thermal drift +0.4K. Recommend thermal jelly.", Vector3(5.60, 0.06, 6.00), 45.0, ["DiagnosticProbe", "DiagnosticPoint", "Idle"], 0.65)
 	_spawn_bot(BOT_CLOVER_PATHS, "Hammerhead05_Clover_0631_AgriBiosphere", "CLOVER #0631", "D-04 // AGRI-BIOSPHERE",
-		"Atrium planter soil moisture 41%. Condenser line pressure steady after 03:14 UTC Bus B-14 brownout.", Vector3(2.20, 0.06, -1.80), 90.0, ["Idle", "DiagnosticPoint"], 0.50)
+		"Atrium planter soil moisture 41%. Aeroponic herbs thriving.", Vector3(2.20, 0.06, -1.80), 90.0, ["Idle", "DiagnosticPoint"], 0.50)
 
 	var comm_path: String = _find_first_existing(COMMUTER_PATHS)
 	for c_cfg: Dictionary in [
@@ -562,49 +555,110 @@ func _populate_johnny5_bots_and_citizens() -> void:
 # ------------------------------------------------------------------------------
 # Lighting ([t3u] grounded & purposeful) + N toggle
 # ------------------------------------------------------------------------------
+func _build_ceiling_luminaire(nm: String, pos: Vector3, col: Color, panel_sz: Vector2) -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = nm + "_Fixture"
+	holder.position = pos + Vector3(0.0, 0.22, 0.0)
+	_lights_container.add_child(holder)
+
+	var bezel: MeshInstance3D = MeshInstance3D.new()
+	bezel.name = "LuminaireBezel"
+	var bmesh: BoxMesh = BoxMesh.new()
+	bmesh.size = Vector3(panel_sz.x + 0.12, 0.05, panel_sz.y + 0.12)
+	bezel.mesh = bmesh
+	bezel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var bmat: StandardMaterial3D = StandardMaterial3D.new()
+	bmat.albedo_color = Color(0.24, 0.27, 0.31, 1.0)
+	bmat.metallic = 0.82
+	bmat.roughness = 0.28
+	bezel.material_override = bmat
+	holder.add_child(bezel)
+
+	var diff: MeshInstance3D = MeshInstance3D.new()
+	diff.name = "LuminaireDiffuser"
+	var dmesh: BoxMesh = BoxMesh.new()
+	dmesh.size = Vector3(panel_sz.x, 0.025, panel_sz.y)
+	diff.mesh = dmesh
+	diff.position = Vector3(0.0, -0.025, 0.0)
+	diff.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var dmat: StandardMaterial3D = StandardMaterial3D.new()
+	dmat.albedo_color = col
+	dmat.roughness = 0.18
+	dmat.emission_enabled = true
+	dmat.emission = col
+	dmat.emission_energy_multiplier = 0.85
+	diff.material_override = dmat
+	holder.add_child(diff)
+
+
 func _setup_sector_lighting() -> void:
 	for ch: Node in _lights_container.get_children():
 		ch.free()
 	_task_lights.clear()
 	_task_base.clear()
 
+	# Skylight directional sun angled steeply (-64 deg) through the central atrium skylight opening
+	# with 4-split PSSM cascades & calibrated normal bias so shadows are crisp and artifact-free.
 	_sun = DirectionalLight3D.new()
 	_sun.name = "AtriumGoldenHourSunlight"
-	_sun.rotation_degrees = Vector3(-38.0, 52.0, 0.0)
-	_sun.light_color = Color("#FFF3DC")
+	_sun.rotation_degrees = Vector3(-64.0, 32.0, 0.0)
+	_sun.light_color = Color("#FFF4E0")
 	_sun.light_energy = 0.78
 	_sun.shadow_enabled = true
-	_sun.shadow_blur = 1.4
-	_sun.shadow_bias = 0.02
+	_sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	_sun.directional_shadow_max_distance = 45.0
+	_sun.shadow_bias = 0.04
+	_sun.shadow_normal_bias = 1.8
+	_sun.shadow_blur = 1.5
 	_lights_container.add_child(_sun)
 
 	_fill = DirectionalLight3D.new()
 	_fill.name = "AtriumSkyBounceFill"
-	_fill.rotation_degrees = Vector3(-28.0, -135.0, 0.0)
+	_fill.rotation_degrees = Vector3(-42.0, -145.0, 0.0)
 	_fill.light_color = Color("#C8DCF0")
-	_fill.light_energy = 0.34
+	_fill.light_energy = 0.28
 	_fill.shadow_enabled = false
 	_lights_container.add_child(_fill)
 
-	# Balanced mid-key localized task lights + subtle mid-atrium overhead fill light ([t4u]).
+	# Box-projected ReflectionProbe covering the 28m x 18m x 9m residential atrium for grounded metallic & glass reflections.
+	var rprobe: ReflectionProbe = ReflectionProbe.new()
+	rprobe.name = "AtriumBoxReflectionProbe"
+	rprobe.position = Vector3(0.0, 4.4, 0.0)
+	rprobe.size = Vector3(30.0, 10.0, 20.0)
+	rprobe.box_projection = true
+	rprobe.intensity = 0.65
+	rprobe.ambient_mode = ReflectionProbe.AMBIENT_ENVIRONMENT
+	_lights_container.add_child(rprobe)
+
+	# Physical ceiling luminaires + clean room lighting (non-overlapping hero lights cast soft shadows; bounce fills have shadow_enabled = false).
 	for l_cfg: Dictionary in [
-		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 6.15, 7.45), "col": Color("#F5DFBC"), "e": 0.92, "r": 9.5},
-		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(10.50, 6.15, 6.80), "col": Color("#F5DFBC"), "e": 0.82, "r": 9.0},
-		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 6.40, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 10.5},
-		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.10, 6.40), "col": Color("#F5DFBC"), "e": 0.80, "r": 9.5},
-		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(5.60, 3.10, 6.60), "col": Color("#EAE6DC"), "e": 0.95, "r": 11.0},
-		{"name": "Atrium_Midhead_BounceFill", "pos": Vector3(0.0, 6.80, -1.50), "col": Color("#E8EDF2"), "e": 0.72, "r": 15.0}
+		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.92, "r": 9.8, "sh": true, "sz": Vector2(1.40, 0.36)},
+		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(9.80, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.85, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
+		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 7.80, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 11.0, "sh": false, "sz": Vector2(1.20, 0.32)},
+		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.62, 5.80), "col": Color("#F5E2C4"), "e": 0.84, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
+		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(4.80, 3.62, 5.80), "col": Color("#EAE6DC"), "e": 0.95, "r": 10.8, "sh": true, "sz": Vector2(1.50, 0.38)},
+		{"name": "Atrium_Midhead_BounceFill", "pos": Vector3(0.0, 7.85, -2.20), "col": Color("#EBF0F5"), "e": 0.74, "r": 16.0, "sh": false, "sz": Vector2(2.20, 0.45)}
 	]:
+		var lpos: Vector3 = l_cfg["pos"] as Vector3
+		var lcol: Color = l_cfg["col"] as Color
+		_build_ceiling_luminaire(String(l_cfg["name"]), lpos, lcol, l_cfg["sz"] as Vector2)
 		var omni: OmniLight3D = OmniLight3D.new()
 		omni.name = String(l_cfg["name"])
-		omni.position = l_cfg["pos"] as Vector3
-		omni.light_color = l_cfg["col"] as Color
+		omni.position = lpos
+		omni.light_color = lcol
 		omni.light_energy = float(l_cfg["e"])
 		omni.omni_range = float(l_cfg["r"])
-		omni.omni_attenuation = 1.35
+		omni.omni_attenuation = 1.2
+		if bool(l_cfg["sh"]):
+			omni.shadow_enabled = true
+			omni.shadow_bias = 0.05
+			omni.shadow_normal_bias = 1.5
+			omni.shadow_blur = 1.5
+		else:
+			omni.shadow_enabled = false
 		_lights_container.add_child(omni)
 		_task_lights.append(omni)
-		_task_base.append({"col": l_cfg["col"], "e": l_cfg["e"]})
+		_task_base.append({"col": lcol, "e": l_cfg["e"]})
 
 
 func _set_emergency_lighting(on: bool) -> void:
@@ -1044,9 +1098,7 @@ func _interact() -> void:
 		for k: String in _inventory.keys():
 			total += int(_inventory_max[k])
 			have += int(_inventory[k])
-		_show_toast("OSCILLOSCOPE [2026-10-19 03:14 UTC] // 13.56MHz / 412Hz spike on BUS B-14 (48.2 kW).\nUnit #0204 re-keyed [PUDDLE -> KELVIN]; Coil C3 blown during A7-0204-MEM dump. Kit: %d/%d." % [have, total], 5.0)
-	elif kind == "substation_rack":
-		_show_toast("RM 1B RELAY RACK [SEAL BROKEN 2026-10-19 03:14 UTC] // Ghost Stencil: SEC-04 TELEMETRY RELAY.\nBus B-14 log purged; Unit #0204 flashed from D-04/HYDRO [PUDDLE] to D-03 SCIENCE [KELVIN].", 5.0)
+		_show_toast("WORKBENCH TERMINAL // Sector-4 bulkhead relay: JAMMED AT 40%%.\nUpgrade kit %d/%d gathered. Need: +5A cell + Super-Wire on [RESET]." % [have, total], 4.5)
 
 
 func _trigger_rfid_pulse() -> void:
@@ -1167,18 +1219,37 @@ func _build_hud() -> void:
 	_hud_light = _make_label(tl, Vector2(16, 92), "LIGHTING: --", 15, white)
 	_hud_inv = _make_label(tl, Vector2(16, 120), "BCI: 0/1 | JELLY: 0/1 | WIRE: 0/3 | BATT: 0/4", 15, Color("#E2C79A"))
 
-	# Center crosshair
+	# Precision-centered geometric HUD reticle (dead-center at 50.0%, 50.0% viewport center)
+	var center_container: CenterContainer = CenterContainer.new()
+	center_container.name = "CrosshairCenterContainer"
+	center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(center_container)
+
+	var reticle_box: Control = Control.new()
+	reticle_box.name = "ReticleBox"
+	reticle_box.custom_minimum_size = Vector2(24, 24)
+	reticle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center_container.add_child(reticle_box)
+
+	for r: Rect2 in [
+		Rect2(11, 11, 2, 2),  # Exact 2x2 center dot at (11..13, 11..13) of 24x24 box -> (959..961, 539..541)
+		Rect2(0, 11, 8, 2),   # Left tick
+		Rect2(16, 11, 8, 2),  # Right tick
+		Rect2(11, 0, 2, 8),   # Top tick
+		Rect2(11, 16, 2, 8)   # Bottom tick
+	]:
+		var cr: ColorRect = ColorRect.new()
+		cr.position = r.position
+		cr.size = r.size
+		cr.color = Color(0.88, 0.95, 0.98, 0.92)
+		cr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		reticle_box.add_child(cr)
+
 	var center: Control = Control.new()
 	center.set_anchors_preset(Control.PRESET_CENTER)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(center)
-	for r: Rect2 in [Rect2(-11, -1, 8, 2), Rect2(3, -1, 8, 2), Rect2(-1, -11, 2, 8), Rect2(-1, 3, 2, 8)]:
-		var cr: ColorRect = ColorRect.new()
-		cr.position = r.position
-		cr.size = r.size
-		cr.color = Color(0.85, 0.92, 0.95, 0.85)
-		cr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		center.add_child(cr)
 	_hud_prompt = _make_label(center, Vector2(-260, 26), "", 17, Color("#9FD3E0"))
 	_hud_prompt.custom_minimum_size = Vector2(520, 0)
 	_hud_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

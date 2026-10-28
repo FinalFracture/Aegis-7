@@ -4,29 +4,35 @@
 [ext_resource type="Script" path="res://scripts/pcba_python_puzzle_ui.gd" id="2_pcba_python_puzzle_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pref_play"]
-sky_top_color = Color(0.14, 0.20, 0.28, 1)
-sky_horizon_color = Color(0.42, 0.40, 0.38, 1)
-ground_bottom_color = Color(0.09, 0.12, 0.15, 1)
-ground_horizon_color = Color(0.26, 0.29, 0.32, 1)
+sky_top_color = Color(0.18, 0.25, 0.34, 1)
+sky_horizon_color = Color(0.46, 0.48, 0.52, 1)
+ground_bottom_color = Color(0.11, 0.14, 0.18, 1)
+ground_horizon_color = Color(0.30, 0.34, 0.38, 1)
 
 [sub_resource type="Sky" id="Sky_pref_play"]
 sky_material = SubResource("ProceduralSkyMaterial_pref_play")
 
 [sub_resource type="Environment" id="Environment_pref_play"]
 background_mode = 2
-background_energy_multiplier = 0.58
+background_energy_multiplier = 0.62
 sky = SubResource("Sky_pref_play")
 ambient_light_source = 3
-ambient_light_color = Color(0.76, 0.80, 0.86, 1)
-ambient_light_sky_contribution = 0.28
-ambient_light_energy = 0.36
+ambient_light_color = Color(0.78, 0.82, 0.88, 1)
+ambient_light_sky_contribution = 0.32
+ambient_light_energy = 0.42
+reflected_light_source = 2
 tonemap_mode = 2
-tonemap_exposure = 0.96
+tonemap_exposure = 0.98
 tonemap_white = 1.65
+ssr_enabled = true
+ssr_max_steps = 32
+ssao_enabled = true
+ssao_radius = 0.8
+ssao_intensity = 1.4
 glow_enabled = true
-glow_intensity = 0.18
+glow_intensity = 0.16
 glow_bloom = 0.02
-glow_hdr_threshold = 1.30
+glow_hdr_threshold = 1.25
 
 [node name="PrefacePlayableResidentialSector" type="Node3D"]
 script = ExtResource("1_preface_playable_area")

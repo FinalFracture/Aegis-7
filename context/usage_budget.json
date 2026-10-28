@@ -6,15 +6,15 @@
   "calibrated_at": "2026-10-27T12:39:00-05:00",
   "start_account_usage_pct": 7.0,
   "baseline_account_usage_pct": 0.0,
-  "target_pause_account_usage_pct": 29.05,
-  "sprint_budget_uc": 29.05,
-  "sprint_warn_uc": 28.05,
-  "sprint_budget_tokens": 855435,
+  "target_pause_account_usage_pct": 42.02,
+  "sprint_budget_uc": 42.02,
+  "sprint_warn_uc": 40.5,
+  "sprint_budget_tokens": 1237363,
   "per_bot_allowance_tokens": 106929,
   "per_bot_allowance_uc": 3.63,
   "baseline_lifetime_tokens": 1274265,
   "baseline_active_tokens": 240106,
-  "target_pause_lifetime_tokens": 2129700,
+  "target_pause_lifetime_tokens": 2511628,
   "baseline_by_bot": {
     "Atlas": 42523,
     "Vance": 26052,
@@ -69,11 +69,11 @@
       "est_tokens": 138081
     }
   },
-  "sprint_name": "Playtesting, QA Bug-Hunt & Git F5 Packaging Sprint (+2.0 UC Authorized -> 29.05 UC Cap)",
+  "sprint_name": "Godot 4.7 Upgrade, 7GB->59MB De-Bloat, Clean Shadows & Architectural PBR Sprint (+15.0 UC Authorized until 4:00 AM CT -> 42.02 UC Cap)",
   "weekly_reset_schedule": "Mondays at 11:28 UTC / 5:28 AM CST (6:28 AM CDT; next reset: Monday, Nov 2, 2026 at 5:28 AM CST)",
   "previous_exchange_rate_tokens_per_uc": 27024,
   "previous_exchange_rate_kb_per_uc": 105.6,
-  "budget_cap_uc": 29.05,
+  "budget_cap_uc": 42.02,
   "no_work_dates": [
     "2026-10-28"
   ],
@@ -86,5 +86,6 @@
     "Saturday": 70.0,
     "Sunday": 90.0
   },
-  "daily_cap_rule": "Cumulative weekly account usage caps by day of week (Monday<=10%, Tuesday<=20%, Wednesday<=30%, Thursday<=40%, Friday<=50%, Saturday<=70%, Sunday<=90%). No work on Wednesday, Oct 28, 2026."
+  "daily_cap_rule": "Cumulative weekly account usage caps by day of week (Monday<=10%, Tuesday<=20%, Wednesday<=30%, Thursday<=40%, Friday<=50%, Saturday<=70%, Sunday<=90%). No work on Wednesday, Oct 28, 2026.",
+  "authorized_window": "15.0 UC authorized by Jared ([t12u]) until 2026-10-28 04:00 AM CT"
 }
