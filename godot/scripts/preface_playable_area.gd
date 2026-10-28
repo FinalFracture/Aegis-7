@@ -312,6 +312,34 @@ func _add_sector_trimesh_collisions(sector_node: Node3D) -> int:
 	return count
 
 
+func _add_architectural_shadow_occluders(parent: Node3D) -> void:
+	var occ_root: Node3D = Node3D.new()
+	occ_root.name = "SectorShadowOccluders"
+	parent.add_child(occ_root)
+	# Hidden SHADOWS_ONLY solid slabs inside the L2 floor and L2/L1 apartment ceilings so
+	# upper-deck characters/props NEVER project shadows onto the L1 atrium floor and
+	# exterior skylight sunlight NEVER leaks through enclosed room ceilings.
+	for cfg: Dictionary in [
+		{"name": "Occ_L2_NorthGallerySlab", "size": Vector3(27.8, 0.30, 7.8), "pos": Vector3(0.0, 4.02, 5.0)},
+		{"name": "Occ_L2_WestAlcoveSlab", "size": Vector3(6.5, 0.30, 7.9), "pos": Vector3(-10.65, 4.02, -2.65)},
+		{"name": "Occ_L2_EastLandingSlab", "size": Vector3(6.5, 0.30, 3.6), "pos": Vector3(10.65, 4.02, -0.50)},
+		{"name": "Occ_L2_EastStairSoffit", "size": Vector3(2.95, 0.28, 6.95), "pos": Vector3(10.65, 2.05, -5.00), "rot_x": -atan2(4.20, 5.60)},
+		{"name": "Occ_Roof_NorthApartments", "size": Vector3(28.0, 0.32, 7.9), "pos": Vector3(0.0, 8.20, 5.0)},
+		{"name": "Occ_Roof_WestWing", "size": Vector3(6.5, 0.32, 7.8), "pos": Vector3(-10.65, 8.20, -2.65)},
+		{"name": "Occ_Roof_EastWing", "size": Vector3(6.5, 0.32, 7.8), "pos": Vector3(10.65, 8.20, -2.65)}
+	]:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = String(cfg["name"])
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = cfg["size"] as Vector3
+		mi.mesh = bm
+		mi.position = cfg["pos"] as Vector3
+		if cfg.has("rot_x"):
+			mi.rotation = Vector3(float(cfg["rot_x"]), 0.0, 0.0)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+		occ_root.add_child(mi)
+
+
 func _add_safety_floor_colliders(parent: Node3D) -> void:
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = "SectorSafetyFloorColliders"
@@ -357,6 +385,7 @@ func _assemble_open_doorless_sector() -> void:
 				print("[PrefacePlayableArea] Trimesh colliders: ", n_col)
 	else:
 		push_warning("[PrefacePlayableArea] Sector GLB not found in SECTOR_GLB_PATHS")
+	_add_architectural_shadow_occluders(_arch_container)
 	if not _batch_render:
 		_add_safety_floor_colliders(_arch_container)
 
@@ -442,6 +471,7 @@ func _populate_pickups_and_wrist_rig() -> void:
 		_fp_wrist_model = _load_glb_scene(_find_first_existing(WRIST_04_PATHS), 0.75)
 		if _fp_wrist_model != null:
 			_fp_wrist_model.name = "Wrist04_NeuralTendonSleeve"
+			_set_tree_cast_shadow(_fp_wrist_model, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 			_fp_wrist_holder.add_child(_fp_wrist_model)
 			_fp_wrist_model.position = Vector3(0.0, -0.18, 0.0)
 			_fp_wrist_holder.position = Vector3(-0.14, -0.12, -0.44)
@@ -598,18 +628,18 @@ func _setup_sector_lighting() -> void:
 	_task_base.clear()
 
 	# Skylight directional sun angled steeply (-64 deg) through the central atrium skylight opening
-	# with 4-split PSSM cascades & calibrated normal bias so shadows are crisp and artifact-free.
+	# with 4-split PSSM cascades & calibrated normal bias so L2 floor slabs cast solid shadows and never peter-pan.
 	_sun = DirectionalLight3D.new()
 	_sun.name = "AtriumGoldenHourSunlight"
-	_sun.rotation_degrees = Vector3(-64.0, 32.0, 0.0)
+	_sun.rotation_degrees = Vector3(-72.0, -162.0, 0.0)
 	_sun.light_color = Color("#FFF4E0")
 	_sun.light_energy = 0.78
 	_sun.shadow_enabled = true
 	_sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	_sun.directional_shadow_max_distance = 45.0
-	_sun.shadow_bias = 0.04
-	_sun.shadow_normal_bias = 1.8
-	_sun.shadow_blur = 1.5
+	_sun.shadow_bias = 0.015
+	_sun.shadow_normal_bias = 1.0
+	_sun.shadow_blur = 1.2
 	_lights_container.add_child(_sun)
 
 	_fill = DirectionalLight3D.new()
@@ -628,15 +658,17 @@ func _setup_sector_lighting() -> void:
 	rprobe.box_projection = true
 	rprobe.intensity = 0.65
 	rprobe.ambient_mode = ReflectionProbe.AMBIENT_ENVIRONMENT
+	rprobe.update_mode = ReflectionProbe.UPDATE_ONCE
 	_lights_container.add_child(rprobe)
 
-	# Physical ceiling luminaires + clean room lighting (non-overlapping hero lights cast soft shadows; bounce fills have shadow_enabled = false).
+	# Physical ceiling luminaires + clean room lighting (OmniLight3D shadow_enabled = false so rooms never have 2 competing sets of shadows
+	# or cast L2 character shadows down through floor slabs onto L1).
 	for l_cfg: Dictionary in [
-		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.92, "r": 9.8, "sh": true, "sz": Vector2(1.40, 0.36)},
+		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.88, "r": 9.8, "sh": false, "sz": Vector2(1.40, 0.36)},
 		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(9.80, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.85, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
 		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 7.80, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 11.0, "sh": false, "sz": Vector2(1.20, 0.32)},
 		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.62, 5.80), "col": Color("#F5E2C4"), "e": 0.84, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
-		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(4.80, 3.62, 5.80), "col": Color("#EAE6DC"), "e": 0.95, "r": 10.8, "sh": true, "sz": Vector2(1.50, 0.38)},
+		{"name": "Room1B_Substation_ServiceBayLight", "pos": Vector3(4.80, 3.62, 5.80), "col": Color("#EAE6DC"), "e": 0.90, "r": 10.8, "sh": false, "sz": Vector2(1.50, 0.38)},
 		{"name": "Atrium_Midhead_BounceFill", "pos": Vector3(0.0, 7.85, -2.20), "col": Color("#EBF0F5"), "e": 0.74, "r": 16.0, "sh": false, "sz": Vector2(2.20, 0.45)}
 	]:
 		var lpos: Vector3 = l_cfg["pos"] as Vector3
@@ -660,6 +692,27 @@ func _setup_sector_lighting() -> void:
 		_task_lights.append(omni)
 		_task_base.append({"col": lcol, "e": l_cfg["e"]})
 
+	# Single downward ceiling SpotLight3D for enclosed rooms (APT 201 & Room 1B) with floor-clamped range (3.55m)
+	# so interior props cast exactly 1 clean downward shadow and never reach any lower deck.
+	for s_cfg: Dictionary in [
+		{"name": "Apt201_CeilingDownSpot", "pos": Vector3(-8.45, 7.55, 6.40), "col": Color("#F5E2C4"), "e": 0.42, "r": 3.50, "ang": 62.0},
+		{"name": "Room1B_CeilingDownSpot", "pos": Vector3(4.80, 3.62, 5.80), "col": Color("#EAE6DC"), "e": 0.42, "r": 3.60, "ang": 64.0}
+	]:
+		var sp: SpotLight3D = SpotLight3D.new()
+		sp.name = String(s_cfg["name"])
+		sp.position = s_cfg["pos"] as Vector3
+		sp.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+		sp.light_color = s_cfg["col"] as Color
+		sp.light_energy = float(s_cfg["e"])
+		sp.spot_range = float(s_cfg["r"])
+		sp.spot_angle = float(s_cfg["ang"])
+		sp.spot_angle_attenuation = 0.85
+		sp.shadow_enabled = true
+		sp.shadow_bias = 0.02
+		sp.shadow_normal_bias = 1.0
+		sp.shadow_blur = 1.4
+		_lights_container.add_child(sp)
+
 
 func _set_emergency_lighting(on: bool) -> void:
 	_emergency = on
@@ -682,6 +735,18 @@ func _set_emergency_lighting(on: bool) -> void:
 # ------------------------------------------------------------------------------
 # Materials (BUG-07 guard + [t3u] emission)
 # ------------------------------------------------------------------------------
+func _set_tree_cast_shadow(root: Node3D, mode: GeometryInstance3D.ShadowCastingSetting) -> void:
+	if root == null:
+		return
+	var st: Array[Node] = [root]
+	while not st.is_empty():
+		var c: Node = st.pop_back()
+		if c is GeometryInstance3D:
+			(c as GeometryInstance3D).cast_shadow = mode
+		for ch: Node in c.get_children():
+			st.append(ch)
+
+
 func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> void:
 	var stack: Array[Node] = [root]
 	var to_convert: Array[ImporterMeshInstance3D] = []
@@ -726,7 +791,7 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 		if curr is MeshInstance3D:
 			var mi: MeshInstance3D = curr as MeshInstance3D
 			if mi.mesh != null and mi.mesh.get_surface_count() > 0:
-				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+				var has_opaque_surface: bool = false
 				for s_idx: int in range(mi.mesh.get_surface_count()):
 					var mat: Material = mi.get_active_material(s_idx)
 					if mat is StandardMaterial3D:
@@ -745,24 +810,31 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 								smat.emission_energy_multiplier = emission_mult * 0.8
 							else:
 								smat.emission_enabled = false
-							mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-						elif mname.contains("amber") or mname.contains("hazard"):
-							smat.emission_enabled = true
-							smat.albedo_color = COLOR_AMBER
-							smat.emission = COLOR_AMBER
-							smat.emission_energy_multiplier = emission_mult
-						elif mname.contains("cyan") or mname.contains("emerald") or mname.contains("uv"):
-							smat.emission_enabled = true
-							smat.albedo_color = COLOR_CYAN
-							smat.emission = COLOR_CYAN
-							smat.emission_energy_multiplier = emission_mult
-						elif smat.emission_enabled or smat.emission_texture != null:
-							smat.emission_enabled = true
-							if smat.emission_texture != null:
-								smat.emission = Color(1.0, 1.0, 1.0, 1.0)
-								smat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
-							smat.emission_energy_multiplier = emission_mult
+						else:
+							has_opaque_surface = true
+							if mname.contains("amber") or mname.contains("hazard"):
+								smat.emission_enabled = true
+								smat.albedo_color = COLOR_AMBER
+								smat.emission = COLOR_AMBER
+								smat.emission_energy_multiplier = emission_mult
+							elif mname.contains("cyan") or mname.contains("emerald") or mname.contains("uv"):
+								smat.emission_enabled = true
+								smat.albedo_color = COLOR_CYAN
+								smat.emission = COLOR_CYAN
+								smat.emission_energy_multiplier = emission_mult
+							elif smat.emission_enabled or smat.emission_texture != null:
+								smat.emission_enabled = true
+								if smat.emission_texture != null:
+									smat.emission = Color(1.0, 1.0, 1.0, 1.0)
+									smat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
+								smat.emission_energy_multiplier = emission_mult
 						mi.set_surface_override_material(s_idx, smat)
+					else:
+						has_opaque_surface = true
+				if has_opaque_surface:
+					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
+				else:
+					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		for ch: Node in curr.get_children():
 			mstack.append(ch)
 
@@ -1400,7 +1472,16 @@ func _process_capture_f5_hud() -> void:
 			_trigger_rfid_pulse()
 		70:
 			_save_qa_png("qa_f5_hud_3rd_person.png")
-		72:
+			# Alcove 2C / L2 West Gallery looking down at the L1 atrium floor (matching Jared [t16u] angle).
+			_third_person = false
+			_player_body.global_position = Vector3(-9.20, 4.25, -1.80)
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, -118.0, 0.0)
+			_pitch = deg_to_rad(-24.0)
+			_apply_view_mode()
+		82:
+			_save_qa_png("qa_f5_hud_alcove2c_atrium_lookdown.png")
+		84:
 			print("[PrefacePlayableArea] F5 HUD capture complete.")
 			get_tree().quit(0)
 

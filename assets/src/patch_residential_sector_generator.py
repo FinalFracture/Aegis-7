@@ -333,25 +333,29 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     )
     # Clean architectural atrium floor — no skid trails or decals ([t11u])
 
-    # Roof Ceiling Structural Beams (`Y = 8.64m..8.80m`) with central architectural glass skylight
-    b_atrium.add("residential_atlas", make_world_uv_box((28.0, 0.16, 4.5), center=(0.0, 8.72, 6.75), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_atlas", make_world_uv_box((28.0, 0.16, 4.5), center=(0.0, 8.72, -6.75), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_atlas", make_world_uv_box((5.5, 0.16, 9.0), center=(-11.25, 8.72, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_atlas", make_world_uv_box((5.5, 0.16, 9.0), center=(11.25, 8.72, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_glass", make_beveled_box((17.0, 0.08, 9.0), center=(0.0, 8.70, 0.0), bevel=0.01))
+    # Roof Ceiling Structural Slabs (`Y = 8.40m..8.80m`) completely covering the L2 North Apartments/Gallery (`Z = +1.10m..+8.90m`),
+    # West Alcove Wing (`X = -13.90m..-7.40m`), and East Stairwell (`X = +7.40m..+13.90m`) so exterior directional sunlight
+    # only enters through the open central atrium skylight well (`X = -7.40m..+7.40m, Z = -6.50m..+1.10m`).
+    b_atrium.add("residential_atlas", make_world_uv_box((28.0, 0.34, 7.90), center=(0.0, 8.58, 5.00), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5, subdivide_max_m=3.5))
+    b_atrium.add("residential_atlas", make_world_uv_box((28.0, 0.34, 2.50), center=(0.0, 8.58, -7.70), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5, subdivide_max_m=3.5))
+    b_atrium.add("residential_atlas", make_world_uv_box((6.50, 0.34, 7.60), center=(-10.65, 8.58, -2.70), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5, subdivide_max_m=3.5))
+    b_atrium.add("residential_atlas", make_world_uv_box((6.50, 0.34, 7.60), center=(10.65, 8.58, -2.70), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5, subdivide_max_m=3.5))
+
+    b_atrium_glass = RichPartBucket(mats)
+    b_atrium_glass.add("residential_glass", make_beveled_box((14.8, 0.08, 7.6), center=(0.0, 8.70, -2.70), bevel=0.01))
 
     # North Backdrop Wall (`Z = +8.90m`), West Wall (`X = -13.90m`), and East 7.2m-Tall Atrium Curtain-Wall Viewport (`X = +13.90m`)
     b_atrium.add(
         "residential_atlas",
-        make_world_uv_box((28.0, 8.60, 0.20), center=(0.0, 4.36, 8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((28.0, 8.60, 0.28), center=(0.0, 4.36, 8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_atrium.add(
         "residential_atlas",
-        make_world_uv_box((0.20, 8.60, 18.0), center=(-13.90, 4.36, 0.0), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((0.28, 8.60, 18.0), center=(-13.90, 4.36, 0.0), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_atrium.add("residential_atlas", make_world_uv_box((0.24, 1.10, 18.0), center=(13.88, 0.60, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
     b_atrium.add("residential_atlas", make_world_uv_box((0.24, 0.90, 18.0), center=(13.88, 8.25, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_glass", make_beveled_box((0.08, 6.70, 16.8), center=(13.88, 4.50, 0.0), bevel=0.01))
+    b_atrium_glass.add("residential_glass", make_beveled_box((0.08, 6.70, 16.8), center=(13.88, 4.50, 0.0), bevel=0.01))
     for mz in [-5.6, 0.0, 5.6]:
         b_atrium.add("residential_atlas", make_world_uv_box((0.18, 6.75, 0.14), center=(13.86, 4.50, mz), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
 
@@ -379,33 +383,38 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     # 2. `Upper_Mezzanine_Walkway` (`Y = +4.20m` Deck with `Atrium_Void` & Tempered Glass Balustrade)
     # --------------------------------------------------------------------------
     b_mezz = RichPartBucket(mats)
+    # Solid 0.36m thick structural floor/ceiling slabs (top at Y = +4.23m, soffit at Y = +3.87m) so L2 casts a solid shadow onto L1
     b_mezz.add(
         "residential_atlas",
-        make_world_uv_box((27.6, 0.18, 7.6), center=(0.0, 0.0, 5.0), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((27.8, 0.36, 7.8), center=(0.0, -0.15, 5.0), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_mezz.add(
         "residential_atlas",
-        make_world_uv_box((6.3, 0.18, 7.7), center=(-10.65, 0.0, -2.65), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((6.5, 0.36, 7.9), center=(-10.65, -0.15, -2.65), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_mezz.add(
         "residential_atlas",
-        make_world_uv_box((6.3, 0.18, 3.4), center=(10.65, 0.0, -0.50), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((6.5, 0.36, 3.6), center=(10.65, -0.15, -0.50), bevel=0.02, uv_rect=UV_FLOOR_SLATE, tile_m=3.5, subdivide_max_m=3.5),
     )
-    b_mezz.add("residential_glass", make_beveled_box((15.2, 1.06, 0.05), center=(0.0, 0.62, 1.25), bevel=0.008))
     b_mezz.add("residential_atlas", make_world_uv_box((15.4, 0.06, 0.09), center=(0.0, 1.16, 1.25), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
     b_mezz.add("residential_atlas", make_world_uv_box((15.4, 0.08, 0.12), center=(0.0, 0.11, 1.25), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
     for post_x in [-7.5, -3.75, 0.0, 3.75, 7.5]:
         b_mezz.add("residential_atlas", make_world_uv_box((0.08, 1.12, 0.08), center=(post_x, 0.62, 1.25), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
 
-    b_mezz.add("residential_glass", make_beveled_box((0.05, 1.06, 7.6), center=(-7.55, 0.62, -2.60), bevel=0.008))
     b_mezz.add("residential_atlas", make_world_uv_box((0.09, 0.06, 7.6), center=(-7.55, 1.16, -2.60), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
     b_mezz.add("residential_atlas", make_world_uv_box((0.12, 0.08, 7.6), center=(-7.55, 0.11, -2.60), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
+
+    # Separate glass balustrade node so translucent glass never disables shadow casting on the L2 floor slab!
+    b_mezz_glass = RichPartBucket(mats)
+    b_mezz_glass.add("residential_glass", make_beveled_box((15.2, 1.06, 0.05), center=(0.0, 0.62, 1.25), bevel=0.008))
+    b_mezz_glass.add("residential_glass", make_beveled_box((0.05, 1.06, 7.6), center=(-7.55, 0.62, -2.60), bevel=0.008))
 
     # --------------------------------------------------------------------------
     # 3. `Tech_Apartment_Upper` / `APT 201` (`X = -9.5m, Y = +4.20m, Z = +5.6m`, `8.2m W x 5.8m D x 3.8m H`)
     # --------------------------------------------------------------------------
     b_apt = RichPartBucket(mats)
     b_apt.add("residential_atlas", make_world_uv_box((8.2, 0.06, 5.8), center=(0.0, 0.12, 0.0), bevel=0.01, uv_rect=UV_FLOOR_SLATE, tile_m=3.5))
+    b_apt.add("residential_atlas", make_world_uv_box((8.3, 0.28, 5.9), center=(0.0, 3.92, 0.0), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_apt.add("residential_atlas", make_world_uv_box((0.16, 3.8, 5.8), center=(4.05, 1.98, 0.0), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_apt.add("residential_atlas", make_world_uv_box((1.4, 3.8, 0.16), center=(-3.40, 1.98, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_apt.add("residential_atlas", make_world_uv_box((2.0, 1.15, 0.16), center=(-1.70, 3.30, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
@@ -460,6 +469,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     # 4. `Room_2B_Neighbor_Balcony_Suite` / `APT 202` (Quartermaster Quarters, `X = +9.5m, Y = +4.20m, Z = +5.6m`)
     # --------------------------------------------------------------------------
     b_room2b = RichPartBucket(mats)
+    b_room2b.add("residential_atlas", make_world_uv_box((8.3, 0.28, 5.9), center=(0.0, 3.92, 0.0), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_room2b.add("residential_atlas", make_world_uv_box((0.16, 3.8, 5.8), center=(-4.05, 1.98, 0.0), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_room2b.add("residential_atlas", make_world_uv_box((1.4, 3.8, 0.16), center=(-3.40, 1.98, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_room2b.add("residential_atlas", make_world_uv_box((2.0, 1.15, 0.16), center=(-1.70, 3.30, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
@@ -525,7 +535,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     for wx in [-2.2, -0.8, 0.6]:
         b_room1a.add("residential_atlas", make_world_uv_box((1.08, 1.32, 0.92), center=(wx, 0.78, 1.80), bevel=0.03, uv_rect=UV_WALL_APT, tile_m=1.5))
         b_room1a.add("residential_atlas", make_world_uv_box((1.04, 0.18, 0.94), center=(wx, 1.34, 1.80), bevel=0.015, uv_rect=UV_STEEL_TRIM, tile_m=1.0))
-        b_room1a.add("residential_glass", make_cylinder(0.30, 0.30, 0.05, center=(wx, 0.82, 1.33), segments=12, axis="z"))
+        pass
     b_room1a.add("residential_atlas", make_world_uv_box((1.25, 0.82, 1.40), center=(2.35, 0.50, 1.65), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
     b_room1a.add("residential_atlas", make_world_uv_box((1.30, 0.06, 1.46), center=(2.35, 0.93, 1.65), bevel=0.015, uv_rect=UV_WOOD_WALNUT, tile_m=1.5))
     b_room1a.add("residential_atlas", make_beveled_box((0.85, 0.025, 0.12), center=(2.35, 2.25, 1.65), bevel=0.003), UV_LIGHT_WARM)
@@ -570,7 +580,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         make_world_uv_box((2.80, 4.95, 0.22), center=(0.0, 6.18, -8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_vest.add("steel_machined", make_cylinder(0.045, 0.045, 2.60, center=(0.0, 3.25, -8.88), segments=10, axis="x"))
-    b_vest.add("residential_glass", make_beveled_box((2.60, 0.82, 0.06), center=(0.0, 3.25, -8.80), bevel=0.01))
+    b_atrium_glass.add("residential_glass", make_beveled_box((2.60, 0.82, 0.06), center=(0.0, 3.25, -8.80), bevel=0.01))
     b_vest.add("residential_atlas", make_beveled_box((2.52, 0.018, 0.12), center=(0.0, 0.128, -8.82), bevel=0.003), UV_LIGHT_AMBER)
 
     b_portal_exit = make_calm_open_portal_arch_frame(mats, clear_w=2.6, clear_h=2.80, placard_uv=None)
@@ -578,8 +588,10 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     node_specs = [
         ("PrefaceResidentialSector_Root", None, (0.0, 0.0, 0.0), None),
         ("Residential_Hallway_Atrium", "PrefaceResidentialSector_Root", (0.0, 0.0, 0.0), b_atrium),
+        ("Atrium_Skylight_And_CurtainGlass", "Residential_Hallway_Atrium", (0.0, 0.0, 0.0), b_atrium_glass),
         ("Atrium_Void", "PrefaceResidentialSector_Root", (0.0, 4.20, -2.50), None),
         ("Upper_Mezzanine_Walkway", "PrefaceResidentialSector_Root", (0.0, 4.20, 0.0), b_mezz),
+        ("Mezzanine_Glass_Balustrade", "Upper_Mezzanine_Walkway", (0.0, 0.0, 0.0), b_mezz_glass),
         ("Tech_Apartment_Upper", "PrefaceResidentialSector_Root", (-9.50, 4.20, 5.60), b_apt),
         ("apt_player_top_floor", "Tech_Apartment_Upper", (0.0, 0.0, 0.0), None),
         ("Open_Portal_201", "Tech_Apartment_Upper", (-1.70, 0.12, -2.85), b_portal_201),
