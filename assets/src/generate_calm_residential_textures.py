@@ -15,7 +15,7 @@ import glob
 import math
 import shutil
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 TEX_DIR = "/workspace/game-project/godot/assets/textures"
 MODELS_DIR = "/workspace/game-project/godot/assets/models"
@@ -497,6 +497,176 @@ def clean_wrist_and_bot_atlases():
     print("[CleanAtlases] Upgraded wrist_rfid (1024x1024) & utility_bot_round2 (2048x2048) atlases with zero blurry text")
 
 
+
+
+def load_sign_font(size: int, mono: bool = False):
+    fp = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf" if mono else "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    if os.path.exists(fp):
+        return ImageFont.truetype(fp, size)
+    return ImageFont.load_default()
+
+
+def generate_sector_door_signage_skin():
+    """
+    Generates the dedicated 2048x2048 Door & Architectural Signage Skin Texture Suite
+    (`sector_door_signage_skin_albedo.png`, `_emission.png`, `_orm.png`, `_normal.png`)
+    drawn at 2x supersampled resolution (4096x4096) and downsampled with LANCZOS:
+      - 6 horizontal doorway header signboard strips (2048x220 each in 1x):
+        0: APT 201  //  RESIDENTIAL QUARTERS
+        1: ALCOVE 2C  //  MAINTENANCE UTILITY
+        2: APT 202  //  RESIDENTIAL QUARTERS
+        3: RM 1A  //  LAUNDRY & UTILITY LOUNGE
+        4: RM 1B  //  BOT FABRICATION & SUBSTATION
+        5: SECTOR-4 PROMENADE  //  CYLINDER HAB-7
+      - Bottom OLED screen panel (y = 1320..2048 in 1x) for the APT 201 Wall Diagnostic Monitor!
+    """
+    SS = 2
+    W, H = 2048 * SS, 2048 * SS
+    alb = Image.new("RGB", (W, H), hex_rgb("#242B34"))
+    emi = Image.new("RGB", (W, H), (0, 0, 0))
+    orm = Image.new("RGB", (W, H), (242, int(0.28 * 255), int(0.82 * 255)))
+    hgt_im = Image.new("L", (W, H), 148)
+
+    d_alb = ImageDraw.Draw(alb)
+    d_emi = ImageDraw.Draw(emi)
+    d_orm = ImageDraw.Draw(orm)
+    d_hgt = ImageDraw.Draw(hgt_im)
+
+    f_title = load_sign_font(38 * SS, mono=False)
+    f_sub = load_sign_font(22 * SS, mono=True)
+    f_badge = load_sign_font(24 * SS, mono=True)
+
+    signs = [
+        ("APT 201  //  RESIDENTIAL QUARTERS", "ROSTOV, K.  —  LEAD SYSTEMS TECH  [SEC-04]", "D-01", "#2E96B2", "#1A5868"),
+        ("ALCOVE 2C  //  MAINTENANCE UTILITY", "AUX POWER CELLS & SUPER-WIRE SUPPLY BAY", "U-2C", "#2E96B2", "#1A5868"),
+        ("APT 202  //  RESIDENTIAL QUARTERS", "QUARTERMASTER SUITE  —  SECTOR-04 HABITAT", "D-02", "#2E96B2", "#1A5868"),
+        ("RM 1A  //  LAUNDRY & UTILITY LOUNGE", "RESIDENTIAL COMMUNAL SERVICE & LOCKER BAY", "S-1A", "#2E96B2", "#1A5868"),
+        ("RM 1B  //  BOT FABRICATION & SUBSTATION", "D-03 TELEMETRY RELAY  —  AUX BUS B-14", "B-14", "#E2963B", "#885418"),
+        ("SECTOR-4 PROMENADE  //  CYLINDER HAB-7", "VALLEY-A ESPLANADE  —  R = 200m DRUM DECK", "SEC-4", "#2E96B2", "#1A5868"),
+    ]
+
+    for idx, (title, sub, badge, acc_hex, em_hex) in enumerate(signs):
+        y0 = idx * 220 * SS
+        y1 = (idx + 1) * 220 * SS
+        pad = 12 * SS
+        d_alb.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=hex_rgb("#3C4654"), outline=hex_rgb("#788696"), width=4 * SS)
+        d_orm.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=(248, int(0.24 * 255), int(0.88 * 255)))
+        d_hgt.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=176)
+
+        in_x0, in_y0, in_x1, in_y1 = 34 * SS, y0 + 28 * SS, W - 34 * SS, y1 - 28 * SS
+        d_alb.rectangle([in_x0, in_y0, in_x1, in_y1], fill=hex_rgb("#12171E"), outline=hex_rgb(acc_hex), width=3 * SS)
+        d_orm.rectangle([in_x0, in_y0, in_x1, in_y1], fill=(235, int(0.36 * 255), int(0.32 * 255)))
+        d_hgt.rectangle([in_x0, in_y0, in_x1, in_y1], fill=112)
+
+        for bx in [22 * SS, W - 22 * SS]:
+            for by in [y0 + 20 * SS, y1 - 20 * SS]:
+                r = 6 * SS
+                d_alb.ellipse([bx - r, by - r, bx + r, by + r], fill=hex_rgb("#8C9AA8"), outline=hex_rgb("#1E242C"), width=2 * SS)
+                d_hgt.ellipse([bx - r, by - r, bx + r, by + r], fill=195)
+
+        d_alb.rectangle([in_x0 + 16 * SS, in_y0 + 16 * SS, in_x0 + 30 * SS, in_y1 - 16 * SS], fill=hex_rgb(acc_hex))
+        d_emi.rectangle([in_x0 + 16 * SS, in_y0 + 16 * SS, in_x0 + 30 * SS, in_y1 - 16 * SS], fill=hex_rgb(em_hex))
+
+        b_x0, b_y0, b_x1, b_y1 = in_x0 + 46 * SS, in_y0 + 24 * SS, in_x0 + 196 * SS, in_y1 - 24 * SS
+        d_alb.rectangle([b_x0, b_y0, b_x1, b_y1], fill=hex_rgb("#1A222C"), outline=hex_rgb(acc_hex), width=3 * SS)
+        d_hgt.rectangle([b_x0, b_y0, b_x1, b_y1], fill=128)
+        d_alb.text(((b_x0 + b_x1) // 2, (b_y0 + b_y1) // 2), badge, font=f_badge, fill=hex_rgb(acc_hex), anchor="mm")
+        d_emi.text(((b_x0 + b_x1) // 2, (b_y0 + b_y1) // 2), badge, font=f_badge, fill=hex_rgb(em_hex), anchor="mm")
+
+        r_x0 = in_x1 - 110 * SS
+        cy = (in_y0 + in_y1) // 2
+        for k in range(3):
+            cx_dot = r_x0 + k * 28 * SS
+            d_alb.ellipse([cx_dot - 7 * SS, cy - 7 * SS, cx_dot + 7 * SS, cy + 7 * SS], fill=hex_rgb(acc_hex))
+            d_emi.ellipse([cx_dot - 7 * SS, cy - 7 * SS, cx_dot + 7 * SS, cy + 7 * SS], fill=hex_rgb(em_hex))
+
+        div_y = y0 + 124 * SS
+        d_alb.rectangle([in_x0 + 220 * SS, div_y, in_x1 - 130 * SS, div_y + 2 * SS], fill=hex_rgb("#2C3A48"))
+
+        tx = (in_x0 + 220 * SS + in_x1 - 130 * SS) // 2
+        ty_title = y0 + 78 * SS
+        ty_sub = y0 + 158 * SS
+        title_col = hex_rgb("#F4F8FC") if idx != 4 else hex_rgb("#FFD28A")
+        title_em = hex_rgb("#465866") if idx != 4 else hex_rgb("#684818")
+        d_alb.text((tx, ty_title), title, font=f_title, fill=title_col, anchor="mm")
+        d_emi.text((tx, ty_title), title, font=f_title, fill=title_em, anchor="mm")
+        d_hgt.text((tx, ty_title), title, font=f_title, fill=142, anchor="mm")
+
+        d_alb.text((tx, ty_sub), sub, font=f_sub, fill=hex_rgb("#9EC8DA"), anchor="mm")
+        d_emi.text((tx, ty_sub), sub, font=f_sub, fill=hex_rgb("#243C48"), anchor="mm")
+
+    # Bottom Section (y = 1320..2048 in 1x): APT 201 Wall Diagnostic / Hab-7 Telemetry Monitor OLED Screen Skin
+    my0 = 1320 * SS
+    my1 = 2048 * SS
+    mpad = 18 * SS
+    d_alb.rectangle([mpad, my0 + mpad, W - mpad, my1 - mpad], fill=hex_rgb("#343E4A"), outline=hex_rgb("#748292"), width=5 * SS)
+    d_orm.rectangle([mpad, my0 + mpad, W - mpad, my1 - mpad], fill=(248, int(0.22 * 255), int(0.88 * 255)))
+    d_hgt.rectangle([mpad, my0 + mpad, W - mpad, my1 - mpad], fill=182)
+
+    sx0, sy0, sx1, sy1 = 48 * SS, my0 + 44 * SS, W - 48 * SS, my1 - 44 * SS
+    d_alb.rectangle([sx0, sy0, sx1, sy1], fill=hex_rgb("#0A1017"), outline=hex_rgb("#2E96B2"), width=4 * SS)
+    d_orm.rectangle([sx0, sy0, sx1, sy1], fill=(252, int(0.10 * 255), int(0.18 * 255)))
+    d_hgt.rectangle([sx0, sy0, sx1, sy1], fill=104)
+
+    for gx in range(sx0 + 60 * SS, sx1 - 40 * SS, 64 * SS):
+        d_alb.line([(gx, sy0 + 80 * SS), (gx, sy1 - 60 * SS)], fill=hex_rgb("#111B26"), width=2)
+    for gy in range(sy0 + 96 * SS, sy1 - 60 * SS, 52 * SS):
+        d_alb.line([(sx0 + 36 * SS, gy), (sx1 - 36 * SS, gy)], fill=hex_rgb("#111B26"), width=2)
+
+    d_alb.rectangle([sx0 + 20 * SS, sy0 + 18 * SS, sx1 - 20 * SS, sy0 + 86 * SS], fill=hex_rgb("#132230"), outline=hex_rgb("#2E96B2"), width=2 * SS)
+    d_emi.rectangle([sx0 + 20 * SS, sy0 + 18 * SS, sx0 + 36 * SS, sy0 + 86 * SS], fill=hex_rgb("#2E96B2"))
+    d_alb.rectangle([sx0 + 20 * SS, sy0 + 18 * SS, sx0 + 36 * SS, sy0 + 86 * SS], fill=hex_rgb("#48C0E0"))
+
+    f_mhead = load_sign_font(34 * SS, mono=False)
+    f_mrow = load_sign_font(27 * SS, mono=True)
+    f_mfoot = load_sign_font(21 * SS, mono=True)
+
+    d_alb.text((sx0 + 58 * SS, sy0 + 52 * SS), "HAB-7 SECTOR-4  //  ENVIRONMENTAL & DRUM TELEMETRY", font=f_mhead, fill=hex_rgb("#9FD8EA"), anchor="lm")
+    d_emi.text((sx0 + 58 * SS, sy0 + 52 * SS), "HAB-7 SECTOR-4  //  ENVIRONMENTAL & DRUM TELEMETRY", font=f_mhead, fill=hex_rgb("#2E6878"), anchor="lm")
+    d_alb.text((sx1 - 42 * SS, sy0 + 52 * SS), "SYS-OK // 13.56 MHz", font=f_mfoot, fill=hex_rgb("#58C496"), anchor="rm")
+    d_emi.text((sx1 - 42 * SS, sy0 + 52 * SS), "SYS-OK // 13.56 MHz", font=f_mfoot, fill=hex_rgb("#1E543C"), anchor="rm")
+
+    m_rows = [
+        ("SPIN RATE:  2.12 RPM (0.98 G)  //  CORIOLIS COMP: NOMINAL", "#E8F2FA", "#385264", "#2E96B2", 0.92),
+        ("ATRIUM SUBSTATION 1B:  OFFLINE  —  AUX BUS FAULT [B-14]", "#FFB866", "#784814", "#E28B2E", 0.40),
+        ("PROMENADE AIRLOCK:  STANDBY  //  ATMO: 101.3 kPa (21.2% O2)", "#8CE0B0", "#24583C", "#3BA868", 0.98),
+        ("AXIAL SOLAR CORE:  5500K DAYLIGHT  //  VALLEY-A BAY 04", "#9FD8EA", "#285060", "#2E96B2", 0.86),
+    ]
+    for r_i, (r_txt, col_t, em_t, bar_c, fill_frac) in enumerate(m_rows):
+        ry = sy0 + (152 + r_i * 116) * SS
+        d_alb.rectangle([sx0 + 36 * SS, ry - 18 * SS, sx0 + 48 * SS, ry + 18 * SS], fill=hex_rgb(bar_c))
+        d_emi.rectangle([sx0 + 36 * SS, ry - 18 * SS, sx0 + 48 * SS, ry + 18 * SS], fill=hex_rgb(em_t))
+        d_alb.text((sx0 + 70 * SS, ry), r_txt, font=f_mrow, fill=hex_rgb(col_t), anchor="lm")
+        d_emi.text((sx0 + 70 * SS, ry), r_txt, font=f_mrow, fill=hex_rgb(em_t), anchor="lm")
+        bx0, bx1 = sx1 - 420 * SS, sx1 - 48 * SS
+        by0, by1 = ry - 18 * SS, ry + 18 * SS
+        d_alb.rectangle([bx0, by0, bx1, by1], fill=hex_rgb("#141E28"), outline=hex_rgb("#344658"), width=2 * SS)
+        bf_w = int((bx1 - bx0 - 8 * SS) * fill_frac)
+        d_alb.rectangle([bx0 + 4 * SS, by0 + 4 * SS, bx0 + 4 * SS + bf_w, by1 - 4 * SS], fill=hex_rgb(bar_c))
+        d_emi.rectangle([bx0 + 4 * SS, by0 + 4 * SS, bx0 + 4 * SS + bf_w, by1 - 4 * SS], fill=hex_rgb(em_t))
+
+    fy = sy1 - 38 * SS
+    d_alb.line([(sx0 + 32 * SS, fy - 22 * SS), (sx1 - 32 * SS, fy - 22 * SS)], fill=hex_rgb("#26384A"), width=2 * SS)
+    d_alb.text((sx0 + 42 * SS, fy), "CYLINDER HAB-7 TELEMETRY BUS  //  NODE: APT-201-WALL-MON  //  REV 4.7", font=f_mfoot, fill=hex_rgb("#7890A4"), anchor="lm")
+
+    alb_out = alb.resize((2048, 2048), Image.Resampling.LANCZOS)
+    emi_out = emi.resize((2048, 2048), Image.Resampling.LANCZOS)
+    orm_out = orm.resize((2048, 2048), Image.Resampling.BILINEAR)
+    hgt_arr = np.array(hgt_im.resize((2048, 2048), Image.Resampling.BILINEAR), dtype=np.float32)
+    nrm_out = Image.fromarray(build_normal_from_height(hgt_arr, scale=5.5), "RGB")
+
+    for suffix, im_o in [
+        ("albedo.png", alb_out),
+        ("emission.png", emi_out),
+        ("orm.png", orm_out),
+        ("normal.png", nrm_out),
+    ]:
+        p_out = os.path.join(TEX_DIR, f"sector_door_signage_skin_{suffix}")
+        im_o.save(p_out, format="PNG")
+    print(f"[SignageSkin] Saved 2048x2048 supersampled sector_door_signage_skin_*.png suite to {TEX_DIR}")
+
+
 if __name__ == "__main__":
     generate_residential_atlas()
     clean_wrist_and_bot_atlases()
+    generate_sector_door_signage_skin()

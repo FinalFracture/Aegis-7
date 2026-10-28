@@ -452,7 +452,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_apt.add("residential_atlas", make_world_uv_box((0.55, 0.68, 2.05), center=(3.70, 2.25, 0.45), bevel=0.015, uv_rect=UV_WOOD_WALNUT, tile_m=1.5))
     b_apt.add("residential_atlas", make_beveled_box((0.12, 0.025, 1.75), center=(3.58, 1.89, 0.45), bevel=0.003), UV_LIGHT_WARM)
 
-    b_portal_201 = make_calm_open_portal_arch_frame(mats, clear_w=2.0, clear_h=2.55, placard_uv=UV_PLACARD_201, placard_x_side=-1.0)
+    b_portal_201 = make_calm_open_portal_arch_frame(mats, clear_w=2.0, clear_h=2.55, placard_uv=None)
 
     # Sleek Recessed 3D Wall Diagnostic / Hab-7 Telemetry Monitor mounted on APT 201 bulkhead wall ([t22u])
     b_apt_win = RichPartBucket(mats)
@@ -510,17 +510,18 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_room2b.add("residential_atlas", make_world_uv_box((1.25, 0.40, 2.05), center=(3.10, 0.32, -0.55), bevel=0.02, uv_rect=UV_WOOD_WALNUT, tile_m=1.5))
     b_room2b.add("residential_atlas", make_world_uv_box((1.18, 0.16, 1.96), center=(3.10, 0.58, -0.55), bevel=0.025, uv_rect=UV_FABRIC_SLATE, tile_m=1.5))
 
-    b_portal_202 = make_calm_open_portal_arch_frame(mats, clear_w=2.0, clear_h=2.55, placard_uv=UV_PLACARD_202, placard_x_side=1.0)
+    b_portal_202 = make_calm_open_portal_arch_frame(mats, clear_w=2.0, clear_h=2.55, placard_uv=None)
 
     # --------------------------------------------------------------------------
     # 5. `Alcove_2C_Upper_Vent_Chase` (`X = -11.5m, Y = +4.20m, Z = -4.5m`)
     # --------------------------------------------------------------------------
     b_alcove2c = RichPartBucket(mats)
     b_alcove2c.add("residential_atlas", make_world_uv_box((2.40, 2.65, 0.18), center=(0.0, 1.40, -1.10), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=2.0))
+    b_alcove2c.add("residential_atlas", make_world_uv_box((2.16, 1.05, 0.18), center=(0.0, 3.28, 0.95), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=2.5))
     b_alcove2c.add("residential_atlas", make_world_uv_box((0.18, 2.65, 2.20), center=(-1.15, 1.40, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=2.0))
     b_alcove2c.add("residential_atlas", make_world_uv_box((1.80, 0.75, 0.65), center=(0.0, 0.42, -0.55), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
 
-    b_arch_2c = make_calm_open_portal_arch_frame(mats, clear_w=1.8, clear_h=2.45, placard_uv=UV_PLACARD_201, placard_x_side=1.0)
+    b_arch_2c = make_calm_open_portal_arch_frame(mats, clear_w=1.8, clear_h=2.45, placard_uv=None)
 
     b_pw_exp = RichPartBucket(mats)
     b_pw_exp.add("residential_atlas", make_cylinder(0.12, 0.12, 0.18, center=(0.0, 0.09, 0.0), segments=14), UV_RES_Q3_WIRE)
@@ -569,7 +570,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_room1a.add("residential_atlas", make_beveled_box((0.85, 0.025, 0.12), center=(2.35, 2.25, 1.65), bevel=0.003), UV_LIGHT_WARM)
     b_room1a.add("residential_atlas", make_world_uv_box((0.75, 0.44, 1.85), center=(-3.10, 0.34, -0.45), bevel=0.02, uv_rect=UV_FABRIC_SLATE, tile_m=1.5))
 
-    b_portal_1a = make_calm_open_portal_arch_frame(mats, clear_w=2.4, clear_h=2.60, placard_uv=UV_PLACARD_1A, placard_x_side=-1.0)
+    b_portal_1a = make_calm_open_portal_arch_frame(mats, clear_w=2.4, clear_h=2.60, placard_uv=None)
 
     # --------------------------------------------------------------------------
     # 8. Level 1 Room 1B (`Side_Room_West_Storage` / `Room_1B_Bot_Substation`, East `X = +4.5m, Z = +5.6m`)
@@ -589,7 +590,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_room1b.add("residential_atlas", make_world_uv_box((2.02, 0.06, 0.88), center=(2.20, 0.92, 1.50), bevel=0.015, uv_rect=UV_WOOD_WALNUT, tile_m=1.5))
     b_room1b.add("residential_atlas", make_beveled_box((0.95, 0.025, 0.12), center=(2.20, 2.15, 1.80), bevel=0.003), UV_LIGHT_WARM)
 
-    b_portal_1b = make_calm_open_portal_arch_frame(mats, clear_w=2.2, clear_h=2.60, placard_uv=UV_PLACARD_1B, placard_x_side=-1.0)
+    b_portal_1b = make_calm_open_portal_arch_frame(mats, clear_w=2.2, clear_h=2.60, placard_uv=None)
 
     # --------------------------------------------------------------------------
     # 9. `Ground_Service_Vestibule` & `Open_Portal_Sector_Exit` (`2.6m W x 2.8m H` Open South Concourse Exit at `Z = -8.90m`)
@@ -605,13 +606,11 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     )
     b_vest.add(
         "residential_atlas",
-        make_world_uv_box((2.80, 4.95, 0.22), center=(0.0, 6.18, -8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((2.80, 5.54, 0.22), center=(0.0, 5.89, -8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
-    b_vest.add("steel_machined", make_cylinder(0.045, 0.045, 2.60, center=(0.0, 3.25, -8.88), segments=10, axis="x"))
-    b_atrium_glass.add("residential_glass", make_beveled_box((2.60, 0.82, 0.06), center=(0.0, 3.25, -8.80), bevel=0.01))
     b_vest.add("residential_atlas", make_beveled_box((2.52, 0.018, 0.12), center=(0.0, 0.128, -8.82), bevel=0.003), UV_LIGHT_AMBER)
 
-    b_portal_exit = make_calm_open_portal_arch_frame(mats, clear_w=2.6, clear_h=2.80, placard_uv=UV_PLACARD_1A, placard_x_side=1.0)
+    b_portal_exit = make_calm_open_portal_arch_frame(mats, clear_w=2.6, clear_h=2.80, placard_uv=None)
 
     node_specs = [
         ("PrefaceResidentialSector_Root", None, (0.0, 0.0, 0.0), None),

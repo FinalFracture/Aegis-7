@@ -385,25 +385,6 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 
 
 
-func _make_crisp_label3d(nm: String, txt: String, pos: Vector3, rot_deg: Vector3, fsize: int = 64, psize: float = 0.0012, col: Color = Color("#EAF2F8"), h_align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER) -> Label3D:
-	var lbl: Label3D = Label3D.new()
-	lbl.name = nm
-	lbl.text = txt
-	lbl.position = pos
-	lbl.rotation_degrees = rot_deg
-	lbl.font_size = fsize
-	lbl.pixel_size = psize
-	lbl.modulate = col
-	lbl.outline_modulate = Color(0.04, 0.06, 0.09, 0.96)
-	lbl.outline_size = 10
-	lbl.horizontal_alignment = h_align
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.shaded = false
-	lbl.double_sided = true
-	lbl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	return lbl
-
-
 func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	var hab_root: Node3D = Node3D.new()
 	hab_root.name = "CylinderHab7_FullScale_World"
@@ -514,230 +495,120 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 			plaza_root.add_child(cap)
 
 
+
+
+func _make_signage_skin_material(v_offset: float, v_scale: float) -> StandardMaterial3D:
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
+	mat.roughness = 0.28
+	mat.metallic = 0.65
+	mat.uv1_scale = Vector3(1.0, v_scale, 1.0)
+	mat.uv1_offset = Vector3(0.0, v_offset, 0.0)
+	var t_alb: Texture2D = _load_tex("sector_door_signage_skin_albedo.png")
+	var t_emi: Texture2D = _load_tex("sector_door_signage_skin_emission.png")
+	var t_nrm: Texture2D = _load_tex("sector_door_signage_skin_normal.png")
+	if t_alb != null:
+		mat.albedo_texture = t_alb
+	if t_emi != null:
+		mat.emission_enabled = true
+		mat.emission = Color(1.0, 1.0, 1.0, 1.0)
+		mat.emission_texture = t_emi
+		mat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
+		mat.emission_energy_multiplier = 0.85
+	if t_nrm != null:
+		mat.normal_enabled = true
+		mat.normal_texture = t_nrm
+		mat.normal_scale = 0.85
+	return mat
+
+
+func _add_skinned_door_header_sign(parent: Node3D, nm: String, row_idx: int, pos: Vector3, rot_y_deg: float, width_m: float = 1.92, height_m: float = 0.34) -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = nm
+	holder.position = pos
+	holder.rotation_degrees = Vector3(0.0, rot_y_deg, 0.0)
+	parent.add_child(holder)
+
+	# Machined dark-anodized titanium housing box mounted flush on the doorway header wall
+	var housing: MeshInstance3D = MeshInstance3D.new()
+	housing.name = nm + "_Housing"
+	var h_bm: BoxMesh = BoxMesh.new()
+	h_bm.size = Vector3(width_m + 0.04, height_m + 0.03, 0.024)
+	housing.mesh = h_bm
+	housing.position = Vector3(0.0, 0.0, -0.012)
+	var h_mat: StandardMaterial3D = StandardMaterial3D.new()
+	h_mat.albedo_color = Color(0.16, 0.19, 0.23, 1.0)
+	h_mat.metallic = 0.84
+	h_mat.roughness = 0.26
+	housing.material_override = h_mat
+	housing.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	holder.add_child(housing)
+
+	# Front textured signboard skin face (local +Z normal, completely clear of door lintel beams)
+	var face: MeshInstance3D = MeshInstance3D.new()
+	face.name = nm + "_SkinFace"
+	var qm: QuadMesh = QuadMesh.new()
+	qm.size = Vector2(width_m, height_m)
+	face.mesh = qm
+	face.position = Vector3(0.0, 0.0, 0.002)
+	var v_scale: float = 220.0 / 2048.0
+	var v_offset: float = float(row_idx) * v_scale
+	face.material_override = _make_signage_skin_material(v_offset, v_scale)
+	face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	holder.add_child(face)
+
+
 func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
 	var sign_root: Node3D = Node3D.new()
-	sign_root.name = "CrispVector3DSignage"
+	sign_root.name = "SkinnedArchitecturalSignage"
 	parent.add_child(sign_root)
 
-	# 1. Eye-Level Doorway Placard Label3Ds (font_size = 64..72, pixel_size = 0.0012, zero blurry bitmap text)
-	var placards: Array[Dictionary] = [
-		{
-			"name": "Sign_APT201",
-			"title": "APT 201 — RESIDENTIAL QUARTERS",
-			"sub": "ROSTOV, K. // LEAD SYSTEMS TECH [SEC-04]",
-			"pos": Vector3(-12.64, 5.80, 2.628),
-			"col": Color("#9FD8EA")
-		},
-		{
-			"name": "Sign_ALCOVE2C",
-			"title": "ALCOVE 2C — MAINTENANCE UTILITY",
-			"sub": "AUX POWER CELLS & SUPER-WIRE SUPPLY",
-			"pos": Vector3(-10.12, 5.80, -3.672),
-			"col": Color("#9FD8EA")
-		},
-		{
-			"name": "Sign_APT202",
-			"title": "APT 202 — RESIDENTIAL QUARTERS",
-			"sub": "QUARTERMASTER SUITE // SEC-04",
-			"pos": Vector3(9.28, 5.80, 2.628),
-			"col": Color("#9FD8EA")
-		},
-		{
-			"name": "Sign_RM1A",
-			"title": "RM 1A — LAUNDRY & UTILITY LOUNGE",
-			"sub": "RESIDENTIAL COMMUNAL SERVICE BAY",
-			"pos": Vector3(-10.16, 1.60, 2.728),
-			"col": Color("#9FD8EA")
-		},
-		{
-			"name": "Sign_RM1B",
-			"title": "RM 1B — BOT FABRICATION & SUBSTATION",
-			"sub": "D-03 TELEMETRY RELAY // AUX BUS B-14",
-			"pos": Vector3(2.94, 1.60, 2.728),
-			"col": Color("#F2B866")
-		},
-		{
-			"name": "Sign_SECTOR4_EXIT",
-			"title": "SECTOR-4 PROMENADE — CYLINDER HAB-7",
-			"sub": "VALLEY-A ESPLANADE // R=200m DRUM DECK",
-			"pos": Vector3(1.76, 1.60, -9.022),
-			"col": Color("#9FD8EA")
-		}
-	]
-	var pl_mat: StandardMaterial3D = StandardMaterial3D.new()
-	pl_mat.albedo_color = Color(0.08, 0.11, 0.14, 1.0)
-	pl_mat.metallic = 0.80
-	pl_mat.roughness = 0.24
-	for p_cfg: Dictionary in placards:
-		var bp: Vector3 = p_cfg["pos"] as Vector3
-		var plate_mi: MeshInstance3D = MeshInstance3D.new()
-		var plate_bm: BoxMesh = BoxMesh.new()
-		plate_bm.size = Vector3(1.12, 0.34, 0.022)
-		plate_mi.mesh = plate_bm
-		plate_mi.position = bp + Vector3(0.0, 0.0, 0.008)
-		plate_mi.material_override = pl_mat
-		plate_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		sign_root.add_child(plate_mi)
-		sign_root.add_child(_make_crisp_label3d(
-			String(p_cfg["name"]) + "_Title",
-			String(p_cfg["title"]),
-			bp + Vector3(0.0, 0.055, -0.006),
-			Vector3(0.0, 180.0, 0.0),
-			68,
-			0.00072,
-			p_cfg["col"] as Color
-		))
-		sign_root.add_child(_make_crisp_label3d(
-			String(p_cfg["name"]) + "_Sub",
-			String(p_cfg["sub"]),
-			bp + Vector3(0.0, -0.058, -0.006),
-			Vector3(0.0, 180.0, 0.0),
-			56,
-			0.00062,
-			Color("#E8F1F8")
-		))
+	# 1. Flush-mounted Textured Doorway Header Signboards on all 6 Portals (zero Label3D, zero beam clipping!)
+	# - Open_Portal_201 (APT 201, X = -11.20, header lintel top Y = 7.12m, wall face Z = 2.67m -> center Y = 7.36m, Z = 2.65m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT201", 0, Vector3(-11.20, 7.36, 2.65), 180.0, 1.92, 0.34)
+	# - Open_Arch_2C (Alcove 2C, X = -11.50, header lintel top Y = 7.07m, wall face Z = -3.64m -> center Y = 7.32m, Z = -3.66m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_ALCOVE2C", 1, Vector3(-11.50, 7.32, -3.66), 180.0, 1.76, 0.32)
+	# - Open_Portal_202 (APT 202, X = +7.80, header lintel top Y = 7.12m, wall face Z = 2.67m -> center Y = 7.36m, Z = 2.65m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT202", 2, Vector3(7.80, 7.36, 2.65), 180.0, 1.92, 0.34)
+	# - Open_Portal_1A (RM 1A Laundry Lounge, X = -8.50, header lintel top Y = 3.02m, wall face Z = 2.76m -> center Y = 3.28m, Z = 2.74m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1A", 3, Vector3(-8.50, 3.28, 2.74), 180.0, 2.16, 0.36)
+	# - Open_Portal_1B (RM 1B Bot Substation, X = +4.50, header lintel top Y = 3.02m, wall face Z = 2.76m -> center Y = 3.28m, Z = 2.74m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1B", 4, Vector3(4.50, 3.28, 2.74), 180.0, 2.16, 0.36)
+	# - Open_Portal_Sector_Exit (Sector-4 Promenade Exit, X = 0.0, header lintel top Y = 3.22m, wall Z = -8.79..-9.01 -> center Y = 3.48m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Interior", 5, Vector3(0.0, 3.48, -8.77), 0.0, 2.48, 0.40)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Exterior", 5, Vector3(0.0, 3.48, -9.03), 180.0, 2.48, 0.40)
 
-	# Large overhead transom banner above Open_Portal_Sector_Exit facing North into the atrium (+Z)
-	sign_root.add_child(_make_crisp_label3d(
-		"Sign_SectorExit_Transom_North",
-		"SECTOR-4 PROMENADE — CYLINDER HAB-7",
-		Vector3(0.0, 3.02, -8.74),
-		Vector3(0.0, 0.0, 0.0),
-		72,
-		0.0012,
-		Color("#9FD8EA")
-	))
-	# Exterior welcome banner above Open_Portal_Sector_Exit facing South onto the promenade (-Z)
-	sign_root.add_child(_make_crisp_label3d(
-		"Sign_SectorExit_Transom_South",
-		"HAB-7 SECTOR-4 RESIDENTIAL ATRIUM",
-		Vector3(0.0, 3.02, -9.06),
-		Vector3(0.0, 180.0, 0.0),
-		72,
-		0.0012,
-		Color("#9FD8EA")
-	))
-
-	# 2. APT 201 Wall Diagnostic / Hab-7 Telemetry Monitor (mounted on solid bulkhead wall at X = -7.80, Y = 6.00, Z = 2.86, facing +Z into APT 201)
+	# 2. APT 201 Recessed Wall Diagnostic / Hab-7 Telemetry Monitor with Flush Textured OLED Screen Skin
 	var mon_root: Node3D = Node3D.new()
 	mon_root.name = "Apt201_WallDiagnosticMonitor"
 	mon_root.position = Vector3(-7.80, 6.00, 2.86)
 	sign_root.add_child(mon_root)
 
-	# Physical dark-anodized titanium monitor bezel + recessed obsidian glass face facing +Z (inside APT 201)
 	var bezel_mi: MeshInstance3D = MeshInstance3D.new()
+	bezel_mi.name = "MonitorAnodizedBezel"
 	var bezel_bm: BoxMesh = BoxMesh.new()
-	bezel_bm.size = Vector3(1.92, 1.12, 0.05)
+	bezel_bm.size = Vector3(1.94, 1.14, 0.05)
 	bezel_mi.mesh = bezel_bm
 	var bezel_mat: StandardMaterial3D = StandardMaterial3D.new()
-	bezel_mat.albedo_color = Color(0.14, 0.17, 0.21, 1.0)
+	bezel_mat.albedo_color = Color(0.15, 0.18, 0.22, 1.0)
 	bezel_mat.metallic = 0.85
-	bezel_mat.roughness = 0.26
+	bezel_mat.roughness = 0.25
 	bezel_mi.material_override = bezel_mat
 	bezel_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mon_root.add_child(bezel_mi)
 
 	var scr_mi: MeshInstance3D = MeshInstance3D.new()
-	var scr_bm: BoxMesh = BoxMesh.new()
-	scr_bm.size = Vector3(1.78, 0.98, 0.056)
-	scr_mi.mesh = scr_bm
-	var scr_mat: StandardMaterial3D = StandardMaterial3D.new()
-	scr_mat.albedo_color = Color(0.05, 0.08, 0.11, 1.0)
-	scr_mat.metallic = 0.20
-	scr_mat.roughness = 0.12
-	scr_mat.emission_enabled = true
-	scr_mat.emission = Color(0.03, 0.06, 0.09, 1.0)
-	scr_mat.emission_energy_multiplier = 0.65
-	scr_mi.material_override = scr_mat
+	scr_mi.name = "MonitorOLEDScreenSkin"
+	var scr_qm: QuadMesh = QuadMesh.new()
+	scr_qm.size = Vector2(1.82, 1.02)
+	scr_mi.mesh = scr_qm
+	scr_mi.position = Vector3(0.0, 0.0, 0.028)
+	var mon_mat: StandardMaterial3D = _make_signage_skin_material(1320.0 / 2048.0, 728.0 / 2048.0)
+	mon_mat.roughness = 0.12
+	mon_mat.metallic = 0.18
+	scr_mi.material_override = mon_mat
 	scr_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mon_root.add_child(scr_mi)
-
-	# Crisp geometric vector bars on the monitor screen
-	for bar_cfg: Dictionary in [
-		{"pos": Vector3(0.0, 0.39, 0.031), "sz": Vector3(1.66, 0.012, 0.004), "col": COLOR_CYAN},
-		{"pos": Vector3(0.0, -0.38, 0.031), "sz": Vector3(1.66, 0.010, 0.004), "col": Color("#2A3B4C")},
-		{"pos": Vector3(-0.81, 0.0, 0.031), "sz": Vector3(0.018, 0.84, 0.004), "col": COLOR_CYAN},
-		{"pos": Vector3(0.54, 0.10, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": COLOR_CYAN},
-		{"pos": Vector3(0.54, -0.04, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": COLOR_AMBER},
-		{"pos": Vector3(0.54, -0.18, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": Color("#3BA868")}
-	]:
-		var bmi: MeshInstance3D = MeshInstance3D.new()
-		var bbm: BoxMesh = BoxMesh.new()
-		bbm.size = bar_cfg["sz"] as Vector3
-		bmi.mesh = bbm
-		bmi.position = bar_cfg["pos"] as Vector3
-		var bmat: StandardMaterial3D = StandardMaterial3D.new()
-		var bcol: Color = bar_cfg["col"] as Color
-		bmat.albedo_color = bcol
-		bmat.emission_enabled = true
-		bmat.emission = bcol
-		bmat.emission_energy_multiplier = 0.85
-		bmi.material_override = bmat
-		bmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		mon_root.add_child(bmi)
-
-	# High-DPI Vector Label3D Telemetry Readouts on APT 201 Wall Monitor (facing +Z into APT 201)
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_Header",
-		"HAB-7 SECTOR-4 ENVIRONMENTAL & DRUM TELEMETRY",
-		Vector3(-0.74, 0.30, 0.034),
-		Vector3.ZERO,
-		64,
-		0.00072,
-		Color("#9FD8EA"),
-		HORIZONTAL_ALIGNMENT_LEFT
-	))
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_Spin",
-		"SPIN RATE: 2.12 RPM (0.98 G)  //  CORIOLIS COMP: NOMINAL",
-		Vector3(-0.74, 0.12, 0.034),
-		Vector3.ZERO,
-		64,
-		0.00062,
-		Color("#E8F1F8"),
-		HORIZONTAL_ALIGNMENT_LEFT
-	))
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_Substation",
-		"ATRIUM SUBSTATION 1B: OFFLINE — AUX BUS FAULT [B-14]",
-		Vector3(-0.74, -0.03, 0.034),
-		Vector3.ZERO,
-		64,
-		0.00062,
-		Color("#F4B266"),
-		HORIZONTAL_ALIGNMENT_LEFT
-	))
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_Airlock",
-		"PROMENADE AIRLOCK: STANDBY  //  ATMO: 101.3 kPa (21.2% O2)",
-		Vector3(-0.74, -0.18, 0.034),
-		Vector3.ZERO,
-		64,
-		0.00062,
-		Color("#8CE0B0"),
-		HORIZONTAL_ALIGNMENT_LEFT
-	))
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_Footer",
-		"SOLAR RAIL AXIAL FLUX: 5500K  //  VALLEY-A PROMENADE BAY 04",
-		Vector3(-0.74, -0.31, 0.034),
-		Vector3.ZERO,
-		64,
-		0.00056,
-		Color("#98AAB8"),
-		HORIZONTAL_ALIGNMENT_LEFT
-	))
-
-	# Also mount a crisp corridor-facing status plaque on the -Z back of the monitor wall (facing the L2 Atrium)
-	mon_root.add_child(_make_crisp_label3d(
-		"Mon_AtriumSide_Plaque",
-		"SECTOR-4 UPPER GALLERY // APT 201 — LEAD SYSTEMS TECH",
-		Vector3(0.0, -0.15, -0.22),
-		Vector3(0.0, 180.0, 0.0),
-		64,
-		0.00095,
-		Color("#9FD8EA")
-	))
 
 
 func _assemble_open_doorless_sector() -> void:
@@ -888,16 +759,6 @@ func _spawn_bot(paths: Array, nm: String, label: String, dept: String, status: S
 	bot.rotation_degrees = Vector3(0.0, yaw, 0.0)
 	bot.scale = Vector3(1.18, 1.18, 1.18)
 	_actors_container.add_child(bot)
-	var chest_lbl: Label3D = _make_crisp_label3d(
-		nm + "_ChestLabel3D",
-		label + "\n" + dept,
-		Vector3(0.0, 0.48, 0.242),
-		Vector3.ZERO,
-		64,
-		0.00038,
-		Color("#F0F6FC")
-	)
-	bot.add_child(chest_lbl)
 	_play_actor_anim(bot, anims, t)
 	_interactables.append({"node": bot, "kind": "bot", "label": label, "dept": dept, "status": status, "collected": false, "pickup": false})
 
@@ -1859,12 +1720,12 @@ func _process_capture_f5_hud() -> void:
 			_apply_view_mode()
 		106:
 			_save_qa_png("l2_north_gallery_unblocked.png")
-			# Shot 3: Close-up (1.5m) of RM 1B — BOT FABRICATION & SUBSTATION signage and Kelvin #0204 showing zero fuzzy text
+			# Shot 3: Close-up of RM 1B — BOT FABRICATION & SUBSTATION flush header signboard and Kelvin #0204 showing zero fuzzy text
 			_third_person = false
-			_player_body.global_position = Vector3(3.35, 0.12, 1.25)
+			_player_body.global_position = Vector3(4.50, 0.12, 0.35)
 			_player_body.velocity = Vector3.ZERO
-			_player_body.rotation_degrees = Vector3(0.0, 166.0, 0.0)
-			_pitch = deg_to_rad(-2.0)
+			_player_body.rotation_degrees = Vector3(0.0, 180.0, 0.0)
+			_pitch = deg_to_rad(22.0)
 			_apply_view_mode()
 		118:
 			_save_qa_png("room1b_crisp_signage_close.png")
