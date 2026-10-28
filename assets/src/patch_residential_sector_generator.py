@@ -344,7 +344,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_atrium_glass = RichPartBucket(mats)
     b_atrium_glass.add("residential_glass", make_beveled_box((14.8, 0.08, 7.6), center=(0.0, 8.70, -2.70), bevel=0.01))
 
-    # North Backdrop Wall (`Z = +8.90m`), West Wall (`X = -13.90m`), and East 7.2m-Tall Atrium Curtain-Wall Viewport (`X = +13.90m`)
+    # North Backdrop Wall (`Z = +8.90m`), West Wall (`X = -13.90m`), and East Solid Bulkhead Wall (`X = +13.90m`, replacing old static-wallpaper window per [t22u])
     b_atrium.add(
         "residential_atlas",
         make_world_uv_box((28.0, 8.60, 0.28), center=(0.0, 4.36, 8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
@@ -353,19 +353,44 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         "residential_atlas",
         make_world_uv_box((0.28, 8.60, 18.0), center=(-13.90, 4.36, 0.0), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
-    b_atrium.add("residential_atlas", make_world_uv_box((0.24, 1.10, 18.0), center=(13.88, 0.60, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium.add("residential_atlas", make_world_uv_box((0.24, 0.90, 18.0), center=(13.88, 8.25, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=3.5))
-    b_atrium_glass.add("residential_glass", make_beveled_box((0.08, 6.70, 16.8), center=(13.88, 4.50, 0.0), bevel=0.01))
+    b_atrium.add(
+        "residential_atlas",
+        make_world_uv_box((0.28, 8.60, 18.0), center=(13.90, 4.36, 0.0), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
+    )
     for mz in [-5.6, 0.0, 5.6]:
-        b_atrium.add("residential_atlas", make_world_uv_box((0.18, 6.75, 0.14), center=(13.86, 4.50, mz), bevel=0.01, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
+        b_atrium.add("residential_atlas", make_world_uv_box((0.18, 8.40, 0.22), center=(13.78, 4.36, mz), bevel=0.015, uv_rect=UV_STEEL_TRIM, tile_m=2.5))
 
+    # Structural Atrium Columns (PATH-01, PATH-02, PATH-03 fixed):
+    # - Skip (cx_col = 0.0, cz_col = -8.2) so Sector-4 Promenade Exit is 100% unobstructed on X = 0.0 (PATH-02).
+    # - For cz_col = 2.20m, shift to balustrade line cz_col = 1.18m, terminate interior columns at L2 soffit (h = 3.92m),
+    #   and shift cx_col = +5.5 -> +6.35 so L2 North Mezzanine Gallery (Z = 1.35..2.65m) has a 100% clear >= 1.30m lane (PATH-01)
+    #   and Room 1B portal (X = 3.40..5.60) is completely unobstructed (PATH-03).
     for cx_col in [-12.5, -5.5, 0.0, 5.5, 12.5]:
         for cz_col in [-8.2, 2.2, 8.2]:
-            b_atrium.add(
-                "residential_atlas",
-                make_chamfered_oct_prism(0.52, 0.52, 8.60, center=(cx_col, 4.36, cz_col), chamfer=0.11),
-                UV_STEEL_TRIM,
-            )
+            if abs(cx_col) < 0.1 and abs(cz_col + 8.2) < 0.1:
+                continue  # PATH-02: clear Sector-4 Promenade Exit centerline
+            if abs(cz_col - 2.2) < 0.1:
+                col_x = 6.35 if abs(cx_col - 5.5) < 0.1 else cx_col
+                col_z = 1.18
+                if abs(cx_col) < 9.0:
+                    # Terminate under L2 mezzanine soffit so L2 walkway is 100% clear
+                    b_atrium.add(
+                        "residential_atlas",
+                        make_chamfered_oct_prism(0.42, 0.42, 3.92, center=(col_x, 2.02, col_z), chamfer=0.09),
+                        UV_STEEL_TRIM,
+                    )
+                else:
+                    b_atrium.add(
+                        "residential_atlas",
+                        make_chamfered_oct_prism(0.48, 0.48, 8.60, center=(col_x, 4.36, col_z), chamfer=0.10),
+                        UV_STEEL_TRIM,
+                    )
+            else:
+                b_atrium.add(
+                    "residential_atlas",
+                    make_chamfered_oct_prism(0.52, 0.52, 8.60, center=(cx_col, 4.36, cz_col), chamfer=0.11),
+                    UV_STEEL_TRIM,
+                )
 
     for px_pl in [-4.2, 4.2]:
         b_atrium.add(
@@ -418,8 +443,8 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_apt.add("residential_atlas", make_world_uv_box((0.16, 3.8, 5.8), center=(4.05, 1.98, 0.0), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_apt.add("residential_atlas", make_world_uv_box((1.4, 3.8, 0.16), center=(-3.40, 1.98, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
     b_apt.add("residential_atlas", make_world_uv_box((2.0, 1.15, 0.16), center=(-1.70, 3.30, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
-    b_apt.add("residential_atlas", make_world_uv_box((4.8, 1.10, 0.16), center=(1.70, 0.64, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
-    b_apt.add("residential_atlas", make_world_uv_box((4.8, 0.85, 0.16), center=(1.70, 3.45, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
+    # Solid architectural bulkhead wall with warm fluted acoustic wood slats + titanium framing (replacing old window per [t22u])
+    b_apt.add("residential_atlas", make_world_uv_box((4.8, 3.80, 0.18), center=(1.70, 1.98, -2.85), bevel=0.02, uv_rect=UV_WALL_APT, tile_m=3.5))
 
     # Compact Kitchenette Counter along East wall of Apt 201 (`X = +3.35m, Z = +0.40m`)
     b_apt.add("residential_atlas", make_world_uv_box((1.15, 0.86, 2.10), center=(3.42, 0.56, 0.45), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
@@ -429,8 +454,11 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
 
     b_portal_201 = make_calm_open_portal_arch_frame(mats, clear_w=2.0, clear_h=2.55, placard_uv=UV_PLACARD_201, placard_x_side=-1.0)
 
+    # Sleek Recessed 3D Wall Diagnostic / Hab-7 Telemetry Monitor mounted on APT 201 bulkhead wall ([t22u])
     b_apt_win = RichPartBucket(mats)
-    b_apt_win.add("residential_glass", make_beveled_box((4.50, 1.85, 0.05), center=(0.0, 0.0, 0.0), bevel=0.008))
+    b_apt_win.add("residential_atlas", make_world_uv_box((1.96, 1.14, 0.08), center=(0.0, -0.25, 0.08), bevel=0.015, uv_rect=UV_STEEL_TRIM, tile_m=1.2))
+    b_apt_win.add("residential_atlas", make_eye_level_door_placard(center=(0.0, -0.25, 0.115), uv_placard=UV_PLACARD_202, width=1.82, height=1.00, depth=0.024))
+    b_apt_win.add("residential_atlas", make_beveled_box((1.68, 0.022, 0.02), center=(0.0, 0.30, 0.13), bevel=0.003), UV_LIGHT_CYAN)
 
     b_bunk = RichPartBucket(mats)
     b_bunk.add("residential_atlas", make_world_uv_box((1.35, 0.42, 2.20), center=(0.0, 0.34, 0.0), bevel=0.02, uv_rect=UV_WOOD_WALNUT, tile_m=1.5))
@@ -492,7 +520,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_alcove2c.add("residential_atlas", make_world_uv_box((0.18, 2.65, 2.20), center=(-1.15, 1.40, 0.0), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=2.0))
     b_alcove2c.add("residential_atlas", make_world_uv_box((1.80, 0.75, 0.65), center=(0.0, 0.42, -0.55), bevel=0.02, uv_rect=UV_STEEL_TRIM, tile_m=1.5))
 
-    b_arch_2c = make_calm_open_portal_arch_frame(mats, clear_w=1.8, clear_h=2.45, placard_uv=None)
+    b_arch_2c = make_calm_open_portal_arch_frame(mats, clear_w=1.8, clear_h=2.45, placard_uv=UV_PLACARD_201, placard_x_side=1.0)
 
     b_pw_exp = RichPartBucket(mats)
     b_pw_exp.add("residential_atlas", make_cylinder(0.12, 0.12, 0.18, center=(0.0, 0.09, 0.0), segments=14), UV_RES_Q3_WIRE)
@@ -583,7 +611,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     b_atrium_glass.add("residential_glass", make_beveled_box((2.60, 0.82, 0.06), center=(0.0, 3.25, -8.80), bevel=0.01))
     b_vest.add("residential_atlas", make_beveled_box((2.52, 0.018, 0.12), center=(0.0, 0.128, -8.82), bevel=0.003), UV_LIGHT_AMBER)
 
-    b_portal_exit = make_calm_open_portal_arch_frame(mats, clear_w=2.6, clear_h=2.80, placard_uv=None)
+    b_portal_exit = make_calm_open_portal_arch_frame(mats, clear_w=2.6, clear_h=2.80, placard_uv=UV_PLACARD_1A, placard_x_side=1.0)
 
     node_specs = [
         ("PrefaceResidentialSector_Root", None, (0.0, 0.0, 0.0), None),
@@ -599,15 +627,12 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         ("Apartment_Bunk_Pod", "Tech_Apartment_Upper", (-2.85, 0.0, 1.20), b_bunk),
         ("Apartment_Workbench", "Tech_Apartment_Upper", (1.05, 0.0, 2.15), b_wb),
         ("Workbench_Player", "Apartment_Workbench", (0.0, 0.0, 0.0), None),
-        ("Pickup_Super_Wire_Starter", "Apartment_Workbench", (0.85, 0.91, 0.18), b_pw_start),
-        ("Pickup_Battery_Cell_Starter", "Apartment_Workbench", (1.08, 0.91, -0.12), b_pb_start),
-        ("Pickup_BCI_Headband_Dock", "Apartment_Workbench", (0.52, 0.91, 0.18), b_bci_dock),
+
         ("Room_2B_Neighbor_Balcony_Suite", "PrefaceResidentialSector_Root", (9.50, 4.20, 5.60), b_room2b),
         ("Open_Portal_202", "Room_2B_Neighbor_Balcony_Suite", (-1.70, 0.12, -2.85), b_portal_202),
         ("Alcove_2C_Upper_Vent_Chase", "PrefaceResidentialSector_Root", (-11.50, 4.20, -4.50), b_alcove2c),
         ("Open_Arch_2C", "Alcove_2C_Upper_Vent_Chase", (0.0, 0.12, 0.95), b_arch_2c),
-        ("Pickup_Super_Wire_Expansion", "Alcove_2C_Upper_Vent_Chase", (-0.42, 0.82, -0.55), b_pw_exp),
-        ("Pickup_Battery_Expansion", "Alcove_2C_Upper_Vent_Chase", (0.42, 0.82, -0.55), b_pb_exp),
+
         ("Stair_Ramp_Connector", "PrefaceResidentialSector_Root", (10.65, 0.0, 0.0), b_stair),
         ("Side_Room_East_Lounge", "PrefaceResidentialSector_Root", (-8.50, 0.0, 5.60), b_room1a),
         ("Room_1A_Laundry_Lounge", "Side_Room_East_Lounge", (0.0, 0.0, 0.0), None),
@@ -629,3 +654,10 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         auto_ground_root_y=True,
     )
     return info
+
+
+if __name__ == "__main__":
+    from preface_multifloor_and_johnny5_generator import get_phase6b_materials
+    mats = get_phase6b_materials()
+    info = build_calm_open_doorway_residential_sector(mats)
+    print(f"[PatchResidentialSector] Exported {info['filepath']} | tris={info['triangles']}")

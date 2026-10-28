@@ -1,60 +1,31 @@
 #!/usr/bin/env python3
 """
-Generates the High-Craft Architectural PBR Texture Suite (1024x1024)
-for the Preface 2-Story Residential Sector (`preface_playable_area.tscn` / `preface_residential_sector.glb`)
-per Jared's [t11u] directive:
-  - ZERO visual storytelling decals, ZERO pry marks, ZERO scorch rings, ZERO skid trails, ZERO ghost stencils.
-  - Rich, tactile, layered architectural PBR materials with crisp normal relief, AO, and metallic/roughness contrast:
-    1. `UV_WALL_APT` (`u:0.02..0.48, v:0.02..0.25`, `x:0..512, y:0..268`):
-       Warm Architectural Acoustic Wood-Slat & Brushed Satin Titanium Dado Wall Paneling —
-       fluted vertical walnut/oak acoustic slats over dark charcoal felt backing in the upper zone,
-       anodized champagne-steel chair rail, and ribbed satin titanium wainscot panels below.
-    2. `UV_WALL_ATRIUM` (`u:0.52..0.98, v:0.02..0.24`, `x:512..1024, y:0..260`):
-       Layered Aerospace Composite Cladding with Anodized Ribbing & Brushed Steel Reveal Channels —
-       satin warm titanium-alabaster upper panels with recessed dark gunmetal shadow-gap reveals,
-       horizontal stiffening ribs, CNC corner fasteners, and a dark brushed-steel lower wainscot.
-    3. `UV_FLOOR_SLATE` (`u:0.52..0.98, v:0.26..0.48`, `x:512..1024, y:260..512`):
-       Honed Basalt-Slate Terrazzo Decking with Machined Brass/Steel Divider Inlays —
-       staggered large-format honed terrazzo slabs (`#4A525C`..`#58626E`) with multi-scale mineral aggregate,
-       crisp beveled grout joints (`roughness 0.84`), polished traffic sheen (`roughness 0.28`), and metallic inlay strips.
-    4. `UV_WOOD_WALNUT` (`u:0.02..0.23, v:0.28..0.48`, `x:0..256, y:268..512`):
-       Staggered Finger-Jointed Teak/Walnut Butcher-Block & Architectural Millwork (`roughness 0.30..0.42`).
-    5. `UV_FABRIC_SLATE` (`u:0.26..0.48, v:0.28..0.48`, `x:256..512, y:268..512`):
-       Quilted Herringbone Technical Upholstery (`#3E4E60`..`#4E6074`) with stitched cushion loft normals.
-    6. `UV_STEEL_TRIM` (`u:0.02..0.48, v:0.52..0.70`, `x:0..512, y:512..740`):
-       Anisotropic Brushed Gunmetal & Machined Titanium Structural Steel (`metallic 0.84, roughness 0.28`).
-    7. `UV_WORKBENCH_TOP` (`u:0.755..0.995, v:0.505..0.635`, `x:768..1024, y:512..652`):
-       Clean Precision Engineering Butcher-Block with Recessed Dark Anodized ESD Mat & Brass Measurement Rule.
-    8. `UV_WORKBENCH_PEGBOARD` (`u:0.512..0.748, v:0.638..0.720`, `x:512..768, y:648..740`):
-       Clean Anodized Dark-Steel Perforated Tool Pegboard with Machined Perimeter Frame.
-    9. `UV_FLOOR_SKID_TRAIL` / `UV_SUBSTATION_HEX_FLOOR` (`u:0.755..0.995, v:0.640..0.720`, `x:768..1024, y:652..740`):
-       Clean Industrial Hex-Grid Grated Utility Decking (`metallic 0.80, roughness 0.30`) for Room 1B service bay.
-   10. `UV_PLACARD_201..1B` (`x:512..1024, y:780..1024`):
-       Clean, high-craft anodized architectural door plates (`APT 201`, `APT 202`, `RM 1A`, `RM 1B`).
+Generates the High-Craft 2048x2048 Architectural PBR Texture Suite
+for the Preface 2-Story Residential Sector (`preface_playable_area.tscn` / `preface_residential_sector.glb`),
+plus clean zero-blurry-text `wrist_rfid_winner_04_neural_tendon_and_bci_atlas_*.png` (1024x1024)
+and `utility_bot_round2_atlas_*.png` (2048x2048) per Jared's [t11u], [t21u], & [t22u] directives:
+  - ZERO blurry/fuzzy rasterized text baked into any shared PBR surface atlas!
+  - All in-world room placards (`APT 201`, `APT 202`, `ALCOVE 2C`, `RM 1A`, `RM 1B`, `SECTOR-4 PROMENADE`),
+    Wall/Workbench Diagnostic Monitors, and `#05` Hammerhead Bot chest nameplates use clean machined
+    dark-anodized titanium bezel & geometric screen graphics in the texture with razor-sharp 3D `Label3D`
+    typography mounted flush in Godot.
 """
 import os
+import glob
 import math
+import shutil
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 TEX_DIR = "/workspace/game-project/godot/assets/textures"
+MODELS_DIR = "/workspace/game-project/godot/assets/models"
 os.makedirs(TEX_DIR, exist_ok=True)
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 def hex_rgb(h: str):
     h = h.lstrip("#")
     return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
-
-
-def load_font(size: int, bold: bool = True):
-    paths = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    ]
-    for p in paths:
-        if os.path.exists(p):
-            return ImageFont.truetype(p, size)
-    return ImageFont.load_default()
 
 
 def add_ultra_clean_micro_grain(arr: np.ndarray, sigma: float = 0.55, seed: int = 42) -> np.ndarray:
@@ -70,23 +41,31 @@ def compute_micro_noise_pct(arr: np.ndarray) -> float:
     return float(np.mean(diff) / 255.0 * 100.0)
 
 
+def build_normal_from_height(hgt: np.ndarray, scale: float = 6.0) -> np.ndarray:
+    gy, gx = np.gradient(hgt / 255.0 * scale)
+    nx = -gx
+    ny = -gy
+    nz = np.ones_like(nx)
+    nlen = np.sqrt(nx * nx + ny * ny + nz * nz)
+    nrm = np.zeros((hgt.shape[0], hgt.shape[1], 3), dtype=np.uint8)
+    nrm[:, :, 0] = np.clip((nx / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
+    nrm[:, :, 1] = np.clip((ny / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
+    nrm[:, :, 2] = np.clip((nz / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
+    return nrm
+
+
 def generate_residential_atlas():
+    # Generate at 1024 base grid and upsample 2x with crisp geometric overlays to 2048x2048
     W, H = 1024, 1024
     alb = np.zeros((H, W, 3), dtype=np.uint8)
     orm = np.zeros((H, W, 3), dtype=np.uint8)  # R=AO, G=Roughness, B=Metallic
-    emi = np.zeros((H, W, 3), dtype=np.uint8)  # 97%+ pitch black #000000
+    emi = np.zeros((H, W, 3), dtype=np.uint8)
     hgt = np.full((H, W), 128.0, dtype=np.float32)
 
-    # --------------------------------------------------------------------------
-    # 1. `UV_WALL_APT` (`x: 0..512, y: 0..268`) — Warm Architectural Acoustic Wood-Slat
-    #    & Brushed Satin Titanium Dado Wall Paneling
-    # --------------------------------------------------------------------------
-    # Upper cornice trim (y: 0..20) in brushed champagne-titanium
+    # 1. `UV_WALL_APT` (`x: 0..512, y: 0..268`) — Warm Architectural Acoustic Wood-Slat & Satin Titanium Dado
     alb[0:20, 0:512] = (118, 124, 132)
     orm[0:20, 0:512] = (242, int(0.32 * 255), int(0.68 * 255))
     hgt[0:20, 0:512] = 142.0
-    # Upper main zone (y: 20..176): Warm Titanium-Alabaster architectural panels with
-    # subtle vertical fluted relief & warm wood-slat accent pilasters
     yy_apt, xx_apt = np.mgrid[20:176, 0:512]
     flute_wave = np.sin(xx_apt * (2.0 * math.pi / 16.0))
     alb[20:176, 0:512, 0] = np.clip(154.0 + 6.0 * flute_wave, 0, 255).astype(np.uint8)
@@ -97,26 +76,21 @@ def generate_residential_atlas():
     orm[20:176, 0:512, 2] = int(0.14 * 255)
     hgt[20:176, 0:512] = 132.0 + 7.5 * flute_wave
 
-    # Architectural warm acoustic wood-slat feature inlay band (y: 44..152) with vertical slats every 12px
     for sx in range(0, 512, 12):
-        # Dark acoustic felt backing groove (3px)
         alb[44:152, sx : sx + 3] = (46, 48, 54)
         orm[44:152, sx : sx + 3] = (178, int(0.82 * 255), int(0.02 * 255))
         hgt[44:152, sx : sx + 3] = 108.0
-        # Warm honey-walnut beveled slat (9px)
         slat_tone = int(4.0 * math.sin(sx * 0.35))
         alb[44:152, sx + 3 : sx + 12] = (146 + slat_tone, 114 + slat_tone, 84 + slat_tone)
         orm[44:152, sx + 3 : sx + 12] = (246, int(0.34 * 255), int(0.06 * 255))
         hgt[44:152, sx + 3 : sx + 12] = 144.0
 
-    # Anodized champagne-bronze chair rail (y: 176..192)
     alb[176:192, 0:512] = (142, 126, 104)
     orm[176:192, 0:512] = (248, int(0.26 * 255), int(0.78 * 255))
     hgt[176:192, 0:512] = 148.0
     alb[174:176, 0:512] = (54, 58, 66)
     hgt[174:176, 0:512] = 110.0
 
-    # Lower dado wainscot (y: 192..268): Ribbed satin gunmetal-slate panels + heavy kickplate
     alb[192:252, 0:512] = (92, 100, 110)
     orm[192:252, 0:512] = (240, int(0.36 * 255), int(0.52 * 255))
     hgt[192:252, 0:512] = 130.0
@@ -127,16 +101,12 @@ def generate_residential_atlas():
     alb[252:268, 0:512] = (62, 68, 76)
     orm[252:268, 0:512] = (228, int(0.32 * 255), int(0.74 * 255))
     hgt[252:268, 0:512] = 138.0
-    # Vertical architectural bay seams at 128px intervals
     for px in [0, 128, 256, 384, 509]:
         alb[0:268, px : px + 3] = (58, 64, 72)
         orm[0:268, px : px + 3, 0] = 185
         hgt[0:268, px : px + 3] = 104.0
 
-    # --------------------------------------------------------------------------
-    # 2. `UV_WALL_ATRIUM` (`x: 512..1024, y: 0..260`) — Layered Aerospace Composite
-    #    Cladding with Anodized Ribbing & Brushed Steel Reveal Channels
-    # --------------------------------------------------------------------------
+    # 2. `UV_WALL_ATRIUM` (`x: 512..1024, y: 0..260`)
     yy_atr, xx_atr = np.mgrid[0:260, 512:1024]
     micro_brush = 3.5 * np.sin(yy_atr * 0.85) + 2.5 * np.cos(xx_atr * 0.12)
     alb[0:200, 512:1024, 0] = np.clip(156.0 + micro_brush[0:200], 0, 255).astype(np.uint8)
@@ -145,7 +115,6 @@ def generate_residential_atlas():
     orm[0:200, 512:1024] = (246, int(0.38 * 255), int(0.22 * 255))
     hgt[0:200, 512:1024] = 136.0 + micro_brush[0:200] * 0.6
 
-    # Horizontal structural stiffening ribs & shadow-gap reveals
     for ry in [24, 88, 152]:
         alb[ry : ry + 4, 512:1024] = (68, 76, 86)
         orm[ry : ry + 4, 512:1024] = (188, int(0.52 * 255), int(0.65 * 255))
@@ -153,7 +122,6 @@ def generate_residential_atlas():
         alb[ry + 4 : ry + 8, 512:1024] = (176, 182, 190)
         hgt[ry + 4 : ry + 8, 512:1024] = 144.0
 
-    # Anodized champagne-titanium datum rail (y: 196..208) + Brushed dark-steel lower bulkhead (y: 208..260)
     alb[196:208, 512:1024] = (148, 132, 108)
     orm[196:208, 512:1024] = (248, int(0.24 * 255), int(0.82 * 255))
     hgt[196:208, 512:1024] = 148.0
@@ -165,10 +133,7 @@ def generate_residential_atlas():
         orm[0:260, px : px + 4, 0] = 182
         hgt[0:260, px : px + 4] = 104.0
 
-    # --------------------------------------------------------------------------
-    # 3. `UV_WOOD_WALNUT` (`x: 0..256, y: 268..512`) — Staggered Finger-Jointed
-    #    Teak/Walnut Butcher-Block & Architectural Millwork
-    # --------------------------------------------------------------------------
+    # 3. `UV_WOOD_WALNUT` (`x: 0..256, y: 268..512`)
     yy_w, xx_w = np.mgrid[268:512, 0:256]
     grain = 9.0 * np.sin(yy_w * 0.32 + 0.04 * xx_w) + 5.0 * np.cos(yy_w * 0.14 - 0.03 * xx_w)
     alb[268:512, 0:256, 0] = np.clip(148.0 + grain, 0, 255).astype(np.uint8)
@@ -183,9 +148,7 @@ def generate_residential_atlas():
         orm[stave_y : stave_y + 2, 0:256, 0] = 212
         hgt[stave_y : stave_y + 2, 0:256] = 116.0
 
-    # --------------------------------------------------------------------------
-    # 4. `UV_FABRIC_SLATE` (`x: 256..512, y: 268..512`) — Quilted Herringbone Technical Upholstery
-    # --------------------------------------------------------------------------
+    # 4. `UV_FABRIC_SLATE` (`x: 256..512, y: 268..512`)
     yy_fab, xx_fab = np.mgrid[268:512, 256:512]
     weave = 6.0 * np.sin((xx_fab + yy_fab) * 0.45) * np.cos((xx_fab - yy_fab) * 0.45)
     quilt_x = np.cos((xx_fab - 256) * (2.0 * math.pi / 48.0))
@@ -199,12 +162,8 @@ def generate_residential_atlas():
     orm[268:512, 256:512, 2] = int(0.04 * 255)
     hgt[268:512, 256:512] = 122.0 + 14.0 * loft + weave * 0.5
 
-    # --------------------------------------------------------------------------
-    # 5. `UV_FLOOR_SLATE` (`x: 512..1024, y: 260..512`) — Honed Basalt-Slate Terrazzo
-    #    with Multi-Scale Mineral Aggregate & Machined Metallic Divider Inlays
-    # --------------------------------------------------------------------------
+    # 5. `UV_FLOOR_SLATE` (`x: 512..1024, y: 260..512`)
     yy_fl, xx_fl = np.mgrid[260:512, 512:1024]
-    # Subtle multi-frequency mineral stone variation
     stone_var = (
         6.5 * np.sin(xx_fl * 0.08 + yy_fl * 0.05)
         + 4.5 * np.cos(xx_fl * 0.19 - yy_fl * 0.14)
@@ -218,7 +177,6 @@ def generate_residential_atlas():
     orm[260:512, 512:1024, 2] = int(0.16 * 255)
     hgt[260:512, 512:1024] = 132.0 + stone_var * 0.5
 
-    # Terrazzo mineral chips (quartz, warm feldspar, dark basalt) with glossy crystal facets
     rng_fl = np.random.default_rng(314)
     for _ in range(420):
         ax = int(rng_fl.integers(516, 1018))
@@ -227,23 +185,22 @@ def generate_residential_atlas():
         ch = int(rng_fl.integers(2, 5))
         chip_type = int(rng_fl.integers(0, 3))
         if chip_type == 0:
-            alb[ay : ay + ch, ax : ax + cw] = (128, 134, 142)  # Quartz highlight chip
+            alb[ay : ay + ch, ax : ax + cw] = (128, 134, 142)
             orm[ay : ay + ch, ax : ax + cw, 1] = int(0.22 * 255)
             hgt[ay : ay + ch, ax : ax + cw] = 136.0
         elif chip_type == 1:
-            alb[ay : ay + ch, ax : ax + cw] = (116, 108, 98)   # Warm feldspar chip
+            alb[ay : ay + ch, ax : ax + cw] = (116, 108, 98)
             orm[ay : ay + ch, ax : ax + cw, 1] = int(0.26 * 255)
         else:
-            alb[ay : ay + ch, ax : ax + cw] = (62, 68, 76)     # Deep basalt chip
+            alb[ay : ay + ch, ax : ax + cw] = (62, 68, 76)
             orm[ay : ay + ch, ax : ax + cw, 1] = int(0.42 * 255)
 
-    # Architectural staggered slab joints & machined brass/steel inlay strips every 64px
     for fy in range(260, 512, 64):
         alb[fy : fy + 3, 512:1024] = (52, 58, 66)
         orm[fy : fy + 3, 512:1024] = (182, int(0.78 * 255), int(0.10 * 255))
         hgt[fy : fy + 3, 512:1024] = 108.0
         if fy + 4 < 512:
-            alb[fy + 3 : fy + 5, 512:1024] = (132, 122, 104)  # Machined metallic divider strip
+            alb[fy + 3 : fy + 5, 512:1024] = (132, 122, 104)
             orm[fy + 3 : fy + 5, 512:1024] = (248, int(0.22 * 255), int(0.84 * 255))
             hgt[fy + 3 : fy + 5, 512:1024] = 138.0
     for row_idx, fy in enumerate(range(260, 512, 64)):
@@ -255,10 +212,7 @@ def generate_residential_atlas():
                 orm[fy:y_end, fx : fx + 3] = (182, int(0.78 * 255), int(0.10 * 255))
                 hgt[fy:y_end, fx : fx + 3] = 108.0
 
-    # --------------------------------------------------------------------------
-    # 6. `UV_STEEL_TRIM` (`x: 0..512, y: 512..740`) — Anisotropic Brushed Gunmetal
-    #    & Machined Titanium Structural Steel
-    # --------------------------------------------------------------------------
+    # 6. `UV_STEEL_TRIM` (`x: 0..512, y: 512..740`)
     yy_st, xx_st = np.mgrid[512:740, 0:512]
     aniso = 5.5 * np.sin(yy_st * 0.65) + 3.0 * np.cos(xx_st * 0.25)
     alb[512:740, 0:512, 0] = np.clip(86.0 + aniso, 0, 255).astype(np.uint8)
@@ -294,11 +248,7 @@ def generate_residential_atlas():
         orm[by : by + 16, 324:444] = (252, int(0.20 * 255), int(0.15 * 255))
         emi[by : by + 16, 324:444] = hex_rgb("#1E5C66")
 
-    # --------------------------------------------------------------------------
-    # 7. Q4 (`x: 512..1024, y: 512..1024`) — Planter Masonry, Clean Precision Workbench,
-    #    Anodized Pegboard, Industrial Hex-Grate Decking, & Clean Architectural Door Plates
-    # --------------------------------------------------------------------------
-    # 7A. `UV_PLANTER_STONE = (0.52, 0.74, 0.51, 0.63)` (`x: 512..768, y: 512..648`)
+    # 7A. `UV_PLANTER_STONE` (`x: 512..768, y: 512..648`)
     alb[512:648, 512:768] = (104, 110, 118)
     orm[512:648, 512:768] = (244, int(0.56 * 255), int(0.10 * 255))
     for py in [546, 580, 614]:
@@ -308,8 +258,7 @@ def generate_residential_atlas():
         alb[py + 3 : py + 6, 512:768] = (124, 130, 138)
         hgt[py + 3 : py + 6, 512:768] = 140.0
 
-    # 7B. `UV_WORKBENCH_TOP` (`x: 768..1024, y: 512..652`) — Clean Finger-Jointed Teak
-    #     Butcher-Block with Recessed Dark Anodized ESD Work Mat & Brass Bezel (ZERO decals!)
+    # 7B. `UV_WORKBENCH_TOP` (`x: 768..1024, y: 512..652`)
     yy_wb, xx_wb = np.mgrid[512:652, 768:1024]
     wb_grain = 7.0 * np.sin(yy_wb * 0.35) + 4.0 * np.cos(xx_wb * 0.12)
     alb[512:652, 768:1024, 0] = np.clip(148.0 + wb_grain, 0, 255).astype(np.uint8)
@@ -317,11 +266,10 @@ def generate_residential_atlas():
     alb[512:652, 768:1024, 2] = np.clip(80.0 + wb_grain * 0.6, 0, 255).astype(np.uint8)
     orm[512:652, 768:1024] = (246, int(0.32 * 255), int(0.06 * 255))
     hgt[512:652, 768:1024] = 136.0 + wb_grain * 0.4
-    # Recessed precision anti-static ESD work mat in center of benchtop (`x: 796..996, y: 532..632`)
-    alb[530:634, 794:998] = (138, 120, 92)  # Machined brass bezel frame
+    alb[530:634, 794:998] = (138, 120, 92)
     orm[530:634, 794:998] = (248, int(0.24 * 255), int(0.84 * 255))
     hgt[530:634, 794:998] = 142.0
-    alb[534:630, 798:994] = (46, 54, 64)    # Matte slate-teal ESD surface
+    alb[534:630, 798:994] = (46, 54, 64)
     orm[534:630, 798:994] = (240, int(0.48 * 255), int(0.12 * 255))
     hgt[534:630, 798:994] = 124.0
     for gx in range(814, 990, 24):
@@ -329,7 +277,7 @@ def generate_residential_atlas():
     for gy in range(546, 626, 20):
         alb[gy : gy + 1, 800:992] = (62, 74, 86)
 
-    # 7C. `UV_WORKBENCH_PEGBOARD` (`x: 512..768, y: 648..740`) — Clean Anodized Perforated Tool Pegboard
+    # 7C. `UV_WORKBENCH_PEGBOARD` (`x: 512..768, y: 648..740`)
     alb[648:740, 512:768] = (76, 84, 94)
     orm[648:740, 512:768] = (242, int(0.34 * 255), int(0.78 * 255))
     hgt[648:740, 512:768] = 134.0
@@ -339,8 +287,7 @@ def generate_residential_atlas():
             orm[py : py + 4, px : px + 4, 0] = 165
             hgt[py : py + 4, px : px + 4] = 102.0
 
-    # 7D. `UV_FLOOR_SKID_TRAIL` / `UV_SUBSTATION_HEX_FLOOR` (`x: 768..1024, y: 652..740`) —
-    #     Clean Industrial Hex-Grid / Diamond-Tread Metallic Service Grating
+    # 7D. `UV_FLOOR_SKID_TRAIL` / `UV_SUBSTATION_HEX_FLOOR` (`x: 768..1024, y: 652..740`)
     alb[652:740, 768:1024] = (78, 86, 96)
     orm[652:740, 768:1024] = (240, int(0.30 * 255), int(0.82 * 255))
     hgt[652:740, 768:1024] = 132.0
@@ -355,59 +302,68 @@ def generate_residential_atlas():
     # 7E. Functional Light Diffuser Swatches (`y: 740..780, x: 512..1024`)
     alb[740:780, 512:1024] = (74, 80, 88)
     orm[740:780, 512:1024] = (242, int(0.56 * 255), int(0.12 * 255))
-    # Swatch 1: Warm Task (`x: 528..680, y: 744..776`)
     alb[744:776, 528:680] = hex_rgb("#F5E2C4")
     orm[744:776, 528:680] = (255, int(0.20 * 255), int(0.05 * 255))
     emi[744:776, 528:680] = hex_rgb("#C8AE8A")
-    # Swatch 2: Muted Functional Cyan (`x: 696..848, y: 744..776`)
     alb[744:776, 696:848] = hex_rgb("#2E8B9A")
     orm[744:776, 696:848] = (255, int(0.20 * 255), int(0.10 * 255))
     emi[744:776, 696:848] = hex_rgb("#1E5C66")
-    # Swatch 3: Muted Functional Amber (`x: 864..1008, y: 744..776`)
     alb[744:776, 864:1008] = hex_rgb("#B87328")
     orm[744:776, 864:1008] = (255, int(0.24 * 255), int(0.10 * 255))
     emi[744:776, 864:1008] = hex_rgb("#784A1A")
 
-    # 7F. Clean Anodized Architectural Door Placards (`x: 512..1024, y: 780..1024`)
-    alb[780:1024, 512:1024] = hex_rgb("#222830")
-    orm[780:1024, 512:1024] = (244, int(0.32 * 255), int(0.65 * 255))
+    # 7F. Clean Anodized Architectural Door Plaques & Wall Monitor Screens (`x: 512..1024, y: 780..1024`)
+    # ZERO rasterized text! Pure physical dark-anodized titanium bezels, obsidian display glass,
+    # corner fasteners, and glowing cyan/amber status bars & geometric oscilloscope/telemetry lines.
+    alb[780:1024, 512:1024] = hex_rgb("#1E242C")
+    orm[780:1024, 512:1024] = (244, int(0.24 * 255), int(0.72 * 255))
+    hgt[780:1024, 512:1024] = 136.0
 
-    alb_im = Image.fromarray(alb, mode="RGB")
-    emi_im = Image.fromarray(emi, mode="RGB")
-    draw_alb = ImageDraw.Draw(alb_im)
-    draw_emi = ImageDraw.Draw(emi_im)
-
-    font_num = load_font(30, bold=True)
-    font_sub = load_font(15, bold=True)
-
-    placards = [
-        (528, 780, 760, 888, "APT 201", "LEAD TECH QUARTERS", "#2E8B9A", "#1E5C66"),
-        (776, 780, 1008, 888, "APT 202", "QUARTERMASTER SUITE", "#2E8B9A", "#1E5C66"),
-        (528, 904, 760, 1012, "RM 1A", "COMMUNAL LOUNGE", "#2E8B9A", "#1E5C66"),
-        (776, 904, 1008, 1012, "RM 1B", "BOT SUBSTATION BAY", "#C47D2B", "#784A1A"),
-    ]
-    for x0, y0, x1, y1, title, sub, acc_hex, em_hex in placards:
-        draw_alb.rectangle([x0, y0, x1, y1], fill=hex_rgb("#1E242C"), outline=hex_rgb("#5A6674"), width=3)
-        draw_alb.rectangle([x0 + 10, y0 + 16, x0 + 18, y1 - 16], fill=hex_rgb(acc_hex))
-        draw_emi.rectangle([x0 + 10, y0 + 16, x0 + 18, y1 - 16], fill=hex_rgb(em_hex))
-        draw_alb.text((x0 + 30, y0 + 18), title, fill=hex_rgb("#E8EEF4"), font=font_num)
-        draw_emi.text((x0 + 30, y0 + 18), title, fill=hex_rgb(em_hex), font=font_num)
-        draw_alb.text((x0 + 30, y0 + 62), sub, fill=hex_rgb("#9AA6B4"), font=font_sub)
-
-    alb = add_ultra_clean_micro_grain(np.asarray(alb_im, dtype=np.uint8), sigma=0.45, seed=101)
+    alb = add_ultra_clean_micro_grain(alb, sigma=0.45, seed=101)
     orm = add_ultra_clean_micro_grain(orm, sigma=0.35, seed=102)
-    emi = np.asarray(emi_im, dtype=np.uint8)
+    nrm = build_normal_from_height(hgt, scale=5.5)
 
-    # Tangent-space normal map from height field (stronger 5.5x relief scale so architectural grooves & slats catch light crisply!)
-    gy, gx = np.gradient(hgt / 255.0 * 5.5)
-    nx = -gx
-    ny = -gy
-    nz = np.ones_like(nx)
-    nlen = np.sqrt(nx * nx + ny * ny + nz * nz)
-    nrm = np.zeros((H, W, 3), dtype=np.uint8)
-    nrm[:, :, 0] = np.clip((nx / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
-    nrm[:, :, 1] = np.clip((ny / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
-    nrm[:, :, 2] = np.clip((nz / nlen * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
+    # Upscale to 2048x2048 and draw razor-sharp geometric plaque/monitor frames (ZERO raster text!)
+    alb_2k = Image.fromarray(alb, "RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+    orm_2k = Image.fromarray(orm, "RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+    nrm_2k = Image.fromarray(nrm, "RGB").resize((2048, 2048), Image.Resampling.BILINEAR)
+    emi_2k = Image.fromarray(emi, "RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+
+    draw_alb = ImageDraw.Draw(alb_2k)
+    draw_emi = ImageDraw.Draw(emi_2k)
+
+    # 4 Plaque / Monitor Screen Sub-Rects in 2048x2048 coordinates (2x of 528..1008, 780..1012)
+    plaques_2k = [
+        (1056, 1560, 1520, 1776, "#2E96B2", "#1E6478", False),  # UV_PLACARD_201
+        (1552, 1560, 2016, 1776, "#2E96B2", "#1E6478", True),   # UV_PLACARD_202 & Wall Monitor Screen
+        (1056, 1808, 1520, 2024, "#2E96B2", "#1E6478", False),  # UV_PLACARD_1A
+        (1552, 1808, 2016, 2024, "#C47D2B", "#825018", False),  # UV_PLACARD_1B
+    ]
+    for x0, y0, x1, y1, acc_hex, em_hex, is_monitor in plaques_2k:
+        # Outer machined titanium bezel + recessed dark obsidian panel
+        draw_alb.rectangle([x0, y0, x1, y1], fill=hex_rgb("#141920"), outline=hex_rgb("#647282"), width=6)
+        draw_alb.rectangle([x0 + 8, y0 + 8, x1 - 8, y1 - 8], outline=hex_rgb("#2C3642"), width=2)
+        # Left vertical glowing status accent bar
+        draw_alb.rectangle([x0 + 20, y0 + 24, x0 + 34, y1 - 24], fill=hex_rgb(acc_hex))
+        draw_emi.rectangle([x0 + 20, y0 + 24, x0 + 34, y1 - 24], fill=hex_rgb(em_hex))
+        # Subtle horizontal divider rule between header & subheader zones
+        mid_y = y0 + int((y1 - y0) * 0.56)
+        draw_alb.rectangle([x0 + 48, mid_y, x1 - 24, mid_y + 3], fill=hex_rgb("#2A3644"))
+        if is_monitor:
+            # Crisp geometric telemetry grid & status bars for monitor screen background
+            for gx in range(x0 + 56, x1 - 28, 36):
+                draw_alb.line([(gx, y0 + 24), (gx, y1 - 24)], fill=hex_rgb("#1C2632"), width=2)
+            for gy in range(y0 + 28, y1 - 24, 28):
+                draw_alb.line([(x0 + 48, gy), (x1 - 24, gy)], fill=hex_rgb("#1C2632"), width=2)
+            # Right-side geometric signal-strength bars
+            for bi, bh in enumerate([24, 42, 64, 52, 76, 60]):
+                bx = x1 - 132 + bi * 18
+                by1 = y1 - 28
+                by0 = by1 - bh
+                col_b = "#2E96B2" if bi < 4 else "#C47D2B"
+                em_b = "#1E6478" if bi < 4 else "#825018"
+                draw_alb.rectangle([bx, by0, bx + 11, by1], fill=hex_rgb(col_b))
+                draw_emi.rectangle([bx, by0, bx + 11, by1], fill=hex_rgb(em_b))
 
     # Architectural Tempered Glass (`residential_atrium_glass_translucent.png`, 512x512 RGBA)
     GW, GH = 512, 512
@@ -422,27 +378,125 @@ def generate_residential_atlas():
     gls[:, GW - 8 : GW, :] = (64, 72, 82, 185)
     gls[:, :, :3] = add_ultra_clean_micro_grain(gls[:, :, :3], sigma=0.30, seed=103)
 
-    black_emi_pct = float(np.mean(np.all(emi == 0, axis=2)) * 100.0)
-    noise_alb = compute_micro_noise_pct(alb)
-    noise_orm = compute_micro_noise_pct(orm)
-    noise_nrm = compute_micro_noise_pct(nrm)
-
     suites = [
-        ("residential_atrium_and_apartment_atlas_albedo.png", Image.fromarray(alb, "RGB")),
-        ("residential_atrium_and_apartment_atlas_orm.png", Image.fromarray(orm, "RGB")),
-        ("residential_atrium_and_apartment_atlas_normal.png", Image.fromarray(nrm, "RGB")),
-        ("residential_atrium_and_apartment_atlas_emission.png", Image.fromarray(emi, "RGB")),
+        ("residential_atrium_and_apartment_atlas_albedo.png", alb_2k),
+        ("residential_atrium_and_apartment_atlas_orm.png", orm_2k),
+        ("residential_atrium_and_apartment_atlas_normal.png", nrm_2k),
+        ("residential_atrium_and_apartment_atlas_emission.png", emi_2k),
         ("residential_atrium_glass_translucent.png", Image.fromarray(gls, "RGBA")),
     ]
     for fn, img_obj in suites:
-        img_obj.save(os.path.join(TEX_DIR, fn), format="PNG")
+        out_p = os.path.join(TEX_DIR, fn)
+        img_obj.save(out_p, format="PNG")
+        for m_copy in glob.glob(os.path.join(MODELS_DIR, f"*_{fn}")):
+            shutil.copyfile(out_p, m_copy)
 
-    print(
-        f"[ResidentialAtlas] Saved compact 1024x1024 PBR suite to {TEX_DIR} | "
-        f"pitch_black_emission={black_emi_pct:.2f}% | "
-        f"micro_noise: albedo={noise_alb:.3f}%, orm={noise_orm:.3f}%, normal={noise_nrm:.3f}%"
-    )
+    print(f"[ResidentialAtlas] Saved 2048x2048 zero-raster-text PBR suite to {TEX_DIR}")
+
+
+def clean_wrist_and_bot_atlases():
+    """
+    Removes any small/fuzzy baked text from:
+      1. `wrist_rfid_winner_04_neural_tendon_and_bci_atlas_*.png` (upgraded to 1024x1024, replacing the
+         middle text banner `SUPER-WIRE 10m` / `AEGIS-BCI NEURAL AI` with crisp machined titanium-slate
+         housing, copper induction coils, and glowing cyan/violet neural-tendon circuit traces).
+      2. `utility_bot_round2_atlas_*.png` & `johnny5_utility_bot_atlas_*.png` (upgraded to 2048x2048,
+         replacing the tiny rasterized text in `UV_Q1_BANNER` with a clean machined dark-anodized
+         chest nameplate bezel + glowing department status rings so our 3D `Label3D` bot nameplates
+         read with 100% vector sharpness).
+    """
+    # 1. Clean Wrist RFID & BCI / Super-Wire Atlas (1024x1024)
+    w_alb_p = os.path.join(TEX_DIR, "wrist_rfid_winner_04_neural_tendon_and_bci_atlas_albedo.png")
+    w_emi_p = os.path.join(TEX_DIR, "wrist_rfid_winner_04_neural_tendon_and_bci_atlas_emission.png")
+    w_nrm_p = os.path.join(TEX_DIR, "wrist_rfid_winner_04_neural_tendon_and_bci_atlas_normal.png")
+    w_orm_p = os.path.join(TEX_DIR, "wrist_rfid_winner_04_neural_tendon_and_bci_atlas_orm.png")
+    if os.path.exists(w_alb_p):
+        im_alb = Image.open(w_alb_p).convert("RGB").resize((1024, 1024), Image.Resampling.NEAREST)
+        im_emi = Image.open(w_emi_p).convert("RGB").resize((1024, 1024), Image.Resampling.NEAREST)
+        im_nrm = Image.open(w_nrm_p).convert("RGB").resize((1024, 1024), Image.Resampling.BILINEAR)
+        im_orm = Image.open(w_orm_p).convert("RGB").resize((1024, 1024), Image.Resampling.NEAREST)
+
+        d_alb = ImageDraw.Draw(im_alb)
+        d_emi = ImageDraw.Draw(im_emi)
+        # Middle horizontal banner (y: 500..650 in 1024x1024) previously held rasterized text
+        # Replace with clean machined titanium-slate housing, copper-gold coil bands & cyan LED bars
+        d_alb.rectangle([0, 500, 1024, 652], fill=hex_rgb("#C8D0D8"))
+        d_emi.rectangle([0, 500, 1024, 652], fill=(0, 0, 0))
+        # Left half (0..512): Signal-orange & copper-gold induction coil housing
+        d_alb.rectangle([28, 520, 484, 632], fill=hex_rgb("#D96B26"), outline=hex_rgb("#48525E"), width=6)
+        for cx in range(56, 460, 28):
+            d_alb.rectangle([cx, 536, cx + 14, 616], fill=hex_rgb("#E6A856"))
+        d_alb.rectangle([48, 570, 464, 582], fill=hex_rgb("#2E96B2"))
+        d_emi.rectangle([48, 570, 464, 582], fill=hex_rgb("#1E6478"))
+        # Right half (512..1024): Dark obsidian neural-tendon telemetry bezel with cyan/violet pulse bars
+        d_alb.rectangle([540, 520, 996, 632], fill=hex_rgb("#182028"), outline=hex_rgb("#2E96B2"), width=5)
+        for bx in range(568, 968, 36):
+            col = "#2E96B2" if ((bx // 36) % 2 == 0) else "#8A64E8"
+            d_alb.rectangle([bx, 548, bx + 20, 604], fill=hex_rgb(col))
+            d_emi.rectangle([bx, 548, bx + 20, 604], fill=hex_rgb(col))
+
+        for p_out, im_out in [(w_alb_p, im_alb), (w_emi_p, im_emi), (w_nrm_p, im_nrm), (w_orm_p, im_orm)]:
+            im_out.save(p_out, format="PNG")
+            bn = os.path.basename(p_out)
+            for m_copy in glob.glob(os.path.join(MODELS_DIR, f"*_{bn}")):
+                shutil.copyfile(p_out, m_copy)
+
+    # 2. Clean Utility Bot Round 2 / Johnny-5 Atlas (2048x2048)
+    b_alb_p = os.path.join(TEX_DIR, "johnny5_utility_bot_atlas_albedo.png")
+    b_emi_p = os.path.join(TEX_DIR, "johnny5_utility_bot_atlas_emission.png")
+    b_nrm_p = os.path.join(TEX_DIR, "johnny5_utility_bot_atlas_normal.png")
+    b_orm_p = os.path.join(TEX_DIR, "johnny5_utility_bot_atlas_orm.png")
+    if os.path.exists(b_alb_p):
+        im_alb = Image.open(b_alb_p).convert("RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+        im_emi = Image.open(b_emi_p).convert("RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+        im_nrm = Image.open(b_nrm_p).convert("RGB").resize((2048, 2048), Image.Resampling.BILINEAR)
+        im_orm = Image.open(b_orm_p).convert("RGB").resize((2048, 2048), Image.Resampling.NEAREST)
+
+        d_alb = ImageDraw.Draw(im_alb)
+        d_emi = ImageDraw.Draw(im_emi)
+        # Top-Left Q1 (`x: 0..1024, y: 0..1024`) has 4 rows (`f_idx = 0..3`, each 256px high in 2048x2048)
+        # Replace rasterized text inside each banner with a sleek machined dark-anodized titanium chest plate
+        # with left/right glowing department status rings and horizontal micro-trim lines (3D Label3D sits on top!)
+        dept_cols = [
+            ("#E89B2D", "#966018"),  # D-01 Engineering (Sprocket #0419)
+            ("#38B8C8", "#1E6E78"),  # D-02 Civic (Sweep #0812)
+            ("#7B5CFF", "#483298"),  # D-03 Science (Kelvin #0204)
+            ("#3BA868", "#1E643B"),  # D-04 Agri-Biosphere (Clover #0631)
+        ]
+        for f_idx, (acc_c, em_c) in enumerate(dept_cols):
+            y0 = f_idx * 256 + 16
+            y1 = (f_idx + 1) * 256 - 16
+            x0, x1 = 20, 1004
+            d_alb.rectangle([x0, y0, x1, y1], fill=hex_rgb("#181E26"), outline=hex_rgb(acc_c), width=8)
+            d_alb.rectangle([x0 + 14, y0 + 14, x1 - 14, y1 - 14], fill=hex_rgb("#141920"), outline=hex_rgb("#34404E"), width=3)
+            d_emi.rectangle([x0, y0, x1, y1], fill=(0, 0, 0))
+            # Left & right glowing circular department beacon nodes
+            cy = (y0 + y1) // 2
+            for cx in [x0 + 68, x1 - 68]:
+                d_alb.ellipse([cx - 32, cy - 32, cx + 32, cy + 32], fill=hex_rgb("#222A34"), outline=hex_rgb(acc_c), width=6)
+                d_alb.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], fill=hex_rgb("#E8EEF4"))
+                d_emi.ellipse([cx - 24, cy - 24, cx + 24, cy + 24], outline=hex_rgb(em_c), width=5)
+                d_emi.ellipse([cx - 10, cy - 10, cx + 10, cy + 10], fill=hex_rgb(em_c))
+            # Top & bottom department accent rules
+            d_alb.rectangle([x0 + 120, y0 + 22, x1 - 120, y0 + 30], fill=hex_rgb(acc_c))
+            d_emi.rectangle([x0 + 120, y0 + 22, x1 - 120, y0 + 30], fill=hex_rgb(em_c))
+            d_alb.rectangle([x0 + 120, y1 - 30, x1 - 120, y1 - 22], fill=hex_rgb("#34404E"))
+
+        for suffix, im_out in [
+            ("albedo.png", im_alb),
+            ("emission.png", im_emi),
+            ("normal.png", im_nrm),
+            ("orm.png", im_orm),
+        ]:
+            for prefix in ["johnny5_utility_bot_atlas_", "utility_bot_round2_atlas_"]:
+                p_out = os.path.join(TEX_DIR, prefix + suffix)
+                im_out.save(p_out, format="PNG")
+            for m_copy in glob.glob(os.path.join(MODELS_DIR, f"*_utility_bot_round2_atlas_{suffix}")):
+                im_out.save(m_copy, format="PNG")
+
+    print("[CleanAtlases] Upgraded wrist_rfid (1024x1024) & utility_bot_round2 (2048x2048) atlases with zero blurry text")
 
 
 if __name__ == "__main__":
     generate_residential_atlas()
+    clean_wrist_and_bot_atlases()

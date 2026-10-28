@@ -122,7 +122,7 @@ def load_png_bytes(path: Optional[str], alpha_mode: str = "OPAQUE", fallback_rgb
         return _PNG_CACHE[key]
     if path and os.path.exists(path):
         im = Image.open(path)
-        im = im.convert("RGBA" if alpha_mode == "BLEND" else "RGB").resize((512, 512), Image.Resampling.LANCZOS)
+        im = im.convert("RGBA" if alpha_mode == "BLEND" else "RGB")
         buf = io.BytesIO()
         im.save(buf, format="PNG", optimize=True)
         _PNG_CACHE[key] = buf.getvalue()

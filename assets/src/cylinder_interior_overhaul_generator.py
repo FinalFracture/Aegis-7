@@ -106,6 +106,8 @@ def tex_cyl_int(fname: str) -> str:
     p = os.path.join(TEX_CYL_INT_DIR, fname)
     if os.path.exists(p):
         return p
+    p2 = os.path.join("/workspace/game-project/godot/assets/textures", fname)
+    if os.path.exists(p2): return p2
     return os.path.join("/workspace/game-project/assets/textures", fname)
 
 

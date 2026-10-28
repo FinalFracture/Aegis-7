@@ -13,6 +13,10 @@ const SECTOR_GLB_PATHS := [
 	"res://assets/models/preface_residential_sector.glb",
 	"res://assets/models/environments/preface_residential_two_story_block.glb"
 ]
+const CYLINDER_MAP_PATHS := [
+	"res://assets/models/env_cylinder_hab7_fullscale_map.glb",
+	"res://assets/models/environments/env_cylinder_hab7_fullscale_map.glb"
+]
 const WRIST_04_PATHS := [
 	"res://assets/models/props/wrist_rfid/prop_wrist_rfid_winner_01_neural_tendon_sleeve.glb",
 	"res://assets/models/prop_wrist_rfid_winner_01_neural_tendon_sleeve.glb",
@@ -194,7 +198,7 @@ func _ready() -> void:
 		_setup_player_controller()
 		_build_hud()
 		_update_hud()
-		_show_toast("WELCOME HOME, ROSTOV. APT 201 // HAB-7 RESIDENTIAL ATRIUM", 5.0)
+		# Clean startup HUD without banner toast ([t22u] Todo #3)
 	if _validate_only:
 		print("[PrefacePlayableArea] Validate OK | interactables=", _interactables.size(), " | player=", _player_body != null)
 
@@ -268,7 +272,7 @@ func _remove_all_doors_and_grates(root: Node3D) -> void:
 		var curr: Node = stack.pop_back()
 		if curr is Node3D:
 			var nm: String = curr.name.to_lower()
-			if nm.contains("door_slide") or nm.contains("door_apt") or nm.contains("door_leaf") or nm.contains("maint_grate"):
+			if nm.contains("door_slide") or nm.contains("door_apt") or nm.contains("door_leaf") or nm.contains("maint_grate") or nm.begins_with("pickup_"):
 				(curr as Node3D).visible = false
 		for ch: Node in curr.get_children():
 			stack.append(ch)
@@ -347,8 +351,18 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 	var boxes: Array[Dictionary] = [
 		{"name": "GroundFloorDeck", "size": Vector3(32.0, 0.4, 24.0), "pos": Vector3(0.0, -0.2, 0.0), "rot_x": 0.0},
 		{"name": "UpperL2NorthDeck", "size": Vector3(28.0, 0.24, 8.0), "pos": Vector3(0.0, 4.08, 5.0), "rot_x": 0.0},
-		{"name": "UpperL2WestWing", "size": Vector3(6.0, 0.24, 10.5), "pos": Vector3(-11.0, 4.08, -3.8), "rot_x": 0.0},
-		{"name": "UpperL2EastStairLanding", "size": Vector3(6.3, 0.24, 3.4), "pos": Vector3(10.65, 4.08, -0.5), "rot_x": 0.0}
+		# PATH-06 Fixed: Trimmed UpperL2WestWing to Z = -6.60m..+9.00m (no invisible floor south of Z = -6.60m)
+		{"name": "UpperL2WestWing", "size": Vector3(6.5, 0.24, 15.6), "pos": Vector3(-10.65, 4.08, 1.20), "rot_x": 0.0},
+		{"name": "UpperL2EastStairLanding", "size": Vector3(6.3, 0.24, 3.4), "pos": Vector3(10.65, 4.08, -0.5), "rot_x": 0.0},
+		# PATH-06 Fixed: Missing guardrail colliders on L2 West Wing South Edge, East Upper Landing West Edge & East Staircase West Edge
+		{"name": "L2WestWingSouthGuardrail", "size": Vector3(6.5, 1.25, 0.18), "pos": Vector3(-10.65, 4.82, -6.55), "rot_x": 0.0},
+		{"name": "EastLandingWestGuardrail", "size": Vector3(0.18, 1.25, 3.55), "pos": Vector3(7.55, 4.82, -0.45), "rot_x": 0.0},
+		{"name": "EastStairWestGuardrail", "size": Vector3(0.18, 4.80, 4.00), "pos": Vector3(9.16, 2.40, -4.20), "rot_x": 0.0},
+		# Walkable Exterior Sector-4 Cylinder Hab-7 Promenade Deck (Z = -9.15m..-45.0m, X = -18.0m..+18.0m) + Guardrails
+		{"name": "Sector4PromenadeExteriorDeck", "size": Vector3(36.0, 0.40, 36.0), "pos": Vector3(0.0, -0.08, -27.0), "rot_x": 0.0},
+		{"name": "PromenadeWestGuardrail", "size": Vector3(0.24, 1.25, 36.0), "pos": Vector3(-18.0, 0.62, -27.0), "rot_x": 0.0},
+		{"name": "PromenadeEastGuardrail", "size": Vector3(0.24, 1.25, 36.0), "pos": Vector3(18.0, 0.62, -27.0), "rot_x": 0.0},
+		{"name": "PromenadeSouthGuardrail", "size": Vector3(36.0, 1.25, 0.24), "pos": Vector3(0.0, 0.62, -45.0), "rot_x": 0.0}
 	]
 	# East Stair-Ramp Connector: smooth sloped box from (Y 4.20, Z -2.20) down to (Y 0.00, Z -7.80) at X = 10.65m
 	var run: float = 5.60
@@ -367,6 +381,363 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 		cs.position = b["pos"] as Vector3
 		cs.rotation = Vector3(float(b["rot_x"]), 0.0, 0.0)
 		body.add_child(cs)
+
+
+
+
+func _make_crisp_label3d(nm: String, txt: String, pos: Vector3, rot_deg: Vector3, fsize: int = 64, psize: float = 0.0012, col: Color = Color("#EAF2F8"), h_align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER) -> Label3D:
+	var lbl: Label3D = Label3D.new()
+	lbl.name = nm
+	lbl.text = txt
+	lbl.position = pos
+	lbl.rotation_degrees = rot_deg
+	lbl.font_size = fsize
+	lbl.pixel_size = psize
+	lbl.modulate = col
+	lbl.outline_modulate = Color(0.04, 0.06, 0.09, 0.96)
+	lbl.outline_size = 10
+	lbl.horizontal_alignment = h_align
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.shaded = false
+	lbl.double_sided = true
+	lbl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return lbl
+
+
+func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
+	var hab_root: Node3D = Node3D.new()
+	hab_root.name = "CylinderHab7_FullScale_World"
+	parent.add_child(hab_root)
+
+	# 1. Instantiate the full-scale 800m x 400m (R = 200m) O'Neill Cylinder Hab-7 Interior Megastructure
+	# Aligned so the Residential Sector Atrium (Z = -9.15m..+9.0m) sits at the Sector-4 Promenade Bay (Valley A bottom nadir)
+	# and looking South out Open_Portal_Sector_Exit (-Z) or up through the Atrium Skylight (+Y) looks straight down the
+	# curving 800m cylinder axis with paired axial solar rails, Ring-A..Ring-E ribs, agricultural terraces,
+	# opposite habitation blocks curving overhead at 120 deg and 240 deg, and the central zero-G docking hub!
+	var cyl_path: String = _find_first_existing(CYLINDER_MAP_PATHS)
+	var cyl_pivot: Node3D = Node3D.new()
+	cyl_pivot.name = "CylinderHab7_DrumAxisPivot"
+	# Cylinder local X is axial [-368..+354]; rotate -90 deg Y so axial +X maps to -Z (looking out Sector-4 Promenade Exit)
+	# and roll 43 deg around local X so Valley A (137 deg) sits at bottom nadir (180 deg, Y = -14.5m below axis Y = 185.5m).
+	cyl_pivot.position = Vector3(0.0, 185.5, -135.0)
+	cyl_pivot.rotation_degrees = Vector3(0.0, -90.0, 43.0)
+	hab_root.add_child(cyl_pivot)
+
+	var cyl_node: Node3D = _load_glb_scene(cyl_path, 0.85)
+	if cyl_node != null:
+		cyl_node.name = "CylinderHab7_FullScale_Mesh"
+		cyl_node.position = Vector3(0.0, -200.0, 0.0)
+		_set_tree_cast_shadow(cyl_node, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		cyl_pivot.add_child(cyl_node)
+
+	# 2. Walkable Exterior Sector-4 Promenade Plaza Deck (Z = -9.0m..-45.0m, X = -18.0m..+18.0m, Y = 0.0m)
+	var plaza_root: Node3D = Node3D.new()
+	plaza_root.name = "Sector4_Promenade_ExteriorPlaza"
+	hab_root.add_child(plaza_root)
+
+	var deck_mat: StandardMaterial3D = StandardMaterial3D.new()
+	deck_mat.albedo_color = Color(0.34, 0.38, 0.43, 1.0)
+	deck_mat.roughness = 0.42
+	deck_mat.metallic = 0.22
+	var deck_tex: Texture2D = _load_tex("mat_deck_floor_albedo.png")
+	if deck_tex != null:
+		deck_mat.albedo_texture = deck_tex
+		deck_mat.uv1_scale = Vector3(12.0, 12.0, 1.0)
+
+	var rail_mat: StandardMaterial3D = StandardMaterial3D.new()
+	rail_mat.albedo_color = Color(0.24, 0.28, 0.33, 1.0)
+	rail_mat.metallic = 0.82
+	rail_mat.roughness = 0.28
+
+	var amber_mat: StandardMaterial3D = StandardMaterial3D.new()
+	amber_mat.albedo_color = COLOR_AMBER
+	amber_mat.emission_enabled = true
+	amber_mat.emission = COLOR_AMBER
+	amber_mat.emission_energy_multiplier = 0.85
+
+	var cyan_mat: StandardMaterial3D = StandardMaterial3D.new()
+	cyan_mat.albedo_color = COLOR_CYAN
+	cyan_mat.emission_enabled = true
+	cyan_mat.emission = COLOR_CYAN
+	cyan_mat.emission_energy_multiplier = 0.85
+
+	var deck_mi: MeshInstance3D = MeshInstance3D.new()
+	deck_mi.name = "PromenadePlazaDeckSlab"
+	var deck_bm: BoxMesh = BoxMesh.new()
+	deck_bm.size = Vector3(36.0, 0.24, 36.0)
+	deck_mi.mesh = deck_bm
+	deck_mi.position = Vector3(0.0, 0.0, -27.0)
+	deck_mi.material_override = deck_mat
+	plaza_root.add_child(deck_mi)
+
+	# Centerline promenade guideway inlay & side balustrade rails
+	for gx: float in [-3.2, 3.2]:
+		var guide_mi: MeshInstance3D = MeshInstance3D.new()
+		var gbm: BoxMesh = BoxMesh.new()
+		gbm.size = Vector3(0.14, 0.02, 34.0)
+		guide_mi.mesh = gbm
+		guide_mi.position = Vector3(gx, 0.125, -26.5)
+		guide_mi.material_override = cyan_mat
+		guide_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		plaza_root.add_child(guide_mi)
+
+	for rail_cfg: Dictionary in [
+		{"pos": Vector3(-18.0, 0.62, -27.0), "sz": Vector3(0.16, 1.10, 36.0)},
+		{"pos": Vector3(18.0, 0.62, -27.0), "sz": Vector3(0.16, 1.10, 36.0)},
+		{"pos": Vector3(0.0, 0.62, -45.0), "sz": Vector3(36.0, 1.10, 0.16)}
+	]:
+		var rmi: MeshInstance3D = MeshInstance3D.new()
+		var rbm: BoxMesh = BoxMesh.new()
+		rbm.size = rail_cfg["sz"] as Vector3
+		rmi.mesh = rbm
+		rmi.position = rail_cfg["pos"] as Vector3
+		rmi.material_override = rail_mat
+		plaza_root.add_child(rmi)
+
+	# Exterior promenade bollards & Ring-A..Ring-E architectural arch markers along the plaza
+	for bz: float in [-14.0, -22.0, -30.0, -38.0]:
+		for bx: float in [-6.5, 6.5]:
+			var bol: MeshInstance3D = MeshInstance3D.new()
+			var bcm: BoxMesh = BoxMesh.new()
+			bcm.size = Vector3(0.36, 1.15, 0.36)
+			bol.mesh = bcm
+			bol.position = Vector3(bx, 0.65, bz)
+			bol.material_override = rail_mat
+			plaza_root.add_child(bol)
+			var cap: MeshInstance3D = MeshInstance3D.new()
+			var cbm: BoxMesh = BoxMesh.new()
+			cbm.size = Vector3(0.38, 0.08, 0.38)
+			cap.mesh = cbm
+			cap.position = Vector3(bx, 1.18, bz)
+			cap.material_override = amber_mat
+			cap.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			plaza_root.add_child(cap)
+
+
+func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
+	var sign_root: Node3D = Node3D.new()
+	sign_root.name = "CrispVector3DSignage"
+	parent.add_child(sign_root)
+
+	# 1. Eye-Level Doorway Placard Label3Ds (font_size = 64..72, pixel_size = 0.0012, zero blurry bitmap text)
+	var placards: Array[Dictionary] = [
+		{
+			"name": "Sign_APT201",
+			"title": "APT 201 — RESIDENTIAL QUARTERS",
+			"sub": "ROSTOV, K. // LEAD SYSTEMS TECH [SEC-04]",
+			"pos": Vector3(-12.64, 5.80, 2.628),
+			"col": Color("#9FD8EA")
+		},
+		{
+			"name": "Sign_ALCOVE2C",
+			"title": "ALCOVE 2C — MAINTENANCE UTILITY",
+			"sub": "AUX POWER CELLS & SUPER-WIRE SUPPLY",
+			"pos": Vector3(-10.12, 5.80, -3.672),
+			"col": Color("#9FD8EA")
+		},
+		{
+			"name": "Sign_APT202",
+			"title": "APT 202 — RESIDENTIAL QUARTERS",
+			"sub": "QUARTERMASTER SUITE // SEC-04",
+			"pos": Vector3(9.28, 5.80, 2.628),
+			"col": Color("#9FD8EA")
+		},
+		{
+			"name": "Sign_RM1A",
+			"title": "RM 1A — LAUNDRY & UTILITY LOUNGE",
+			"sub": "RESIDENTIAL COMMUNAL SERVICE BAY",
+			"pos": Vector3(-10.16, 1.60, 2.728),
+			"col": Color("#9FD8EA")
+		},
+		{
+			"name": "Sign_RM1B",
+			"title": "RM 1B — BOT FABRICATION & SUBSTATION",
+			"sub": "D-03 TELEMETRY RELAY // AUX BUS B-14",
+			"pos": Vector3(2.94, 1.60, 2.728),
+			"col": Color("#F2B866")
+		},
+		{
+			"name": "Sign_SECTOR4_EXIT",
+			"title": "SECTOR-4 PROMENADE — CYLINDER HAB-7",
+			"sub": "VALLEY-A ESPLANADE // R=200m DRUM DECK",
+			"pos": Vector3(1.76, 1.60, -9.022),
+			"col": Color("#9FD8EA")
+		}
+	]
+	var pl_mat: StandardMaterial3D = StandardMaterial3D.new()
+	pl_mat.albedo_color = Color(0.08, 0.11, 0.14, 1.0)
+	pl_mat.metallic = 0.80
+	pl_mat.roughness = 0.24
+	for p_cfg: Dictionary in placards:
+		var bp: Vector3 = p_cfg["pos"] as Vector3
+		var plate_mi: MeshInstance3D = MeshInstance3D.new()
+		var plate_bm: BoxMesh = BoxMesh.new()
+		plate_bm.size = Vector3(1.12, 0.34, 0.022)
+		plate_mi.mesh = plate_bm
+		plate_mi.position = bp + Vector3(0.0, 0.0, 0.008)
+		plate_mi.material_override = pl_mat
+		plate_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		sign_root.add_child(plate_mi)
+		sign_root.add_child(_make_crisp_label3d(
+			String(p_cfg["name"]) + "_Title",
+			String(p_cfg["title"]),
+			bp + Vector3(0.0, 0.055, -0.006),
+			Vector3(0.0, 180.0, 0.0),
+			68,
+			0.00072,
+			p_cfg["col"] as Color
+		))
+		sign_root.add_child(_make_crisp_label3d(
+			String(p_cfg["name"]) + "_Sub",
+			String(p_cfg["sub"]),
+			bp + Vector3(0.0, -0.058, -0.006),
+			Vector3(0.0, 180.0, 0.0),
+			56,
+			0.00062,
+			Color("#E8F1F8")
+		))
+
+	# Large overhead transom banner above Open_Portal_Sector_Exit facing North into the atrium (+Z)
+	sign_root.add_child(_make_crisp_label3d(
+		"Sign_SectorExit_Transom_North",
+		"SECTOR-4 PROMENADE — CYLINDER HAB-7",
+		Vector3(0.0, 3.02, -8.74),
+		Vector3(0.0, 0.0, 0.0),
+		72,
+		0.0012,
+		Color("#9FD8EA")
+	))
+	# Exterior welcome banner above Open_Portal_Sector_Exit facing South onto the promenade (-Z)
+	sign_root.add_child(_make_crisp_label3d(
+		"Sign_SectorExit_Transom_South",
+		"HAB-7 SECTOR-4 RESIDENTIAL ATRIUM",
+		Vector3(0.0, 3.02, -9.06),
+		Vector3(0.0, 180.0, 0.0),
+		72,
+		0.0012,
+		Color("#9FD8EA")
+	))
+
+	# 2. APT 201 Wall Diagnostic / Hab-7 Telemetry Monitor (mounted on solid bulkhead wall at X = -7.80, Y = 6.00, Z = 2.86, facing +Z into APT 201)
+	var mon_root: Node3D = Node3D.new()
+	mon_root.name = "Apt201_WallDiagnosticMonitor"
+	mon_root.position = Vector3(-7.80, 6.00, 2.86)
+	sign_root.add_child(mon_root)
+
+	# Physical dark-anodized titanium monitor bezel + recessed obsidian glass face facing +Z (inside APT 201)
+	var bezel_mi: MeshInstance3D = MeshInstance3D.new()
+	var bezel_bm: BoxMesh = BoxMesh.new()
+	bezel_bm.size = Vector3(1.92, 1.12, 0.05)
+	bezel_mi.mesh = bezel_bm
+	var bezel_mat: StandardMaterial3D = StandardMaterial3D.new()
+	bezel_mat.albedo_color = Color(0.14, 0.17, 0.21, 1.0)
+	bezel_mat.metallic = 0.85
+	bezel_mat.roughness = 0.26
+	bezel_mi.material_override = bezel_mat
+	bezel_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mon_root.add_child(bezel_mi)
+
+	var scr_mi: MeshInstance3D = MeshInstance3D.new()
+	var scr_bm: BoxMesh = BoxMesh.new()
+	scr_bm.size = Vector3(1.78, 0.98, 0.056)
+	scr_mi.mesh = scr_bm
+	var scr_mat: StandardMaterial3D = StandardMaterial3D.new()
+	scr_mat.albedo_color = Color(0.05, 0.08, 0.11, 1.0)
+	scr_mat.metallic = 0.20
+	scr_mat.roughness = 0.12
+	scr_mat.emission_enabled = true
+	scr_mat.emission = Color(0.03, 0.06, 0.09, 1.0)
+	scr_mat.emission_energy_multiplier = 0.65
+	scr_mi.material_override = scr_mat
+	scr_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mon_root.add_child(scr_mi)
+
+	# Crisp geometric vector bars on the monitor screen
+	for bar_cfg: Dictionary in [
+		{"pos": Vector3(0.0, 0.39, 0.031), "sz": Vector3(1.66, 0.012, 0.004), "col": COLOR_CYAN},
+		{"pos": Vector3(0.0, -0.38, 0.031), "sz": Vector3(1.66, 0.010, 0.004), "col": Color("#2A3B4C")},
+		{"pos": Vector3(-0.81, 0.0, 0.031), "sz": Vector3(0.018, 0.84, 0.004), "col": COLOR_CYAN},
+		{"pos": Vector3(0.54, 0.10, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": COLOR_CYAN},
+		{"pos": Vector3(0.54, -0.04, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": COLOR_AMBER},
+		{"pos": Vector3(0.54, -0.18, 0.031), "sz": Vector3(0.46, 0.032, 0.004), "col": Color("#3BA868")}
+	]:
+		var bmi: MeshInstance3D = MeshInstance3D.new()
+		var bbm: BoxMesh = BoxMesh.new()
+		bbm.size = bar_cfg["sz"] as Vector3
+		bmi.mesh = bbm
+		bmi.position = bar_cfg["pos"] as Vector3
+		var bmat: StandardMaterial3D = StandardMaterial3D.new()
+		var bcol: Color = bar_cfg["col"] as Color
+		bmat.albedo_color = bcol
+		bmat.emission_enabled = true
+		bmat.emission = bcol
+		bmat.emission_energy_multiplier = 0.85
+		bmi.material_override = bmat
+		bmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mon_root.add_child(bmi)
+
+	# High-DPI Vector Label3D Telemetry Readouts on APT 201 Wall Monitor (facing +Z into APT 201)
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_Header",
+		"HAB-7 SECTOR-4 ENVIRONMENTAL & DRUM TELEMETRY",
+		Vector3(-0.74, 0.30, 0.034),
+		Vector3.ZERO,
+		64,
+		0.00072,
+		Color("#9FD8EA"),
+		HORIZONTAL_ALIGNMENT_LEFT
+	))
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_Spin",
+		"SPIN RATE: 2.12 RPM (0.98 G)  //  CORIOLIS COMP: NOMINAL",
+		Vector3(-0.74, 0.12, 0.034),
+		Vector3.ZERO,
+		64,
+		0.00062,
+		Color("#E8F1F8"),
+		HORIZONTAL_ALIGNMENT_LEFT
+	))
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_Substation",
+		"ATRIUM SUBSTATION 1B: OFFLINE — AUX BUS FAULT [B-14]",
+		Vector3(-0.74, -0.03, 0.034),
+		Vector3.ZERO,
+		64,
+		0.00062,
+		Color("#F4B266"),
+		HORIZONTAL_ALIGNMENT_LEFT
+	))
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_Airlock",
+		"PROMENADE AIRLOCK: STANDBY  //  ATMO: 101.3 kPa (21.2% O2)",
+		Vector3(-0.74, -0.18, 0.034),
+		Vector3.ZERO,
+		64,
+		0.00062,
+		Color("#8CE0B0"),
+		HORIZONTAL_ALIGNMENT_LEFT
+	))
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_Footer",
+		"SOLAR RAIL AXIAL FLUX: 5500K  //  VALLEY-A PROMENADE BAY 04",
+		Vector3(-0.74, -0.31, 0.034),
+		Vector3.ZERO,
+		64,
+		0.00056,
+		Color("#98AAB8"),
+		HORIZONTAL_ALIGNMENT_LEFT
+	))
+
+	# Also mount a crisp corridor-facing status plaque on the -Z back of the monitor wall (facing the L2 Atrium)
+	mon_root.add_child(_make_crisp_label3d(
+		"Mon_AtriumSide_Plaque",
+		"SECTOR-4 UPPER GALLERY // APT 201 — LEAD SYSTEMS TECH",
+		Vector3(0.0, -0.15, -0.22),
+		Vector3(0.0, 180.0, 0.0),
+		64,
+		0.00095,
+		Color("#9FD8EA")
+	))
 
 
 func _assemble_open_doorless_sector() -> void:
@@ -389,30 +760,8 @@ func _assemble_open_doorless_sector() -> void:
 	if not _batch_render:
 		_add_safety_floor_colliders(_arch_container)
 
-	for v_cfg: Dictionary in [
-		{"name": "EastAtriumValleyVista", "pos": Vector3(16.4, 4.5, 0.0), "rot_y": -90.0, "sz": Vector2(24.0, 12.0)},
-		{"name": "SouthOpenPromenadeThresholdVista", "pos": Vector3(0.0, 3.8, -13.2), "rot_y": 0.0, "sz": Vector2(24.0, 11.0)}
-	]:
-		var bdrop: MeshInstance3D = MeshInstance3D.new()
-		bdrop.name = String(v_cfg["name"])
-		var qmesh: QuadMesh = QuadMesh.new()
-		qmesh.size = v_cfg["sz"] as Vector2
-		bdrop.mesh = qmesh
-		bdrop.position = v_cfg["pos"] as Vector3
-		bdrop.rotation_degrees = Vector3(0.0, float(v_cfg["rot_y"]), 0.0)
-		var vmat: StandardMaterial3D = StandardMaterial3D.new()
-		var vtex: Texture2D = _load_tex("vista_oneill_cylinder_interior.png")
-		if vtex != null:
-			vmat.albedo_texture = vtex
-			vmat.albedo_color = Color(0.72, 0.75, 0.78, 1.0)
-			vmat.emission_enabled = true
-			vmat.emission_texture = vtex
-			vmat.emission_energy_multiplier = 0.45
-		vmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		vmat.cull_mode = BaseMaterial3D.CULL_DISABLED
-		bdrop.material_override = vmat
-		bdrop.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		_arch_container.add_child(bdrop)
+	_build_cylinder_hab7_fullscale_world(_arch_container)
+	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
 
 
 # ------------------------------------------------------------------------------
@@ -539,6 +888,16 @@ func _spawn_bot(paths: Array, nm: String, label: String, dept: String, status: S
 	bot.rotation_degrees = Vector3(0.0, yaw, 0.0)
 	bot.scale = Vector3(1.18, 1.18, 1.18)
 	_actors_container.add_child(bot)
+	var chest_lbl: Label3D = _make_crisp_label3d(
+		nm + "_ChestLabel3D",
+		label + "\n" + dept,
+		Vector3(0.0, 0.48, 0.242),
+		Vector3.ZERO,
+		64,
+		0.00038,
+		Color("#F0F6FC")
+	)
+	bot.add_child(chest_lbl)
 	_play_actor_anim(bot, anims, t)
 	_interactables.append({"node": bot, "kind": "bot", "label": label, "dept": dept, "status": status, "collected": false, "pickup": false})
 
@@ -847,7 +1206,7 @@ func apply_camera_preset(idx: int) -> void:
 		return
 	var c: Dictionary = CAMERAS[idx]
 	_camera.near = 0.02
-	_camera.far = 500.0
+	_camera.far = 2500.0
 	_camera.fov = float(c["fov"])
 	_camera.global_position = c["pos"] as Vector3
 	_camera.look_at(c["target"] as Vector3, Vector3.UP)
@@ -912,6 +1271,7 @@ func _setup_player_controller() -> void:
 		_camera.transform = Transform3D.IDENTITY
 		_camera.fov = 70.0
 		_camera.near = 0.02
+		_camera.far = 2500.0
 		_camera.current = true
 
 	if _rostov_root != null:
@@ -1283,8 +1643,9 @@ func _build_hud() -> void:
 	var white: Color = Color("#DCE3EA")
 	var dim: Color = Color("#8C98A4")
 
-	# Top-left status panel
+	# Top-left status panel hidden for clean immersive 1st-person viewport (Todo #3 — no permanent HUD banners)
 	var tl: Panel = _make_panel(root, Vector2(24, 22), Vector2(560, 160), COLOR_CYAN)
+	tl.visible = false
 	_make_label(tl, Vector2(16, 10), "AEGIS-7 // HAB-7 RESIDENTIAL ATRIUM", 20, Color("#9FD3E0"))
 	_hud_zone = _make_label(tl, Vector2(16, 44), "ZONE: --", 15, white)
 	_hud_view = _make_label(tl, Vector2(16, 68), "VIEW: --", 15, white)
@@ -1337,13 +1698,7 @@ func _build_hud() -> void:
 	_hud_scan = _make_label(tr_anchor, Vector2(-640, 26), "", 14, Color("#9FD3E0"))
 	_hud_scan.visible = false
 
-	# Bottom-left controls bar
-	var bl_anchor: Control = Control.new()
-	bl_anchor.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	bl_anchor.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(bl_anchor)
-	var bl: Panel = _make_panel(bl_anchor, Vector2(24, -58), Vector2(1240, 36), COLOR_AMBER)
-	_make_label(bl, Vector2(14, 7), "[WASD] Move  [Shift] Sprint  [Space] Jump  [Mouse] Look  [V/Tab] 1st/3rd Person  [E] Interact/Pickup  [R] Wrist RFID Pulse  [N] Emergency Lights  [1-4] Cams  [0] Player", 14, dim.lerp(white, 0.5))
+	# Training-wheel bottom controls legend bar stripped per [t22u] Todo #3
 
 
 func _zone_name(p: Vector3) -> String:
@@ -1363,6 +1718,8 @@ func _zone_name(p: Vector3) -> String:
 		return "RM 1A — LAUNDRY LOUNGE"
 	if p.x > 0.6 and p.x < 8.4 and p.z > 2.85:
 		return "RM 1B — BOT SUBSTATION"
+	if p.z < -9.1:
+		return "SECTOR-4 PROMENADE — CYLINDER HAB-7"
 	if p.z < -7.0:
 		return "SOUTH SERVICE VESTIBULE"
 	return "L1 ATRIUM CONCOURSE"
@@ -1481,7 +1838,46 @@ func _process_capture_f5_hud() -> void:
 			_apply_view_mode()
 		82:
 			_save_qa_png("qa_f5_hud_alcove2c_atrium_lookdown.png")
-		84:
+			if _hud_scan != null:
+				_hud_scan.visible = false
+			_scan_t = 0.0
+			# Shot 1: Inside APT 201 showing solid bulkhead wall + new Wall Diagnostic Monitor (X=-7.8, Z=2.86) + workbench + clean HUD
+			_third_person = false
+			_player_body.global_position = Vector3(-9.15, 4.35, 5.45)
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, -24.0, 0.0)
+			_pitch = deg_to_rad(-2.0)
+			_apply_view_mode()
+		94:
+			_save_qa_png("apt201_wall_monitor_and_clean_hud.png")
+			# Shot 2: L2 North Mezzanine Gallery showing unobstructed walkway (PATH-01 fixed), Sweep #0812, and crisp APT 202 signage
+			_third_person = false
+			_player_body.global_position = Vector3(-4.20, 4.25, 2.05)
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, -92.0, 0.0)
+			_pitch = deg_to_rad(-2.0)
+			_apply_view_mode()
+		106:
+			_save_qa_png("l2_north_gallery_unblocked.png")
+			# Shot 3: Close-up (1.5m) of RM 1B — BOT FABRICATION & SUBSTATION signage and Kelvin #0204 showing zero fuzzy text
+			_third_person = false
+			_player_body.global_position = Vector3(3.35, 0.12, 1.25)
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, 166.0, 0.0)
+			_pitch = deg_to_rad(-2.0)
+			_apply_view_mode()
+		118:
+			_save_qa_png("room1b_crisp_signage_close.png")
+			# Shot 4: Looking out Sector-4 Promenade Exit and standing on exterior promenade deck looking up at full-scale Cylinder Hab-7 map
+			_third_person = false
+			_player_body.global_position = Vector3(0.0, 0.12, -6.50)
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, 0.0, 0.0)
+			_pitch = deg_to_rad(14.0)
+			_apply_view_mode()
+		130:
+			_save_qa_png("cylinder_hab7_promenade_view.png")
+		134:
 			print("[PrefacePlayableArea] F5 HUD capture complete.")
 			get_tree().quit(0)
 
