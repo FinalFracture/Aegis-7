@@ -254,3 +254,49 @@
 - `hand_qa_03_raised_wrist_rfid_pulse.png`: `[F]` held at the APT 201 workbench with the hand raised lower-left and `PulseRings` active
 - `hand_qa_00_apt201_lowered_reference.png`: same spot before `[F]`, hand out of view
 - Refreshed: `apt201_wall_monitor_and_clean_hud.png`, `l2_north_gallery_unblocked.png`, `room1b_crisp_signage_close.png`, `cylinder_hab7_promenade_view.png` (lowered hand out of view in all four), and `qa_f5_hud_1st_person.png` (now shows the `[F]` raised wrist and pulse)
+
+## Hand/Wrist Rig & Controls QA (3b7b65e)
+_Patch, independent probe, 2026-10-27 (CDT). Godot 4.7.2, xvfb + opengl3, real `preface_playable_area.tscn` with the scene's own `_physics_process` running. Input came from `Input.parse_input_event`. Screenshots are in `godot/renders/qa/patch_hand_0[1-7]_*.png`._
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Code/input review | **PASS w/ notes.** Arm is solved in body space every physics frame (`preface_playable_area.gd:825-856`). Holder is `top_level` (`:1335-1339`). PulseRings are gated on `_rfid_pulse_timer > 0` only (`:807-811`). Keys: F→pulse `:1457`, R→flashlight `:1459`, E `:1455`, V/Tab `:1453`. See HW-01. |
+| 2a | Idle out of view @ pitch 0/-10/-20 | **PASS.** 0/126 hand AABB points are in the frustum at all three pitches. Rings are hidden, with 0 ring centres in view (`patch_hand_01_idle_pitch0.png`). |
+| 2b | Look-down swing @ -50 | **PASS.** Hand is in view (126/126 points). Walk: 5.20 m/s, phase 5.80 rad/s = **0.92 Hz**, wrist Z ±0.22 m, pitch ±24°. Sprint: phase 8.60 rad/s = **1.37 Hz** (1.48× faster), with the same amplitude (amp is clamped at ≥walk speed, `:843`). Release ease: Z −0.179 → −0.251 → −0.280 (rest) in 10 frames, max 0.014 m/frame, pitch settles at exactly −14° (rest). Smooth, no pop. |
+| 2c | F raise / pulse / E pickup | **PASS.** F raises the arm smoothly (max blend step 0.075/frame, smoothstep). Rings are visible for exactly 108 frames = 1.80 s (=`RFID_PULSE_DURATION`) and hidden afterwards. E at 1.2 m collected the nearest pickup (THERMAL JELLY): HUD `JELLY: 0/1 → 1/1`, node hidden + `queue_free` (`:1594-1597`). |
+| 2d | Controls | **PASS.** Mouse yaw −0.480 rad per 200 px (=MOUSE_SENS), pitch clamps at −80°/+75° (1st person). W walk 5.2 m/s, Shift+W reaches sprint (phase rate confirms 8.2 m/s), S/A moved correctly, Space jump +0.68 m @10f. R flashlight OFF→ON→OFF without raising the arm or showing rings (R no longer pulses ✔). V→3rd: hand holder hidden, Rostov visible, spring 3.1 m; V again → 1st, hand back. F in 3rd: rings not visible. No game script errors or warnings (only env ALSA `ERR_CANT_OPEN` and the GL-Compat SSR notice). |
+
+**Issues**
+- **HW-01 (Low): stale or conflicting InputMap.** `project.godot:67` `raise_wrist` is still bound to **R (82) + F (70)**, but R is now the flashlight. It's harmless today only because the script ignores the InputMap and hard-codes physical keys (`preface_playable_area.gd:832`, `:1449-1471`, `:1499-1522`), so in-editor rebinding does nothing. *Fix:* remove R from `raise_wrist` (rename it `rfid_pulse`), add `toggle_flashlight=R`, and switch the polling to `Input.is_action_pressed` / `event.is_action_pressed`.
+- **HW-02 (Cosmetic): raised pose crops at the frame edge.** With `ARM_RAISED_POS` (-0.24,-0.19,-0.42) (`:110`), the PulseRings and the palm are cut by the bottom-left edge of the frame (`patch_hand_04_f_pulse_raised.png`, `hand_qa_03`). *Fix:* try (-0.20,-0.15,-0.42) so the full ring stays in frame.
+- **HW-03 (Cosmetic/Info): no forearm when looking down.** At −50° only the glove/hand is drawn, with no forearm reaching back to the body (`patch_hand_02_walk_lookdown_m50.png`). It reads as a floating hand. Consider a short forearm mesh or a sleeve on the #04 model.
+
+**Verdict:** the 3b7b65e hand rig works. Idle is out of view, the swing is sinusoidal with faster sprint cadence and a smooth return, F-only rings and E pickup work, and every control is mapped with no runtime errors. No blockers. HW-01 is a cleanup item.
+
+## [t34u] Cylinder Radial Spin Gravity (3-step) — implemented + automated QA
+_Run `godot --path godot -- --qa-cylinder-gravity` (windowed via xvfb, 1920×1080, opengl3): **14/14 PASS**, plus headless 14/14. The log is in `context/cylinder_gravity_qa_log.md`._
+
+**Test ring.** `CylinderSpinGravityTestRing` sits at (150, 30, 0). The axis is +Z, R = 10 m, L = 20 m. It has 72 tangent floor tiles, end caps, colour stripes at 0/90/180/270°, and an amber Coriolis core lift pad at θ0 and θ180 joined by a glass shaft at z = 7. No floating text.
+- **[G]** toggles the player into or out of the ring.
+- **[E]** on an amber pad rides the core lift.
+
+**Physics.**
+- In-ring gravity is `radial_outward · 9.8 · ρ/R`: 1 g at the floor and 0 at the axis.
+- The player uses `up_direction = −radial_outward`. Movement is projected onto the local floor plane.
+- Yaw is applied with `rotate_object_local`.
+- The basis is re-oriented by a minimal-arc rotation, rate-limited to 3.5 rad/s, so a 180° flip takes ~0.9 s.
+- Step-up only fires on wall-like hits (n·up < 0.5).
+- Outside the ring, gravity and world-up behave as before.
+
+| Step | Result |
+|---|---|
+| 1. 360° walk | **PASS.** A sprint-W loop covered 366° (64 m), on the floor 466/466 frames. Max ρ error 0.013 m; min dot(basis.y, local up) 0.99991. Through 0→90→180→270→360° the body up went (0,1,0)→(−0.98,−0.21)→(0.20,−0.98)→(0.98,0.21)→start. Seamless. `gravity_step1_360_walk_angles.png` |
+| 2. Boxes 0…315° | **PASS.** 8 RigidBody3D boxes (gravity_scale 0, custom radial force) stay at ρ 9.610 and speed ≤ 0.0001 m/s. They are face-aligned 1.000 with 0.00° drift, including after a 1.6 m/s axis-ward kick. `gravity_step2_ring_boxes_planted.png` (end-cap view showing every box on its own local floor, including the ceiling) |
+| 3. Core transit flip | **PASS.** The box transit passed ρ_min 0.000, gravity flipped (0,−1,0)→(0,1,0), and it landed planted at θ180. The player transit was started by a real [E] press and passed ρ_min 0.000. Max rotation was 0.058 rad per frame (limit 0.059), so it is smooth. The player landed on the floor at θ180 with body up (0,−1,0) and camera aligned. Walking 11.6 m on the flipped floor worked. `gravity_step3_core_transit_flip.png` (pad → mid-flip → landed → shaft overview) |
+
+**Regression.** `--qa-hand-controls` windowed passes with 0 failures (36/36 lines, same as 3b7b65e). Headless still shows only the 2 known mouse-motion harness duplicates. Validate-only passes.
+
+**Notes / follow-ups**
+- **GRAV-01 (Info).** Gravity is modelled as static radial (ρ/R) with no true rotating-frame Coriolis deflection on jumps or free-fall. The lift is a guided kinematic path through the axis. If you want it, real Coriolis drift (`−2 Ω×v`) could be added for airborne bodies.
+- **GRAV-02 (Low).** Rigid boxes auto-ride the lift after resting 1.5 s on a pad (with a 6 s cooldown). The QA disables this so it can drive the transit explicitly.
+- **GRAV-03 (Cosmetic).** The ring is lit only by 3 axis omni lights and the world sun. The near end wall reads dark in the 1st-person walk shots.

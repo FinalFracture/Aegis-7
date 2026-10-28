@@ -116,6 +116,21 @@ const WRIST_PIVOT_IN_MODEL := Vector3(0.0, 0.195, 0.062)
 const PITCH_MIN_DEG := -80.0
 const PITCH_MAX_DEG := 75.0
 
+# [t34u] Cylinder radial spin-gravity test ring (walk 360 deg, planted boxes, Coriolis core transit).
+const RING_CENTER := Vector3(150.0, 30.0, 0.0)
+const RING_AXIS := Vector3(0.0, 0.0, 1.0)
+const RING_RADIUS := 10.0
+const RING_LENGTH := 20.0
+const RING_SEGMENTS := 72
+const RING_SHAFT_Z := 7.0
+const RING_BOX_Z := 3.0
+const RING_WALK_Z := -3.0
+const RING_BOX_SIZE := 0.8
+const RING_ORIENT_RATE := 3.5          # rad/s max basis re-orientation (smooth 180 deg flip ~0.9 s)
+const RING_FEET_OFFSET := 0.10         # body origin sits ~0.12 m below capsule bottom
+const CORE_TRANSIT_DURATION := 4.0
+const CORE_PAD_RADIUS := 1.4
+
 var _arch_container: Node3D
 var _props_container: Node3D
 var _actors_container: Node3D
@@ -169,6 +184,11 @@ var _walk_phase: float = 0.0
 var _walk_swing_amp: float = 0.0
 var _flashlight: SpotLight3D
 var _qa_hand: bool = false
+var _qa_cyl: bool = false
+var _ring_root: Node3D
+var _gravity_boxes: Array[Dictionary] = []
+var _core_transits: Array[Dictionary] = []
+var _player_transit: Dictionary = {}
 var _qa_failures: int = 0
 var _qa_log: PackedStringArray = PackedStringArray()
 
@@ -206,6 +226,9 @@ func _ready() -> void:
 			_capture_hud = true
 		elif arg == "--qa-hand-controls":
 			_qa_hand = true
+		elif arg == "--qa-cylinder-gravity":
+			_qa_cyl = true
+			_qa_hand = true  # reuse the interactive (non-batch, non-validate) QA boot path
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -232,7 +255,10 @@ func _ready() -> void:
 	if _validate_only:
 		print("[PrefacePlayableArea] Validate OK | interactables=", _interactables.size(), " | player=", _player_body != null)
 	if _qa_hand:
-		_run_hand_controls_qa.call_deferred()
+		if _qa_cyl:
+			_run_cylinder_gravity_qa.call_deferred()
+		else:
+			_run_hand_controls_qa.call_deferred()
 
 
 func _ensure_child(nm: String) -> Node3D:
@@ -649,6 +675,8 @@ func _assemble_open_doorless_sector() -> void:
 
 	_build_cylinder_hab7_fullscale_world(_arch_container)
 	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
+	if not _batch_render:
+		_build_cylinder_gravity_ring(_arch_container)
 
 
 # ------------------------------------------------------------------------------
@@ -835,7 +863,7 @@ func _update_first_person_arm(delta: float) -> void:
 
 	# Sinusoidal walk swing (State B) driven by real horizontal ground speed.
 	var hv: Vector3 = _player_body.velocity
-	hv.y = 0.0
+	hv -= _player_body.up_direction * hv.dot(_player_body.up_direction)
 	var hs: float = hv.length()
 	var moving: bool = hs > 0.15 and _player_body.is_on_floor()
 	var sprint_ratio: float = clampf((hs - WALK_SPEED) / (SPRINT_SPEED - WALK_SPEED), 0.0, 1.0)
@@ -1439,7 +1467,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 	if event is InputEventMouseMotion and (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED or _qa_hand) and _preset_active < 0:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
-		_player_body.rotate_y(-mm.relative.x * MOUSE_SENS)
+		_player_body.rotate_object_local(Vector3.UP, -mm.relative.x * MOUSE_SENS)
 		_pitch -= mm.relative.y * MOUSE_SENS
 		_apply_pitch()
 		return
@@ -1450,6 +1478,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		match ke.physical_keycode:
 			KEY_ESCAPE:
 				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			KEY_G:
+				_toggle_gravity_ring_test()
 			KEY_V, KEY_TAB:
 				_toggle_view()
 			KEY_E:
@@ -1485,9 +1515,14 @@ func _apply_pitch() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_apply_ring_box_gravity(delta)
+	_process_core_transits(delta)
 	if _player_body == null:
 		return
 	var b: CharacterBody3D = _player_body
+	if not _player_transit.is_empty():
+		_update_first_person_arm(delta)
+		return
 	var controls: bool = _preset_active < 0 and not _capture_hud
 
 	var input_dir: Vector2 = Vector2.ZERO
@@ -1501,7 +1536,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_physical_key_pressed(KEY_RIGHT):
 			yaw_in -= 1.0
 		if yaw_in != 0.0:
-			b.rotate_y(yaw_in * KEY_LOOK_SPEED * delta)
+			b.rotate_object_local(Vector3.UP, yaw_in * KEY_LOOK_SPEED * delta)
 		var pitch_in: float = 0.0
 		if Input.is_physical_key_pressed(KEY_PAGEUP):
 			pitch_in += 1.0
@@ -1521,35 +1556,45 @@ func _physics_process(delta: float) -> void:
 		sprint = Input.is_physical_key_pressed(KEY_SHIFT)
 		jump = Input.is_physical_key_pressed(KEY_SPACE)
 
+	# [t34u] Local "up" = world up normally, or toward the cylinder axis inside the spin-gravity ring.
+	var in_ring: bool = _in_gravity_ring(b.global_position)
+	var up_dir: Vector3 = _ring_up_at(b.global_position, b.global_basis.y) if in_ring else Vector3.UP
+	_orient_node_to_up(b, up_dir, delta)
+	b.up_direction = up_dir
+	var g_vec: Vector3 = _ring_gravity_at(b.global_position) if in_ring else Vector3.DOWN * GRAVITY
+
 	var basis: Basis = b.global_transform.basis
 	var dir: Vector3 = basis.x * input_dir.x + basis.z * input_dir.y
-	dir.y = 0.0
+	dir -= up_dir * dir.dot(up_dir)
 	if dir.length_squared() > 0.0001:
 		dir = dir.normalized()
 	var speed: float = SPRINT_SPEED if sprint else WALK_SPEED
 
+	var v_up: float = b.velocity.dot(up_dir)
 	if not b.is_on_floor():
-		b.velocity.y -= GRAVITY * delta
+		v_up = (b.velocity + g_vec * delta).dot(up_dir)
 	elif jump:
-		b.velocity.y = JUMP_VELOCITY
-	b.velocity.x = dir.x * speed
-	b.velocity.z = dir.z * speed
+		v_up = JUMP_VELOCITY
+	b.velocity = dir * speed + up_dir * v_up
 
-	# Smooth step-up over small ledges (thresholds, treads, slab lips).
+	# Smooth step-up over small ledges (thresholds, treads, slab lips) — only for wall-like hits,
+	# so gently curving floors (cylinder ring) never trigger a bogus step.
 	if b.is_on_floor() and dir != Vector3.ZERO:
-		var motion: Vector3 = Vector3(b.velocity.x, 0.0, b.velocity.z) * delta
-		if b.test_move(b.global_transform, motion):
-			var up: Vector3 = Vector3.UP * STEP_HEIGHT
+		var motion: Vector3 = dir * speed * delta
+		var hit: KinematicCollision3D = KinematicCollision3D.new()
+		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < 0.5:
+			var up: Vector3 = up_dir * STEP_HEIGHT
 			if not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
 				b.global_position += up
 
 	b.move_and_slide()
 
-	if b.global_position.y < -8.0:
+	if not in_ring and b.global_position.y < -8.0:
 		_respawn()
 	_update_first_person_arm(delta)
 
-	var moving: bool = Vector2(b.velocity.x, b.velocity.z).length() > 0.2 and b.is_on_floor()
+	var hvel: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
+	var moving: bool = hvel.length() > 0.2 and b.is_on_floor()
 	_set_rostov_anim("WalkCycle" if moving else "Idle")
 	if _rostov_root != null:
 		var ap: AnimationPlayer = _find_anim_player(_rostov_root)
@@ -1589,6 +1634,9 @@ func _find_nearest_interactable(max_dist: float) -> Dictionary:
 func _interact() -> void:
 	if not _third_person:
 		_interact_reach_timer = INTERACT_REACH_DURATION
+	if _player_body != null and _start_core_transit(_player_body, true):
+		_show_toast("CORIOLIS CORE LIFT // TRANSITING TO OPPOSITE FLOOR", 2.4)
+		return
 	var it: Dictionary = _find_nearest_interactable(INTERACT_RANGE)
 	if it.is_empty():
 		_show_toast("NOTHING IN REACH // MOVE WITHIN 2.8m", 1.6)
@@ -2272,4 +2320,643 @@ func _run_hand_controls_qa() -> void:
 		fa.store_string("\n".join(out) + "\n")
 		fa.close()
 	print("[HAND-QA] DONE failures=", _qa_failures, " log=", fn)
+	get_tree().quit(1 if _qa_failures > 0 else 0)
+
+
+# ------------------------------------------------------------------------------
+# [t34u] Cylinder radial spin gravity: 360 deg walkable ring, planted boxes, Coriolis core transit
+#   Gravity inside the ring = radial_outward * g * (rho / R)  (spin-gravity profile, 1 g at the floor)
+#   Local up = -radial_outward (toward the cylinder axis). Crossing the axis flips it to the opposite floor.
+# ------------------------------------------------------------------------------
+var _last_transit_report: Dictionary = {}
+var _last_box_transit_report: Dictionary = {}
+
+
+func _ring_radial(p: Vector3) -> Vector3:
+	var d: Vector3 = p - RING_CENTER
+	return d - RING_AXIS * d.dot(RING_AXIS)
+
+
+func _ring_rho(p: Vector3) -> float:
+	return _ring_radial(p).length()
+
+
+func _ring_theta_deg(p: Vector3) -> float:
+	var r: Vector3 = _ring_radial(p)
+	return fposmod(rad_to_deg(atan2(r.x, -r.y)), 360.0)
+
+
+func _in_gravity_ring(p: Vector3) -> bool:
+	if _ring_root == null:
+		return false
+	var along: float = (p - RING_CENTER).dot(RING_AXIS)
+	return absf(along) < RING_LENGTH * 0.5 + 0.5 and _ring_rho(p) < RING_RADIUS + 1.5
+
+
+func _ring_up_at(p: Vector3, fallback: Vector3) -> Vector3:
+	var r: Vector3 = _ring_radial(p)
+	if r.length() < 0.03:
+		return fallback
+	return -r.normalized()
+
+
+func _ring_gravity_at(p: Vector3) -> Vector3:
+	var r: Vector3 = _ring_radial(p)
+	var rho: float = r.length()
+	if rho < 0.001:
+		return Vector3.ZERO
+	return (r / rho) * GRAVITY * clampf(rho / RING_RADIUS, 0.0, 1.2)
+
+
+func _ring_floor_point(theta_deg: float, z: float, inset: float) -> Vector3:
+	var th: float = deg_to_rad(theta_deg)
+	var outward: Vector3 = Vector3(sin(th), -cos(th), 0.0)
+	return RING_CENTER + outward * (RING_RADIUS - inset) + RING_AXIS * z
+
+
+func _ring_frame(theta_deg: float) -> Basis:
+	# y = local up (toward axis), -z = walking tangent (increasing theta), x = y cross z.
+	var th: float = deg_to_rad(theta_deg)
+	var up: Vector3 = -Vector3(sin(th), -cos(th), 0.0)
+	var tang: Vector3 = Vector3(cos(th), sin(th), 0.0)
+	return Basis(up.cross(-tang), up, -tang)
+
+
+func _orient_node_to_up(n: Node3D, up: Vector3, delta: float) -> float:
+	# Minimal-arc rotation of the node basis so basis.y -> up, rate-limited for smoothness. Returns step (rad).
+	var gb: Basis = n.global_basis.orthonormalized()
+	var cur: Vector3 = gb.y
+	var d: float = clampf(cur.dot(up), -1.0, 1.0)
+	if d > 0.9999999:
+		return 0.0
+	var axis: Vector3 = cur.cross(up)
+	if axis.length_squared() < 1e-10:
+		axis = RING_AXIS  # exact 180 deg flip at the core: roll around the cylinder axis
+	var ang: float = acos(d)
+	var step: float = minf(ang, RING_ORIENT_RATE * delta) if delta > 0.0 else ang
+	n.global_basis = (Basis(axis.normalized(), step) * gb).orthonormalized()
+	return step
+
+
+func _ring_mat(col: Color, emissive: float = 0.0, alpha: float = 1.0) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = Color(col.r, col.g, col.b, alpha)
+	m.roughness = 0.55
+	m.metallic = 0.25
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	if alpha < 1.0:
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	if emissive > 0.0:
+		m.emission_enabled = true
+		m.emission = col
+		m.emission_energy_multiplier = emissive
+	return m
+
+
+func _build_cylinder_gravity_ring(parent: Node3D) -> void:
+	_ring_root = Node3D.new()
+	_ring_root.name = "CylinderSpinGravityTestRing"
+	parent.add_child(_ring_root)
+	_ring_root.global_position = RING_CENTER
+
+	# 1. Collision: 72 tangent floor tiles (inner faces at rho = R) + 2 end-cap discs.
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "RingFloorColliders"
+	_ring_root.add_child(body)
+	var seg_w: float = 2.0 * RING_RADIUS * tan(PI / float(RING_SEGMENTS)) * 1.04
+	for i: int in range(RING_SEGMENTS):
+		var th: float = deg_to_rad(360.0 * float(i) / float(RING_SEGMENTS))
+		var outward: Vector3 = Vector3(sin(th), -cos(th), 0.0)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = "FloorTile_%02d" % i
+		var bs: BoxShape3D = BoxShape3D.new()
+		bs.size = Vector3(seg_w, 0.6, RING_LENGTH + 1.0)
+		cs.shape = bs
+		cs.transform = Transform3D(Basis(Vector3(cos(th), sin(th), 0.0), -outward, RING_AXIS), outward * (RING_RADIUS + 0.3))
+		body.add_child(cs)
+	for sgn: float in [-1.0, 1.0]:
+		var cap: CollisionShape3D = CollisionShape3D.new()
+		cap.name = "EndCap_%s" % ("North" if sgn > 0.0 else "South")
+		var cyl: CylinderShape3D = CylinderShape3D.new()
+		cyl.radius = RING_RADIUS + 0.8
+		cyl.height = 0.5
+		cap.shape = cyl
+		cap.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5), RING_AXIS * sgn * (RING_LENGTH * 0.5 + 0.25))
+		body.add_child(cap)
+
+	# 2. Visuals: deck shell, angle stripes (0/90/180/270 coloured), seams every 15 deg, end walls.
+	var shell: MeshInstance3D = MeshInstance3D.new()
+	shell.name = "RingDeckShell"
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = RING_RADIUS + 0.01
+	cm.bottom_radius = RING_RADIUS + 0.01
+	cm.height = RING_LENGTH
+	cm.radial_segments = RING_SEGMENTS
+	cm.rings = 1
+	cm.cap_top = false
+	cm.cap_bottom = false
+	shell.mesh = cm
+	shell.rotation = Vector3(PI * 0.5, 0.0, 0.0)
+	var deck: StandardMaterial3D = _ring_mat(Color(0.42, 0.46, 0.52))
+	var deck_tex: Texture2D = _load_tex("mat_deck_floor_albedo.png")
+	if deck_tex != null:
+		deck.albedo_texture = deck_tex
+		deck.albedo_color = Color(0.8, 0.82, 0.86)
+		deck.uv1_scale = Vector3(24.0, 8.0, 1.0)
+	shell.material_override = deck
+	shell.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_ring_root.add_child(shell)
+	var marker_cols: Dictionary = {0: Color("#2E96B2"), 90: Color("#C47D2B"), 180: Color("#7B5CFF"), 270: Color("#3FAF6A")}
+	for k: int in range(24):
+		var th_m: int = k * 15
+		var big: bool = marker_cols.has(th_m)
+		var stripe: MeshInstance3D = MeshInstance3D.new()
+		stripe.name = "AngleStripe_%03d" % th_m
+		var sb: BoxMesh = BoxMesh.new()
+		sb.size = Vector3(0.7 if big else 0.08, 0.02, RING_LENGTH - 0.2)
+		stripe.mesh = sb
+		var thr: float = deg_to_rad(float(th_m))
+		var outw: Vector3 = Vector3(sin(thr), -cos(thr), 0.0)
+		stripe.transform = Transform3D(Basis(Vector3(cos(thr), sin(thr), 0.0), -outw, RING_AXIS), outw * (RING_RADIUS - 0.005))
+		stripe.material_override = _ring_mat(marker_cols[th_m] if big else Color(0.12, 0.14, 0.17), 0.9 if big else 0.0)
+		stripe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_ring_root.add_child(stripe)
+	for sgn2: float in [-1.0, 1.0]:
+		var wall: MeshInstance3D = MeshInstance3D.new()
+		wall.name = "EndWall_%s" % ("North" if sgn2 > 0.0 else "South")
+		var wm: CylinderMesh = CylinderMesh.new()
+		wm.top_radius = RING_RADIUS + 0.02
+		wm.bottom_radius = RING_RADIUS + 0.02
+		wm.height = 0.1
+		wm.radial_segments = RING_SEGMENTS
+		wall.mesh = wm
+		wall.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5), RING_AXIS * sgn2 * (RING_LENGTH * 0.5))
+		var wmat: StandardMaterial3D = _ring_mat(Color(0.62, 0.66, 0.72), 0.25)
+		if deck_tex != null:
+			wmat.albedo_texture = deck_tex
+			wmat.uv1_scale = Vector3(6.0, 6.0, 1.0)
+		wall.material_override = wmat
+		wall.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_ring_root.add_child(wall)
+		var trim: MeshInstance3D = MeshInstance3D.new()
+		trim.name = "EndWallLightTrim_%s" % ("North" if sgn2 > 0.0 else "South")
+		var trm: TorusMesh = TorusMesh.new()
+		trm.inner_radius = RING_RADIUS - 0.18
+		trm.outer_radius = RING_RADIUS - 0.02
+		trm.rings = 96
+		trim.mesh = trm
+		trim.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5), RING_AXIS * sgn2 * (RING_LENGTH * 0.5 - 0.1))
+		trim.material_override = _ring_mat(Color("#F2ECE0"), 1.2)
+		trim.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_ring_root.add_child(trim)
+
+	# 3. Coriolis core transit shaft along the theta 0 <-> 180 diameter at z = RING_SHAFT_Z.
+	var shaft: MeshInstance3D = MeshInstance3D.new()
+	shaft.name = "CoriolisCoreTransitShaft"
+	var shm: CylinderMesh = CylinderMesh.new()
+	shm.top_radius = 1.05
+	shm.bottom_radius = 1.05
+	shm.height = RING_RADIUS * 2.0 - 0.1
+	shm.cap_top = false
+	shm.cap_bottom = false
+	shaft.mesh = shm
+	shaft.position = RING_AXIS * RING_SHAFT_Z
+	shaft.material_override = _ring_mat(Color(0.45, 0.85, 1.0), 0.25, 0.16)
+	shaft.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_ring_root.add_child(shaft)
+	for rail_x: float in [-1.0, 1.0]:
+		var rail: MeshInstance3D = MeshInstance3D.new()
+		rail.name = "ShaftGuideRail_%s" % ("W" if rail_x < 0.0 else "E")
+		var rbm: BoxMesh = BoxMesh.new()
+		rbm.size = Vector3(0.08, RING_RADIUS * 2.0 - 0.1, 0.08)
+		rail.mesh = rbm
+		rail.position = RING_AXIS * RING_SHAFT_Z + Vector3(rail_x * 1.08, 0.0, 0.0)
+		rail.material_override = _ring_mat(Color(0.75, 0.78, 0.82))
+		_ring_root.add_child(rail)
+	var core: MeshInstance3D = MeshInstance3D.new()
+	core.name = "CoriolisCoreRing"
+	var tm: TorusMesh = TorusMesh.new()
+	tm.inner_radius = 1.15
+	tm.outer_radius = 1.35
+	core.mesh = tm
+	core.position = RING_AXIS * RING_SHAFT_Z
+	core.material_override = _ring_mat(Color("#2E96B2"), 1.4)
+	_ring_root.add_child(core)
+	for pad_th: float in [0.0, 180.0]:
+		var pad: MeshInstance3D = MeshInstance3D.new()
+		pad.name = "CoreLiftPad_%03d" % int(pad_th)
+		var pm: CylinderMesh = CylinderMesh.new()
+		pm.top_radius = 1.0
+		pm.bottom_radius = 1.0
+		pm.height = 0.04
+		pad.mesh = pm
+		var pr: float = deg_to_rad(pad_th)
+		var po: Vector3 = Vector3(sin(pr), -cos(pr), 0.0)
+		pad.transform = Transform3D(Basis(Vector3(cos(pr), sin(pr), 0.0), -po, RING_AXIS), po * (RING_RADIUS - 0.02) + RING_AXIS * RING_SHAFT_Z)
+		pad.material_override = _ring_mat(COLOR_AMBER, 0.8)
+		_ring_root.add_child(pad)
+
+	# 4. Lighting along the cylinder axis.
+	for lz: float in [-6.0, 0.0, 6.0]:
+		var om: OmniLight3D = OmniLight3D.new()
+		om.name = "RingAxisLight_%d" % int(lz)
+		om.position = RING_AXIS * lz
+		om.light_color = Color("#F2ECE0")
+		om.light_energy = 1.6
+		om.omni_range = 15.0
+		om.shadow_enabled = false
+		_ring_root.add_child(om)
+
+	# 5. Physical boxes around the full ring + a core-transit test box on the theta 0 lift pad.
+	var box_cols: Array = [Color("#D95B26"), Color("#2E96B2"), Color("#C47D2B"), Color("#7B5CFF"), Color("#3FAF6A"), Color("#E0C060"), Color("#B03A48"), Color("#8C98A4")]
+	for bi: int in range(8):
+		_spawn_ring_box("RingBox_%03d" % (bi * 45), float(bi * 45), RING_BOX_Z, box_cols[bi])
+	_spawn_ring_box("CoreTransitBox", 0.0, RING_SHAFT_Z, Color("#F2F2F2"))
+
+
+func _spawn_ring_box(nm: String, theta_deg: float, z: float, col: Color) -> RigidBody3D:
+	var rb: RigidBody3D = RigidBody3D.new()
+	rb.name = nm
+	rb.mass = 20.0
+	rb.gravity_scale = 0.0  # custom radial spin gravity applied in _apply_ring_box_gravity()
+	rb.can_sleep = false
+	rb.continuous_cd = true
+	rb.linear_damp = 0.05
+	rb.angular_damp = 0.5
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = Vector3.ONE * RING_BOX_SIZE
+	cs.shape = bs
+	rb.add_child(cs)
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = Vector3.ONE * RING_BOX_SIZE
+	mi.mesh = bm
+	mi.material_override = _ring_mat(col, 0.15)
+	rb.add_child(mi)
+	_ring_root.add_child(rb)
+	rb.global_transform = Transform3D(_ring_frame(theta_deg), _ring_floor_point(theta_deg, z, RING_BOX_SIZE * 0.5 + 0.02))
+	_gravity_boxes.append({"body": rb, "home_theta": theta_deg, "rest_t": 0.0})
+	return rb
+
+
+func _is_transiting(n: Node3D) -> bool:
+	for tr: Dictionary in _core_transits:
+		if tr["node"] == n:
+			return true
+	return false
+
+
+func _apply_ring_box_gravity(delta: float) -> void:
+	for bx: Dictionary in _gravity_boxes:
+		var rb: RigidBody3D = bx["body"] as RigidBody3D
+		if rb == null or not is_instance_valid(rb) or rb.freeze:
+			continue
+		rb.apply_central_force(_ring_gravity_at(rb.global_position) * rb.mass)
+		# A box left resting on a lift pad for 1.5 s rides the Coriolis core lift to the opposite floor.
+		if _qa_cyl:
+			continue
+		var on_pad: bool = false
+		for pt: float in [0.0, 180.0]:
+			if rb.global_position.distance_to(_ring_floor_point(pt, RING_SHAFT_Z, RING_BOX_SIZE * 0.5)) < 0.9:
+				on_pad = true
+		var rt: float = float(bx["rest_t"])
+		if on_pad and rb.linear_velocity.length() < 0.1 and rt >= 0.0:
+			rt += delta
+			if rt > 1.5:
+				rt = -6.0  # cooldown after arrival so it does not immediately bounce back
+				_start_core_transit(rb, false)
+		elif rt > 0.0:
+			rt = 0.0
+		elif rt < 0.0:
+			rt = minf(rt + delta, 0.0)
+		bx["rest_t"] = rt
+
+
+func _start_core_transit(n: Node3D, is_player: bool) -> bool:
+	if n == null or _ring_root == null or _is_transiting(n) or not _in_gravity_ring(n.global_position):
+		return false
+	var inset: float = -RING_FEET_OFFSET if is_player else RING_BOX_SIZE * 0.5 + 0.02
+	var pad_a: Vector3 = _ring_floor_point(0.0, RING_SHAFT_Z, inset)
+	var pad_b: Vector3 = _ring_floor_point(180.0, RING_SHAFT_Z, inset)
+	var p: Vector3 = n.global_position
+	var from_a: bool = p.distance_to(pad_a) <= p.distance_to(pad_b)
+	var start_pad: Vector3 = pad_a if from_a else pad_b
+	if p.distance_to(start_pad) > CORE_PAD_RADIUS:
+		return false
+	var tr: Dictionary = {
+		"node": n, "is_player": is_player, "t": 0.0, "dur": CORE_TRANSIT_DURATION,
+		"start": p, "from": start_pad, "to": pad_b if from_a else pad_a,
+		"last_up": n.global_basis.y, "min_rho": 1e9, "max_step": 0.0, "flipped": false,
+	}
+	if not is_player:
+		var rb: RigidBody3D = n as RigidBody3D
+		rb.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+		rb.freeze = true
+	else:
+		_player_body.velocity = Vector3.ZERO
+		_player_transit = tr
+	_core_transits.append(tr)
+	return true
+
+
+func _process_core_transits(delta: float) -> void:
+	var done: Array[Dictionary] = []
+	for tr: Dictionary in _core_transits:
+		var n: Node3D = tr["node"] as Node3D
+		if n == null or not is_instance_valid(n):
+			done.append(tr)
+			continue
+		tr["t"] = float(tr["t"]) + delta
+		var k: float = clampf(float(tr["t"]) / float(tr["dur"]), 0.0, 1.0)
+		var ks: float = smoothstep(0.0, 1.0, k)
+		# Ride the shaft line through rho = 0 at the core; ease any lateral pad offset out in the first 15%.
+		var on_line: Vector3 = (tr["from"] as Vector3).lerp(tr["to"] as Vector3, ks)
+		var lateral: Vector3 = (tr["start"] as Vector3) - (tr["from"] as Vector3)
+		var pos: Vector3 = on_line + lateral * (1.0 - smoothstep(0.0, 0.15, k))
+		n.global_position = pos
+		tr["min_rho"] = minf(float(tr["min_rho"]), _ring_rho(pos))
+		var prev_up: Vector3 = tr["last_up"] as Vector3
+		var up: Vector3 = _ring_up_at(pos, prev_up)
+		if up.dot(prev_up) < -0.5:
+			tr["flipped"] = true  # crossed the axis: radial gravity now points at the opposite floor
+		tr["last_up"] = up
+		var step: float = _orient_node_to_up(n, up, delta)
+		tr["max_step"] = maxf(float(tr["max_step"]), step)
+		if bool(tr["is_player"]):
+			_player_body.up_direction = up
+			_player_body.velocity = Vector3.ZERO
+		if k >= 1.0:
+			done.append(tr)
+	for tr2: Dictionary in done:
+		_core_transits.erase(tr2)
+		var n2: Node3D = tr2["node"] as Node3D
+		if bool(tr2["is_player"]):
+			_player_transit = {}
+			_last_transit_report = tr2
+		elif n2 != null and is_instance_valid(n2):
+			var rb: RigidBody3D = n2 as RigidBody3D
+			rb.freeze = false
+			rb.linear_velocity = Vector3.ZERO
+			rb.angular_velocity = Vector3.ZERO
+			_last_box_transit_report = tr2
+
+
+func _place_player_in_ring(theta_deg: float, z: float) -> void:
+	_player_body.global_transform = Transform3D(_ring_frame(theta_deg), _ring_floor_point(theta_deg, z, -RING_FEET_OFFSET))
+	_player_body.velocity = Vector3.ZERO
+	_player_body.up_direction = _player_body.global_basis.y
+
+
+func _toggle_gravity_ring_test() -> void:
+	if _player_body == null or _ring_root == null or not _player_transit.is_empty():
+		return
+	if _in_gravity_ring(_player_body.global_position):
+		_player_body.up_direction = Vector3.UP
+		_respawn()
+	else:
+		_place_player_in_ring(0.0, RING_WALK_Z)
+		_show_toast("SPIN-GRAVITY TEST RING // WALK 360 DEG  [E] ON AMBER PAD = CORIOLIS CORE LIFT  [G] EXIT", 3.5)
+
+
+# ------------------------------------------------------------------------------
+# [t34u] Automated cylinder spin-gravity QA  (`-- --qa-cylinder-gravity`)
+# ------------------------------------------------------------------------------
+func _qa_grid(imgs: Array, fname: String) -> void:
+	var valid: Array[Image] = []
+	for im in imgs:
+		if im != null:
+			valid.append(im as Image)
+	if valid.size() < imgs.size() or valid.is_empty():
+		return
+	var combo: Image = Image.create(1920, 1080, false, valid[0].get_format())
+	for i: int in range(valid.size()):
+		var tile: Image = valid[i].duplicate() as Image
+		tile.resize(960, 540, Image.INTERPOLATE_BILINEAR)
+		combo.blit_rect(tile, Rect2i(0, 0, 960, 540), Vector2i((i % 2) * 960, (i / 2) * 540))
+	combo.fill_rect(Rect2i(958, 0, 4, 1080), Color(0.9, 0.95, 1.0))
+	combo.fill_rect(Rect2i(0, 538, 1920, 4), Color(0.9, 0.95, 1.0))
+	combo.save_png(_resolve_path(QA_DIR) + "/" + fname)
+	print("[CYL-QA] Saved ", fname)
+
+
+func _qa_free_cam(pos: Vector3, target: Vector3, up: Vector3, fov: float) -> void:
+	# SpringArm3D rewrites its child camera transform every physics tick; pause it for the free QA camera.
+	if _spring_arm != null:
+		_spring_arm.set_physics_process_internal(false)
+	_camera.top_level = true
+	_camera.global_transform = Transform3D(Basis.looking_at(target - pos, up), pos)
+	_camera.fov = fov
+	if _fp_wrist_holder != null:
+		_fp_wrist_holder.visible = false
+
+
+func _qa_player_cam() -> void:
+	if _spring_arm != null:
+		_spring_arm.set_physics_process_internal(true)
+	_camera.top_level = false
+	_camera.transform = Transform3D.IDENTITY
+	_camera.fov = 70.0
+	_apply_view_mode()
+
+
+func _qa_cyl_check(nm: String, ok: bool, detail: String) -> void:
+	var line: String = "%s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail]
+	print("[CYL-QA] ", line)
+	_qa_log.append(line)
+	if not ok:
+		_qa_failures += 1
+
+
+func _qa_face_align(n: Node3D, up: Vector3) -> float:
+	var gb: Basis = n.global_basis
+	return maxf(absf(gb.x.dot(up)), maxf(absf(gb.y.dot(up)), absf(gb.z.dot(up))))
+
+
+func _run_cylinder_gravity_qa() -> void:
+	if _player_body == null or _camera == null or _ring_root == null:
+		_qa_cyl_check("setup", false, "player/camera/ring missing")
+		get_tree().quit(1)
+		return
+	if _hud_toast != null:
+		_hud_toast.visible = false
+	_third_person = false
+	_apply_view_mode()
+	var R: float = RING_RADIUS
+	var foot_rho: float = R + RING_FEET_OFFSET
+	var box_rho: float = R - RING_BOX_SIZE * 0.5
+
+	# ---------------- STEP 1: full 360 deg walk around the inner ring ----------------
+	_place_player_in_ring(0.0, RING_WALK_Z)
+	_pitch = deg_to_rad(8.0)
+	_apply_pitch()
+	await _qa_frames(40)
+	foot_rho = _ring_rho(_player_body.global_position)
+	_qa_cyl_check("step1_spawn_on_floor_theta0", _player_body.is_on_floor(), "on_floor=%s rho=%.3f theta=%.1f" % [_player_body.is_on_floor(), foot_rho, _ring_theta_deg(_player_body.global_position)])
+	var shots: Array = [await _qa_capture("gravity_step1_walk_000deg.png")]
+	var table: PackedStringArray = PackedStringArray()
+	table.append("| milestone | frame | theta_deg | rho_m | on_floor | basis_y . local_up | basis_y world |")
+	table.append("|---|---|---|---|---|---|---|")
+	_qa_key(KEY_SHIFT, true)
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	var last_th: float = _ring_theta_deg(_player_body.global_position)
+	var travelled: float = 0.0
+	var frames: int = 0
+	var floor_frames: int = 0
+	var min_align: float = 1.0
+	var max_rho_err: float = 0.0
+	var next_ms: int = 90
+	while travelled < 366.0 and frames < 1500:
+		await _qa_frames(1)
+		frames += 1
+		var pp: Vector3 = _player_body.global_position
+		var th_now: float = _ring_theta_deg(pp)
+		travelled += wrapf(th_now - last_th, -180.0, 180.0)
+		last_th = th_now
+		var align: float = _player_body.global_basis.y.dot(_ring_up_at(pp, Vector3.UP))
+		min_align = minf(min_align, align)
+		if _player_body.is_on_floor():
+			floor_frames += 1
+			max_rho_err = maxf(max_rho_err, absf(_ring_rho(pp) - foot_rho))
+		if travelled >= float(next_ms) and next_ms <= 360:
+			var by: Vector3 = _player_body.global_basis.y
+			table.append("| %d deg | %d | %.1f | %.3f | %s | %.5f | (%.2f, %.2f, %.2f) |" % [next_ms, frames, th_now, _ring_rho(pp), _player_body.is_on_floor(), align, by.x, by.y, by.z])
+			if next_ms < 360:
+				shots.append(await _qa_capture("gravity_step1_walk_%03ddeg.png" % next_ms))
+			next_ms += 90
+	_qa_key(KEY_W, false)
+	_qa_key(KEY_SHIFT, false)
+	await _qa_idle(2)
+	await _qa_frames(20)
+	_qa_cyl_check("step1_full_360_traversed", travelled >= 360.0, "travelled=%.1f deg (%.1f m) in %d physics frames, sprint W" % [travelled, deg_to_rad(travelled) * R, frames])
+	_qa_cyl_check("step1_stays_on_local_floor", float(floor_frames) / float(maxi(frames, 1)) > 0.98 and max_rho_err < 0.08, "on_floor %d/%d frames, max |rho - %.3f| = %.4f m" % [floor_frames, frames, foot_rho, max_rho_err])
+	_qa_cyl_check("step1_basis_tracks_radial_up", min_align > 0.995, "min dot(basis.y, -radial_outward) = %.5f over the loop" % min_align)
+	_qa_cyl_check("step1_back_at_start_on_floor", _player_body.is_on_floor() and absf(wrapf(_ring_theta_deg(_player_body.global_position), -180.0, 180.0)) < 25.0, "theta=%.1f on_floor=%s" % [_ring_theta_deg(_player_body.global_position), _player_body.is_on_floor()])
+	_qa_grid(shots, "gravity_step1_360_walk_angles.png")
+
+	# ---------------- STEP 2: boxes at 0..315 deg stay planted on their local floor ----------------
+	var box_rows: PackedStringArray = PackedStringArray()
+	box_rows.append("| box | home_theta | theta_now | rho_center | speed_m_s | face_align | drift_deg |")
+	box_rows.append("|---|---|---|---|---|---|---|")
+	var ring_boxes: Array[RigidBody3D] = []
+	var homes: Array[float] = []
+	for bx: Dictionary in _gravity_boxes:
+		if String((bx["body"] as Node).name).begins_with("RingBox_"):
+			ring_boxes.append(bx["body"] as RigidBody3D)
+			homes.append(float(bx["home_theta"]))
+	await _qa_frames(60)
+	# Kick every box toward the axis (1.6 m/s) — spin gravity must pull it back onto its own local floor.
+	for rbk: RigidBody3D in ring_boxes:
+		rbk.linear_velocity = _ring_up_at(rbk.global_position, Vector3.UP) * 1.6
+	await _qa_frames(300)
+	var planted_ok: int = 0
+	for bi: int in range(ring_boxes.size()):
+		var rb2: RigidBody3D = ring_boxes[bi]
+		var p2: Vector3 = rb2.global_position
+		var fa2: float = _qa_face_align(rb2, _ring_up_at(p2, Vector3.UP))
+		var rho_c: float = _ring_rho(p2)
+		var spd: float = rb2.linear_velocity.length()
+		var drift: float = absf(wrapf(_ring_theta_deg(p2) - homes[bi], -180.0, 180.0))
+		if absf(rho_c - box_rho) < 0.06 and spd < 0.05 and fa2 > 0.995 and drift < 3.0:
+			planted_ok += 1
+		box_rows.append("| %s | %.0f | %.2f | %.3f | %.4f | %.5f | %.2f |" % [rb2.name, homes[bi], _ring_theta_deg(p2), rho_c, spd, fa2, drift])
+	_qa_cyl_check("step2_8_boxes_planted_0_to_315", planted_ok == 8 and ring_boxes.size() == 8, "%d/%d boxes flat on local floor (rho %.2f +/- 0.06, speed < 0.05, face-aligned > 0.995, drift < 3 deg) after a 1.6 m/s axis-ward kick" % [planted_ok, ring_boxes.size(), box_rho])
+	_qa_free_cam(RING_CENTER - RING_AXIS * (RING_LENGTH * 0.5 - 0.3), RING_CENTER + RING_AXIS * RING_BOX_Z, Vector3.UP, 92.0)
+	await _qa_idle(2)
+	await _qa_capture("gravity_step2_ring_boxes_planted.png")
+	_qa_player_cam()
+
+	# ---------------- STEP 3: Coriolis core transit flips gravity + re-orients ----------------
+	var tbox: RigidBody3D = null
+	for bx5: Dictionary in _gravity_boxes:
+		if String((bx5["body"] as Node).name) == "CoreTransitBox":
+			tbox = bx5["body"] as RigidBody3D
+	var g_before: Vector3 = _ring_gravity_at(tbox.global_position).normalized()
+	var ext_shots: Array = []
+	_qa_cyl_check("step3_box_transit_started", _start_core_transit(tbox, false), "from theta=%.1f rho=%.3f" % [_ring_theta_deg(tbox.global_position), _ring_rho(tbox.global_position)])
+	var bguard: int = 0
+	while _is_transiting(tbox) and bguard < 600:
+		await _qa_frames(1)
+		bguard += 1
+	await _qa_frames(150)
+	var g_after: Vector3 = _ring_gravity_at(tbox.global_position).normalized()
+	var tb_align: float = _qa_face_align(tbox, _ring_up_at(tbox.global_position, Vector3.UP))
+	var brep: Dictionary = _last_box_transit_report
+	_qa_cyl_check("step3_box_crossed_core_rho0", float(brep.get("min_rho", 99.0)) < 0.1 and bool(brep.get("flipped", false)), "min_rho=%.3f flipped=%s" % [float(brep.get("min_rho", 99.0)), brep.get("flipped", false)])
+	_qa_cyl_check("step3_box_gravity_flipped_planted_opposite", g_before.dot(g_after) < -0.99 and absf(_ring_theta_deg(tbox.global_position) - 180.0) < 3.0 and absf(_ring_rho(tbox.global_position) - box_rho) < 0.06 and tbox.linear_velocity.length() < 0.05 and tb_align > 0.995,
+		"gravity dir before=(%.2f, %.2f, %.2f) after=(%.2f, %.2f, %.2f) theta=%.1f rho=%.3f speed=%.4f face_align=%.4f" % [g_before.x, g_before.y, g_before.z, g_after.x, g_after.y, g_after.z, _ring_theta_deg(tbox.global_position), _ring_rho(tbox.global_position), tbox.linear_velocity.length(), tb_align])
+
+	# Player transit via the real [E] input on the theta 0 amber lift pad
+	_place_player_in_ring(0.0, RING_SHAFT_Z)
+	_pitch = deg_to_rad(60.0)
+	_apply_pitch()
+	await _qa_frames(30)
+	var t_shots: Array = [await _qa_capture("gravity_step3a_on_lift_pad.png")]
+	var up_before: Vector3 = _player_body.global_basis.y
+	await _qa_tap(KEY_E)
+	var started: bool = not _player_transit.is_empty() or not _last_transit_report.is_empty()
+	_qa_cyl_check("step3_player_E_starts_core_transit", started, "transit_active=%s" % started)
+	var mid_shot: bool = false
+	var guard: int = 0
+	while not _player_transit.is_empty() and guard < 900:
+		await _qa_frames(1)
+		guard += 1
+		if not mid_shot and float(_player_transit.get("t", 0.0)) > CORE_TRANSIT_DURATION * 0.55:
+			mid_shot = true
+			t_shots.append(await _qa_capture("gravity_step3b_core_crossing_flip.png"))
+	await _qa_frames(90)
+	var prep: Dictionary = _last_transit_report
+	var pp3: Vector3 = _player_body.global_position
+	var up_loc: Vector3 = _ring_up_at(pp3, Vector3.UP)
+	var p_align: float = _player_body.global_basis.y.dot(up_loc)
+	var cam_align: float = _camera_pivot.global_basis.x.dot(_player_body.global_basis.x)
+	var rate_lim: float = RING_ORIENT_RATE / float(Engine.physics_ticks_per_second) + 0.001
+	_qa_cyl_check("step3_player_crossed_core_rho0", float(prep.get("min_rho", 99.0)) < 0.1 and bool(prep.get("flipped", false)), "min_rho=%.3f flipped=%s" % [float(prep.get("min_rho", 99.0)), prep.get("flipped", false)])
+	_qa_cyl_check("step3_player_smooth_reorient", float(prep.get("max_step", 9.0)) <= rate_lim, "max basis rotation per physics frame = %.4f rad (limit %.4f, 180 deg in ~%.2f s)" % [float(prep.get("max_step", 9.0)), rate_lim, PI / RING_ORIENT_RATE])
+	var by3: Vector3 = _player_body.global_basis.y
+	_qa_cyl_check("step3_player_on_opposite_floor_flipped", _player_body.is_on_floor() and absf(_ring_theta_deg(pp3) - 180.0) < 3.0 and p_align > 0.995 and up_before.dot(by3) < -0.99 and cam_align > 0.999,
+		"on_floor=%s theta=%.1f rho=%.3f body_up=(%.2f, %.2f, %.2f) dot(up_before)=%.3f body_align=%.4f camera_pivot_x_align=%.4f" % [_player_body.is_on_floor(), _ring_theta_deg(pp3), _ring_rho(pp3), by3.x, by3.y, by3.z, up_before.dot(by3), p_align, cam_align])
+	_pitch = deg_to_rad(8.0)
+	_apply_pitch()
+	await _qa_frames(3)
+	t_shots.append(await _qa_capture("gravity_step3c_landed_opposite_floor.png"))
+	var th0: float = _ring_theta_deg(_player_body.global_position)
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	await _qa_frames(120)
+	_qa_key(KEY_W, false)
+	await _qa_idle(2)
+	await _qa_frames(20)
+	var dth: float = absf(wrapf(_ring_theta_deg(_player_body.global_position) - th0, -180.0, 180.0))
+	_qa_cyl_check("step3_walk_on_flipped_floor", _player_body.is_on_floor() and dth > 15.0 and absf(_ring_rho(_player_body.global_position) - foot_rho) < 0.08, "walked %.1f deg (%.2f m) along the new floor, on_floor=%s" % [dth, deg_to_rad(dth) * R, _player_body.is_on_floor()])
+	_qa_free_cam(RING_CENTER - RING_AXIS * (RING_LENGTH * 0.5 - 0.3) + Vector3(0.0, 3.0, 0.0), RING_CENTER + RING_AXIS * RING_SHAFT_Z, Vector3.UP, 80.0)
+	await _qa_idle(2)
+	t_shots.append(await _qa_capture("gravity_step3d_shaft_overview.png"))
+	_qa_player_cam()
+	_qa_grid(t_shots, "gravity_step3_core_transit_flip.png")
+
+	# ---------------- Report ----------------
+	var out: PackedStringArray = PackedStringArray()
+	out.append("# Cylinder radial spin-gravity QA log ([t34u])")
+	out.append("")
+	out.append("display=%s  failures=%d  ring: R=%.1f m, L=%.1f m, center=%s, axis=%s, g(rho)=9.8*rho/R, orient rate=%.1f rad/s" % [DisplayServer.get_name(), _qa_failures, RING_RADIUS, RING_LENGTH, str(RING_CENTER), str(RING_AXIS), RING_ORIENT_RATE])
+	out.append("")
+	out.append_array(_qa_log)
+	out.append("")
+	out.append("## Step 1 - 360 deg sprint walk milestones")
+	out.append("")
+	out.append_array(table)
+	out.append("")
+	out.append("## Step 2 - ring boxes after settle + 1.6 m/s axis-ward kick (300 physics frames)")
+	out.append("")
+	out.append_array(box_rows)
+	var dir_abs: String = _resolve_path(QA_DIR)
+	DirAccess.make_dir_recursive_absolute(dir_abs)
+	var fn: String = dir_abs + ("/cylinder_gravity_qa_log_headless.md" if DisplayServer.get_name() == "headless" else "/cylinder_gravity_qa_log.md")
+	var fa: FileAccess = FileAccess.open(fn, FileAccess.WRITE)
+	if fa != null:
+		fa.store_string("\n".join(out) + "\n")
+		fa.close()
+	print("[CYL-QA] DONE failures=", _qa_failures, " log=", fn)
 	get_tree().quit(1 if _qa_failures > 0 else 0)
