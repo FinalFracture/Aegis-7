@@ -200,3 +200,26 @@
 2. `l2_north_gallery_unblocked.png` — Level 2 North Mezzanine walkway verifying the unobstructed gallery path (`PATH-01` fixed), `Sweep #0812`, and crisp `APT 202` signage.
 3. `room1b_crisp_signage_close.png` — Close-up (`1.5m`) of `RM 1B — BOT FABRICATION & SUBSTATION` (`D-03 TELEMETRY RELAY // AUX BUS B-14`) signage and `Kelvin #0204` verifying zero blurry bitmap text.
 4. `cylinder_hab7_promenade_view.png` — Looking out `Open_Portal_Sector_Exit` (`SECTOR-4 PROMENADE — CYLINDER HAB-7`) onto the walkable exterior promenade deck with the full-scale curving Cylinder Hab-7 interior megastructure overhead.
+
+---
+
+## `[t27u]` / `[t28u]` / `[t29u]` Doorway Header Lintel Skin & Zero-`Label3D` Overhaul (2026-10-28 CDT / UTC-5 — Gage & Patch)
+
+- **User Directive (`[t27u]` / `[t28u]` / `[t29u]`):**
+  - *"Looking much better. There is still an obvious problem in the clipping of the door sign and its beam. I want that to have a texture/skin, not a floating text box."*
+  - *"Floating text boxes should only be for speech bubbles. Or when we have the UI for python code."*
+- **Root Cause & Fix Applied:**
+  1. **Removed 100% of `Label3D` Nodes & Floating Sign Boxes from 3D Architecture, Doors, Wall Monitor, and Bots:**
+     - Deleted `_make_crisp_label3d()` and every `Label3D` / floating `BoxMesh` placard from `preface_playable_area.gd` (including all doorway signs, the `APT 201` Wall Diagnostic Monitor text overlays, and the `#05` Hammerhead bot chest `Label3D`s).
+     - Removed the old `Apartment_Atrium_Window` node from `patch_residential_sector_generator.py` (whose `"window"` node name previously triggered alpha-glass material override in `_upgrade_sector_materials()`) and removed the redundant glass/pipe transom bar at `Y = 3.25m` above `Open_Portal_Sector_Exit`.
+  2. **Created Dedicated `2048×2048` Supersampled Architectural Lintel & Monitor Skin (`sector_door_signage_skin_*.png`) + Upgraded Bot Chest Skins:**
+     - Generated `godot/assets/textures/sector_door_signage_skin_albedo.png`, `_emission.png`, `_normal.png`, and `_orm.png` at `4096×4096` (2x supersampled and downsampled with `LANCZOS` to `2048×2048`).
+     - Each doorway header strip (`APT 201 // RESIDENTIAL QUARTERS`, `ALCOVE 2C // MAINTENANCE UTILITY`, `APT 202 // RESIDENTIAL QUARTERS`, `RM 1A // LAUNDRY & UTILITY LOUNGE`, `RM 1B // BOT FABRICATION & SUBSTATION`, `SECTOR-4 PROMENADE // CYLINDER HAB-7`) is baked directly into a full-bleed brushed gunmetal-titanium lintel skin (`#545C66` matching `UV_STEEL_TRIM`) with machined corner hex-bolts, jamb seams, and engraved/backlit architectural lettering.
+     - Baked the `APT 201` Wall Diagnostic Monitor display (`HAB-7 SECTOR-4 // ENVIRONMENTAL & DRUM TELEMETRY`) and the 4 `#05` Hammerhead bot chest nameplates (`SPROCKET #0419`, `SWEEP #0812`, `KELVIN #0204`, `CLOVER #0631`) into their respective high-resolution PBR texture skins.
+  3. **Mounted Lintel Skins Flush onto All 6 Portal Header Beams (`0.36m` Tall Structural Lintels):**
+     - Upgraded all 6 portal arch header lintels (`Open_Portal_201`, `Open_Arch_2C`, `Open_Portal_202`, `Open_Portal_1A`, `Open_Portal_1B`, `Open_Portal_Sector_Exit`) to `0.36m` height in `patch_residential_sector_generator.py` and mapped the corresponding `sector_door_signage_skin_*.png` UV strip flush onto the front face of each header beam with **zero clipping and zero floating text boxes**.
+  4. **Visual Verification (`1920×1080` Captures in `godot/renders/qa/`):**
+     - `cylinder_hab7_promenade_view.png` — Verified `SECTOR-4 PROMENADE // CYLINDER HAB-7` is a flush textured skin on the doorway header beam with zero beam clipping.
+     - `room1b_crisp_signage_close.png` — Verified `RM 1B // BOT FABRICATION & SUBSTATION` is a flush textured skin on the doorway lintel beam with zero clipping or duplicate signs.
+     - `l2_north_gallery_unblocked.png` — Verified L2 North Gallery and `Sweep #0812` chest plate use flush textured skins with zero floating 3D text.
+     - `apt201_wall_monitor_and_clean_hud.png` — Verified `Apt201_WallDiagnosticMonitor` displays a clean, flush OLED texture skin with zero clipping or floating `Label3D` nodes.

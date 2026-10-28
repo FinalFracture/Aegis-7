@@ -300,8 +300,8 @@ def make_calm_open_portal_arch_frame(
     bp.add(
         "residential_atlas",
         make_world_uv_box(
-            (clear_w + 0.36, 0.20, 0.28),
-            center=(0.0, clear_h + 0.10, 0.0),
+            (clear_w + 0.36, 0.36, 0.28),
+            center=(0.0, clear_h + 0.18, 0.0),
             bevel=0.02,
             uv_rect=UV_STEEL_TRIM,
             tile_m=2.0,
@@ -606,7 +606,7 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
     )
     b_vest.add(
         "residential_atlas",
-        make_world_uv_box((2.80, 5.54, 0.22), center=(0.0, 5.89, -8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
+        make_world_uv_box((2.80, 5.38, 0.22), center=(0.0, 5.97, -8.90), bevel=0.02, uv_rect=UV_WALL_ATRIUM, tile_m=3.5, subdivide_max_m=3.5),
     )
     b_vest.add("residential_atlas", make_beveled_box((2.52, 0.018, 0.12), center=(0.0, 0.128, -8.82), bevel=0.003), UV_LIGHT_AMBER)
 
@@ -622,7 +622,6 @@ def build_calm_open_doorway_residential_sector(mats: Dict[str, RichPBRMaterial])
         ("Tech_Apartment_Upper", "PrefaceResidentialSector_Root", (-9.50, 4.20, 5.60), b_apt),
         ("apt_player_top_floor", "Tech_Apartment_Upper", (0.0, 0.0, 0.0), None),
         ("Open_Portal_201", "Tech_Apartment_Upper", (-1.70, 0.12, -2.85), b_portal_201),
-        ("Apartment_Atrium_Window", "Tech_Apartment_Upper", (1.70, 2.05, -2.85), b_apt_win),
         ("Apartment_Bunk_Pod", "Tech_Apartment_Upper", (-2.85, 0.0, 1.20), b_bunk),
         ("Apartment_Workbench", "Tech_Apartment_Upper", (1.05, 0.0, 2.15), b_wb),
         ("Workbench_Player", "Apartment_Workbench", (0.0, 0.0, 0.0), None),

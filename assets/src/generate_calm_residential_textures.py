@@ -457,30 +457,35 @@ def clean_wrist_and_bot_atlases():
         # Top-Left Q1 (`x: 0..1024, y: 0..1024`) has 4 rows (`f_idx = 0..3`, each 256px high in 2048x2048)
         # Replace rasterized text inside each banner with a sleek machined dark-anodized titanium chest plate
         # with left/right glowing department status rings and horizontal micro-trim lines (3D Label3D sits on top!)
-        dept_cols = [
-            ("#E89B2D", "#966018"),  # D-01 Engineering (Sprocket #0419)
-            ("#38B8C8", "#1E6E78"),  # D-02 Civic (Sweep #0812)
-            ("#7B5CFF", "#483298"),  # D-03 Science (Kelvin #0204)
-            ("#3BA868", "#1E643B"),  # D-04 Agri-Biosphere (Clover #0631)
+        f_bot_title = load_sign_font(40, mono=False)
+        f_bot_sub = load_sign_font(23, mono=True)
+        bot_specs = [
+            ("SPROCKET #0419", "D-01  //  ENGINEERING", "#E89B2D", "#885418"),
+            ("SWEEP #0812", "D-02  //  CIVIC SANITATION", "#38B8C8", "#1E6470"),
+            ("KELVIN #0204", "D-03  //  SCIENCE & RELAY", "#8A6CFF", "#483490"),
+            ("CLOVER #0631", "D-04  //  AGRI-BIOSPHERE", "#3BA868", "#1E5C38"),
         ]
-        for f_idx, (acc_c, em_c) in enumerate(dept_cols):
+        for f_idx, (b_title, b_sub, acc_c, em_c) in enumerate(bot_specs):
             y0 = f_idx * 256 + 16
             y1 = (f_idx + 1) * 256 - 16
             x0, x1 = 20, 1004
             d_alb.rectangle([x0, y0, x1, y1], fill=hex_rgb("#181E26"), outline=hex_rgb(acc_c), width=8)
             d_alb.rectangle([x0 + 14, y0 + 14, x1 - 14, y1 - 14], fill=hex_rgb("#141920"), outline=hex_rgb("#34404E"), width=3)
             d_emi.rectangle([x0, y0, x1, y1], fill=(0, 0, 0))
-            # Left & right glowing circular department beacon nodes
             cy = (y0 + y1) // 2
             for cx in [x0 + 68, x1 - 68]:
-                d_alb.ellipse([cx - 32, cy - 32, cx + 32, cy + 32], fill=hex_rgb("#222A34"), outline=hex_rgb(acc_c), width=6)
-                d_alb.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], fill=hex_rgb("#E8EEF4"))
-                d_emi.ellipse([cx - 24, cy - 24, cx + 24, cy + 24], outline=hex_rgb(em_c), width=5)
-                d_emi.ellipse([cx - 10, cy - 10, cx + 10, cy + 10], fill=hex_rgb(em_c))
-            # Top & bottom department accent rules
-            d_alb.rectangle([x0 + 120, y0 + 22, x1 - 120, y0 + 30], fill=hex_rgb(acc_c))
-            d_emi.rectangle([x0 + 120, y0 + 22, x1 - 120, y0 + 30], fill=hex_rgb(em_c))
-            d_alb.rectangle([x0 + 120, y1 - 30, x1 - 120, y1 - 22], fill=hex_rgb("#34404E"))
+                d_alb.ellipse([cx - 30, cy - 30, cx + 30, cy + 30], fill=hex_rgb("#222A34"), outline=hex_rgb(acc_c), width=6)
+                d_alb.ellipse([cx - 11, cy - 11, cx + 11, cy + 11], fill=hex_rgb("#E8EEF4"))
+                d_emi.ellipse([cx - 22, cy - 22, cx + 22, cy + 22], outline=hex_rgb(em_c), width=5)
+                d_emi.ellipse([cx - 9, cy - 9, cx + 9, cy + 9], fill=hex_rgb(em_c))
+            d_alb.rectangle([x0 + 120, y0 + 20, x1 - 120, y0 + 26], fill=hex_rgb(acc_c))
+            d_emi.rectangle([x0 + 120, y0 + 20, x1 - 120, y0 + 26], fill=hex_rgb(em_c))
+            d_alb.rectangle([x0 + 120, y1 - 26, x1 - 120, y1 - 20], fill=hex_rgb("#34404E"))
+            tx = (x0 + x1) // 2
+            d_alb.text((tx, cy - 24), b_title, font=f_bot_title, fill=hex_rgb("#F4F8FC"), anchor="mm")
+            d_emi.text((tx, cy - 24), b_title, font=f_bot_title, fill=hex_rgb("#3A4854"), anchor="mm")
+            d_alb.text((tx, cy + 32), b_sub, font=f_bot_sub, fill=hex_rgb(acc_c), anchor="mm")
+            d_emi.text((tx, cy + 32), b_sub, font=f_bot_sub, fill=hex_rgb(em_c), anchor="mm")
 
         for suffix, im_out in [
             ("albedo.png", im_alb),
@@ -488,7 +493,7 @@ def clean_wrist_and_bot_atlases():
             ("normal.png", im_nrm),
             ("orm.png", im_orm),
         ]:
-            for prefix in ["johnny5_utility_bot_atlas_", "utility_bot_round2_atlas_"]:
+            for prefix in ["johnny5_utility_bot_atlas_"]:
                 p_out = os.path.join(TEX_DIR, prefix + suffix)
                 im_out.save(p_out, format="PNG")
             for m_copy in glob.glob(os.path.join(MODELS_DIR, f"*_utility_bot_round2_atlas_{suffix}")):
@@ -548,52 +553,60 @@ def generate_sector_door_signage_skin():
     for idx, (title, sub, badge, acc_hex, em_hex) in enumerate(signs):
         y0 = idx * 220 * SS
         y1 = (idx + 1) * 220 * SS
-        pad = 12 * SS
-        d_alb.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=hex_rgb("#3C4654"), outline=hex_rgb("#788696"), width=4 * SS)
-        d_orm.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=(248, int(0.24 * 255), int(0.88 * 255)))
-        d_hgt.rectangle([pad, y0 + pad, W - pad, y1 - pad], fill=176)
+        # Full-bleed brushed gunmetal-titanium lintel beam skin (#545C66 matching UV_STEEL_TRIM) so the beam ITSELF is skinned!
+        d_alb.rectangle([0, y0, W, y1], fill=hex_rgb("#545C66"))
+        d_orm.rectangle([0, y0, W, y1], fill=(246, int(0.32 * 255), int(0.82 * 255)))
+        d_hgt.rectangle([0, y0, W, y1], fill=144)
 
-        in_x0, in_y0, in_x1, in_y1 = 34 * SS, y0 + 28 * SS, W - 34 * SS, y1 - 28 * SS
-        d_alb.rectangle([in_x0, in_y0, in_x1, in_y1], fill=hex_rgb("#12171E"), outline=hex_rgb(acc_hex), width=3 * SS)
-        d_orm.rectangle([in_x0, in_y0, in_x1, in_y1], fill=(235, int(0.36 * 255), int(0.32 * 255)))
-        d_hgt.rectangle([in_x0, in_y0, in_x1, in_y1], fill=112)
+        # Subtle horizontal brushed-steel grain & top/bottom machined bevel seams across full beam width
+        for gy_b in range(y0 + 6 * SS, y1 - 6 * SS, 6 * SS):
+            tone_b = 84 + int(3 * math.sin(gy_b * 0.25))
+            d_alb.line([(0, gy_b), (W, gy_b)], fill=(tone_b - 6, tone_b, tone_b + 8), width=2)
+        d_alb.rectangle([0, y0, W, y0 + 8 * SS], fill=hex_rgb("#3C444E"))
+        d_alb.rectangle([0, y1 - 8 * SS, W, y1], fill=hex_rgb("#3C444E"))
+        d_hgt.rectangle([0, y0, W, y0 + 8 * SS], fill=118)
+        d_hgt.rectangle([0, y1 - 8 * SS, W, y1], fill=118)
 
-        for bx in [22 * SS, W - 22 * SS]:
-            for by in [y0 + 20 * SS, y1 - 20 * SS]:
-                r = 6 * SS
-                d_alb.ellipse([bx - r, by - r, bx + r, by + r], fill=hex_rgb("#8C9AA8"), outline=hex_rgb("#1E242C"), width=2 * SS)
-                d_hgt.ellipse([bx - r, by - r, bx + r, by + r], fill=195)
+        # Left & right vertical structural jamb seam grooves + CNC hex-bolts on the steel beam
+        for sx_seam in [168 * SS, W - 168 * SS]:
+            d_alb.rectangle([sx_seam - 3 * SS, y0 + 10 * SS, sx_seam + 3 * SS, y1 - 10 * SS], fill=hex_rgb("#343C46"))
+            d_hgt.rectangle([sx_seam - 3 * SS, y0 + 10 * SS, sx_seam + 3 * SS, y1 - 10 * SS], fill=108)
+        for bx in [48 * SS, W - 48 * SS]:
+            for by in [y0 + 38 * SS, y1 - 38 * SS]:
+                r = 8 * SS
+                d_alb.ellipse([bx - r, by - r, bx + r, by + r], fill=hex_rgb("#6E7884"), outline=hex_rgb("#2C343E"), width=2 * SS)
+                d_hgt.ellipse([bx - r, by - r, bx + r, by + r], fill=178)
 
-        d_alb.rectangle([in_x0 + 16 * SS, in_y0 + 16 * SS, in_x0 + 30 * SS, in_y1 - 16 * SS], fill=hex_rgb(acc_hex))
-        d_emi.rectangle([in_x0 + 16 * SS, in_y0 + 16 * SS, in_x0 + 30 * SS, in_y1 - 16 * SS], fill=hex_rgb(em_hex))
-
-        b_x0, b_y0, b_x1, b_y1 = in_x0 + 46 * SS, in_y0 + 24 * SS, in_x0 + 196 * SS, in_y1 - 24 * SS
-        d_alb.rectangle([b_x0, b_y0, b_x1, b_y1], fill=hex_rgb("#1A222C"), outline=hex_rgb(acc_hex), width=3 * SS)
-        d_hgt.rectangle([b_x0, b_y0, b_x1, b_y1], fill=128)
-        d_alb.text(((b_x0 + b_x1) // 2, (b_y0 + b_y1) // 2), badge, font=f_badge, fill=hex_rgb(acc_hex), anchor="mm")
+        # Flush stenciled department badge on the left of the steel lintel beam (NO dark box!)
+        b_x0, b_y0, b_x1, b_y1 = 192 * SS, y0 + 36 * SS, 356 * SS, y1 - 36 * SS
+        d_alb.rectangle([b_x0, b_y0, b_x1, b_y1], fill=hex_rgb("#464E58"), outline=hex_rgb(acc_hex), width=4 * SS)
+        d_hgt.rectangle([b_x0, b_y0, b_x1, b_y1], fill=134)
+        d_alb.text(((b_x0 + b_x1) // 2, (b_y0 + b_y1) // 2), badge, font=f_badge, fill=hex_rgb("#F4F8FC"), anchor="mm")
         d_emi.text(((b_x0 + b_x1) // 2, (b_y0 + b_y1) // 2), badge, font=f_badge, fill=hex_rgb(em_hex), anchor="mm")
 
-        r_x0 = in_x1 - 110 * SS
-        cy = (in_y0 + in_y1) // 2
-        for k in range(3):
-            cx_dot = r_x0 + k * 28 * SS
-            d_alb.ellipse([cx_dot - 7 * SS, cy - 7 * SS, cx_dot + 7 * SS, cy + 7 * SS], fill=hex_rgb(acc_hex))
-            d_emi.ellipse([cx_dot - 7 * SS, cy - 7 * SS, cx_dot + 7 * SS, cy + 7 * SS], fill=hex_rgb(em_hex))
+        # Flush glowing accent stripe along top & bottom inner trim of the steel beam
+        d_alb.rectangle([380 * SS, y0 + 20 * SS, W - 196 * SS, y0 + 26 * SS], fill=hex_rgb(acc_hex))
+        d_emi.rectangle([380 * SS, y0 + 20 * SS, W - 196 * SS, y0 + 26 * SS], fill=hex_rgb(em_hex))
+        d_alb.rectangle([380 * SS, y1 - 26 * SS, W - 196 * SS, y1 - 20 * SS], fill=hex_rgb("#3A424C"))
 
-        div_y = y0 + 124 * SS
-        d_alb.rectangle([in_x0 + 220 * SS, div_y, in_x1 - 130 * SS, div_y + 2 * SS], fill=hex_rgb("#2C3A48"))
+        # Stenciled / Engraved Architectural Lettering directly on the brushed steel beam surface
+        tx = (380 * SS + W - 196 * SS) // 2
+        ty_title = y0 + 82 * SS
+        ty_sub = y0 + 156 * SS
+        # Subtle dark engraved bevel shadow behind letters so light lettering pops on brushed steel
+        for ox, oy in [(-2 * SS, -2 * SS), (2 * SS, 2 * SS), (0, 3 * SS)]:
+            d_alb.text((tx + ox, ty_title + oy), title, font=f_title, fill=hex_rgb("#242A32"), anchor="mm")
+            d_alb.text((tx + ox, ty_sub + oy), sub, font=f_sub, fill=hex_rgb("#242A32"), anchor="mm")
 
-        tx = (in_x0 + 220 * SS + in_x1 - 130 * SS) // 2
-        ty_title = y0 + 78 * SS
-        ty_sub = y0 + 158 * SS
-        title_col = hex_rgb("#F4F8FC") if idx != 4 else hex_rgb("#FFD28A")
+        title_col = hex_rgb("#F4F8FC") if idx != 4 else hex_rgb("#FFD68A")
         title_em = hex_rgb("#465866") if idx != 4 else hex_rgb("#684818")
         d_alb.text((tx, ty_title), title, font=f_title, fill=title_col, anchor="mm")
         d_emi.text((tx, ty_title), title, font=f_title, fill=title_em, anchor="mm")
-        d_hgt.text((tx, ty_title), title, font=f_title, fill=142, anchor="mm")
+        d_hgt.text((tx, ty_title), title, font=f_title, fill=122, anchor="mm")
 
-        d_alb.text((tx, ty_sub), sub, font=f_sub, fill=hex_rgb("#9EC8DA"), anchor="mm")
+        d_alb.text((tx, ty_sub), sub, font=f_sub, fill=hex_rgb("#D0E6F2"), anchor="mm")
         d_emi.text((tx, ty_sub), sub, font=f_sub, fill=hex_rgb("#243C48"), anchor="mm")
+        d_hgt.text((tx, ty_sub), sub, font=f_sub, fill=126, anchor="mm")
 
     # Bottom Section (y = 1320..2048 in 1x): APT 201 Wall Diagnostic / Hab-7 Telemetry Monitor OLED Screen Skin
     my0 = 1320 * SS

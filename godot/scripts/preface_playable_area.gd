@@ -522,35 +522,19 @@ func _make_signage_skin_material(v_offset: float, v_scale: float) -> StandardMat
 	return mat
 
 
-func _add_skinned_door_header_sign(parent: Node3D, nm: String, row_idx: int, pos: Vector3, rot_y_deg: float, width_m: float = 1.92, height_m: float = 0.34) -> void:
+func _add_skinned_door_header_sign(parent: Node3D, nm: String, row_idx: int, pos: Vector3, rot_y_deg: float, width_m: float = 2.04, height_m: float = 0.30) -> void:
 	var holder: Node3D = Node3D.new()
 	holder.name = nm
 	holder.position = pos
 	holder.rotation_degrees = Vector3(0.0, rot_y_deg, 0.0)
 	parent.add_child(holder)
 
-	# Machined dark-anodized titanium housing box mounted flush on the doorway header wall
-	var housing: MeshInstance3D = MeshInstance3D.new()
-	housing.name = nm + "_Housing"
-	var h_bm: BoxMesh = BoxMesh.new()
-	h_bm.size = Vector3(width_m + 0.04, height_m + 0.03, 0.024)
-	housing.mesh = h_bm
-	housing.position = Vector3(0.0, 0.0, -0.012)
-	var h_mat: StandardMaterial3D = StandardMaterial3D.new()
-	h_mat.albedo_color = Color(0.16, 0.19, 0.23, 1.0)
-	h_mat.metallic = 0.84
-	h_mat.roughness = 0.26
-	housing.material_override = h_mat
-	housing.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	holder.add_child(housing)
-
-	# Front textured signboard skin face (local +Z normal, completely clear of door lintel beams)
+	# Flush textured signboard skin face applied directly to the front face of the doorway header lintel beam (zero floating box!)
 	var face: MeshInstance3D = MeshInstance3D.new()
 	face.name = nm + "_SkinFace"
 	var qm: QuadMesh = QuadMesh.new()
 	qm.size = Vector2(width_m, height_m)
 	face.mesh = qm
-	face.position = Vector3(0.0, 0.0, 0.002)
 	var v_scale: float = 220.0 / 2048.0
 	var v_offset: float = float(row_idx) * v_scale
 	face.material_override = _make_signage_skin_material(v_offset, v_scale)
@@ -563,20 +547,20 @@ func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
 	sign_root.name = "SkinnedArchitecturalSignage"
 	parent.add_child(sign_root)
 
-	# 1. Flush-mounted Textured Doorway Header Signboards on all 6 Portals (zero Label3D, zero beam clipping!)
-	# - Open_Portal_201 (APT 201, X = -11.20, header lintel top Y = 7.12m, wall face Z = 2.67m -> center Y = 7.36m, Z = 2.65m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT201", 0, Vector3(-11.20, 7.36, 2.65), 180.0, 1.92, 0.34)
-	# - Open_Arch_2C (Alcove 2C, X = -11.50, header lintel top Y = 7.07m, wall face Z = -3.64m -> center Y = 7.32m, Z = -3.66m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_ALCOVE2C", 1, Vector3(-11.50, 7.32, -3.66), 180.0, 1.76, 0.32)
-	# - Open_Portal_202 (APT 202, X = +7.80, header lintel top Y = 7.12m, wall face Z = 2.67m -> center Y = 7.36m, Z = 2.65m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT202", 2, Vector3(7.80, 7.36, 2.65), 180.0, 1.92, 0.34)
-	# - Open_Portal_1A (RM 1A Laundry Lounge, X = -8.50, header lintel top Y = 3.02m, wall face Z = 2.76m -> center Y = 3.28m, Z = 2.74m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1A", 3, Vector3(-8.50, 3.28, 2.74), 180.0, 2.16, 0.36)
-	# - Open_Portal_1B (RM 1B Bot Substation, X = +4.50, header lintel top Y = 3.02m, wall face Z = 2.76m -> center Y = 3.28m, Z = 2.74m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1B", 4, Vector3(4.50, 3.28, 2.74), 180.0, 2.16, 0.36)
-	# - Open_Portal_Sector_Exit (Sector-4 Promenade Exit, X = 0.0, header lintel top Y = 3.22m, wall Z = -8.79..-9.01 -> center Y = 3.48m)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Interior", 5, Vector3(0.0, 3.48, -8.77), 0.0, 2.48, 0.40)
-	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Exterior", 5, Vector3(0.0, 3.48, -9.03), 180.0, 2.48, 0.40)
+	# 1. Flush-mounted Textured Doorway Header Skins directly on the front face of all 6 Portal Lintel Beams (zero Label3D, zero beam clipping!)
+	# - Open_Portal_201 (APT 201, lintel Y = 6.985..7.345m -> center Y = 7.165m, front face Z = 2.610m -> skin at Z = 2.607m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT201", 0, Vector3(-11.20, 7.165, 2.606), 180.0, 2.32, 0.32)
+	# - Open_Arch_2C (Alcove 2C, lintel Y = 6.885..7.245m -> center Y = 7.065m, front face Z = -3.690m -> skin at Z = -3.694m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_ALCOVE2C", 1, Vector3(-11.50, 7.065, -3.694), 180.0, 2.12, 0.32)
+	# - Open_Portal_202 (APT 202, lintel Y = 6.985..7.345m -> center Y = 7.165m, front face Z = 2.610m -> skin at Z = 2.606m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_APT202", 2, Vector3(7.80, 7.165, 2.606), 180.0, 2.32, 0.32)
+	# - Open_Portal_1A (RM 1A Laundry Lounge, lintel Y = 2.835..3.195m -> center Y = 3.015m, front face Z = 2.710m -> skin at Z = 2.706m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1A", 3, Vector3(-8.50, 3.015, 2.706), 180.0, 2.72, 0.32)
+	# - Open_Portal_1B (RM 1B Bot Substation, lintel Y = 2.835..3.195m -> center Y = 3.015m, front face Z = 2.710m -> skin at Z = 2.706m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_RM1B", 4, Vector3(4.50, 3.015, 2.706), 180.0, 2.52, 0.32)
+	# - Open_Portal_Sector_Exit (Sector-4 Promenade Exit, lintel Y = 3.035..3.395m -> center Y = 3.215m, atrium face Z = -8.760m, exterior face Z = -9.040m)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Interior", 5, Vector3(0.0, 3.215, -8.756), 0.0, 2.92, 0.32)
+	_add_skinned_door_header_sign(sign_root, "HeaderSign_Sector4Exit_Exterior", 5, Vector3(0.0, 3.215, -9.044), 180.0, 2.92, 0.32)
 
 	# 2. APT 201 Recessed Wall Diagnostic / Hab-7 Telemetry Monitor with Flush Textured OLED Screen Skin
 	var mon_root: Node3D = Node3D.new()
@@ -1711,21 +1695,21 @@ func _process_capture_f5_hud() -> void:
 			_apply_view_mode()
 		94:
 			_save_qa_png("apt201_wall_monitor_and_clean_hud.png")
-			# Shot 2: L2 North Mezzanine Gallery showing unobstructed walkway (PATH-01 fixed), Sweep #0812, and crisp APT 202 signage
+			# Shot 2: L2 North Mezzanine Gallery showing unobstructed walkway (PATH-01 fixed), Sweep #0812, and crisp APT 202 lintel skin
 			_third_person = false
-			_player_body.global_position = Vector3(-4.20, 4.25, 2.05)
+			_player_body.global_position = Vector3(-4.20, 4.25, 1.95)
 			_player_body.velocity = Vector3.ZERO
-			_player_body.rotation_degrees = Vector3(0.0, -92.0, 0.0)
-			_pitch = deg_to_rad(-2.0)
+			_player_body.rotation_degrees = Vector3(0.0, -94.0, 0.0)
+			_pitch = deg_to_rad(3.0)
 			_apply_view_mode()
 		106:
 			_save_qa_png("l2_north_gallery_unblocked.png")
-			# Shot 3: Close-up of RM 1B — BOT FABRICATION & SUBSTATION flush header signboard and Kelvin #0204 showing zero fuzzy text
+			# Shot 3: Close-up of RM 1B — BOT FABRICATION & SUBSTATION flush lintel skin and Kelvin #0204 showing zero fuzzy text
 			_third_person = false
-			_player_body.global_position = Vector3(4.50, 0.12, 0.35)
+			_player_body.global_position = Vector3(4.50, 0.12, 0.45)
 			_player_body.velocity = Vector3.ZERO
 			_player_body.rotation_degrees = Vector3(0.0, 180.0, 0.0)
-			_pitch = deg_to_rad(22.0)
+			_pitch = deg_to_rad(18.0)
 			_apply_view_mode()
 		118:
 			_save_qa_png("room1b_crisp_signage_close.png")
