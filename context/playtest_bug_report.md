@@ -223,3 +223,34 @@
      - `room1b_crisp_signage_close.png` — Verified `RM 1B // BOT FABRICATION & SUBSTATION` is a flush textured skin on the doorway lintel beam with zero clipping or duplicate signs.
      - `l2_north_gallery_unblocked.png` — Verified L2 North Gallery and `Sweep #0812` chest plate use flush textured skins with zero floating 3D text.
      - `apt201_wall_monitor_and_clean_hud.png` — Verified `Apt201_WallDiagnosticMonitor` displays a clean, flush OLED texture skin with zero clipping or floating `Label3D` nodes.
+
+---
+
+## `[t31u]` Hand-Rig Placement, Sinusoidal Walk Swing & Controls QA — 2026-10-28 (CDT / UTC-5)
+
+**Directive (Jared):** quality-check the hand so its movement and placement look realistic, and verify that the controls work both functionally and visually. The hand stays out of view unless it is raised; when the player looks down while walking, it swings back and forth sinusoidally.
+
+| ID | Issue | Fix (`godot/scripts/preface_playable_area.gd`) | Status |
+| :--- | :--- | :--- | :---: |
+| **HAND-01** | `#04` sleeve was parented to `_camera`, so the hand stayed stuck in the lower-left of the screen even when looking straight ahead | The arm is now solved every physics frame by `_update_first_person_arm()`. **Lowered** pose is in `_player_body` (torso/yaw) space at `(-0.26, 0.97, -0.28)` and never pitches with the camera. **Raised** pose is in `_camera` space at `(-0.24, -0.19, -0.42)`. Movement between the two is `lowered.interpolate_with(raised, smoothstep(_arm_raise_blend))`, with `move_toward(…, delta * 4.5)` | **FIXED** |
+| **HAND-02** | No walk motion on the arm | `_walk_phase += delta * lerp(5.8, 8.6, sprint_ratio)` while moving faster than 0.15 m/s. `_walk_swing_amp` ramps via `move_toward(…, delta * 6.0)`. Swing values: `Δz = -sin·0.22`, `Δy = abs(sin)·0.04`, `Δpitch = sin·24°` | **FIXED** |
+| **HAND-03** | 3 baked cyan holo torus rings (`Holo_Projection_Rings`), 3 cuff torus bands, and the octagonal display-stand pedestal were always visible on the sleeve | At load, `_build_first_person_wrist_pulse_rings()` clears the baked ring mesh and strips the emissive cuff bands, holo shell, and stand pedestal surfaces. The animation-track nodes are kept. New dynamic `PulseRings` (3 additive tori) are `visible` **only** while `_rfid_pulse_timer > 0.0`. The static `.glb` is unchanged on disk (it still embeds its textures) | **FIXED** |
+| **CTRL-01** | `[R]` fired the RFID pulse, and there was no `[F]` raise or flashlight | `[F]` now triggers a 1.8 s pulse that raises the arm and shows the rings, and holding `[F]` keeps the arm raised. `[R]` toggles the camera `PlayerFlashlight` SpotLight3D. `[E]` sets a 0.65 s reach that raises the arm, and a collected pickup is now `queue_free()`d | **FIXED** |
+| **CTRL-02** | First-person pitch clamp was ±85° | Clamp is now `-80°..+75°` (third-person clamp unchanged) | **FIXED** |
+
+### Automated verification (`godot --rendering-driver opengl3 --path godot -- --qa-hand-controls` under `xvfb-run`)
+- **Result: 39 / 39 PASS** (`display=X11`). The full log, including the 72-frame `frame | walk_phase | swing_s | hand_body_local_z | hand_pitch_deg` table, is in `context/hand_controls_qa_log.md`.
+- Hand is **100% out of the camera frustum** (0 of 126 mesh AABB sample points) at pitch −4°, −12° and −20° while standing, and in APT 201 at −14°.
+- Looking down at −52° while walking with `W`, the hand is in view at both swing extrema. Measured `hand_body_local_z` sweeps **−0.500 m ↔ −0.060 m**, and its maximum deviation from `z0 − sin(phase)·amp·0.22` is **0.00000 m**. Amplitude eases back to 0 within 30 frames after stopping.
+- `W` 5.20 m/s · `Shift` sprint 8.20 m/s at 8.60 rad/s swing frequency · `A` / `D` / `S` move in the correct body-local direction · `Space` jump rises 1.22 m and lands · mouse yaw is exact (−27.50°) · pitch clamps hold at +75° and −80°.
+- `[F]`: blend reaches 1.000, hand is in view, `PulseRings` are visible. After the pulse ends the rings hide and the arm lowers out of view. Holding `[F]` keeps blend at 1.000.
+- `[E]`: the BCI Headband pickup was collected (9→8 pickups, inventory 0→1, node freed), and the reach raised the arm to blend 0.82 before lowering it again.
+- `[V]`: 3rd-person view hides the wrist and the spring arm extends to 3.1 m, then the view returns to 1st-person. `[R]`: flashlight toggles on and off.
+- Headless pass (`--headless`): 37 / 39. The only failures were the two mouse-motion checks. The headless display server applies the parsed `InputEventMouseMotion` more than once, which is a limit of the test harness. The same checks pass exactly under X11/OpenGL.
+
+### `1920x1080` captures (`godot/renders/qa/`, gitignored)
+- `hand_qa_01_neutral_out_of_view.png`: pitch −4°, no hand and no rings in view
+- `hand_qa_02a_look_down_swing_forward.png`, `hand_qa_02b_look_down_swing_back.png`, and the combined `hand_qa_02_look_down_walking_swing.png`: pitch −52°, swing forward (sin = +1) and back (sin = −1), zero rings
+- `hand_qa_03_raised_wrist_rfid_pulse.png`: `[F]` held at the APT 201 workbench with the hand raised lower-left and `PulseRings` active
+- `hand_qa_00_apt201_lowered_reference.png`: same spot before `[F]`, hand out of view
+- Refreshed: `apt201_wall_monitor_and_clean_hud.png`, `l2_north_gallery_unblocked.png`, `room1b_crisp_signage_close.png`, `cylinder_hab7_promenade_view.png` (lowered hand out of view in all four), and `qa_f5_hud_1st_person.png` (now shows the `[F]` raised wrist and pulse)

@@ -100,6 +100,22 @@ const TP_ARM_LENGTH := 3.1
 const COLOR_CYAN := Color("#2E96B2")
 const COLOR_AMBER := Color("#C47D2B")
 
+# [t31u] Body-anchored first-person #04 arm: lowered at the player's left side (torso/yaw space, out of view
+# when looking ahead), sinusoidal walk swing visible when looking down, raised into camera view on [F] / [E].
+const RFID_PULSE_DURATION := 1.8
+const INTERACT_REACH_DURATION := 0.65
+const ARM_LOWERED_POS := Vector3(-0.26, 0.97, -0.28)       # _player_body local (wrist pivot)
+const ARM_LOWERED_ROT_DEG := Vector3(-14.0, -22.0, -10.0)   # forearm extends from left hip forward-down to wrist
+const ARM_RAISED_POS := Vector3(-0.24, -0.19, -0.42)       # _camera local (wrist pivot)
+const ARM_RAISED_ROT_DEG := Vector3(24.0, -24.0, -10.0)
+const ARM_RAISE_SPEED := 4.5
+const WALK_SWING_Z := 0.22
+const WALK_SWING_LIFT := 0.04
+const WALK_SWING_PITCH_DEG := 24.0
+const WRIST_PIVOT_IN_MODEL := Vector3(0.0, 0.195, 0.062)
+const PITCH_MIN_DEG := -80.0
+const PITCH_MAX_DEG := 75.0
+
 var _arch_container: Node3D
 var _props_container: Node3D
 var _actors_container: Node3D
@@ -143,9 +159,18 @@ var _task_base: Array[Dictionary] = []
 var _emergency: bool = false
 var _time: float = 0.0
 
-# RFID pulse
-var _pulse_ring: MeshInstance3D
-var _pulse_t: float = -1.0
+# RFID pulse rings + body-anchored arm kinematics ([t31u])
+var _pulse_rings_root: Node3D
+var _pulse_rings: Array[MeshInstance3D] = []
+var _rfid_pulse_timer: float = 0.0
+var _interact_reach_timer: float = 0.0
+var _arm_raise_blend: float = 0.0
+var _walk_phase: float = 0.0
+var _walk_swing_amp: float = 0.0
+var _flashlight: SpotLight3D
+var _qa_hand: bool = false
+var _qa_failures: int = 0
+var _qa_log: PackedStringArray = PackedStringArray()
 
 # HUD
 var _hud: CanvasLayer
@@ -179,13 +204,18 @@ func _ready() -> void:
 			_validate_only = true
 		elif arg == "--capture-f5-hud":
 			_capture_hud = true
+		elif arg == "--qa-hand-controls":
+			_qa_hand = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
 		_validate_only = true
-	if _capture_hud:
+	if _capture_hud or _qa_hand:
 		_batch_render = false
-	if DisplayServer.get_name() == "headless" and not _batch_render:
+		_validate_only = false
+	if _qa_hand:
+		_capture_hud = false
+	if DisplayServer.get_name() == "headless" and not _batch_render and not _qa_hand:
 		_validate_only = true
 		_capture_hud = false
 
@@ -201,6 +231,8 @@ func _ready() -> void:
 		# Clean startup HUD without banner toast ([t22u] Todo #3)
 	if _validate_only:
 		print("[PrefacePlayableArea] Validate OK | interactables=", _interactables.size(), " | player=", _player_body != null)
+	if _qa_hand:
+		_run_hand_controls_qa.call_deferred()
 
 
 func _ensure_child(nm: String) -> Node3D:
@@ -677,9 +709,181 @@ func _populate_pickups_and_wrist_rig() -> void:
 			_fp_wrist_model.name = "Wrist04_NeuralTendonSleeve"
 			_set_tree_cast_shadow(_fp_wrist_model, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 			_fp_wrist_holder.add_child(_fp_wrist_model)
-			_fp_wrist_model.position = Vector3(0.0, -0.18, 0.0)
-			_fp_wrist_holder.position = Vector3(-0.14, -0.12, -0.44)
-			_fp_wrist_holder.rotation_degrees = Vector3(24.0, -24.0, -10.0)
+			# Holder origin == wrist pivot so lowered/raised poses are authored at the wrist.
+			_fp_wrist_model.position = -WRIST_PIVOT_IN_MODEL
+			_fp_wrist_holder.position = ARM_RAISED_POS
+			_fp_wrist_holder.rotation_degrees = ARM_RAISED_ROT_DEG
+			_build_first_person_wrist_pulse_rings()
+
+
+func _strip_surfaces_by_mat_substr(mi: MeshInstance3D, drop_substrs: Array[String]) -> void:
+	if mi == null or mi.mesh == null:
+		return
+	var src: ArrayMesh = mi.mesh as ArrayMesh
+	if src == null:
+		return
+	var dst: ArrayMesh = ArrayMesh.new()
+	var mats: Array[Material] = []
+	for si: int in range(src.get_surface_count()):
+		var mat: Material = mi.get_active_material(si)
+		var m_src: Material = src.surface_get_material(si)
+		var nm: String = ((mat.resource_name if mat != null else "") + " " + (m_src.resource_name if m_src != null else "")).to_lower()
+		var drop: bool = false
+		for sub: String in drop_substrs:
+			if nm.contains(sub):
+				drop = true
+				break
+		if not drop:
+			dst.add_surface_from_arrays(src.surface_get_primitive_type(si), src.surface_get_arrays(si))
+			mats.append(mat)
+	mi.mesh = dst
+	for si2: int in range(mats.size()):
+		mi.set_surface_override_material(si2, mats[si2])
+
+
+func _build_first_person_wrist_pulse_rings() -> void:
+	# [t31u] Clean up the static wrist GLB at load time so zero holographic rings or stand pedestals
+	# are visible unless [F] is actively pulsing:
+	#  - Holo_Projection_Rings: clear baked 3-torus mesh (replaced by dynamic PulseRings below).
+	#  - Cuff_Aperture_Assembly: hide the 3 baked cyan/UV torus rings & translucent holo sleeve shell;
+	#    keep the machined steel cuff pins, Spool_SuperWire_Cuff, Forearm_Base sleeve, and Wrist_Joint hand.
+	#  - Forearm_Base: strip the octagonal display-stand pedestal base (gunmetal + UV ring) so only the
+	#    anatomical forearm sleeve remains.
+	if _fp_wrist_model == null:
+		return
+	var anchor: Node3D = _fp_wrist_model
+	var ring_pos: Vector3 = Vector3(0.0, 0.235, 0.135)
+	var st: Array[Node] = [_fp_wrist_model]
+	while not st.is_empty():
+		var c: Node = st.pop_back()
+		if c is MeshInstance3D and (c as MeshInstance3D).mesh != null:
+			var mi: MeshInstance3D = c as MeshInstance3D
+			var mname: String = (String(mi.name) + " " + String(mi.mesh.resource_name)).to_lower()
+			if mname.contains("holo_projection_rings"):
+				mi.mesh = null
+				anchor = mi
+				ring_pos = Vector3.ZERO
+			elif mname.contains("cuff_aperture_assembly"):
+				_strip_surfaces_by_mat_substr(mi, ["emissive", "holo"])
+			elif mname.contains("forearm_base"):
+				_strip_surfaces_by_mat_substr(mi, ["gunmetal", "emissive"])
+			elif mname.contains("spool_superwire"):
+				_strip_surfaces_by_mat_substr(mi, ["emissive", "copper"])
+		for ch: Node in c.get_children():
+			st.append(ch)
+	_pulse_rings.clear()
+	_pulse_rings_root = Node3D.new()
+	_pulse_rings_root.name = "PulseRings"
+	_pulse_rings_root.position = ring_pos
+	_pulse_rings_root.rotation_degrees = Vector3(65.0, 0.0, 0.0)
+	_pulse_rings_root.visible = false
+	anchor.add_child(_pulse_rings_root)
+	var cfgs: Array = [[0.036, 0.0, COLOR_CYAN], [0.052, 0.016, Color("#7B5CFF")], [0.066, 0.032, COLOR_CYAN]]
+	for i: int in range(cfgs.size()):
+		var c: Array = cfgs[i]
+		var r: float = float(c[0])
+		var ring: MeshInstance3D = MeshInstance3D.new()
+		ring.name = "RFID_PulseRing_%02d" % (i + 1)
+		var tm: TorusMesh = TorusMesh.new()
+		tm.inner_radius = r - 0.0035
+		tm.outer_radius = r + 0.0035
+		tm.rings = 40
+		tm.ring_segments = 8
+		ring.mesh = tm
+		ring.position = Vector3(0.0, float(c[1]), 0.0)
+		var col: Color = c[2] as Color
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		m.albedo_color = Color(col.r, col.g, col.b, 0.0)
+		ring.material_override = m
+		ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_pulse_rings_root.add_child(ring)
+		_pulse_rings.append(ring)
+
+
+func _update_pulse_rings() -> void:
+	if _pulse_rings_root == null:
+		return
+	var active: bool = _rfid_pulse_timer > 0.0
+	_pulse_rings_root.visible = active
+	if not active:
+		return
+	var elapsed: float = RFID_PULSE_DURATION - _rfid_pulse_timer
+	var env: float = clampf(minf(elapsed / 0.15, _rfid_pulse_timer / 0.35), 0.0, 1.0)
+	for i: int in range(_pulse_rings.size()):
+		var ring: MeshInstance3D = _pulse_rings[i]
+		var ph: float = fmod(elapsed * 1.6 + float(i) / 3.0, 1.0)
+		var sc: float = 0.75 + ph * 0.9
+		ring.scale = Vector3(sc, 1.0, sc)
+		var m: StandardMaterial3D = ring.material_override as StandardMaterial3D
+		m.albedo_color.a = 0.9 * (1.0 - ph) * env
+
+
+func _update_first_person_arm(delta: float) -> void:
+	if _fp_wrist_holder == null or _player_body == null or _camera == null:
+		return
+	if _rfid_pulse_timer > 0.0:
+		_rfid_pulse_timer = maxf(_rfid_pulse_timer - delta, 0.0)
+	if _interact_reach_timer > 0.0:
+		_interact_reach_timer = maxf(_interact_reach_timer - delta, 0.0)
+	var f_held: bool = _preset_active < 0 and not _capture_hud and Input.is_physical_key_pressed(KEY_F)
+	var target_raise: float = 1.0 if (f_held or _rfid_pulse_timer > 0.0 or _interact_reach_timer > 0.0) else 0.0
+	_arm_raise_blend = move_toward(_arm_raise_blend, target_raise, delta * ARM_RAISE_SPEED)
+
+	# Sinusoidal walk swing (State B) driven by real horizontal ground speed.
+	var hv: Vector3 = _player_body.velocity
+	hv.y = 0.0
+	var hs: float = hv.length()
+	var moving: bool = hs > 0.15 and _player_body.is_on_floor()
+	var sprint_ratio: float = clampf((hs - WALK_SPEED) / (SPRINT_SPEED - WALK_SPEED), 0.0, 1.0)
+	var target_amp: float = clampf(hs / WALK_SPEED, 0.0, 1.0) if moving else 0.0
+	if moving:
+		_walk_phase = fmod(_walk_phase + delta * lerpf(5.8, 8.6, sprint_ratio), TAU)
+	_walk_swing_amp = move_toward(_walk_swing_amp, target_amp, delta * 6.0)
+	var smooth_blend: float = smoothstep(0.0, 1.0, _arm_raise_blend)
+	var swing_s: float = sin(_walk_phase) * _walk_swing_amp
+
+	# State A: lowered at the left side in _player_body (torso/yaw) space — never pitches with the camera.
+	var low_pos: Vector3 = ARM_LOWERED_POS + Vector3(0.0, absf(swing_s) * WALK_SWING_LIFT, -swing_s * WALK_SWING_Z)
+	var low_rot: Vector3 = ARM_LOWERED_ROT_DEG + Vector3(swing_s * WALK_SWING_PITCH_DEG, 0.0, 0.0)
+	var lowered_xf: Transform3D = _player_body.global_transform * Transform3D(Basis.from_euler(low_rot * (PI / 180.0)), low_pos)
+	# State C: raised into the camera viewing pose.
+	var raised_xf: Transform3D = _camera.global_transform * Transform3D(Basis.from_euler(ARM_RAISED_ROT_DEG * (PI / 180.0)), ARM_RAISED_POS)
+	_fp_wrist_holder.global_transform = lowered_xf.interpolate_with(raised_xf, smooth_blend)
+	_update_pulse_rings()
+
+
+func _hand_body_local() -> Transform3D:
+	return _player_body.global_transform.affine_inverse() * _fp_wrist_holder.global_transform
+
+
+func _wrist_world_points() -> PackedVector3Array:
+	var pts: PackedVector3Array = PackedVector3Array()
+	if _fp_wrist_model == null:
+		return pts
+	var st: Array[Node] = [_fp_wrist_model]
+	while not st.is_empty():
+		var c: Node = st.pop_back()
+		if c is MeshInstance3D and (c as MeshInstance3D).mesh != null and not String(c.name).begins_with("RFID_PulseRing"):
+			var mi: MeshInstance3D = c as MeshInstance3D
+			var bb: AABB = mi.get_aabb()
+			for k: int in range(8):
+				pts.append(mi.global_transform * bb.get_endpoint(k))
+			pts.append(mi.global_transform * bb.get_center())
+		for ch: Node in c.get_children():
+			st.append(ch)
+	return pts
+
+
+func _hand_points_in_view() -> int:
+	var n: int = 0
+	for p: Vector3 in _wrist_world_points():
+		if _camera.is_position_in_frustum(p) and not _camera.is_position_behind(p):
+			n += 1
+	return n
 
 
 # ------------------------------------------------------------------------------
@@ -1127,9 +1331,36 @@ func _setup_player_controller() -> void:
 		_rostov_anim = ""
 		_set_rostov_anim("Idle")
 
+	if _fp_wrist_holder != null:
+		# [t31u] Arm is no longer glued to the camera: its pose is solved every physics frame in body space.
+		_fp_wrist_holder.get_parent().remove_child(_fp_wrist_holder)
+		add_child(_fp_wrist_holder)
+		_fp_wrist_holder.top_level = true
+		_arm_raise_blend = 0.0
+	if _camera != null:
+		_flashlight = SpotLight3D.new()
+		_flashlight.name = "PlayerFlashlight"
+		_flashlight.position = Vector3(0.10, -0.06, -0.05)
+		_flashlight.light_color = Color("#FFF1DC")
+		_flashlight.light_energy = 2.4
+		_flashlight.spot_range = 16.0
+		_flashlight.spot_angle = 26.0
+		_flashlight.spot_angle_attenuation = 0.9
+		_flashlight.shadow_enabled = true
+		_flashlight.shadow_bias = 0.03
+		_flashlight.visible = false
+		_camera.add_child(_flashlight)
 	if _fp_wrist_model != null:
 		_play_actor_anim(_fp_wrist_model, ["Idle", "WristRaiseInspect"], 0.0)
 	_apply_view_mode()
+	_update_first_person_arm(0.0)
+
+
+func _toggle_flashlight() -> void:
+	if _flashlight == null:
+		return
+	_flashlight.visible = not _flashlight.visible
+	_show_toast("FLASHLIGHT " + ("ON" if _flashlight.visible else "OFF"), 1.2)
 
 
 func _set_rostov_anim(nm: String) -> void:
@@ -1155,7 +1386,7 @@ func _apply_view_mode() -> void:
 		_fp_wrist_holder.visible = not _third_person and _preset_active < 0
 	if _rostov_root != null:
 		_rostov_root.visible = _third_person or _preset_active >= 0
-	_pitch = clampf(_pitch, deg_to_rad(-60.0) if _third_person else deg_to_rad(-85.0), deg_to_rad(45.0) if _third_person else deg_to_rad(85.0))
+	_pitch = clampf(_pitch, deg_to_rad(-60.0) if _third_person else deg_to_rad(PITCH_MIN_DEG), deg_to_rad(45.0) if _third_person else deg_to_rad(PITCH_MAX_DEG))
 	if _camera_pivot != null:
 		_camera_pivot.rotation = Vector3(_pitch, 0.0, 0.0)
 
@@ -1206,7 +1437,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			get_viewport().set_input_as_handled()
 			return
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and _preset_active < 0:
+	if event is InputEventMouseMotion and (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED or _qa_hand) and _preset_active < 0:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
 		_player_body.rotate_y(-mm.relative.x * MOUSE_SENS)
 		_pitch -= mm.relative.y * MOUSE_SENS
@@ -1223,8 +1454,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_view()
 			KEY_E:
 				_interact()
-			KEY_R:
+			KEY_F:
 				_trigger_rfid_pulse()
+			KEY_R:
+				_toggle_flashlight()
 			KEY_N:
 				_set_emergency_lighting(not _emergency)
 			KEY_1:
@@ -1244,8 +1477,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _apply_pitch() -> void:
-	var lo: float = deg_to_rad(-60.0) if _third_person else deg_to_rad(-85.0)
-	var hi: float = deg_to_rad(45.0) if _third_person else deg_to_rad(85.0)
+	var lo: float = deg_to_rad(-60.0) if _third_person else deg_to_rad(PITCH_MIN_DEG)
+	var hi: float = deg_to_rad(45.0) if _third_person else deg_to_rad(PITCH_MAX_DEG)
 	_pitch = clampf(_pitch, lo, hi)
 	if _camera_pivot != null:
 		_camera_pivot.rotation = Vector3(_pitch, 0.0, 0.0)
@@ -1314,6 +1547,7 @@ func _physics_process(delta: float) -> void:
 
 	if b.global_position.y < -8.0:
 		_respawn()
+	_update_first_person_arm(delta)
 
 	var moving: bool = Vector2(b.velocity.x, b.velocity.z).length() > 0.2 and b.is_on_floor()
 	_set_rostov_anim("WalkCycle" if moving else "Idle")
@@ -1353,6 +1587,8 @@ func _find_nearest_interactable(max_dist: float) -> Dictionary:
 
 
 func _interact() -> void:
+	if not _third_person:
+		_interact_reach_timer = INTERACT_REACH_DURATION
 	var it: Dictionary = _find_nearest_interactable(INTERACT_RANGE)
 	if it.is_empty():
 		_show_toast("NOTHING IN REACH // MOVE WITHIN 2.8m", 1.6)
@@ -1360,7 +1596,9 @@ func _interact() -> void:
 	var kind: String = String(it["kind"])
 	if bool(it["pickup"]):
 		it["collected"] = true
-		(it["node"] as Node3D).visible = false
+		var picked: Node3D = it["node"] as Node3D
+		picked.visible = false
+		picked.queue_free()
 		_inventory[kind] = int(_inventory[kind]) + 1
 		_show_toast("COLLECTED %s  [%d/%d]" % [String(it["label"]), int(_inventory[kind]), int(_inventory_max[kind])], 2.6)
 		if _fp_wrist_model != null and not _third_person:
@@ -1383,30 +1621,8 @@ func _trigger_rfid_pulse() -> void:
 		return
 	if _fp_wrist_model != null:
 		_play_actor_anim(_fp_wrist_model, ["RFIDPulse", "Idle"], 0.0)
-	if _pulse_ring != null and is_instance_valid(_pulse_ring):
-		_pulse_ring.queue_free()
-	_pulse_ring = MeshInstance3D.new()
-	_pulse_ring.name = "Wrist04_RFIDPulseRing"
-	var torus: TorusMesh = TorusMesh.new()
-	torus.inner_radius = 0.92
-	torus.outer_radius = 1.0
-	torus.rings = 48
-	torus.ring_segments = 8
-	_pulse_ring.mesh = torus
-	var mat: StandardMaterial3D = StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color = Color(COLOR_CYAN.r, COLOR_CYAN.g, COLOR_CYAN.b, 0.85)
-	mat.emission_enabled = true
-	mat.emission = COLOR_CYAN
-	mat.emission_energy_multiplier = 1.2
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_pulse_ring.material_override = mat
-	_pulse_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(_pulse_ring)
-	_pulse_ring.global_position = _player_body.global_position + Vector3(0.0, 1.05, 0.0)
-	_pulse_ring.scale = Vector3(0.3, 0.3, 0.3)
-	_pulse_t = 0.0
+	# [t31u] Raises the wrist and shows the dynamic PulseRings only for the pulse duration.
+	_rfid_pulse_timer = RFID_PULSE_DURATION
 
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("#04 WRIST RFID PULSE // 13.56 MHz // RANGE 12.0m")
@@ -1620,18 +1836,6 @@ func _process(delta: float) -> void:
 		_hud_scan.modulate.a = clampf(_scan_t / 0.8, 0.0, 1.0)
 		if _scan_t <= 0.0:
 			_hud_scan.visible = false
-	if _pulse_t >= 0.0 and _pulse_ring != null and is_instance_valid(_pulse_ring):
-		_pulse_t += delta
-		var s: float = 0.3 + _pulse_t * 9.0
-		_pulse_ring.scale = Vector3(s, 1.0, s)
-		var m: StandardMaterial3D = _pulse_ring.material_override as StandardMaterial3D
-		m.albedo_color.a = clampf(0.85 * (1.0 - _pulse_t / 1.3), 0.0, 0.85)
-		if _player_body != null:
-			_pulse_ring.global_position = _player_body.global_position + Vector3(0.0, 1.05, 0.0)
-		if _pulse_t > 1.3:
-			_pulse_ring.queue_free()
-			_pulse_ring = null
-			_pulse_t = -1.0
 	if _emergency:
 		var e: float = 0.30 + 0.22 * (0.5 + 0.5 * sin(_time * 3.2))
 		for l: OmniLight3D in _task_lights:
@@ -1641,28 +1845,40 @@ func _process(delta: float) -> void:
 		_process_capture_f5_hud()
 
 
-func _save_qa_png(fname: String) -> void:
+func _save_qa_png(fname: String) -> Image:
 	var img: Image = get_viewport().get_texture().get_image()
 	if img == null or img.is_empty():
 		push_warning("[PrefacePlayableArea] Empty viewport image for " + fname)
-		return
+		return null
 	var dir_abs: String = _resolve_path(QA_DIR)
 	DirAccess.make_dir_recursive_absolute(dir_abs)
 	var out: String = dir_abs + "/" + fname
 	if img.save_png(out) == OK:
 		print("[PrefacePlayableArea] Saved F5 HUD capture ", out)
+	return img
 
 
 func _process_capture_f5_hud() -> void:
 	match _frame_counter:
 		20:
-			# 1st-person: turn toward the Apt 201 workbench so the pickups + [E] prompt + #04 sleeve are in frame.
+			# 1st-person: turn toward the Apt 201 workbench and raise the #04 wrist ([F] pulse) so the sleeve + rings + [E] prompt are in frame.
 			_third_person = false
 			_player_body.rotation_degrees = Vector3(0.0, -146.0, 0.0)
 			_pitch = deg_to_rad(-16.0)
 			_apply_view_mode()
+			_trigger_rfid_pulse()
+			_arm_raise_blend = 1.0  # capture frames can outrun physics ticks; pin the raised pose
+			_update_first_person_arm(0.0)
+		47, 48:
+			# Software-rendered capture frames take ~0.9 s each, so re-arm the 1.8 s pulse right before the grab.
+			_rfid_pulse_timer = RFID_PULSE_DURATION
+			_arm_raise_blend = 1.0
+			_update_first_person_arm(0.0)
 		50:
 			_save_qa_png("qa_f5_hud_1st_person.png")
+			_rfid_pulse_timer = 0.0
+			_arm_raise_blend = 0.0
+			_update_first_person_arm(0.0)
 			# 3rd-person: Rostov on the L1 atrium concourse facing the planters, side rooms, and mezzanine.
 			_player_body.global_position = Vector3(-0.60, 0.15, -4.60)
 			_player_body.velocity = Vector3.ZERO
@@ -1674,6 +1890,9 @@ func _process_capture_f5_hud() -> void:
 			_trigger_rfid_pulse()
 		70:
 			_save_qa_png("qa_f5_hud_3rd_person.png")
+			_rfid_pulse_timer = 0.0
+			_arm_raise_blend = 0.0
+			_update_first_person_arm(0.0)
 			# Alcove 2C / L2 West Gallery looking down at the L1 atrium floor (matching Jared [t16u] angle).
 			_third_person = false
 			_player_body.global_position = Vector3(-9.20, 4.25, -1.80)
@@ -1758,3 +1977,299 @@ func _process_batch_render() -> void:
 				img.save_png(f2)
 		_render_step += 1
 		_render_wait = 0
+
+
+# ------------------------------------------------------------------------------
+# [t31u] Automated hand-rig + controls QA  (`-- --qa-hand-controls`)
+# Drives the REAL input path via Input.parse_input_event and logs PASS/FAIL lines.
+# ------------------------------------------------------------------------------
+func _qa_key(code: Key, pressed: bool) -> void:
+	var ev: InputEventKey = InputEventKey.new()
+	ev.keycode = code
+	ev.physical_keycode = code
+	ev.pressed = pressed
+	Input.parse_input_event(ev)
+
+
+func _qa_tap(code: Key) -> void:
+	_qa_key(code, true)
+	await _qa_idle(3)
+	_qa_key(code, false)
+	await _qa_idle(2)
+
+
+func _qa_idle(n: int) -> void:
+	# Parsed input is flushed once per idle (process) frame, which can span several physics ticks.
+	for i: int in range(n):
+		await get_tree().process_frame
+
+
+func _qa_mouse(rel: Vector2) -> void:
+	var mm: InputEventMouseMotion = InputEventMouseMotion.new()
+	mm.relative = rel
+	mm.screen_relative = rel
+	Input.parse_input_event(mm)
+
+
+func _qa_frames(n: int) -> void:
+	for i: int in range(n):
+		await get_tree().physics_frame
+
+
+func _qa_check(nm: String, ok: bool, detail: String) -> void:
+	var line: String = "%s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail]
+	print("[HAND-QA] ", line)
+	_qa_log.append(line)
+	if not ok:
+		_qa_failures += 1
+
+
+func _qa_place(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
+	_player_body.global_position = pos
+	_player_body.velocity = Vector3.ZERO
+	_player_body.rotation_degrees = Vector3(0.0, yaw_deg, 0.0)
+	_pitch = deg_to_rad(pitch_deg)
+	_apply_pitch()
+
+
+func _qa_capture(fname: String) -> Image:
+	if DisplayServer.get_name() == "headless":
+		return null
+	await RenderingServer.frame_post_draw
+	return _save_qa_png(fname)
+
+
+func _qa_hand_row(frame: int) -> String:
+	var hl: Transform3D = _hand_body_local()
+	return "| %3d | %6.3f | %+6.3f | %+7.3f | %7.2f | %6.2f |" % [frame, _walk_phase, sin(_walk_phase) * _walk_swing_amp, hl.origin.z, rad_to_deg(hl.basis.get_euler().x), _walk_swing_amp]
+
+
+func _run_hand_controls_qa() -> void:
+	if _player_body == null or _camera == null or _fp_wrist_holder == null:
+		_qa_check("setup", false, "player/camera/wrist missing")
+		get_tree().quit(1)
+		return
+	if _hud_toast != null:
+		_hud_toast.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(10)
+
+	# --- 1. Neutral straight-ahead: hand 100% out of view (Promenade deck, open space) ---
+	_qa_place(Vector3(0.0, 0.25, -12.0), 0.0, -4.0)
+	await _qa_frames(30)
+	_qa_check("floor_contact", _player_body.is_on_floor(), "is_on_floor=%s y=%.3f" % [_player_body.is_on_floor(), _player_body.global_position.y])
+	var vis_neutral: int = _hand_points_in_view()
+	_qa_check("neutral_hand_out_of_view", vis_neutral == 0 and _arm_raise_blend == 0.0, "pitch=-4 blend=%.2f hand_pts_in_frustum=%d/%d" % [_arm_raise_blend, vis_neutral, _wrist_world_points().size()])
+	_qa_check("pulse_rings_hidden_idle", _pulse_rings_root != null and not _pulse_rings_root.visible, "PulseRings.visible=%s" % [_pulse_rings_root.visible if _pulse_rings_root != null else "null"])
+	await _qa_capture("hand_qa_01_neutral_out_of_view.png")
+	for pd: float in [-12.0, -20.0]:
+		_qa_place(_player_body.global_position, 0.0, pd)
+		await _qa_frames(3)
+		_qa_check("standing_hand_out_of_view_pitch_%d" % int(pd), _hand_points_in_view() == 0, "pitch=%d pts_in_frustum=%d" % [int(pd), _hand_points_in_view()])
+
+	# --- 2. Mouse look (yaw + pitch clamps -80..+75) ---
+	_qa_place(_player_body.global_position, 0.0, -4.0)
+	await _qa_frames(2)
+	var yaw0: float = _player_body.rotation.y
+	_qa_mouse(Vector2(200.0, 0.0))
+	await _qa_idle(3)
+	var dyaw: float = rad_to_deg(_player_body.rotation.y - yaw0)
+	_qa_check("mouse_yaw", absf(dyaw - rad_to_deg(-200.0 * MOUSE_SENS)) < 0.5, "dyaw=%.2f deg (expected %.2f)" % [dyaw, rad_to_deg(-200.0 * MOUSE_SENS)])
+	_qa_mouse(Vector2(0.0, -6000.0))
+	await _qa_idle(3)
+	_qa_check("mouse_pitch_clamp_up", absf(rad_to_deg(_pitch) - PITCH_MAX_DEG) < 0.05, "pitch=%.2f" % rad_to_deg(_pitch))
+	_qa_mouse(Vector2(0.0, 12000.0))
+	await _qa_idle(3)
+	_qa_check("mouse_pitch_clamp_down", absf(rad_to_deg(_pitch) - PITCH_MIN_DEG) < 0.05, "pitch=%.2f" % rad_to_deg(_pitch))
+	_qa_place(Vector3(0.0, 0.25, -11.0), 0.0, -4.0)
+	await _qa_frames(10)
+	_qa_mouse(Vector2(0.0, deg_to_rad(48.0) / MOUSE_SENS))
+	await _qa_idle(3)
+	_qa_check("mouse_pitch_look_down", absf(rad_to_deg(_pitch) + 52.0) < 0.2, "pitch=%.2f (target -52)" % rad_to_deg(_pitch))
+
+	# --- 3. W walk + sinusoidal arm swing table (looking down -52 deg) ---
+	var p0: Vector3 = _player_body.global_position
+	_walk_phase = 0.0
+	_qa_key(KEY_W, true)
+	var table: PackedStringArray = PackedStringArray()
+	table.append("| frame | walk_phase | swing_s | hand_body_local_z | hand_pitch_deg | amp |")
+	table.append("|---|---|---|---|---|---|")
+	var max_err: float = 0.0
+	var z_min: float = 10.0
+	var z_max: float = -10.0
+	var vis_fwd: int = 0
+	var vis_back: int = 0
+	for f: int in range(72):
+		await _qa_frames(1)
+		table.append(_qa_hand_row(f))
+		var hl: Transform3D = _hand_body_local()
+		var s_now: float = sin(_walk_phase) * _walk_swing_amp
+		var expect_z: float = ARM_LOWERED_POS.z - s_now * WALK_SWING_Z
+		max_err = maxf(max_err, absf(hl.origin.z - expect_z))
+		z_min = minf(z_min, hl.origin.z)
+		z_max = maxf(z_max, hl.origin.z)
+		if s_now > 0.95:
+			vis_fwd = max(vis_fwd, _hand_points_in_view())
+		elif s_now < -0.95:
+			vis_back = max(vis_back, _hand_points_in_view())
+	var walk_speed: float = Vector2(_player_body.velocity.x, _player_body.velocity.z).length()
+	_qa_key(KEY_W, false)
+	var disp: Vector3 = _player_body.global_position - p0
+	# Deterministic 1920x1080 captures at the exact forward (+1.0) and backward (-1.0) extrema of the swing cycle.
+	_walk_swing_amp = 1.0
+	_walk_phase = PI * 0.5
+	_update_first_person_arm(0.0)
+	vis_fwd = max(vis_fwd, _hand_points_in_view())
+	var img_fwd: Image = await _qa_capture("hand_qa_02a_look_down_swing_forward.png")
+	_walk_swing_amp = 1.0
+	_walk_phase = PI * 1.5
+	_update_first_person_arm(0.0)
+	vis_back = max(vis_back, _hand_points_in_view())
+	var img_back: Image = await _qa_capture("hand_qa_02b_look_down_swing_back.png")
+	var got_fwd: bool = true
+	var got_back: bool = true
+	_qa_check("W_forward_move", disp.z < -3.0 and absf(disp.x) < 0.3, "disp=(%.2f, %.2f, %.2f) speed=%.2f m/s" % [disp.x, disp.y, disp.z, walk_speed])
+	_qa_check("walk_speed", absf(walk_speed - WALK_SPEED) < 0.1, "%.2f m/s (expected %.1f)" % [walk_speed, WALK_SPEED])
+	_qa_check("arm_swing_sinusoidal", max_err < 0.004, "max |z - (z0 - sin(phase)*amp*0.22)| = %.5f m over 96 frames" % max_err)
+	_qa_check("arm_swing_range", z_min < -0.47 and z_max > -0.09, "hand_body_local_z range [%.3f, %.3f] m" % [z_min, z_max])
+	_qa_check("look_down_swing_forward_visible", got_fwd and vis_fwd > 0, "captured=%s pts_in_frustum=%d" % [got_fwd, vis_fwd])
+	_qa_check("look_down_swing_back_visible", got_back and vis_back > 0, "captured=%s pts_in_frustum=%d" % [got_back, vis_back])
+	_qa_check("no_rings_while_walking", not _pulse_rings_root.visible, "PulseRings.visible=%s" % _pulse_rings_root.visible)
+	if img_fwd != null and img_back != null:
+		var combo: Image = Image.create(1920, 1080, false, img_fwd.get_format())
+		combo.blit_rect(img_fwd, Rect2i(300, 0, 960, 1080), Vector2i(0, 0))
+		combo.blit_rect(img_back, Rect2i(300, 0, 960, 1080), Vector2i(960, 0))
+		combo.fill_rect(Rect2i(958, 0, 4, 1080), Color(0.9, 0.95, 1.0, 1.0))
+		combo.save_png(_resolve_path(QA_DIR) + "/hand_qa_02_look_down_walking_swing.png")
+		print("[PrefacePlayableArea] Saved combined swing comparison")
+
+	# --- 4. Stop: swing amplitude eases back to 0 ---
+	await _qa_frames(30)
+	var hl_stop: Transform3D = _hand_body_local()
+	_qa_check("stop_swing_eases_out", _walk_swing_amp < 0.001 and absf(hl_stop.origin.z - ARM_LOWERED_POS.z) < 0.002, "amp=%.3f z=%.3f" % [_walk_swing_amp, hl_stop.origin.z])
+
+	# --- 5. Shift sprint, A / S / D strafe ---
+	_qa_place(Vector3(0.0, 0.25, -15.0), 0.0, -4.0)
+	await _qa_frames(10)
+	_qa_key(KEY_SHIFT, true)
+	_qa_key(KEY_W, true)
+	await _qa_frames(20)
+	var ph_a: float = _walk_phase
+	await _qa_frames(1)
+	var dph: float = fposmod(_walk_phase - ph_a, TAU) * 60.0
+	var sp: float = Vector2(_player_body.velocity.x, _player_body.velocity.z).length()
+	_qa_key(KEY_W, false)
+	_qa_key(KEY_SHIFT, false)
+	_qa_check("shift_sprint", absf(sp - SPRINT_SPEED) < 0.1 and absf(dph - 8.6) < 0.2, "speed=%.2f m/s swing_freq=%.2f rad/s" % [sp, dph])
+	for kd: Array in [[KEY_A, Vector3(-1, 0, 0), "A_strafe_left"], [KEY_D, Vector3(1, 0, 0), "D_strafe_right"], [KEY_S, Vector3(0, 0, 1), "S_backpedal"]]:
+		_qa_place(Vector3(0.0, 0.25, -20.0), 0.0, -4.0)
+		await _qa_frames(8)
+		var q0: Vector3 = _player_body.global_position
+		_qa_key(kd[0] as Key, true)
+		await _qa_frames(20)
+		_qa_key(kd[0] as Key, false)
+		var dq: Vector3 = _player_body.global_position - q0
+		dq.y = 0.0
+		var dirn: Vector3 = kd[1] as Vector3
+		_qa_check(String(kd[2]), dq.length() > 1.0 and dq.normalized().dot(dirn) > 0.98, "disp=(%.2f, %.2f)" % [dq.x, dq.z])
+	await _qa_frames(10)
+
+	# --- 6. Space jump ---
+	var y0: float = _player_body.global_position.y
+	var y_peak: float = y0
+	_qa_key(KEY_SPACE, true)
+	await _qa_idle(3)
+	_qa_key(KEY_SPACE, false)
+	var landed: bool = false
+	for jf: int in range(90):
+		await _qa_frames(1)
+		y_peak = maxf(y_peak, _player_body.global_position.y)
+		if jf > 10 and _player_body.is_on_floor():
+			landed = true
+			break
+	_qa_check("space_jump", y_peak - y0 > 0.9 and landed, "rise=%.2f m landed=%s" % [y_peak - y0, landed])
+
+	# --- 7. [F] wrist raise + RFID PulseRings (APT 201 workbench) ---
+	_qa_place(Vector3(-8.50, 4.30, 6.35), 180.0, -14.0)
+	await _qa_frames(30)
+	_qa_check("apt201_lowered_out_of_view", _hand_points_in_view() == 0 and not _pulse_rings_root.visible, "pts_in_frustum=%d rings=%s" % [_hand_points_in_view(), _pulse_rings_root.visible])
+	await _qa_capture("hand_qa_00_apt201_lowered_reference.png")
+	await _qa_tap(KEY_F)
+	await _qa_frames(30)
+	var vis_raised: int = _hand_points_in_view()
+	_qa_check("F_raise_blend", _arm_raise_blend > 0.999, "blend=%.3f pulse_timer=%.2f" % [_arm_raise_blend, _rfid_pulse_timer])
+	_qa_check("F_hand_in_view", vis_raised > 0, "pts_in_frustum=%d" % vis_raised)
+	_qa_check("F_pulse_rings_visible", _pulse_rings_root.visible, "PulseRings.visible=%s" % _pulse_rings_root.visible)
+	await _qa_capture("hand_qa_03_raised_wrist_rfid_pulse.png")
+	await _qa_frames(130)
+	_qa_check("F_pulse_ends_rings_hidden", not _pulse_rings_root.visible and _rfid_pulse_timer == 0.0, "rings=%s timer=%.2f" % [_pulse_rings_root.visible, _rfid_pulse_timer])
+	await _qa_frames(40)
+	_qa_check("F_arm_lowers_after_pulse", _arm_raise_blend == 0.0 and _hand_points_in_view() == 0, "blend=%.2f pts=%d" % [_arm_raise_blend, _hand_points_in_view()])
+	_qa_key(KEY_F, true)
+	await _qa_frames(40)
+	var held_blend: float = _arm_raise_blend
+	await _qa_frames(120)
+	_qa_check("F_hold_keeps_raised", held_blend > 0.999 and _arm_raise_blend > 0.999, "blend after 2.7s hold=%.3f" % _arm_raise_blend)
+	_qa_key(KEY_F, false)
+	await _qa_frames(40)
+
+	# --- 8. [E] interact reach + pickup removal ---
+	var n_before: int = 0
+	for it: Dictionary in _interactables:
+		if bool(it["pickup"]) and not bool(it["collected"]):
+			n_before += 1
+	var target: Dictionary = _find_nearest_interactable(INTERACT_RANGE)
+	var tgt_node: Node3D = target.get("node", null) as Node3D
+	var tgt_label: String = String(target.get("label", "none"))
+	var inv_before: int = 0
+	for k: String in _inventory.keys():
+		inv_before += int(_inventory[k])
+	_qa_key(KEY_E, true)
+	await _qa_idle(1)
+	await _qa_frames(12)
+	var reach_blend: float = _arm_raise_blend
+	_qa_key(KEY_E, false)
+	await _qa_frames(2)
+	var n_after: int = 0
+	for it2: Dictionary in _interactables:
+		if bool(it2["pickup"]) and not bool(it2["collected"]):
+			n_after += 1
+	var inv_after: int = 0
+	for k2: String in _inventory.keys():
+		inv_after += int(_inventory[k2])
+	_qa_check("E_pickup_collected_removed", n_after == n_before - 1 and inv_after == inv_before + 1 and (tgt_node == null or not is_instance_valid(tgt_node)), "target=%s pickups %d->%d inventory %d->%d node_freed=%s" % [tgt_label, n_before, n_after, inv_before, inv_after, tgt_node == null or not is_instance_valid(tgt_node)])
+	_qa_check("E_reach_raises_arm", reach_blend > 0.5, "blend 12 physics frames after [E]=%.2f" % reach_blend)
+	await _qa_frames(60)
+	_qa_check("E_reach_lowers_again", _arm_raise_blend == 0.0, "blend=%.2f" % _arm_raise_blend)
+
+	# --- 9. [V] view toggle & [R] flashlight ---
+	await _qa_tap(KEY_V)
+	await _qa_frames(3)
+	_qa_check("V_third_person", _third_person and not _fp_wrist_holder.visible and _spring_arm.spring_length > 3.0, "third=%s wrist_visible=%s arm=%.1f" % [_third_person, _fp_wrist_holder.visible, _spring_arm.spring_length])
+	await _qa_tap(KEY_V)
+	await _qa_frames(3)
+	_qa_check("V_back_to_first_person", not _third_person and _fp_wrist_holder.visible and _spring_arm.spring_length == 0.0, "third=%s wrist_visible=%s" % [_third_person, _fp_wrist_holder.visible])
+	await _qa_tap(KEY_R)
+	_qa_check("R_flashlight_on", _flashlight != null and _flashlight.visible, "visible=%s" % _flashlight.visible)
+	await _qa_tap(KEY_R)
+	_qa_check("R_flashlight_off", _flashlight != null and not _flashlight.visible, "visible=%s" % _flashlight.visible)
+
+	# --- Report ---
+	var out: PackedStringArray = PackedStringArray()
+	out.append("# Hand-rig & controls QA log ([t31u])")
+	out.append("display=%s  failures=%d" % [DisplayServer.get_name(), _qa_failures])
+	out.append("")
+	out.append_array(_qa_log)
+	out.append("")
+	out.append("## Sinusoidal arm swing — W walk, pitch -52 deg (physics 60 Hz)")
+	out.append_array(table)
+	var dir_abs: String = _resolve_path(QA_DIR)
+	DirAccess.make_dir_recursive_absolute(dir_abs)
+	var fn: String = dir_abs + ("/hand_controls_qa_log_headless.md" if DisplayServer.get_name() == "headless" else "/hand_controls_qa_log.md")
+	var fa: FileAccess = FileAccess.open(fn, FileAccess.WRITE)
+	if fa != null:
+		fa.store_string("\n".join(out) + "\n")
+		fa.close()
+	print("[HAND-QA] DONE failures=", _qa_failures, " log=", fn)
+	get_tree().quit(1 if _qa_failures > 0 else 0)
