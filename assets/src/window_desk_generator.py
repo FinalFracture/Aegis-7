@@ -77,4 +77,35 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+
+# ---------- final: polished iter_01 Cantilever_Slab (wall at -Z, floor y=0 so the top sits at 0.75) ----------
+def final_cantilever():
+    p = Pod("Window_Desk_Cantilever_Slab")
+    p.add("Wall_Rail", "alloy", blk(-W / 2, W / 2, .6, .64, ZB - .0, ZB + .03, .008, 1))
+    p.add("Rail_Bolts", "gunmetal", *[box(x - .015, x + .015, .61, .63, ZB + .03, ZB + .036) for x in np.linspace(-1.85, 1.85, 9)])
+    p.add("Desk_Slab", "white", bev(W, D - .03, TOP - .045, TOP, .025, .01, 3, 0, .015))
+    p.add("Front_Lip", "white", bev(W, .03, TOP - .07, TOP, .012, .006, 2, 0, ZF - .015))
+    for x in (-1.6, -.55, .55, 1.6):
+        p.add("Brackets", "gunmetal", blk(x - .02, x + .02, .5, TOP - .045, ZB + .03, ZB + .1, .006, 1), blk(x - .02, x + .02, TOP - .085, TOP - .045, ZB + .1, ZB + .33, .006, 1))
+        p.add("Bracket_Clamps", "gunmetal", blk(x - .04, x + .04, .58, .66, ZB + .03, ZB + .06, .008, 1))
+        p.add("Bracket_Latches", "amber", box(x - .012, x + .012, .645, .655, ZB + .06, ZB + .064))
+    p.add("Under_Light", "violet", box(-1.85, 1.85, TOP - .072, TOP - .066, ZF - .05, ZF - .035))
+    for x in (-1.2, -.4, .4, 1.2):
+        z = -.04
+        p.add("Slate_Cradles", "gunmetal", bev(.3, .1, TOP, TOP + .022, .01, .004, 1, x, z))
+        p.add("Cradle_Mag_Strip", "alloy", box(x - .12, x + .12, TOP + .022, TOP + .026, z - .03, z - .01))
+        p.add("Cradle_Latches", "amber", box(x + .125, x + .14, TOP + .015, TOP + .03, z + .02, z + .035))
+        s = tilt(bev(.25, .012, TOP + .024, TOP + .2, .01, .003, 1, x, z - .024), -18, [x, TOP + .024, z - .018])
+        g = tilt(box(x - .05, x + .05, TOP + .075, TOP + .155, z - .0175, z - .0165), -18, [x, TOP + .024, z - .018])
+        p.add("Data_Slates", "slate", s); p.add("Slate_Glyphs", "amber", g)
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    p = final_cantilever(); gp = os.path.join(dc.ROOT, "godot/assets/models/window_desk_cantilever_slab.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_cantilever_slab_sheet.png"); wg.sheet(p, sp, "Final  #28 window desk, Cantilever Slab (qty 2: 104 / 204)"); os.remove(sp.replace("_sheet.png", ".glb"))
+
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
