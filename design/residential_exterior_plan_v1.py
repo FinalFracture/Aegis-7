@@ -1,4 +1,4 @@
-# Residential rev C exterior + 20 m city ring (v1.1 QC: plan -> residential_exterior_plan_v1_1_plan.png; v1 PNG kept), Cylinder Hab-7. DESIGN ONLY (plan diagrams).
+# Residential rev C exterior + 20 m city ring (v1.2: plan -> residential_exterior_plan_v1_2_plan.png; v1 and v1.1 PNGs kept), Cylinder Hab-7. DESIGN ONLY (plan diagrams).
 # Axis mapping: X = axial (fore -X / aft +X), Z = circumferential (+Z spinward, -Z antispinward),
 # up = toward spin axis, down = radially outward. Walking floor R_HULL_FLOOR = 185.5 m.
 import math, matplotlib; matplotlib.use("Agg")
@@ -33,6 +33,16 @@ for z in (19.5,21.5,23.5): O.append(("hydro bed",-13,-3,z,z+0.9,False))
 POLES=[(x,-18.0) for x in (-40,-30,-20,-10.5,8.5,22,30,40)]+[(-6,-10.8),(6,-10.8)]+[(-16.6,z) for z in (-8,2.5,10.8)]+[(16.75,z) for z in (-8,2.5,10.8)] \
      +[(x,16.2) for x in (-15,-5,5,15)]+[(-23.4,z) for z in (-5,8,20)]+[(23.4,z) for z in (-5,8,20)]+[(x,-25.6) for x in (-30,-10,10,30)]
 for x,z in POLES: O.append(("pole",x-0.15,x+0.15,z-0.15,z+0.15,False))
+# v1.2 street furniture: benches 1.8 x 0.5, bins 0.5 x 0.5, bollards 0.2 x 0.2
+BENCH=[(9.3,11.1,-16.05,-15.55),(18.9,20.7,-16.05,-15.55),(-36,-34.2,-17.6,-17.1),(-26,-24.2,-17.6,-17.1),(26,27.8,-17.6,-17.1),(33,34.8,-17.6,-17.1),
+       (-7.9,-7.4,-17.6,-15.8),(13.0,14.8,-12.3,-11.8)]
+BIN=[(11.3,11.8,-16.05,-15.55),(18.2,18.7,-16.05,-15.55),(-34.0,-33.5,-17.6,-17.1),(28.0,28.5,-17.6,-17.1),(-7.9,-7.4,-18.3,-17.8),(12.3,12.8,-12.3,-11.8)]
+BROWS={"Spin St W end":([-22.0,-20.667,-19.333,-18.0],-9.4,(-23,-17)),"Spin St E end":([18.0,19.333,20.667,22.0],-9.4,(17,23)),
+       "apron W":([-1.0,0.4],11.55,None),"apron E":([6.1,7.5],11.55,None)}
+for b in BENCH: O.append(("bench",)+b+(False,))
+for b in BIN: O.append(("bin",)+b+(False,))
+for xs,z,_ in BROWS.values():
+    for x in xs: O.append(("bollard",x-0.1,x+0.1,z-0.1,z+0.1,False))
 def ov(a,b): return a[1]<b[2]-1e-9 and b[1]<a[2]-1e-9 and a[3]<b[4]-1e-9 and b[3]<a[4]-1e-9
 def kind_at(x,z):
     ks=[k for n,x0,x1,z0,z1,k in Zg if x0<=x<=x1 and z0<=z<=z1]; return ks
@@ -46,7 +56,7 @@ bad=[o[0]+f"@{o[1]:.1f},{o[3]:.1f}" for o in O if not inside(o,("green",) if o[0
 bad=[o for o in O if o[0]=="tram shelter" and not (ZD["platform"][1]<=o[1] and o[2]<=ZD["platform"][2] and ZD["platform"][3]<=o[3] and o[4]<=ZD["platform"][4])]
 QC.append(("shelter not on platform",bad)); QC.append(("shelter clearance to track (m)",round(O[[o[0] for o in O].index("tram shelter")][3]-ZD["tram band"][4],2)))
 CLR=[("exit approach 2.6 m",-1.3,1.3,-18.5,-11.65),("W sidewalk clear",-15.4,-14,-9,11.8),("E sidewalk clear",14,16.6,-9,11.8),
-     ("N sidewalk clear",-14,14,10.3,11.8),("platform front",12,18,-18.5,-16.9),("hydro aisle 1",-13,-3,20.4,21.5),("hydro aisle 2",-13,-3,22.4,23.5),("kerb walk clear",-47,47,-25.4,-22.5)]
+     ("N sidewalk clear",-14,14,10.3,11.4),("platform front",9,21,-18.5,-16.9),("promenade through-walk",-47,47,-15.4,-12.5),("apron + ramp opening",0.5,6.0,9.0,11.8),("hydro aisle 1",-13,-3,20.4,21.5),("hydro aisle 2",-13,-3,22.4,23.5),("kerb walk clear",-47,47,-25.4,-22.5)]
 for c in CLR:
     w=min(c[2]-c[1],c[4]-c[3]); hit=[o[0] for o in O if not o[5] and ov(("c",)+c[1:],o)]
     QC.append((f"clear corridor {c[0]} width {w:.2f} m (>=0.9)",[] if (w>=0.9 and not hit) else hit+([f"w={w}"] if w<0.9 else [])))
@@ -63,6 +73,10 @@ def path_hits(P,half,kinds):
 QC.append(("desire path tram->exit blocked by",path_hits(DESIRE,0.45,("walk",))))
 QC.append(("promenade path ->exit blocked by",path_hits(PROM,0.45,("walk",))))
 QC.append(("Sprocket route blocked by",path_hits(SPR,0.45,("walk","road"))))
+for n,(xs,z,ends) in BROWS.items():
+    e=[x-0.1 for x in xs]; f=[x+0.1 for x in xs]; gaps=[e[i+1]-f[i] for i in range(len(xs)-1)]+([e[0]-ends[0],ends[1]-f[-1]] if ends else [])
+    QC.append((f"bollard row {n} gaps {[round(g,2) for g in gaps]} (0.9..1.5 m)",[g for g in gaps if not 0.9-1e-6<=g<=1.5]))
+QC.append(("apron opening for Sprocket 0.78 m (m)",round((6.1-0.1)-(0.4+0.1),2)))
 pz=[(x,z,kind_at(x,z)) for x,z in POLES]; QC.append(("poles in road/tram/lane",[(x,z) for x,z,k in pz if "road" in k]))
 QC.append(("off-map items",[o[0] for o in O if o[1]<-47 or o[2]>47 or o[3]<-42 or o[4]>42]))
 dist=lambda x,z: math.hypot(max(abs(x)-14,0),max(abs(z)-9,0))
@@ -73,7 +87,7 @@ QC.append(("ring max |offset-30| (m)",round(max(abs(dist(x,z)-30) for x,z in rin
 QC.append(("study-box corner (34,29) offset from footprint (m)",round(dist(34,29),2)))
 for q in QC: print("QC:",q)
 assert all((not v) if isinstance(v,list) else True for _,v in QC), "QC failed"
-print("poles",len(POLES),"planters",sum(o[0].startswith("planter") for o in O))
+print("benches",len(BENCH),"bins",len(BIN),"bollards",sum(len(v[0]) for v in BROWS.values()),"objects",len(O),"poles",len(POLES),"planters",sum(o[0].startswith("planter") for o in O))
 COL={"walk":PAVE,"road":STREET,"water":WATER,"green":"#CFEBD8","plot":"#E3E6EA","bldg":"#EEF1F5"}
 fig,ax=plt.subplots(figsize=(15,15),dpi=150)
 R_(ax,-47,47,-42,42,"#FAFAFB")
@@ -97,6 +111,9 @@ for o in O:
     elif n=="tram shelter": R_(ax,x0,x1,z0,z1,GRAPH,z=7)
     elif n=="memorial nook": ax.add_patch(Circle(((x0+x1)/2,(z0+z1)/2),0.8,fc="#F2E6FF",ec=VIO,lw=1.5,zorder=7))
     elif n=="hydro bed": R_(ax,x0,x1,z0,z1,GRN,z=7,alpha=0.8)
+    elif n=="bench": R_(ax,x0,x1,z0,z1,"#8C939E",ec=WALL,lw=0.8,z=9)
+    elif n=="bin": R_(ax,x0,x1,z0,z1,WALL,ec=AMB,lw=0.8,z=9)
+    elif n=="bollard": ax.add_patch(Circle(((x0+x1)/2,(z0+z1)/2),0.17,fc=WALL,ec="white",lw=0.5,zorder=11))
 R_(ax,-9,-6,21.5,22.4,AMB,z=8); R_(ax,-16.8,-15.4,3,7,AMB,z=8,alpha=0.8)
 R_(ax,-1.3,1.3,-9.25,-8.75,"white",ec=VIO,lw=2.2,z=9); R_(ax,1.45,1.85,-8.6,-8.25,AMB,ec=WALL,lw=1,z=9)
 R_(ax,2.3,4.3,8.75,9.25,"white",ec=VIO,lw=2.2,z=9); R_(ax,1.85,2.25,8.25,8.6,AMB,ec=WALL,lw=1,z=9)
@@ -108,9 +125,9 @@ B=dict(fc="white",ec="none",pad=1.2)
 L=[(0,3.2,"RESIDENTIAL  rev C\n28 x 18 x 8.8 m  (L1 + L2)",10,WALL,"center"),(0,-0.9,"10 units: 8 apts + Laundry + Maintenance",7.5,"#555","center"),
  (0,-7.4,"SECTOR-4 EXIT 2.6 m (resident entrance)",7.5,WALL,"center"),(0,-5.9,"L2 promenade window above exit",6.5,VIO,"center"),
  (3.3,7.0,"SERVICE DOOR 2.0 m + Bulkhead Hub\n(Maintenance: Sprocket + 2nd fire exit)",7,WALL,"center"),
- (-7.5,11.25,"planters + 1:12 ramps mask 0.22 m step",5.8,"#1F6B3E","center"),
- (-4.6,-16.9,"SECTOR-4 PLAZA\n16 x 9.5 m",8,WALL,"center"),(-24.5,-12.2,"SECTOR-4 PROMENADE\n(Valley A frontage)",8,WALL,"left"),
- (10.3,-14.4,"worn desire path",6.5,"#B36A00","left"),(15,-17.75,"TRAM STOP (LIVE) + lived-in shelter",6.5,WALL,"center"),
+ (-8.4,11.25,"planters + 1:12 ramps mask 0.22 m step",5.8,"#1F6B3E","center"),
+ (-2.4,-16.9,"SECTOR-4 PLAZA\n16 x 9.5 m",8,WALL,"center"),(-24.5,-12.2,"SECTOR-4 PROMENADE\n(Valley A frontage)",8,WALL,"left"),
+ (10.3,-14.4,"worn desire path",6.5,"#B36A00","left"),(15,-20.5,"TRAM STOP (LIVE) + lived-in shelter",7,"white","center"),
  (16.9,-11.0,"memorial nook",6.5,VIO,"left"),(-34,-20.5,"TRAM (axial, live)",7.5,"white","center"),
  (-8,13.8,"SERVICE LANE 4 m (Sprocket + carts)",7.5,WALL,"center"),(-8,25.7,"HYDRO CO-OP BEDS\n(community, patched liners)",7.5,"#1F6B3E","center"),
  (-35,10,"PLOT W  R-6 residential\nFACADE ONLY  (edge X -26)",7.5,WALL,"center"),(35,10,"PLOT E  clinic / market\nFACADE ONLY  (edge X +26)",7.5,WALL,"center"),
@@ -126,18 +143,18 @@ for h in (0.5,1.0,2.0):
 T(ax,-49,0,"floor\nrise\n(Z)",6.2,color=VIO)
 # margin band below map: legend, scale, compass (outside map area)
 lg=[("white",VIO,"force-field door"),(AMB,WALL,"Bulkhead Hub"),("#9ED9B1",GRN,"masking planter"),("#F4F5F7",GRAPH,"1:12 ramp"),(VIO,VIO,"unit windows"),
-    (GRN,GRN,"Sprocket route / pad"),(AMB,AMB,"light pole / worn path"),("#E3E6EA",GRAPH,"facade-only plot")]
+    (GRN,GRN,"Sprocket route / pad"),(AMB,AMB,"light pole / worn path"),("#E3E6EA",GRAPH,"facade-only plot"),("#8C939E",WALL,"bench"),(WALL,AMB,"bin"),(WALL,"white","bollard")]
 for i,(fc,ec,lab) in enumerate(lg):
-    x=-46+(i//3)*13; z=-44.5-(i%3)*1.6; R_(ax,x,x+1.4,z-0.35,z+0.35,fc,ec=ec,lw=1,z=12); T(ax,x+2,z,lab,7,ha="left")
+    x=-46+(i//4)*13; z=-44.2-(i%4)*1.5; R_(ax,x,x+1.4,z-0.35,z+0.35,fc,ec=ec,lw=1,z=12); T(ax,x+2,z,lab,7,ha="left")
 R_(ax,-6,4,-47.6,-47.0,WALL,z=12); R_(ax,-6,-1,-47.6,-47.0,"white",ec=WALL,lw=1,z=12); T(ax,-1,-48.6,"0          5          10 m",7)
 cx,cz=30,-47.5
 for dx,dz in [(0,3),(0,-3),(3,0),(-3,0)]: ax.annotate("",xy=(cx+dx,cz+dz),xytext=(cx,cz),arrowprops=dict(arrowstyle="-|>",color=WALL,lw=1.4))
 T(ax,cx,cz+3.8,"SPINWARD +Z",7,weight="bold"); T(ax,cx,cz-3.8,"ANTISPINWARD -Z",7,weight="bold")
 T(ax,cx-3.6,cz,"FORE -X",7,ha="right"); T(ax,cx+3.6,cz,"AFT +X",7,ha="left")
-T(ax,-46,-50.0,"X = axial (flat)  |  up = toward axis, down = radially outward",6.5,color="#555",ha="left")
-ax.set_title("RESIDENTIAL rev C - EXTERIOR + 20 m CITY RING (plan, L1) - v1.1 QC   |   Cylinder Hab-7, Valley A, Sector-4   |   floor R 185.5 m",fontsize=11.5,weight="bold",color=WALL)
+T(ax,-46,-51.0,"X = axial (flat)  |  up = toward axis, down = radially outward",6.5,color="#555",ha="left")
+ax.set_title("RESIDENTIAL rev C - EXTERIOR + 20 m CITY RING (plan, L1) - v1.2 furniture   |   Cylinder Hab-7, Valley A, Sector-4   |   floor R 185.5 m",fontsize=11.5,weight="bold",color=WALL)
 ax.set_xlim(-51,47); ax.set_ylim(-52,42.5); ax.set_aspect("equal"); ax.axis("off")
-fig.savefig("residential_exterior_plan_v1_1_plan.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
+fig.savefig("residential_exterior_plan_v1_2_plan.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
 # ---------------- SECTION ----------------
 VE=5
 fig=plt.figure(figsize=(15,9),dpi=150); ax=fig.add_axes([0.04,0.36,0.92,0.58]); ax2=fig.add_axes([0.04,0.0,0.30,0.24]); ax3=fig.add_axes([0.37,0.0,0.59,0.24])

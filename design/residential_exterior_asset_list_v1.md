@@ -64,9 +64,9 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ## H. Street furniture
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 32 | Bench | promenade, plaza, stop | 8 | 1.8 × 0.5 × 0.45 | 800 |
-| 33 | Bin / recycler | promenade, lane | 6 | 0.5 × 0.5 × 1.0 | 400 |
-| 34 | Bollard (cart barrier) | plaza edge, lane mouths | 12 | 0.2 × 0.2 × 0.9 | 150 |
+| 32 | Bench | tram platform 2, promenade (canal-facing) 4, plaza edge 1, memorial nook 1 (placed v1.2) | 8 | 1.8 × 0.5 × 0.45 | 800 |
+| 33 | Bin / recycler | tram stop 2, beside benches 4 (placed v1.2) | 6 | 0.5 × 0.5 × 1.0 | 400 |
+| 34 | Bollard (cart barrier) | Spin St ends 4 + 4, service ramp edge 2 + 2 (placed v1.2) | 12 | 0.2 × 0.2 × 0.9 | 150 |
 | 35 | Utility junction cabinet | service lane | 3 | 0.8 × 0.4 × 1.4 | 400 |
 | 36 | Service hand cart | apron | 1 | 1.4 × 0.7 × 1.0 | 900 |
 

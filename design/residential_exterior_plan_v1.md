@@ -1,11 +1,35 @@
 # Residential rev C — Exterior + 20 m City Ring (plan v1)
 
-**Status: APPROVED v1 design decisions; v1.1 QC revision pending Jared's notes.** This is design only. The v1 plan PNG is kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
+**Status: v1.2 pending Jared review.** The v1 design decisions are approved, and Jared thumbs-upped v1.1. This is design only. The v1 and v1.1 plan PNGs are kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
 Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interior_overhaul_spec.md` and `residential_apartment_layout_v2.md` (rev C)
 
-![Plan v1.1](residential_exterior_plan_v1_1_plan.png)
-(v1 for comparison: `residential_exterior_plan_v1_plan.png`)
+![Plan v1.2](residential_exterior_plan_v1_2_plan.png)
+(For comparison: v1.1 `residential_exterior_plan_v1_1_plan.png`, v1 `residential_exterior_plan_v1_plan.png`)
 ![Section](residential_exterior_plan_v1_section.png)
+
+## QC v1.2: street furniture (same object table and asserted checks; PNG checked with Read)
+**Furniture placed:**
+- **8 benches** (1.8 × 0.5 m):
+  - 2 at the tram platform ends, beside the shelter.
+  - 4 along the track-side edge of the promenade, facing the canal.
+  - 1 at the west edge of the plaza.
+  - 1 at the memorial nook.
+- **6 bins**: 2 at the tram stop and one beside each of 4 benches (2 promenade, plaza, nook).
+- **12 bollards**:
+  - 4 across the end of each Spin Street at Z -9.4, which protects the promenade and plaza.
+  - 2 + 2 along the lane-side edge of the north sidewalk, either side of the service ramp, separating lane from sidewalk.
+- These match the asset list, so no counts changed.
+
+| # | Check | Result | Note |
+|---|---|---|---|
+| 1 | Nothing in a road, lane or tram band | PASS | All 86 objects are on walk or green zones. There are 0 object-object overlaps and 0 off-map. |
+| 2 | Walkways keep ≥ 0.9 m clear | FIXED | The bollards narrow the north sidewalk clear width from 1.5 to 1.1 m. Other widths: W 1.4, E 2.6, platform front 1.6 (now X 9..21), new promenade through-walk 2.9. |
+| 3 | Exit approach, ramps and service door clear | PASS | The 2.6 m approach has no objects. The ramp-plus-apron box (X 0.5..6.0) is clear at 2.8 m deep. Furniture stays off both ramps. |
+| 4 | Bollard gaps between 0.9 and 1.5 m (people pass, carts and vehicles don't) | PASS | Spin Street ends: 1.13 between bollards and 0.9 to the kerbs. Apron rows: 1.2. The 5.5 m ramp opening is the intended service access. |
+| 5 | Sprocket (0.78 m) reaches the apron | PASS | The 5.5 m opening is well over 0.78, and the route lane → ramp → door is clear at a 0.9 m check width. |
+| 6 | Walking routes | PASS | The desire path (platform → exit) and the promenade → exit route are both unobstructed. |
+| 7 | Label collisions | FIXED | The plaza label moved off the plaza-edge bench, and the tram stop label moved into the tram band, off the poles and benches. The legend has 11 entries in the margin band. |
+| 8 | Asset counts | PASS | Benches 8, bins 6, bollards 12, as in the asset list. Only the Where column was updated. |
 
 ## QC v1.1 checklist (geometry checked in the `.py`, which asserts every check; PNG checked with Read)
 | # | Check | Result | Note |
@@ -26,7 +50,6 @@ Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interio
 | 14 | Extra: asset counts | FIXED | Light poles 23 → 30 and platform kerb 7 → 6. The service apron is now the ramp. The tri total is about 209k. See the asset list. |
 | 15 | Section PNG | PASS | Curvature numbers and labels are unchanged. It was regenerated from the same script. |
 
-Benches, bins and bollards are counted in the asset list but not yet placed on the plan, so their positions are open for Jared's notes.
 
 ## Axis mapping and constants
 - **The walking floor is at R = 185.5 m** (`R_HULL_FLOOR`). R 200 m is the hull/interior shell. The drum is 520 m long along world X, and the spin axis sits at Y 200, Z 0.
