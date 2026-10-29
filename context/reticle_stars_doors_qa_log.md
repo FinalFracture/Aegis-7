@@ -102,3 +102,27 @@ PASS | interior_respawn_on_vestibule_reentry | z=-6.0 loaded=true live_pickups=8
 - **QA-FF-04 RESOLVED:** `tools/door_field_ui.py` lazy-imports tkinter; `--set DOOR_ID|ALL --opacity X --color r,g,b[,a]` writes JSON and exits; `--user` / `--user-dir` / `--print-paths`. Game reads `res://config/door_fields.json` when `OS.has_feature("editor")`, else `user://door_fields.json` (exact user folder printed at boot). `godot/config/` gitignored. py_compile + `--set` round-trip verified.
 - **QA-FF-05 HARDENED:** reticle uses `PRESET_CENTER` anchors + `GROW_DIRECTION_BOTH` (no manual positioning). Centering QA still 0.000 px at all 4 sizes; Windows embedded-Game-view repro still pending (needs Jared's Windows run).
 - Full run `--qa-reticle-stars-doors`: 58 PASS / 0 FAIL, 0 script errors; `--validate-only` OK.
+
+---
+
+## [Bulkhead Hub] door_hub_bulkhead.glb on all 6 force-field doors — Gage, 2026-10-29 04:08 CDT
+
+`--qa-reticle-stars-doors`: 73 PASS / 0 FAIL, 0 script errors (hub mounted at door-local (1.14,0,0.15)+0.022 m standoff on 6/6, [F] target = ScanZone, 8 glow parts amber→#3FAF6A on grant and back on close, coupler arm stowed x6 / deploys on Sprocket dock RM1B / sprocket_dock() hook). `--validate-only` OK. Screenshot: godot/renders/qa/door_hub_ingame_rm1b.png. Dock pads lifted to the measured floor (ground floor +0.115 m, upper +0.025 m).
+
+```
+PASS | door_apt201_bulkhead_hub_mounted | hub=DoorHub_DOOR_APT201 pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_apt201_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | door_alcove2c_bulkhead_hub_mounted | hub=DoorHub_DOOR_ALCOVE2C pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_alcove2c_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | door_apt202_bulkhead_hub_mounted | hub=DoorHub_DOOR_APT202 pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_apt202_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | door_rm1a_bulkhead_hub_mounted | hub=DoorHub_DOOR_RM1A pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_rm1a_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | door_rm1b_bulkhead_hub_mounted | hub=DoorHub_DOOR_RM1B pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_rm1b_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | door_sector4_exit_bulkhead_hub_mounted | hub=DoorHub_DOOR_SECTOR4_EXIT pos_err=0.0000 m rot_err=0.0000 offset=(1.14, 0.0, 0.15)+standoff 0.022 scan_target=ScanZone
+PASS | door_sector4_exit_hub_8_glow_parts_green_on_grant | parts=8 emission=3faf6a
+PASS | hub_coupler_arm_stowed_by_default_x6 | stowed_deg=90.0
+PASS | hub_arm_deploys_on_sprocket_dock_rm1b | marker=SprocketDock_DOOR_RM1B parked_deg=0.0 after_leave_deg=90.0
+PASS | hub_sprocket_dock_hook | hook parked_deg=0.0 released_deg=90.0
+```

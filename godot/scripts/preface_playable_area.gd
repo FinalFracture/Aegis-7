@@ -154,6 +154,20 @@ const FF_DEFAULT_COLOR := Color(0.72, 0.35, 1.0, 1.0)   # in-game violet (shader
 const FF_EMITTER_ENERGY := {"EmitterStrip": 2.5, "EmitterNodes": 3.0, "Conduits": 1.6}
 const FF_DEFAULT_OPACITY := 0.45
 const FF_LIGHT_GREEN := Color("#3FAF6A")
+# [Bulkhead Hub] Rook's door_hub_bulkhead.glb mounted beside every force-field door (door-local frame).
+const DOOR_HUB_GLB := "res://assets/models/door_hub_bulkhead.glb"
+const HUB_MOUNT_OFFSET := Vector3(1.14, 0.0, 0.15)
+# Baked sector walls can't be cut at runtime, and the hub's recessed face (HubPanel z -0.020) would sit behind
+# the wall face, so the hub stands off the wall by this much (bezel ~25 mm proud; liner hidden inside the wall).
+const HUB_WALL_STANDOFF := 0.022
+const HUB_AMBER := Color(1.0, 0.584, 0.0)
+const HUB_GLOW_PARTS := ["LightPipe", "DisplayGlyphs", "ScanZone_Ring", "EqualBand", "Meniscus_L", "Meniscus_R", "CouplerHead_Ring", "DockPad_InductionRing"]
+const HUB_ARM_PARTS := ["CouplerArm", "CouplerHead", "CouplerHead_Ring"]
+const HUB_ARM_PIVOT := Vector3(0.25, 0.45, -0.025)
+const HUB_ARM_STOWED_DEG := 90.0
+const HUB_DOCK_POS := Vector3(0.25, 0.013, 0.47)
+const HUB_DOCK_RADIUS := 0.30
+const SPROCKET_NODE := "Hammerhead05_Sprocket_0419_Engineering"
 # Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
 # [QA-FF-04/06] every run polls BOTH res://config/door_fields.json (godot/config/, gitignored) and
 #            user://door_fields.json and applies whichever has the newer mtime (exports: user:// in practice).
@@ -219,9 +233,9 @@ var _qa_hand: bool = false
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
 var _qa_ff_door: bool = false
+var _qa_hub_shot: bool = false
 var _ff_shader: Shader = null
-var _ff_gltf_doc: GLTFDocument = null
-var _ff_gltf_state: GLTFState = null
+var _glb_cache: Dictionary = {}
 var _door_json_mtime: int = -1
 var _door_json_src: String = ""
 var _door_json_hash: int = 0
@@ -286,6 +300,9 @@ func _ready() -> void:
 		elif arg == "--qa-forcefield-door":
 			_qa_ff_door = true
 			_qa_hand = true
+		elif arg == "--qa-door-hub-shot":
+			_qa_hub_shot = true
+			_qa_hand = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -316,6 +333,8 @@ func _ready() -> void:
 			_run_cylinder_gravity_qa.call_deferred()
 		elif _qa_ff_door:
 			_run_forcefield_door_qa.call_deferred()
+		elif _qa_hub_shot:
+			_run_door_hub_shot.call_deferred()
 		elif _qa_t38:
 			_run_reticle_stars_doors_qa.call_deferred()
 		else:
@@ -3427,20 +3446,21 @@ func _ff_load_shader() -> Shader:
 	return _ff_shader
 
 
-func _ff_instance_model() -> Node3D:
-	if _ff_gltf_state == null:
-		var abs_p: String = _resolve_path(FORCEFIELD_DOOR_GLB)
+func _ff_instance_model(glb_path: String = FORCEFIELD_DOOR_GLB) -> Node3D:
+	# Runtime GLTF load by path (new files from Rook are picked up automatically); parsed state cached per path.
+	if not _glb_cache.has(glb_path):
+		var abs_p: String = _resolve_path(glb_path)
 		if not FileAccess.file_exists(abs_p):
-			push_error("[FORCEFIELD] glb missing: " + FORCEFIELD_DOOR_GLB)
+			push_error("[FORCEFIELD] glb missing: " + glb_path)
 			return null
 		var doc: GLTFDocument = GLTFDocument.new()
 		var st: GLTFState = GLTFState.new()
 		if doc.append_from_file(abs_p, st) != OK:
 			push_error("[FORCEFIELD] glb load failed: " + abs_p)
 			return null
-		_ff_gltf_doc = doc
-		_ff_gltf_state = st
-	var root: Node = _ff_gltf_doc.generate_scene(_ff_gltf_state)
+		_glb_cache[glb_path] = [doc, st]
+	var pair: Array = _glb_cache[glb_path] as Array
+	var root: Node = (pair[0] as GLTFDocument).generate_scene(pair[1] as GLTFState)
 	if not (root is Node3D):
 		if root != null:
 			root.free()
@@ -3521,15 +3541,11 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 		model.name = "ForceFieldDoorModel"
 		droot.add_child(model)
 		var n_field: MeshInstance3D = model.find_child("FieldPlane", true, false) as MeshInstance3D
-		var n_light: MeshInstance3D = model.find_child("StatusLight", true, false) as MeshInstance3D
-		var n_panel: Node3D = model.find_child("RFIDPanel", true, false) as Node3D
-		# Panel pocket sits beside the 1.82 m frame (x 1.06..1.20); in the narrower baked portals that falls
-		# inside the 0.30 m wall, so nudge panel + light proud of the wall face to stay visible (glb untouched).
-		# [QA-FF-03] panel +10 mm; light +20 mm so its face stands ~11 mm proud of the panel face (>=10 mm, no z-fight).
-		if n_panel != null:
-			n_panel.position.z += 0.010
-		if n_light != null:
-			n_light.position.z += 0.020
+		# [Bulkhead Hub] the hub replaces the door glb's own RFIDPanel + StatusLight: hide them.
+		for retired: String in ["RFIDPanel", "StatusLight"]:
+			var rn: Node3D = model.find_child(retired, true, false) as Node3D
+			if rn != null:
+				rn.visible = false
 
 		var fmat: ShaderMaterial = ShaderMaterial.new()
 		fmat.shader = shader
@@ -3552,13 +3568,8 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			em_m.emission_energy_multiplier = float(FF_EMITTER_ENERGY[en])
 			n_e.material_override = em_m
 			emit_mats[en] = em_m
-		var lmat: StandardMaterial3D = StandardMaterial3D.new()
-		lmat.albedo_color = COLOR_AMBER
-		lmat.emission_enabled = true
-		lmat.emission = COLOR_AMBER
-		lmat.emission_energy_multiplier = 2.0
-		if n_light != null:
-			n_light.material_override = lmat
+		var hub: Dictionary = _build_door_hub(droot, did)
+		var lmat: StandardMaterial3D = hub.get("glow_mat") as StandardMaterial3D
 
 		# Wall fit: close any gap between the 1.82 x 2.61 m frame and the wider/taller baked portal opening.
 		# Visual infill stays 5 mm inside the 0.30 m wall faces (no coplanar faces -> no z-fighting).
@@ -3583,15 +3594,26 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			_ff_static_box(droot, "PortalHeaderCollider", Vector3(maxf(pw, FF_FRAME_HALF_W * 2.0), top_h, 0.30), Vector3(0.0, FF_OPEN_H + top_h * 0.5, 0.0))
 			field_cs = _ff_static_box(droot, "FieldCollider", Vector3(FF_OPEN_W, FF_OPEN_H, 0.20), Vector3(0.0, FF_OPEN_H * 0.5, 0.0))
 
-		var tag_anchor: Node3D = Node3D.new()
-		tag_anchor.name = did + "_RFIDTag"
-		tag_anchor.position = Vector3(0.0, 1.35, 0.0)
-		droot.add_child(tag_anchor)
+		# [F] RFID scan target = the hub's ScanZone (fallback: a doorway anchor if the hub glb is missing).
+		var tag_anchor: Node3D = hub.get("scan_zone") as Node3D
+		if tag_anchor == null:
+			tag_anchor = Node3D.new()
+			tag_anchor.name = did + "_RFIDTag"
+			tag_anchor.position = Vector3(0.0, 1.35, 0.0)
+			droot.add_child(tag_anchor)
 		var d_entry: Dictionary = {
 			"id": did,
 			"label": String(spec["label"]),
 			"root": droot,
-			"center": dpos + Vector3(0.0, 1.25, 0.0),
+			"center": tag_anchor.global_position if tag_anchor.is_inside_tree() else dpos + Vector3(0.0, 1.25, 0.0),
+			"hub": hub.get("root"),
+			"glow_nodes": hub.get("glow_nodes", []),
+			"arm_pivot": hub.get("arm_pivot"),
+			"dock_marker": hub.get("dock_marker"),
+			"dock_hook": false,
+			"arm_deployed": false,
+			"arm_tween": null,
+			"glow_tween": null,
 			"field_mat": fmat,
 			"emit_mats": emit_mats,
 			"led_mat": lmat,
@@ -3619,6 +3641,115 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 	_poll_door_field_json()  # apply any saved overrides at boot
 
 
+func _build_door_hub(droot: Node3D, did: String) -> Dictionary:
+	var hub_root: Node3D = _ff_instance_model(DOOR_HUB_GLB)
+	if hub_root == null:
+		return {}
+	hub_root.name = "DoorHub_" + did
+	hub_root.position = HUB_MOUNT_OFFSET + Vector3(0.0, 0.0, HUB_WALL_STANDOFF)
+	droot.add_child(hub_root)
+	# Per-door glow material (amber idle) shared by the 8 state-glow parts.
+	var gm: StandardMaterial3D = StandardMaterial3D.new()
+	gm.albedo_color = HUB_AMBER
+	gm.emission_enabled = true
+	gm.emission = HUB_AMBER
+	gm.emission_energy_multiplier = 2.0
+	var glow_nodes: Array = []
+	for gp: String in HUB_GLOW_PARTS:
+		var gn: MeshInstance3D = hub_root.find_child(gp, true, false) as MeshInstance3D
+		if gn != null:
+			gn.material_override = gm
+			glow_nodes.append(gn)
+	# Coupler arm: modelled DEPLOYED; reparent arm parts under a Y pivot and default to STOWED (+90 deg).
+	var piv: Node3D = Node3D.new()
+	piv.name = "CouplerArm_StowPivot"
+	piv.position = HUB_ARM_PIVOT
+	var arm_parent: Node = hub_root
+	var first_arm: Node3D = hub_root.find_child(HUB_ARM_PARTS[0], true, false) as Node3D
+	if first_arm != null:
+		arm_parent = first_arm.get_parent()
+	arm_parent.add_child(piv)
+	for ap: String in HUB_ARM_PARTS:
+		var an: Node3D = hub_root.find_child(ap, true, false) as Node3D
+		if an != null:
+			var keep: Transform3D = an.transform
+			an.get_parent().remove_child(an)
+			piv.add_child(an)
+			an.transform = Transform3D(keep.basis, keep.origin - HUB_ARM_PIVOT)
+	piv.rotation_degrees = Vector3(0.0, HUB_ARM_STOWED_DEG, 0.0)
+	# Sprocket park marker on the floor dock pad (origin, facing +Z in the hub frame).
+	var mk: Marker3D = Marker3D.new()
+	mk.name = "SprocketDock_" + did
+	mk.position = HUB_DOCK_POS
+	hub_root.add_child(mk)
+	return {
+		"root": hub_root,
+		"glow_mat": gm,
+		"glow_nodes": glow_nodes,
+		"arm_pivot": piv,
+		"dock_marker": mk,
+		"scan_zone": hub_root.find_child("ScanZone", true, false) as Node3D
+	}
+
+
+## Public hook: force Sprocket's dock state for a door (in addition to live proximity to the SprocketDock marker).
+func sprocket_dock(door_id: String, parked: bool) -> bool:
+	var d: Dictionary = _find_door(door_id)
+	if d.is_empty():
+		return false
+	d["dock_hook"] = parked
+	return true
+
+
+func _fit_dock_pad_to_floor(door: Dictionary) -> void:
+	# Baked floors sit above some door pivots (ground floor ~+0.115 m), so lift the 13 mm dock pad + park marker
+	# onto the real floor surface (one-time downward ray; no floor cut).
+	var mk: Marker3D = door["dock_marker"] as Marker3D
+	var hub_root: Node3D = door["hub"] as Node3D
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null or hub_root == null:
+		return
+	var base: Vector3 = mk.global_position - Vector3(0.0, HUB_DOCK_POS.y, 0.0)
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(base + Vector3(0.0, 0.8, 0.0), base - Vector3(0.0, 0.5, 0.0))
+	if _player_body != null:
+		rq.exclude = [_player_body.get_rid()]
+	var hit: Dictionary = space.intersect_ray(rq)
+	if hit.is_empty():
+		return
+	var lift: float = clampf((hit["position"] as Vector3).y - base.y, 0.0, 0.30)
+	for pn: String in ["DockPad", "DockPad_InductionRing", "DockPad_Chevrons"]:
+		var n: Node3D = hub_root.find_child(pn, true, false) as Node3D
+		if n != null:
+			n.position.y += lift
+	mk.position.y += lift
+	door["pad_fitted"] = true
+	door["pad_lift"] = lift
+
+
+func _update_hub_docks() -> void:
+	var spr: Node3D = _actors_container.get_node_or_null(SPROCKET_NODE) as Node3D if _actors_container != null else null
+	var spr_ok: bool = spr != null and is_instance_valid(spr) and spr.is_inside_tree() and spr.visible
+	for door: Dictionary in _rfid_doors:
+		var mk: Marker3D = door.get("dock_marker") as Marker3D
+		if mk == null or not is_instance_valid(mk):
+			continue
+		if not bool(door.get("pad_fitted", false)):
+			_fit_dock_pad_to_floor(door)
+		var parked: bool = bool(door["dock_hook"])
+		if not parked and spr_ok:
+			var dv: Vector3 = spr.global_position - mk.global_position
+			parked = Vector2(dv.x, dv.z).length() < HUB_DOCK_RADIUS and absf(dv.y) < 0.4
+		if parked != bool(door["arm_deployed"]):
+			door["arm_deployed"] = parked
+			var piv: Node3D = door["arm_pivot"] as Node3D
+			var old: Variant = door["arm_tween"]
+			if old is Tween and (old as Tween).is_valid():
+				(old as Tween).kill()
+			var tw: Tween = create_tween()
+			tw.tween_property(piv, "rotation_degrees:y", 0.0 if parked else HUB_ARM_STOWED_DEG, 0.6).set_trans(Tween.TRANS_SINE)
+			door["arm_tween"] = tw
+
+
 func _find_door(door_id: String) -> Dictionary:
 	for d: Dictionary in _rfid_doors:
 		if String(d["id"]) == door_id:
@@ -3632,11 +3763,30 @@ func _door_dissolve(door: Dictionary) -> float:
 
 
 func _set_door_light(door: Dictionary, open_state: bool) -> void:
+	# Snap the hub's 8 glow parts (one shared per-door material) to the final state colour.
+	var old: Variant = door.get("glow_tween")
+	if old is Tween and (old as Tween).is_valid():
+		(old as Tween).kill()
 	var lmat: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
 	if lmat != null:
-		var col: Color = FF_LIGHT_GREEN if open_state else COLOR_AMBER
+		var col: Color = FF_LIGHT_GREEN if open_state else HUB_AMBER
 		lmat.albedo_color = col
 		lmat.emission = col
+
+
+func _tween_door_light(door: Dictionary, open_state: bool, dur: float) -> void:
+	# Access grant -> tween amber to green over the dissolve; close -> back to amber.
+	var old: Variant = door.get("glow_tween")
+	if old is Tween and (old as Tween).is_valid():
+		(old as Tween).kill()
+	var lmat: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
+	if lmat == null:
+		return
+	var col: Color = FF_LIGHT_GREEN if open_state else HUB_AMBER
+	var tw: Tween = create_tween().set_parallel(true)
+	tw.tween_property(lmat, "emission", col, maxf(dur, 0.001))
+	tw.tween_property(lmat, "albedo_color", col, maxf(dur, 0.001))
+	door["glow_tween"] = tw
 
 
 func _finish_door_field(door: Dictionary, open_state: bool) -> void:
@@ -3708,6 +3858,7 @@ func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
 	tw.tween_property(m, "shader_parameter/dissolve", target, maxf(dur, 0.001))
 	tw.tween_callback(_finish_door_field.bind(door, open_target))
 	door["tween"] = tw
+	_tween_door_light(door, open_target, maxf(dur, 0.001))
 
 
 func _set_door_dissolve_immediate(door: Dictionary, v: float) -> void:
@@ -3771,6 +3922,7 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 
 
 func _update_rfid_doors(delta: float) -> void:
+	_update_hub_docks()
 	for door: Dictionary in _rfid_doors:
 		door["dissolve"] = _door_dissolve(door)
 		if bool(door["close_pending"]):
@@ -3853,6 +4005,34 @@ func apply_door_field_overrides(data: Variant) -> int:
 # ------------------------------------------------------------------------------
 # [t45u] Force-field door screenshots (`-- --qa-forcefield-door`)
 # ------------------------------------------------------------------------------
+func _run_door_hub_shot() -> void:
+	# [Bulkhead Hub] one in-game 1920x1080 shot of DOOR_RM1B: field door + hub + floor dock pad.
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if _hud != null:
+		_hud.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(10)
+	var door: Dictionary = _find_door("DOOR_RM1B")
+	var droot: Node3D = door["root"] as Node3D
+	var xf: Transform3D = droot.global_transform
+	var fill: OmniLight3D = OmniLight3D.new()
+	fill.position = xf * Vector3(1.0, 2.2, 1.9)
+	fill.light_color = Color("#F2ECE2")
+	fill.light_energy = 1.4
+	fill.omni_range = 6.0
+	add_child(fill)
+	_qa_free_cam(xf * Vector3(0.55, 1.55, 2.75), xf * Vector3(0.85, 0.95, 0.0), Vector3.UP, 60.0)
+	await _qa_idle(8)
+	var img: Image = await _qa_capture("door_hub_ingame_rm1b.png")
+	for did2: Dictionary in _rfid_doors:
+		print("[HUB-SHOT] %s pad_lift=%.3f m" % [did2["id"], float(did2.get("pad_lift", -1.0))])
+	fill.queue_free()
+	print("[HUB-SHOT] DONE saved=%s" % (img != null))
+	get_tree().quit(0 if img != null else 1)
+
+
 func _run_forcefield_door_qa() -> void:
 	if _camera == null:
 		print("[FF-DOOR-QA] FAIL camera missing")
@@ -4003,7 +4183,21 @@ func _run_reticle_stars_doors_qa() -> void:
 		await _qa_frames(4)
 		_qa_t38_check("%s_forcefield_shader_material" % did.to_lower(), fm != null and fm.shader != null and fm.shader.code.contains("uniform float dissolve") and (fm.get_shader_parameter("field_color") as Color).is_equal_approx(FF_DEFAULT_COLOR),
 			"shader=%s field_color=%s" % [FORCEFIELD_DOOR_SHADER, (fm.get_shader_parameter("field_color") as Color).to_html()])
-		_qa_t38_check("%s_closed_state" % did.to_lower(), _door_dissolve(door) == 0.0 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(COLOR_AMBER),
+		# [Bulkhead Hub] present at the door-local mount offset, [F] target is its ScanZone, 8 glow parts amber
+		var hub_n: Node3D = door.get("hub") as Node3D
+		var exp_xf: Transform3D = (door["root"] as Node3D).global_transform * Transform3D(Basis.IDENTITY, HUB_MOUNT_OFFSET + Vector3(0.0, 0.0, HUB_WALL_STANDOFF))
+		var hub_err: float = hub_n.global_position.distance_to(exp_xf.origin) if hub_n != null else 99.0
+		var hub_rot_err: float = hub_n.global_transform.basis.get_rotation_quaternion().angle_to(exp_xf.basis.get_rotation_quaternion()) if hub_n != null else 9.0
+		var scan_target: String = ""
+		for it_q: Dictionary in _interactables:
+			if String(it_q["kind"]) == "rfid_door" and String(it_q.get("door_id", "")) == did:
+				scan_target = String((it_q["node"] as Node).name)
+		_qa_t38_check("%s_bulkhead_hub_mounted" % did.to_lower(), hub_n != null and hub_err < 0.001 and hub_rot_err < 0.001 and scan_target == "ScanZone",
+			"hub=%s pos_err=%.4f m rot_err=%.4f offset=%s+standoff %.3f scan_target=%s" % [hub_n.name if hub_n != null else "MISSING", hub_err, hub_rot_err, str(HUB_MOUNT_OFFSET), HUB_WALL_STANDOFF, scan_target])
+		var glow_amber: bool = (door["glow_nodes"] as Array).size() == 8
+		for gn0: Variant in door["glow_nodes"]:
+			glow_amber = glow_amber and (gn0 as MeshInstance3D).material_override == lm
+		_qa_t38_check("%s_closed_state" % did.to_lower(), _door_dissolve(door) == 0.0 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(HUB_AMBER) and glow_amber,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
 		var from_south: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
 		var start_z: float = (dpos.z - 1.55) if from_south else (dpos.z + 1.55)
@@ -4029,7 +4223,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		await _qa_tap(KEY_F)
 		await _qa_idle(1)
 		var mid_d: float = _door_dissolve(door)
-		var mid_light_amber: bool = lm.emission.is_equal_approx(COLOR_AMBER)
+		var mid_light_amber: bool = not lm.emission.is_equal_approx(FF_LIGHT_GREEN)  # glow still tweening toward green
 		var mid_coll: bool = fcs != null and not fcs.disabled
 		Engine.time_scale = 1.0
 		await get_tree().create_timer(1.0).timeout
@@ -4037,7 +4231,11 @@ func _run_reticle_stars_doors_qa() -> void:
 		var d_open: float = _door_dissolve(door)
 		var opened_ok: bool = bool(door["open"]) and d_open >= 0.999 and fcs != null and fcs.disabled and lm.emission.is_equal_approx(FF_LIGHT_GREEN)
 		_qa_t38_check("%s_F_scan_dissolves_open" % did.to_lower(), opened_ok and mid_d > 0.0 and mid_d < 1.0 and mid_light_amber and mid_coll,
-			"during_tween dissolve=%.3f light_amber=%s collision_on=%s | after dissolve=%.3f collision_off=%s light=%s" % [mid_d, mid_light_amber, mid_coll, d_open, fcs != null and fcs.disabled, lm.emission.to_html(false)])
+			"during_tween dissolve=%.3f glow_not_yet_green=%s collision_on=%s | after dissolve=%.3f collision_off=%s light=%s" % [mid_d, mid_light_amber, mid_coll, d_open, fcs != null and fcs.disabled, lm.emission.to_html(false)])
+		var glow_green: bool = (door["glow_nodes"] as Array).size() == 8 and lm.emission.is_equal_approx(FF_LIGHT_GREEN)
+		for gn1: Variant in door["glow_nodes"]:
+			glow_green = glow_green and (gn1 as MeshInstance3D).material_override == lm
+		_qa_t38_check("%s_hub_8_glow_parts_green_on_grant" % did.to_lower(), glow_green, "parts=%d emission=%s" % [(door["glow_nodes"] as Array).size(), lm.emission.to_html(false)])
 		if did == "DOOR_APT201":
 			door_img_opened = await _qa_capture("qa_rfid_door_apt201_opened.png")
 		_qa_key(KEY_W, true)
@@ -4055,8 +4253,8 @@ func _run_reticle_stars_doors_qa() -> void:
 		await _qa_tap(KEY_F)
 		await get_tree().create_timer(1.0).timeout
 		await _qa_frames(3)
-		var closed_ok: bool = not bool(door["open"]) and _door_dissolve(door) <= 0.001 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(COLOR_AMBER)
-		_qa_t38_check("%s_F_scan_closes_back" % did.to_lower(), closed_ok,
+		var closed_ok: bool = not bool(door["open"]) and _door_dissolve(door) <= 0.001 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(HUB_AMBER)
+		_qa_t38_check("%s_F_scan_closes_back_glow_amber" % did.to_lower(), closed_ok,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
 
 	# [QA-FF-01] close is held while a bot / rigid body is in the opening, then completes once it is clear
@@ -4080,7 +4278,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		await get_tree().create_timer(0.6 + DOOR_DISSOLVE_TIME + 0.3).timeout
 		await _qa_frames(3)
 		var lm1: StandardMaterial3D = ob_door["led_mat"] as StandardMaterial3D
-		_qa_t38_check("qa_ff_01_closes_once_bot_clear", not bool(ob_door["close_pending"]) and not bool(ob_door["open"]) and _door_dissolve(ob_door) <= 0.001 and not ob_cs.disabled and lm1.emission.is_equal_approx(COLOR_AMBER),
+		_qa_t38_check("qa_ff_01_closes_once_bot_clear", not bool(ob_door["close_pending"]) and not bool(ob_door["open"]) and _door_dissolve(ob_door) <= 0.001 and not ob_cs.disabled and lm1.emission.is_equal_approx(HUB_AMBER),
 			"pending=%s open=%s dissolve=%.3f collision_on=%s light=%s" % [ob_door["close_pending"], ob_door["open"], _door_dissolve(ob_door), not ob_cs.disabled, lm1.emission.to_html(false)])
 	else:
 		_qa_t38_check("qa_ff_01_close_held_while_bot_in_doorway", false, "Kelvin bot missing")
@@ -4105,6 +4303,37 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(3)
 	_qa_t38_check("qa_ff_01_rigidbody_blocks_then_closes", crate_held and not bool(ob_door["open"]) and _door_dissolve(ob_door) <= 0.001 and not ob_cs.disabled,
 		"held_by=%s then open=%s dissolve=%.3f collision_on=%s" % ["QA_DoorwayCrate" if crate_held else "none", ob_door["open"], _door_dissolve(ob_door), not ob_cs.disabled])
+
+	# [Bulkhead Hub] coupler arm stowed by default on all 6; deploys when Sprocket parks on the dock pad
+	var all_stowed: bool = true
+	for dz: Dictionary in _rfid_doors:
+		var pz: Node3D = dz["arm_pivot"] as Node3D
+		all_stowed = all_stowed and pz != null and absf(pz.rotation_degrees.y - HUB_ARM_STOWED_DEG) < 0.5 and not bool(dz["arm_deployed"])
+	_qa_t38_check("hub_coupler_arm_stowed_by_default_x6", all_stowed, "stowed_deg=%.1f" % HUB_ARM_STOWED_DEG)
+	var spr: Node3D = _actors_container.get_node_or_null(SPROCKET_NODE) as Node3D
+	var rb_door: Dictionary = _find_door("DOOR_RM1B")
+	var rb_piv: Node3D = rb_door["arm_pivot"] as Node3D
+	if spr != null:
+		var spr_home: Transform3D = spr.global_transform
+		var mk_rb: Marker3D = rb_door["dock_marker"] as Marker3D
+		spr.global_transform = mk_rb.global_transform
+		await get_tree().create_timer(0.9).timeout
+		var dep_deg: float = rb_piv.rotation_degrees.y
+		var dep_ok: bool = bool(rb_door["arm_deployed"]) and absf(dep_deg) < 0.5
+		spr.global_transform = spr_home
+		await get_tree().create_timer(0.9).timeout
+		_qa_t38_check("hub_arm_deploys_on_sprocket_dock_rm1b", dep_ok and not bool(rb_door["arm_deployed"]) and absf(rb_piv.rotation_degrees.y - HUB_ARM_STOWED_DEG) < 0.5,
+			"marker=%s parked_deg=%.1f after_leave_deg=%.1f" % [mk_rb.name, dep_deg, rb_piv.rotation_degrees.y])
+	else:
+		_qa_t38_check("hub_arm_deploys_on_sprocket_dock_rm1b", false, "Sprocket node missing")
+	var a2: Dictionary = _find_door("DOOR_APT201")
+	sprocket_dock("DOOR_APT201", true)
+	await get_tree().create_timer(0.9).timeout
+	var hook_deg: float = (a2["arm_pivot"] as Node3D).rotation_degrees.y
+	sprocket_dock("DOOR_APT201", false)
+	await get_tree().create_timer(0.9).timeout
+	_qa_t38_check("hub_sprocket_dock_hook", absf(hook_deg) < 0.5 and absf((a2["arm_pivot"] as Node3D).rotation_degrees.y - HUB_ARM_STOWED_DEG) < 0.5,
+		"hook parked_deg=%.1f released_deg=%.1f" % [hook_deg, (a2["arm_pivot"] as Node3D).rotation_degrees.y])
 
 	# set_door_field(): opacity clamp + field colour + emitter tint, per-door material isolation, JSON override path
 	var d0: Dictionary = _find_door("DOOR_RM1B")
