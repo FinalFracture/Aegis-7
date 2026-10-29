@@ -171,5 +171,67 @@ def main():
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
     for r in rows: print(*r)
 
+# ---------- final: polished Moulded Pedestal (family 1), all 3 sizes ----------
+from dining_chair_generator import loft, rrect
+def ped_column(x, y0, y1, w=.18, d=.14, r=.06):
+    """Pedestal with flared fillets top and bottom (smooth loft)."""
+    h = y1 - y0; rings = [(y0, 1.25, 1.3), (y0 + .02, 1.1, 1.12), (y0 + .05, 1, 1), (y1 - .05, 1, 1), (y1 - .02, 1.1, 1.12), (y1, 1.22, 1.28)]
+    return xf(loft(rrect(w, d, r, 4), rings), t=(x, 0, 0))
+
+def final_pedestal(L, Wd, Ht, tag):
+    p = Pod(f"Moulded Pedestal {tag}")
+    p.add("Top", "white", bev(L, Wd, Ht - TT, Ht, .1, .014, 4))
+    p.add("Top_Underside", "gunmetal", bev(L - .12, Wd - .12, Ht - TT - .006, Ht - TT, .07, .002, 3))
+    p.add("Top_EdgeBand", "violet", box(-L / 2 + .15, L / 2 - .15, Ht - TT + .006, Ht - TT + .012, Wd / 2 - .002, Wd / 2 + .001))
+    xs = (0,) if L < 1.4 else (-.4, .4)
+    for k, x in enumerate(xs, 1):
+        p.add(f"Pedestal_{k}", "white", ped_column(x, .06, Ht - TT - .006))
+        p.add(f"Pedestal_Base_{k}", "gunmetal", bev(.34, .22, 0, .06, .08, .015, 3, x, 0))
+        for side, dx in (("L", -.12), ("R", .12)):
+            cx = x + dx
+            p.add(f"FloorPlate_{k}{side}", "gunmetal", bev(.1, .15, 0, .012, .02, .004, 1, cx, 0))
+            p.add(f"Clamp_{k}{side}", "gunmetal", box(cx - .025, cx + .025, .012, .075, -.04, .04))
+            p.add("Clamp_Bolts", "alloy", *[box(cx - .01, cx + .01, .012, .02, z - .01, z + .01) for z in (-.06, .06)])
+            p.add("Clamp_Lights", "amber", box(cx - .015, cx + .015, .045, .06, .04, .044))
+    p.add("Service_Port", "gunmetal", bev(.1, .01, min(.26, Ht * .5), min(.34, Ht * .5 + .08), .015, .003, 2, xs[0], .072))
+    p.add("Service_Port_Light", "amber", box(xs[0] - .02, xs[0] + .02, min(.29, Ht * .5 + .03), min(.31, Ht * .5 + .05), .077, .081))
+    return p
+
+def final_main():
+    from PIL import Image, ImageDraw, ImageFont
+    names = {"small_dining": "table_pedestal_small", "dining4": "table_pedestal_dining4", "tea": "table_pedestal_tea"}
+    top, front, side, iso = views(); VIEWS = [("Top", top, False), ("Front", front, True), ("Side", side, True), ("Iso", iso, True)]
+    PX = 300   # common scale: pixels per metre for every view of every size
+    rows = []
+    for nm, L, Wd, Ht in SIZES:
+        p = final_pedestal(L, Wd, Ht, nm); gp = os.path.join(dc.ROOT, "godot/assets/models", names[nm] + ".glb")
+        tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+        bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+        fit = fit_check(p, L, Wd, Ht) if Ht > .6 else "n/a"
+        print(nm, "tris", tris, "dims", (V.max(0) - V.min(0)).round(3), "fit", fit, "bad", bad)
+        saved = tonemap(); ims = []
+        for t, R, sh in VIEWS:
+            P = V @ R.T; span = (P[:, :2].max(0) - P[:, :2].min(0)).max() * 1.25; size = int(round(span * PX))
+            im = render_view(geo, R, size=size, shadow=sh); ns = render_view(geo, R, size=size, shadow=False) if sh else im
+            fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); ims.append((t, crop(im)))
+        FMAT.update(saved); rows.append((nm, ims))
+    bg = (244, 242, 236); font = ImageFont.truetype("DejaVuSans.ttf", 22); gap, lab = 30, 26
+    colw = [max(r[1][c][1].shape[1] for r in rows) for c in range(4)]
+    rowh = [max(im.shape[0] for _, im in r[1]) for r in rows]
+    Wc = sum(colw) + gap * 5 + 170; Hc = sum(rowh) + (gap + lab) * 3 + 60
+    canvas = Image.new("RGB", (Wc, Hc), bg); d = ImageDraw.Draw(canvas)
+    d.text((Wc // 2 - 300, 12), "Final  Moulded Pedestal tables (common scale)", fill=(70, 70, 70), font=font)
+    y = 50
+    for (nm, ims), rh in zip(rows, rowh):
+        d.text((10, y + rh // 2), {"small_dining": "Small dining", "dining4": "Dining for 4", "tea": "Tea"}[nm], fill=(85, 85, 85), font=font)
+        x = 170
+        for (t, im), cw in zip(ims, colw):
+            pim = Image.fromarray((np.clip(im, 0, 1) * 255).astype(np.uint8))
+            ox, oy = x + (cw - pim.width) // 2, y + rh - pim.height     # bottom-aligned (shared ground line)
+            canvas.paste(pim, (ox, oy)); d.text((x + cw // 2 - 25, y + rh + 6), t, fill=(85, 85, 85), font=font)
+            x += cw + gap
+        y += rh + lab + gap
+    canvas.save(os.path.join(OUT, "final_pedestal_sheet.png"))
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
