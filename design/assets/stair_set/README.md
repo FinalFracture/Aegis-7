@@ -39,3 +39,18 @@ Generator: `assets/src/stair_guard_generator.py` (it imports `stair_set_generato
 - **Guard height:** the guard top is 1.100 m above the nosing line on the flights and above the landing finish at every break point. The cap-rail top measures 1.097–1.100 m everywhere except where flight 2 starts, where the nosing line steps up one riser (0.1615 m) from the mid-landing.
 - **Posts:** 14 posts on the 14 #3 Guard_Sockets, 0.000 m XZ offset. Each post base is the socket top; on flight 2 it is 6 mm higher, on the stringer plate.
 - **Clashes:** I sampled 4,000 points per #4 part against every #3 solid (all of which are convex). There are no clashes, except the glass edge and shoe seating into the #3 Guard_Sockets, which is the bolt-in engagement by design.
+
+# #5 Skylight strip
+Generator: `assets/src/skylight_generator.py`. glb: `godot/assets/models/stair_skylight.glb`, 976 tris, closed meshes, not placed anywhere. It uses the same plan origin as #3 and #4. Sheet: `final_skylight_sheet.png`, shown with #3 and #4.
+
+- **Interpretation:** real glazing set into the roof slab, as the section shows (roof Y 8.8..9.1, skylight band over Z −8.9..−4.88). "Up" is toward the axis, so it admits axis lighting and the view of the far side of the habitat. Light reaches the L1 vestibule through the 0.8 m well. It is not a light panel or a well to another level.
+- **Position:** X −1.9..1.9 (3.8 m), Z −8.9..−4.88 (4.02 m; the md rounds this to 4.0), Y 8.788..9.1. The model fills the roof opening and the 12 mm anchor plates sit under the soffit. It is inside the core footprint.
+- **Build:**
+  - gunmetal perimeter frame, full slab depth
+  - alloy mullion grid of 3 × 4 panels (about 1.2 × 0.95 m)
+  - 24 mm laminated glass units, `alphaMode BLEND`
+  - amber latch light at each panel on the soffit side, latched for spin-down
+  - bolted gunmetal anchor plates on the soffit
+  - violet perimeter light strip
+- **Service:** from the roof side. A Sprocket or roof crew releases the latches and lifts each panel out by its amber lug. Nothing drops into the stair void.
+- **Clashes:** the lowest skylight part is at Y 8.788. The highest #3 part is at 4.474 and the highest #4 part is at 5.30, so the clearance is 3.49 m.
