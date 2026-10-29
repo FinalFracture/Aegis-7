@@ -18,3 +18,10 @@ A low slate platform 0.18 m high with a lift-up warm-grey deck that opens to sto
 A white moulded tub with raised slate side bolsters, latched side drawers and an arched partial canopy over the head end. The canopy has a violet band and an amber reading-light strip. The bolsters and canopy keep the sleeper centred and sheltered when gravity changes. It matches the capsule bath pod's moulded language.
 
 **Recommendation:** iter_01 (Moulded Platform + Drawers) is the cleanest fit with the white-composite family and has the most storage. If restraint should read strongly, iter_02 is the pick.
+
+## Final: Moulded Platform + Floor Clamps (1,904 tris)
+This combines iter_01 with iter_04's clamps, built with `python3 assets/src/double_bed_generator.py final`. It is exported only to `godot/assets/models/double_bed_moulded_clamped.glb`, and the sheet is `final_moulded_clamped_sheet.png`.
+- **Footprint:** the white moulded Shell (bevelled, rounded corners) is 1.6 × 2.0 m. Overall it is 1.68 × 2.08 m including the floor plates. The mattress top is at 0.54 m and the Headboard at 0.8 m.
+- **Clamps:** the gunmetal Base is recessed. Four hard-edged gunmetal Clamp_* feet sit inside the plan outline under the shell corners, each on a bolted FloorPlate_* that sticks out 40 mm, with an amber clamp light.
+- **Drawers:** four latched Drawer_* (L1/L2/R1/R2) with amber latches and alloy pulls sit between the clamps (z -0.57 to 0.77 vs plates from ±0.86), so they have a clear outward pull path.
+- **Materials:** violet FootBand, smooth-shaded fabric Mattress/Duvet/Pillow_L/R (non-metal, roughness 0.9). Every part is a closed mesh.

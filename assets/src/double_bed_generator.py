@@ -158,5 +158,46 @@ def main():
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", y=-0.1, fontsize=11, color="#555")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
 
+# ---------- final: Moulded Platform + Drawers (iter_01) with iter_04 floor clamps ----------
+def final_bed():
+    p = Pod("Moulded Platform + Floor Clamps (final)"); Y0, Y1 = .08, .34
+    p.add("Base", "gunmetal", bev(W - .2, LZ - .2, 0, Y0 + .01, .04, .008, 2))          # recessed plinth
+    p.add("Shell", "white", soft(W, LZ, Y0, Y1, .05, n=3, k=2) if False else bev(W, LZ, Y0, Y1, .08, .025, 3))
+    p.add("FootBand", "violet", box(-W / 2 + .12, W / 2 - .12, .2, .21, ZF - .003, ZF + .003))
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            x, z, t = sx * (W / 2 - .08), sz * (LZ / 2 - .08), f"{'LR'[sx > 0]}{'HF'[sz > 0]}"
+            p.add(f"FloorPlate_{t}", "gunmetal", box(x - .12, x + .12, 0, .012, z - .12, z + .12))       # 40 mm proud of shell
+            p.add(f"Clamp_{t}", "gunmetal", box(x - .06, x + .06, .012, Y0, z - .06, z + .06))
+            p.add("Clamp_Bolts", "alloy", *[box(x + dx - .012, x + dx + .012, .012, .022, z + dz - .012, z + dz + .012) for dx, dz in ((-.09, -.09), (.09, .09), (-.09, .09), (.09, -.09))])
+            p.add("Clamp_Lights", "amber", box(x + sx * .06, x + sx * .066, .03, .05, z - .03, z + .03))
+    for sx in (-1, 1):
+        for j, zc in enumerate((-.25, .45)):
+            x0 = sx * W / 2; a, b = sorted((x0, x0 + sx * .02)); t = f"{'LR'[sx > 0]}{j + 1}"
+            p.add(f"Drawer_{t}", "white", blk(a, b, .1, .32, zc - .32, zc + .32, .012, 1))
+            a, b = sorted((x0 + sx * .02, x0 + sx * .034))
+            p.add("Drawer_Handles", "alloy", box(a, b, .27, .284, zc - .15, zc + .15))
+            p.add("Drawer_Latches", "amber", box(a, b, .27, .284, zc + .2, zc + .25))
+    p.add("Headboard", "white", bev(W, .1, Y0, .8, .05, .02, 2, 0, ZH + .05))
+    bedding(p, Y1, mz=.03)
+    return p
+
+def final_main():
+    p = final_bed(); gp = os.path.join(dc.ROOT, "godot/assets/models/double_bed_moulded_clamped.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    mat_top = max(g[1][:, 1].max() for n, g in geo.items() if n == "Mattress")
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "mattress top", round(mat_top, 3), "non-watertight:", bad)
+    saved = tonemap(); top, front, side, iso = views()
+    def rv(R, s, sh):
+        im = render_view(geo, R, size=s, shadow=sh); ns = render_view(geo, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
+    ims = [rv(top, 600, False), rv(front, 600, True), rv(side, 600, True), rv(iso, 700, True)]; FMAT.update(saved)
+    bg = "#F4F2EC"; fig, axs = plt.subplots(2, 2, figsize=(12, 10), facecolor=bg)
+    for ax, im, t in zip(axs.flat, ims, ("Top", "Foot", "Side", "Iso")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, y=-0.09, fontsize=11, color="#555")
+    fig.suptitle("Final  Moulded Platform + Floor Clamps", fontsize=12, color="#444"); plt.tight_layout()
+    fig.savefig(os.path.join(OUT, "final_moulded_clamped_sheet.png"), dpi=100, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
