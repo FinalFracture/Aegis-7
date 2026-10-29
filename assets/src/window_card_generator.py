@@ -336,7 +336,7 @@ def sheet(it, parts, path, ext):
 
 NAMES = {1: "Flat painted quad", 2: "Interior box (fake interior mapping)", 3: "Layered cutout planes", 4: "Frosted privacy glass", 5: "Blinds over lit room"}
 
-if __name__ == "__main__":
+def _main_iters():
     os.makedirs(OUT, exist_ok=True); exts = []
     for it in range(1, 6):
         parts = build(it, "103")
@@ -348,3 +348,221 @@ if __name__ == "__main__":
     for i, (ax, e) in enumerate(zip(axs, exts), 1):
         ax.imshow(e); ax.axis("off"); ax.set_title(f"{i}. {NAMES[i]}", y=-0.13, fontsize=12, color="#444")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
+
+
+# =====================================================================
+# COMBO: open interior box + layered prop cutouts  ->  python3 window_card_generator.py combo
+# 14 tris, 2 x 1024 atlases (A: box RGB, B: props RGBA), textures embedded in the glb.
+# =====================================================================
+DEPTH, MID_Z, FORE_Z = 1.0, -0.7, -0.3
+
+def combo_atlases(unit):
+    L = paint(unit)
+    A = np.ones((1024, 1024, 4))
+    A[:512] = L["back"]
+    flr = L["back"][-20, ::2, :3]; cei = L["back"][6, ::2, :3]
+    A[512:768, :512, :3] = flr[None] * np.linspace(0.55, 1.0, 256)[:, None, None]
+    A[512:768:32, :512, :3] *= 0.7                                   # floor plank seams
+    A[512:768, 512:, :3] = cei[None] * np.linspace(1.0, 0.55, 256)[:, None, None]
+    side = L["back"][::2, :512, :3][:256] * np.linspace(0.6, 0.95, 512)[None, :, None]
+    A[768:, :512, :3] = side; A[768:, 512:, :3] = side[:, ::-1]
+    B = np.zeros((1024, 1024, 4)); B[:512] = L["mid"]; B[512:] = L["fore"]
+    return A, B
+
+def combo_parts(unit):
+    A, B = combo_atlases(unit)
+    tr = lambda r: (r[0] / 1024, 1 - r[3] / 1024, r[2] / 1024, 1 - r[1] / 1024)
+    def q4(V, r, flip=False):
+        u = tr(r); UV = np.array([[u[0], u[1]], [u[2], u[1]], [u[2], u[3]], [u[0], u[3]]])
+        return V, UV, (np.array([[0, 2, 1], [0, 3, 2]]) if flip else np.array([[0, 1, 2], [0, 2, 3]]))
+    w, h, D = CW, CH, DEPTH
+    box = [q4(np.array([[-w/2, 0, -D], [w/2, 0, -D], [w/2, h, -D], [-w/2, h, -D]]), (0, 0, 1024, 512)),
+           q4(np.array([[-w/2, 0, 0], [w/2, 0, 0], [w/2, 0, -D], [-w/2, 0, -D]]), (0, 512, 512, 768), True),
+           q4(np.array([[-w/2, h, -D], [w/2, h, -D], [w/2, h, 0], [-w/2, h, 0]]), (512, 512, 1024, 768), True),
+           q4(np.array([[-w/2, 0, 0], [-w/2, 0, -D], [-w/2, h, -D], [-w/2, h, 0]]), (0, 768, 512, 1024)),
+           q4(np.array([[w/2, 0, -D], [w/2, 0, 0], [w/2, h, 0], [w/2, h, -D]]), (512, 768, 1024, 1024))]
+    props = [q4(np.array([[-w/2, 0, MID_Z], [w/2, 0, MID_Z], [w/2, h, MID_Z], [-w/2, h, MID_Z]]), (0, 0, 1024, 512)),
+             q4(np.array([[-w/2, 0, FORE_Z], [w/2, 0, FORE_Z], [w/2, h, FORE_Z], [-w/2, h, FORE_Z]]), (0, 512, 1024, 1024))]
+    cat = lambda L: (np.vstack([l[0] for l in L]), np.vstack([l[1] for l in L]), np.vstack([l[2] + 4 * i for i, l in enumerate(L)]))
+    return [("InteriorBox", *cat(box), A, "OPAQUE"), ("PropLayers", *cat(props), B, "BLEND")]
+
+def write_glb_embedded(parts, path):
+    import io
+    from pygltflib import (GLTF2, Scene, Node, Mesh, Primitive, Attributes, Buffer, BufferView, Accessor,
+                           Material, PbrMetallicRoughness, TextureInfo, Texture, Image as GImage, Sampler)
+    g = GLTF2(); blob = bytearray(); tris = 0
+    g.extensionsUsed = ["KHR_materials_unlit"]; g.samplers = [Sampler(magFilter=9729, minFilter=9987)]
+    def raw(bts):
+        off = len(blob); blob.extend(bts)
+        while len(blob) % 4: blob.append(0)
+        return off
+    def add(arr, target, ct, typ, mm=False):
+        arr = np.ascontiguousarray(arr); off = raw(arr.tobytes())
+        g.bufferViews.append(BufferView(buffer=0, byteOffset=off, byteLength=arr.nbytes, target=target))
+        a = Accessor(bufferView=len(g.bufferViews) - 1, componentType=ct, count=len(arr), type=typ)
+        if mm: a.min, a.max = arr.min(0).tolist(), arr.max(0).tolist()
+        g.accessors.append(a); return len(g.accessors) - 1
+    for name, V, U, F, tex, mode in parts:
+        im = (np.clip(tex, 0, 1) * 255).astype(np.uint8); bio = io.BytesIO()
+        Image.fromarray(im if mode == "BLEND" else im[..., :3]).save(bio, "PNG"); bts = bio.getvalue()
+        off = raw(bts); g.bufferViews.append(BufferView(buffer=0, byteOffset=off, byteLength=len(bts)))
+        g.images.append(GImage(bufferView=len(g.bufferViews) - 1, mimeType="image/png", name=name + "_atlas"))
+        g.textures.append(Texture(source=len(g.images) - 1, sampler=0)); ti = len(g.textures) - 1
+        g.materials.append(Material(name=name + "_Unlit", alphaMode=mode, emissiveFactor=[1, 1, 1], emissiveTexture=TextureInfo(index=ti),
+            extensions={"KHR_materials_unlit": {}}, pbrMetallicRoughness=PbrMetallicRoughness(baseColorTexture=TextureInfo(index=ti), metallicFactor=0, roughnessFactor=1)))
+        N = np.zeros_like(V); fn_ = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
+        for k in range(3): np.add.at(N, F[:, k], fn_)
+        N /= np.linalg.norm(N, axis=1, keepdims=True) + 1e-12
+        at = Attributes(POSITION=add(V.astype(np.float32), 34962, 5126, "VEC3", True), NORMAL=add(N.astype(np.float32), 34962, 5126, "VEC3"),
+                        TEXCOORD_0=add(np.c_[U[:, 0], 1 - U[:, 1]].astype(np.float32), 34962, 5126, "VEC2"))
+        g.meshes.append(Mesh(name=name, primitives=[Primitive(attributes=at, indices=add(F.astype(np.uint32).ravel(), 34963, 5125, "SCALAR"), material=len(g.materials) - 1)]))
+        g.nodes.append(Node(name=name, mesh=len(g.meshes) - 1)); tris += len(F)
+    g.scenes = [Scene(nodes=list(range(len(g.nodes))))]; g.scene = 0
+    g.buffers = [Buffer(byteLength=len(blob))]; g.set_binary_blob(bytes(blob)); g.save_binary(path)
+    return tris
+
+# ---------- in-context scene (rev C residential, street side) ----------
+FLOOR_H, SILL = 4.2, 0.9
+WINDOWS = [(-10.5, 0, "103"), (-6.0, 0, "104"), (6.0, 0, "103"), (10.5, 0, "104"),
+           (-10.5, 1, "201"), (-6.0, 1, "103"), (6.0, 1, "104"), (10.5, 1, "201")]
+CLAD, RIB, SPAN = np.array([0xD8, 0xDE, 0xE6]) / 255, np.array([0x1A, 0x1E, 0x24]) / 255, np.array([0x28, 0x2E, 0x38]) / 255
+NIGHT = 0.38      # dim habitat night-cycle light level on lit (non-emissive) surfaces
+R_CYL = 450.0     # habitat radius for the upward ground curve
+
+def ground_y(z): return R_CYL - np.sqrt(np.maximum(R_CYL ** 2 - z ** 2, 1.0))
+
+def building_items(card_cache):
+    it = []; X0, X1, H = -14.0, 14.0, 2 * FLOOR_H + 0.6
+    c = lambda col, k=NIGHT: tuple(np.array(col) * k)
+    # facade face is z=0 plane; build wall around window openings per floor
+    for fl in range(2):
+        y0 = fl * FLOOR_H; ws = sorted(x for x, f, _ in WINDOWS if f == fl)
+        xs = [X0] + sum([[x - CW / 2, x + CW / 2] for x in ws], []) + [X1]
+        for i in range(0, len(xs), 2): it.append(box_items(xs[i], y0, -0.3, xs[i + 1], y0 + FLOOR_H, 0, c(CLAD)))
+        for x in ws:
+            it.append(box_items(x - CW / 2, y0, -0.3, x + CW / 2, y0 + SILL, 0, c(CLAD)))
+            it.append(box_items(x - CW / 2, y0 + SILL + CH, -0.3, x + CW / 2, y0 + FLOOR_H, 0, c(CLAD)))
+        it.append(box_items(X0, y0 + FLOOR_H - 0.35, 0, X1, y0 + FLOOR_H, 0.12, c(SPAN)))     # spandrel band
+    it.append(box_items(X0 - .2, 2 * FLOOR_H, -0.4, X1 + .2, H, 0.2, c(RIB)))                  # parapet
+    for x in (-14, -8.3, -1.8, 1.8, 8.3, 14):                                                  # chamfer-ish gunmetal ribs
+        it.append(box_items(x - .18, 0, 0, x + .18, 2 * FLOOR_H, 0.25, c(RIB)))
+    it.append(box_items(-1.2, 0, -0.2, 1.2, 2.6, 0.02, c(RIB, .5)))                           # entry (Bulkhead hub)
+    it.append(box_items(-1.0, 0.02, 0.02, 1.0, 2.4, 0.04, (0.72 * .3, 0.35 * .3, 1.0 * .3), amb=1.0, alpha=0.85))
+    for x, fl, u in WINDOWS:
+        y0 = fl * FLOOR_H + SILL
+        fr = c(RIB, 0.8)
+        it += [box_items(x - CW / 2 - .1, y0 - .1, -0.02, x + CW / 2 + .1, y0, 0.12, fr), box_items(x - CW / 2 - .1, y0 + CH, -0.02, x + CW / 2 + .1, y0 + CH + .1, 0.12, fr),
+               box_items(x - CW / 2 - .1, y0, -0.02, x - CW / 2, y0 + CH, 0.12, fr), box_items(x + CW / 2, y0, -0.02, x + CW / 2 + .1, y0 + CH, 0.12, fr),
+               box_items(x - .025, y0, -0.12, x + .025, y0 + CH, -0.08, fr)]
+        it.append(dict(P=np.array([[x - CW / 2, y0, -.1], [x + CW / 2, y0, -.1], [x + CW / 2, y0 + CH, -.1], [x - CW / 2, y0 + CH, -.1]]),
+                       F=np.array([[0, 1, 2], [0, 2, 3]]), color=(0.42, 0.5, 0.62), alpha=0.18, amb=1.0, grad=-0.6))
+        it += card_items(card_cache[u], (x, fl * FLOOR_H + SILL, -0.15))
+    return it
+
+def world_items(zmin=-420, zmax=60, xr=160, dz=6.0, dx=16.0, blocks=True):
+    """Curved habitat floor (spin axis along X, ground rises toward -Z), street, distant lit blocks."""
+    it = []; rng = np.random.default_rng(7)
+    zs = np.arange(zmin, zmax + dz, dz); xs = np.arange(-xr, xr + dx, dx)
+    P, F, C = [], [], []
+    for i in range(len(zs) - 1):
+        for j in range(len(xs) - 1):
+            z0, z1, x0, x1 = zs[i], zs[i + 1], xs[j], xs[j + 1]
+            street = 1.5 < (z0 + z1) / 2 < 14
+            col = np.array([0.20, 0.21, 0.24]) if street else (np.array([0.16, 0.24, 0.17]) if (i // 3 + j) % 3 else np.array([0.23, 0.24, 0.26]))
+            if not street and (j % 4 == 0): col = np.array([0.30, 0.30, 0.32])            # cross-streets
+            V = np.array([[x0, ground_y(z0) - .01, z0], [x1, ground_y(z0) - .01, z0], [x1, ground_y(z1) - .01, z1], [x0, ground_y(z1) - .01, z1]])
+            it.append(dict(P=V, F=np.array([[0, 2, 1], [0, 3, 2]]), color=tuple(col * NIGHT * 1.4), amb=0.8))
+    # sidewalk + lane markings + street lamps in front of the building
+    it.append(box_items(-30, -.01, 0, 30, 0.12, 2.0, tuple(np.array([0.5, 0.5, 0.52]) * NIGHT)))
+    for x in np.arange(-28, 30, 6): it.append(box_items(x, 0.0, 7.9, x + 2.5, 0.015, 8.1, (0.55, 0.55, 0.5), amb=1.0))
+    for x in (-16, -2.5, 16):
+        it.append(box_items(x - .06, 0, 1.6, x + .06, 4.2, 1.72, tuple(RIB * 1.5)))
+        it.append(box_items(x - .25, 4.1, 1.5, x + .25, 4.22, 1.82, (1.0, 0.85, 0.6), amb=1.0))
+    if blocks:   # distant residential blocks on the rising floor, with lit window bands
+        for k in range(60):
+            z = rng.uniform(-400, -40); x = rng.uniform(-150, 150)
+            if abs(x) < 25 and z > -60: continue
+            gy = ground_y(z); ang = np.arcsin(z / R_CYL)               # tilt with local "up"
+            w, d, h = rng.uniform(10, 26), rng.uniform(8, 14), rng.uniform(6, 16)
+            blk = box_items(x - w / 2, 0, -d / 2, x + w / 2, h, d / 2, tuple(CLAD * NIGHT * 0.6))
+            Rx = np.array([[1, 0, 0], [0, np.cos(ang), -np.sin(ang)], [0, np.sin(ang), np.cos(ang)]])
+            def place(Pl): Pl = Pl.copy(); Pl[:, 2] -= 0; Pl = (Pl - [x, 0, 0]) @ Rx.T + [x, gy, z]; return Pl
+            blk["P"] = place(blk["P"]); it.append(blk)
+            for fy in np.arange(1.2, h - 1, 3.0):
+                warm = (1.0, 0.82, 0.55) if rng.random() < 0.75 else (0.75, 0.85, 1.0)
+                band = box_items(x - w / 2 + .5, fy, d / 2, x + w / 2 - .5, fy + 1.1, d / 2 + .05, tuple(np.array(warm) * rng.uniform(.5, 1.0)), amb=1.0)
+                band["P"] = place(band["P"]); it.append(band)
+    return it
+
+def raster_ctx(items, cam, W, H, bg=(0.05, 0.06, 0.09)):
+    """Wraps raster(): drops triangles behind/near the camera (no clipper) and adds a soft glow pass."""
+    keep = []
+    for itm in items:
+        _, _, w = cam(itm["P"])
+        ok = (w[itm["F"]] > 0.3).all(1)
+        if ok.all(): keep.append(itm)
+        elif ok.any(): d = dict(itm); d["F"] = itm["F"][ok]; keep.append(d)
+    img = raster(keep, cam, W, H, bg)
+    glow = np.clip(img - 0.55, 0, 1)
+    for ch in range(3): glow[..., ch] = gaussian_filter(glow[..., ch], 6)
+    return np.clip(img + glow * 0.8, 0, 1)
+
+def save(img, path, title=None):
+    h, w = img.shape[:2]; fig = plt.figure(figsize=(w / 100, h / 100 + (0.35 if title else 0)), facecolor="#F4F2EC")
+    ax = fig.add_axes([0, 0.3 / (h / 100 + .35) if title else 0, 1, 1 - (0.3 / (h / 100 + .35) if title else 0)]); ax.imshow(img); ax.axis("off")
+    if title: fig.text(0.5, 0.01, title, ha="center", fontsize=10, color="#555")
+    fig.savefig(path, dpi=100, facecolor="#F4F2EC"); plt.close(fig)
+
+def combo_main():
+    os.makedirs(OUT, exist_ok=True); cache = {}
+    for u in ("103", "104", "201"):
+        cache[u] = combo_parts(u)
+        tris = write_glb_embedded(cache[u], os.path.join(OUT, f"combo_{u}.glb"))
+        for name, *_, tex, mode in cache[u]:
+            im = (np.clip(tex, 0, 1) * 255).astype(np.uint8)
+            Image.fromarray(im if mode == "BLEND" else im[..., :3]).save(os.path.join(OUT, f"combo_{u}_{'atlasA_box' if mode == 'OPAQUE' else 'atlasB_props'}.png"))
+        print("combo", u, "tris", tris)
+    world = world_items(); bld = building_items(cache)
+    # (a) street
+    cam = persp(np.array([-3.0, 1.7, 12.0]), np.array([-2.5, 2.9, 0.0]), 70, 1400, 760)
+    save(raster_ctx(world + bld, cam, 1400, 760), os.path.join(OUT, "combo_street.png"), "Street, eye height 1.7 m, ~12 m out (night cycle)")
+    # (b) far, across/up the cylinder curve
+    zc = 75.0; cam = persp(np.array([20.0, ground_y(zc) + 1.7, zc]), np.array([0.0, 22.0, -60.0]), 58, 1400, 760)
+    far_world = world_items(zmin=-430, zmax=110, xr=320, dz=8.0, dx=20.0)
+    save(raster_ctx(far_world + bld, cam, 1400, 760), os.path.join(OUT, "combo_far.png"), "~75 m out: Residential facade with the habitat floor curving up behind it")
+    # (c) walk-by, 3 frames 2.5 m apart, oblique on window (-6.0, L1 / 104) and (-10.5)
+    frames = []
+    for i, ex in enumerate((-13.0, -9.0, -5.0)):
+        cam = persp(np.array([ex, 1.7, 3.2]), np.array([ex + 1.5, 1.6, 0.0]), 70, 640, 520)
+        frames.append(raster_ctx(world + bld, cam, 640, 520))
+    fig, axs = plt.subplots(1, 3, figsize=(19.5, 5.8), facecolor="#F4F2EC")
+    for ax, f, ex in zip(axs, frames, (-13.0, -9.0, -5.0)):
+        ax.imshow(f); ax.axis("off"); ax.set_title(f"walk-by x = {ex:+.0f} m", y=-0.08, fontsize=11, color="#555")
+    plt.tight_layout(); fig.savefig(os.path.join(OUT, "combo_walkby.png"), dpi=100, facecolor="#F4F2EC"); plt.close(fig)
+    # (d) clean sheet: Top/Front/Side/Iso + a 3-variant strip (103 / 104 / 201 lights off)
+    strip = []
+    for u in ("103", "104", "201"):
+        cam = persp(np.array([1.2, 0.85, 3.6]), np.array([0, 0.75, -0.5]), 52, 420, 300)
+        strip.append(raster(card_items(cache[u]), cam, 420, 300, (0.955, 0.948, 0.925)))
+    sheet_combo(cache["103"], np.concatenate([np.pad(s, ((0, 0), (6, 6), (0, 0)), constant_values=0.955) for s in strip], 1),
+                os.path.join(OUT, "combo_sheet.png"))
+
+def sheet_combo(parts, strip, path):
+    fig = plt.figure(figsize=(13, 9.6), facecolor="#F4F2EC"); gs = fig.add_gridspec(2, 3, height_ratios=[1, 1.0])
+    R_top = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]]); R_side = np.array([[0, 0, -1], [0, 1, 0], [1, 0, 0]])
+    a, b = np.radians(-30), np.radians(22)
+    Ry = np.array([[np.cos(a), 0, np.sin(a)], [0, 1, 0], [-np.sin(a), 0, np.cos(a)]]); Rx = np.array([[1, 0, 0], [0, np.cos(b), -np.sin(b)], [0, np.sin(b), np.cos(b)]])
+    allV = np.vstack([p[1] for p in parts]); c = (allV.min(0) + allV.max(0)) / 2; bg = (0.955, 0.948, 0.925)
+    axes = [fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[0, 2]), fig.add_subplot(gs[1, 0])]
+    for ax, (t, R) in zip(axes, [("Top", R_top), ("Front", np.eye(3)), ("Side", R_side), ("Iso", Rx @ Ry)]):
+        items = card_items(parts)
+        mn, mx = allV.min(0), allV.max(0)   # faint outer shell outline so the open box reads in Top/Side
+        items.append(box_items(*(mn - .015), *(mx + .015), (0.45, 0.47, 0.52), alpha=0.12, amb=0.9))
+        ax.imshow(raster(items, ortho(R, c, 3.6, 520, 420), 520, 420, bg)); ax.axis("off"); ax.set_title(t, y=-0.08, fontsize=11, color="#555")
+    ax = fig.add_subplot(gs[1, 1:]); ax.imshow(np.clip(strip, 0, 1)); ax.axis("off")
+    ax.set_title("Per-unit variants: 103 family / 104 researcher / 201 lights off", y=-0.12, fontsize=11, color="#555")
+    plt.tight_layout(); fig.savefig(path, dpi=100, facecolor="#F4F2EC"); plt.close(fig)
+
+if __name__ == "__main__":
+    import sys
+    combo_main() if len(sys.argv) > 1 and sys.argv[1] == "combo" else _main_iters()

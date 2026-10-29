@@ -29,3 +29,17 @@ A blurred, desaturated room is painted with a soft person silhouette and frost n
 A room quad sits at -0.6 m behind a blinds plane at -0.04 m. The blinds are 55% drawn, with lit slat edges and the room visible below them. They add parallax and a believable reason for less detail. The blind height can vary per unit.
 
 **Recommendation:** iter_05 (blinds), with the iter_03 split of mid and fore layers behind it if extra depth is wanted. It reads as lived-in at 10–20 m, hides the stand-in nature cleanly and costs 4 tris.
+
+## Combo: interior box + layered cutouts (14 tris, 2 × 1024×1024 atlases, embedded)
+This combines iter_02 and iter_03. A shallow open box is 1.0 m deep with a 3.0 × 1.5 m opening and has five faces: back wall, floor, ceiling and two side walls. Inside it are two alpha cutout planes: mid furniture at -0.7 m and foreground props (chairs, toys) at -0.3 m.
+- **Atlas A (RGB, opaque, used by the box):** back wall in the top half; floor, ceiling and both side walls in 512×256 slots.
+- **Atlas B (RGBA, alpha-blended, used by the props):** the mid layer in the top half and the foreground layer in the bottom half.
+
+Per-unit profiles (tint, prop set, lights on or off) only repaint the atlases; the mesh stays the same. The atlases are embedded in each glb. The same PNGs are also saved alongside for review: `combo_<unit>_atlasA_box.png` and `combo_<unit>_atlasB_props.png`.
+
+- **Files:** `combo_103.glb`, `combo_104.glb`, `combo_201.glb` (201 has its lights off). Build them with `python3 assets/src/window_card_generator.py combo`.
+- **Renders:**
+  - `combo_street.png`: eye height 1.7 m, about 12 m out, night cycle.
+  - `combo_far.png`: about 75 m out, with the habitat floor curving up behind the building (R about 450 m) and distant lit blocks.
+  - `combo_walkby.png`: 3 oblique frames 4 m apart, showing parallax of the box walls and the prop layers.
+  - `combo_sheet.png`: Top, Front, Side and Iso views, plus a strip of the 103, 104 and 201 variants.
