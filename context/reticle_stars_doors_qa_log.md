@@ -154,3 +154,11 @@ PASS | qa_hub_01_far_side_of_wall_noop | dist=1.24 m (in range) rm1b_open=false
 PASS | qa_hub_01_E_toggles_door_not_pickup | rm1b_open=true pickup=SUPER-WIRE SPOOL in_reach=true collected=false inventory_unchanged=true
 PASS | qa_hub_01_player_on_dock_pad_can_close | open=false pending=false blocker='Hammerhead05_Kelvin_0204_Science' dissolve=0.000 dist_to_scanzone=1.13
 ```
+
+---
+
+### [REAL-01..03] resolution (Gage, 2026-10-29 05:04 CDT)
+- **REAL-03 DONE:** `_zone_name` shows RM 1A / RM 1B only inside `ROOM_1A_INTERIOR` / `ROOM_1B_INTERIOR`. These are AABBs from the sector glb shells (`Side_Room_East_Lounge` x[-12.25,-4.75] z[2.76,7.98]; `Side_Room_West_Storage` x[0.75,8.25] z[2.76,8.16]), inset 0.15 m for the walls, and they start behind the door wall (z ≥ 3.00). Everywhere else on L1 falls back to the concourse/vestibule/promenade names. QA `real_03_room_zone_labels_interior_only`: room centres labelled; the corridor outside each door (z 2.2), x -13.2 and x -2.0 are not.
+- **REAL-02 DONE:** `MezzanineGlassBalustrade_North` (15.2 × 1.06 × 0.06 m @ z 1.25) and `_West` (0.06 × 1.06 × 7.6 m @ x -7.55) are StaticBody3D boxes matching the glb panes (y 4.405–5.465). Neither touches the east stair (x ≥ 9.16) or any doorway. QA `real_02_glass_balustrade_collider_hit`: 6/6 rays across the runs, masked to the glass layer, hit the right run. Note: on the north run at y 4.9, an unmasked ray hits `Upper_Mezzanine_Walkway_col` first, so part of that edge was already covered.
+- **REAL-01 DONE (backing panel):** `_fit_hub_backing()` casts 9 rays from each hub face straight back. Where any finds no solid within 5 cm, it adds a wall-toned gunmetal backing plinth with a collider (0.695 × 1.44 × 0.25 m, face 2 mm proud of the hub's wall plane). ALCOVE2C had 6/9 rays with no wall even within 0.20 m (the void Patch found). **All 5 other hubs also got a plinth:** the baked wall faces sit 5–20 cm behind the 0.30 m frame plane at every portal (3–6/9 rays missed at 5 cm; 9/9 hit within 20 cm). QA `<door>_hub_solid_wall_behind_5cm`: 6/6 doors, 0 misses. No render was taken, so the plinth look (and the door frame/infill standing proud of the real wall) needs a visual check.
+- `--qa-reticle-stars-doors` 88 PASS / 0 FAIL, 0 script errors; `--validate-only` OK.

@@ -140,6 +140,11 @@ const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward
 const DOOR_DISSOLVE_TIME := 0.8
 
 # [t39u]-[t40u] Dynamic interior model despawn/respawn streaming
+# [REAL-03] Interior volumes of the L1 side rooms, from the sector glb shells (Side_Room_East_Lounge =
+# x[-12.25,-4.75] z[2.76,7.98]; Side_Room_West_Storage = x[0.75,8.25] z[2.76,8.16]; y[0.2,4.01]) inset by
+# 0.15 m walls; the door wall's inner face is z = 2.85 + 0.15.
+const ROOM_1A_INTERIOR := AABB(Vector3(-12.10, 0.0, 3.00), Vector3(7.20, 4.0, 4.83))
+const ROOM_1B_INTERIOR := AABB(Vector3(0.90, 0.0, 3.00), Vector3(7.20, 4.0, 5.01))
 const INTERIOR_DESPAWN_Z := -14.0   # [QA-FF-02] despawn farther out than respawn (hysteresis band 1 m)
 const INTERIOR_RESPAWN_Z := -13.0
 
@@ -168,6 +173,10 @@ const HUB_ARM_PIVOT := Vector3(0.25, 0.45, -0.025)
 const HUB_ARM_STOWED_DEG := 90.0
 const HUB_DOCK_POS := Vector3(0.25, 0.013, 0.47)
 const HUB_DOCK_RADIUS := 0.30
+const GLASS_QA_LAYER_BIT := 1 << 19
+const HUB_BACKING_MAX_GAP := 0.05                    # [REAL-01] max allowed void behind the hub face
+const HUB_BACKING_SAMPLE_X := [-0.15, 0.13, 0.40]   # hub-local bezel sample columns (bezel x -0.20..0.455)
+const HUB_BACKING_SAMPLE_Y := [0.50, 1.10, 1.70]    # hub-local bezel sample rows (bezel y 0.40..1.80)
 const SPROCKET_NODE := "Hammerhead05_Sprocket_0419_Engineering"
 # Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
 # [QA-FF-04/06] every run polls BOTH res://config/door_fields.json (godot/config/, gitignored) and
@@ -524,6 +533,27 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 
 
 
+func _add_glass_balustrade_colliders(parent: Node3D) -> void:
+	# [REAL-02] Mezzanine_Glass_Balustrade has no collider of its own: one thin StaticBody3D per glass run,
+	# matching the glb panes (y 4.405..5.465). North run x[-7.6,7.6] @ z 1.25; west run z[-6.4,1.2] @ x -7.55.
+	# Neither run crosses the east stair (x >= 9.16) or any doorway (doors at z 2.75 / x -11.5).
+	var runs: Array[Dictionary] = [
+		{"name": "MezzanineGlassBalustrade_North", "size": Vector3(15.2, 1.06, 0.06), "pos": Vector3(0.0, 4.935, 1.25)},
+		{"name": "MezzanineGlassBalustrade_West", "size": Vector3(0.06, 1.06, 7.6), "pos": Vector3(-7.55, 4.935, -2.6)}
+	]
+	for r: Dictionary in runs:
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = String(r["name"])
+		body.collision_layer = 1 | GLASS_QA_LAYER_BIT  # default world layer + a dedicated bit for QA rays
+		body.position = r["pos"] as Vector3
+		parent.add_child(body)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		var bs: BoxShape3D = BoxShape3D.new()
+		bs.size = r["size"] as Vector3
+		cs.shape = bs
+		body.add_child(cs)
+
+
 func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	var hab_root: Node3D = Node3D.new()
 	hab_root.name = "CylinderHab7_FullScale_World"
@@ -755,6 +785,7 @@ func _assemble_open_doorless_sector() -> void:
 	_add_architectural_shadow_occluders(_arch_container)
 	if not _batch_render:
 		_add_safety_floor_colliders(_arch_container)
+		_add_glass_balustrade_colliders(_arch_container)
 
 	_build_cylinder_hab7_fullscale_world(_arch_container)
 	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
@@ -1979,9 +2010,10 @@ func _zone_name(p: Vector3) -> String:
 		return "L2 MEZZANINE GALLERY"
 	if p.x > 9.0 and p.z < -2.0 and p.y > 0.3:
 		return "EAST STAIR-RAMP CONNECTOR"
-	if p.x < -4.6 and p.z > 2.85:
+	# [REAL-03] RM 1A / RM 1B only inside the enclosed room interiors (sector glb room-shell bounds, walls inset).
+	if ROOM_1A_INTERIOR.has_point(p):
 		return "RM 1A — LAUNDRY LOUNGE"
-	if p.x > 0.6 and p.x < 8.4 and p.z > 2.85:
+	if ROOM_1B_INTERIOR.has_point(p):
 		return "RM 1B — BOT SUBSTATION"
 	if p.z < -9.1:
 		return "SECTOR-4 PROMENADE — CYLINDER HAB-7"
@@ -3737,6 +3769,60 @@ func _fit_dock_pad_to_floor(door: Dictionary) -> void:
 	door["pad_lift"] = lift
 
 
+func _hub_backing_misses(door: Dictionary, depth: float) -> int:
+	# Rays from 9 points on the hub face straight back into the wall; count points with no solid within `depth`.
+	var hub_root: Node3D = door["hub"] as Node3D
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if hub_root == null or space == null:
+		return -1
+	var xf: Transform3D = hub_root.global_transform
+	var misses: int = 0
+	for hx: float in HUB_BACKING_SAMPLE_X:
+		for hy: float in HUB_BACKING_SAMPLE_Y:
+			var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(xf * Vector3(hx, hy, 0.0), xf * Vector3(hx, hy, -depth))
+			if _player_body != null:
+				rq.exclude = [_player_body.get_rid()]
+			if space.intersect_ray(rq).is_empty():
+				misses += 1
+	return misses
+
+
+func _fit_hub_backing(door: Dictionary) -> void:
+	# [REAL-01] If any part of a hub has no wall within HUB_BACKING_MAX_GAP behind it (ALCOVE 2C: the hub overhangs
+	# the alcove's outer wall at x -10.30; elsewhere the baked wall face sits 5-10 cm behind the 0.30 m door-frame
+	# plane), add a solid wall-toned backing plinth + collider filling the void behind the bezel,
+	# its face 2 mm proud of the wall plane (hub-local z -0.022) so it never z-fights the real wall.
+	var misses: int = _hub_backing_misses(door, HUB_BACKING_MAX_GAP)
+	if misses < 0:
+		return
+	door["backing_misses_20cm"] = _hub_backing_misses(door, 0.20)
+	door["backing_checked"] = true
+	door["backing_added"] = misses > 0
+	if misses == 0:
+		return
+	var hub_root: Node3D = door["hub"] as Node3D
+	var sz: Vector3 = Vector3(0.695, 1.44, 0.25)
+	var ctr: Vector3 = Vector3(0.1275, 1.10, -0.020 - sz.z * 0.5)
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = Color(0.26, 0.29, 0.33)
+	m.metallic = 0.8
+	m.roughness = 0.34
+	var t: Texture2D = _load_tex("facade_titanium_gunmetal_hull.png")
+	if t != null:
+		m.albedo_texture = t
+	var mi: MeshInstance3D = _dbox(hub_root, "HubWallBacking", sz, ctr, m)
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "HubWallBacking_Collider"
+	body.position = ctr
+	hub_root.add_child(body)
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = sz
+	cs.shape = bs
+	body.add_child(cs)
+	print("[HUB] %s: %d/9 hub-face rays found no wall within %.2f m (%d/9 within 0.20 m) -> added backing panel %s" % [String(door["id"]), misses, HUB_BACKING_MAX_GAP, 9 - int(door["backing_misses_20cm"]), mi.name])
+
+
 func _update_hub_docks() -> void:
 	var spr: Node3D = _actors_container.get_node_or_null(SPROCKET_NODE) as Node3D if _actors_container != null else null
 	var spr_ok: bool = spr != null and is_instance_valid(spr) and spr.is_inside_tree() and spr.visible
@@ -3746,6 +3832,8 @@ func _update_hub_docks() -> void:
 			continue
 		if not bool(door.get("pad_fitted", false)):
 			_fit_dock_pad_to_floor(door)
+		if not bool(door.get("backing_checked", false)) and _frame_counter >= 3:
+			_fit_hub_backing(door)
 		var parked: bool = bool(door["dock_hook"])
 		if not parked and spr_ok:
 			var dv: Vector3 = spr.global_position - mk.global_position
@@ -4229,6 +4317,9 @@ func _run_reticle_stars_doors_qa() -> void:
 				scan_target = String((it_q["node"] as Node).name)
 		_qa_t38_check("%s_bulkhead_hub_mounted" % did.to_lower(), hub_n != null and hub_err < 0.001 and hub_rot_err < 0.001 and scan_target == "ScanZone",
 			"hub=%s pos_err=%.4f m rot_err=%.4f offset=%s+standoff %.3f scan_target=%s" % [hub_n.name if hub_n != null else "MISSING", hub_err, hub_rot_err, str(HUB_MOUNT_OFFSET), HUB_WALL_STANDOFF, scan_target])
+		var back_miss: int = _hub_backing_misses(door, HUB_BACKING_MAX_GAP)
+		_qa_t38_check("%s_hub_solid_wall_behind_5cm" % did.to_lower(), back_miss == 0,
+			"9-point rays from hub face: misses=%d backing_panel_added=%s" % [back_miss, door.get("backing_added", false)])
 		var glow_amber: bool = (door["glow_nodes"] as Array).size() == 8
 		for gn0: Variant in door["glow_nodes"]:
 			glow_amber = glow_amber and (gn0 as MeshInstance3D).material_override == lm
@@ -4295,6 +4386,35 @@ func _run_reticle_stars_doors_qa() -> void:
 		var closed_ok: bool = not bool(door["open"]) and _door_dissolve(door) <= 0.001 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(HUB_AMBER)
 		_qa_t38_check("%s_E_scan_closes_back_glow_amber" % did.to_lower(), closed_ok,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
+
+	# [REAL-03] zone labels: room names only inside the enclosed room interiors
+	var zone_ok: bool = true
+	var zone_desc: PackedStringArray = PackedStringArray()
+	for zc: Array in [[Vector3(-8.5, 0.3, 5.4), "RM 1A", true], [Vector3(-8.5, 0.3, 2.2), "RM 1A", false], [Vector3(-13.2, 0.3, 5.0), "RM 1A", false],
+			[Vector3(4.5, 0.3, 5.4), "RM 1B", true], [Vector3(4.5, 0.3, 2.2), "RM 1B", false], [Vector3(-2.0, 0.3, 5.0), "RM 1", false]]:
+		var zn: String = _zone_name(zc[0] as Vector3)
+		var ok_z: bool = zn.begins_with(String(zc[1])) == bool(zc[2])
+		zone_ok = zone_ok and ok_z
+		zone_desc.append("%s->'%s'" % [str(zc[0]), zn])
+	_qa_t38_check("real_03_room_zone_labels_interior_only", zone_ok, " | ".join(zone_desc))
+	# [REAL-02] rays across the mezzanine glass hit its own colliders
+	var space_g: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var g_hits: PackedStringArray = PackedStringArray()
+	var g_ok: bool = true
+	# Rays across each run (3 points per run, y 4.5 / 4.9 / 5.4) masked to the glass layer: every one must hit the run.
+	var g_rays: Array[Array] = []
+	for gx: float in [-6.0, 0.0, 6.0]:
+		g_rays.append([Vector3(gx, 4.5 + absf(gx) * 0.075, 0.7), Vector3(gx, 4.5 + absf(gx) * 0.075, 1.8), "MezzanineGlassBalustrade_North"])
+	for gz: float in [-5.5, -2.6, 0.6]:
+		g_rays.append([Vector3(-7.0, 4.9, gz), Vector3(-8.1, 4.9, gz), "MezzanineGlassBalustrade_West"])
+	for gr: Array in g_rays:
+		var rqg: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(gr[0] as Vector3, gr[1] as Vector3, GLASS_QA_LAYER_BIT)
+		rqg.exclude = [_player_body.get_rid()]
+		var hg: Dictionary = space_g.intersect_ray(rqg)
+		var hname: String = String((hg["collider"] as Node).name) if not hg.is_empty() else "none"
+		g_ok = g_ok and hname == String(gr[2])
+		g_hits.append("%s@%s hit=%s" % [String(gr[2]).trim_prefix("MezzanineGlassBalustrade_"), str(gr[0]), hname])
+	_qa_t38_check("real_02_glass_balustrade_collider_hit", g_ok, ", ".join(g_hits))
 
 	# [QA-HUB-01] single-target scan: RM1B only (APT202 upstairs untouched), facing away / out of range = no-op
 	var h_rb: Dictionary = _find_door("DOOR_RM1B")
