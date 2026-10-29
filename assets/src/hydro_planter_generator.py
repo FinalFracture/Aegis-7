@@ -74,4 +74,35 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+# ---------- final: polished iter_03 Tiered_Steps as an EXTERIOR asset (hydro co-op beds / sidewalk planters) ----------
+# Interior #33 dropped from 103/202 (Jared, Oct 29). Levelling clamp feet: each foot is a threaded alloy jack in a
+# gunmetal clamp shoe; jacks take up curved-floor sag (+/-25 mm) so the tiers stay level on the cylinder floor.
+def lean_plants(p, xs, y, z, r):
+    a = [bush(x, y, z, r * (0.85 + .3 * rng.random())) for i, x in enumerate(xs) if i % 2 == 0]
+    b = [bush(x, y, z, r * (0.85 + .3 * rng.random()), "leaf2") for i, x in enumerate(xs) if i % 2 == 1]
+    p.add("Foliage", "leaf", *a); p.add("Foliage_Light", "leaf2", *b)
+    p.add("Net_Cup_Clips", "gunmetal", *[cyl(x, z, .035, y - .02, y + .012, 6) for x in xs])
+def final_tiered():
+    p = Pod("Tiered_Steps_Exterior"); FT = .06
+    p.add("Base_Frame", "gunmetal", blk(-W / 2 + .05, W / 2 - .05, FT - .03, FT, -.19, .19, .006, 1))
+    for i, (y, z) in enumerate(((.2, .12), (.36, 0), (.52, -.12))):
+        p.add("Tiers", "white", bev(W, .16, FT, y + FT, .03, .01, 2, 0, z))
+        x0, x1 = -W / 2 + .04, W / 2 - .04; yy = y + FT
+        p.add("Tier_Lids", "slate", box(x0, x1, yy - .01, yy + .006, z - .07, z + .07))
+        p.add("Tier_Latches", "amber", *[box(x - .02, x + .02, yy - .012, yy - .004, z + .07, z + .076) for x in (-1.5, 0, 1.5)])
+        lean_plants(p, np.linspace(-1.75, 1.75, (7, 5, 4)[i]), yy, z, .075)
+    p.add("Reservoir", "slate", box(-1.9, 1.9, FT + .02, FT + .14, .2, .206))
+    p.add("Reservoir_Seal", "alloy", box(-1.9, 1.9, FT + .14, FT + .15, .2, .206))
+    feet = [(x, z) for x in (-1.75, 0, 1.75) for z in (-.14, .14)]
+    p.add("Levelling_Jacks", "alloy", *[cyl(x, z, .018, .02, FT - .03, 8) for x, z in feet])
+    p.add("Clamp_Shoes", "gunmetal", *[box(x - .06, x + .06, 0, .02, z - .045, z + .045) for x, z in feet])
+    p.add("Shoe_Bolts", "alloy", *[cyl(x + dx, z, .008, .02, .03, 6) for x, z in feet for dx in (-.04, .04)])
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    p = final_tiered(); gp = os.path.join(dc.ROOT, "godot/assets/models/hydro_planter_tiered_exterior.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_tiered_exterior_sheet.png"); wg.sheet(p, sp, "Final  hydro planter, Tiered Steps (EXTERIOR: hydro co-op / sidewalk)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()

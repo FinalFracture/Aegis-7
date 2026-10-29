@@ -16,3 +16,10 @@ Generator: `assets/src/hydro_planter_generator.py`. The pivot is bottom-centre, 
 **Recommendation:** #5, Sprocket_Service. Sprocket can top up and dose the reservoir without any human, which fits the family theme, and it is the lowest tri count.
 - Choose #2 for a balcony rail where the floor has to stay clear.
 - Choose #3 for the most visible greenery.
+
+## Final (Oct 29, 2026): Tiered Steps, EXTERIOR
+Jared picked iter_03 Tiered Steps but moved it outdoors (hydro co-op beds / sidewalk planters on Vance's exterior plan); interior #33 is dropped from rooms 103/202.
+- `godot/assets/models/hydro_planter_tiered_exterior.glb`: 2,784 tris, 4.0 W × 0.70 H × 0.41 D m, bottom-centre pivot, +Z front, closed meshes. Not placed.
+- Curved floor: the tiers ride on a gunmetal base frame lifted 60 mm on six levelling feet. Each foot is a threaded alloy jack in a bolted gunmetal clamp shoe, giving ±25 mm of take-up so the troughs stay level over the floor's curvature (lay the 4 m length along the cylinder axis where possible).
+- Spin-down: three latched slate grow lids (amber latches), plants in clipped net cups, sealed slate reservoir along the front.
+- Sheet: `final_tiered_exterior_sheet.png`.

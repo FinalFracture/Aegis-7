@@ -64,7 +64,7 @@ Sizes are rough W × D × H in meters.
 | 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |
 | 31 | Emitter repair bench (dismantled field emitter) | 204 | 1 | 0.9 × 1.9 × 0.9 |
 | 32 | Cycler route model (wall) | 203 | 1 | 0.9 × 0.2 × 1.0 |
-| 33 | Hydro planter (window/balcony) | 103, 202 | 2 | 4.0 × 0.4 × 0.6 |
+| 33 | ~~Hydro planter (window/balcony)~~ MOVED TO EXTERIOR (Jared, Oct 29): removed from 103/202; Tiered Steps planter now serves the hydro co-op / sidewalk planters, `godot/assets/models/hydro_planter_tiered_exterior.glb` | ~~103, 202~~ exterior | — | 4.0 × 0.4 × 0.7 |
 | 34 | Potted plants set | 102, 203 | 2 | 0.4–0.7 each |
 | 35 | Toy bin + scattered toys | 103 | 1 | 1.2 × 0.6 × 0.5 |
 | 36 | Small clutter kit (meal tray, cups, cables, photo frames as decals) | 101, 102, 104, 202 | 1 kit | small |
@@ -106,5 +106,5 @@ Sizes are rough W × D × H in meters.
 2. Wardrobe (7), sofa (6), the three table variants (8 total), coat closet (4), washer/dryer stack (4)
 3. Repeated small items: tool wall (3), task lamp (3), floor pad (3), coupler arm (3)
 4. Building fixtures: stair set, rail, skylight, riser, bot lift (#51)
-5. Pairs: kids' bunk, armchair, window desk, hydro planter, plants, tea set
+5. Pairs: kids' bunk, armchair, window desk, plants, tea set
 6. Singles and story pieces: workbench, substation, lockers, laundry counter/bench, spares shelf, suit storage, lab bench, specimen shelf, telescope, emitter bench, Cycler model, toy bin, reading nook, clutter kit
