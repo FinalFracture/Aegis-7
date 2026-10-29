@@ -168,5 +168,88 @@ def main():
         ax.imshow(im); ax.set_title(f"{i}. {n}  (right)  beside approved open-bay wardrobe (left)", y=-0.1, fontsize=11, color="#555")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=80, facecolor="#F4F2EC"); plt.close(fig)
 
+# ---------- final: polished Mudroom Bench + Sprocket Dock (iter_03) ----------
+SPROCKET = os.path.join(dc.ROOT, "godot/assets/models/char_bot_r2_05_livery_01_sprocket.glb")
+PROUD = 0.20   # dock alcove cheeks + charging collar stand proud of the closet face
+
+def final_mudroom():
+    p = Pod("Mudroom Bench + Sprocket Dock (final)"); b_ = bays(); _, dcx, dw = b_[4]
+    da, db = dcx - dw / 2, dcx + dw / 2                    # dock bay x-range
+    # wall plate + bottom rail NOTCHED at the dock bay (open back: Sprocket docks against the wall); top rail continuous
+    p.add("Wall_Plate", "gunmetal", bev(da - (-W / 2), .02, .1, H, .006, .004, 1, (da - W / 2) / 2, ZB + .01),
+          bev(W / 2 - db + .0, .02, .1, H, .006, .004, 1, (db + W / 2) / 2, ZB + .01), bev(dw, .02, 1.3, H, .006, .004, 1, dcx, ZB + .01))
+    p.add("Wall_Rail_Top", "alloy", blk(-W / 2 + .02, W / 2 - .02, 2.06, 2.1, WZ, WZ + .03, .01, 1))
+    p.add("Wall_Rail_Low", "alloy", blk(-W / 2 + .02, da - .02, .3, .34, WZ, WZ + .03, .01, 1))
+    p.add("Accent_Strip", "violet", box(-W / 2 + .05, W / 2 - .05, 2.07, 2.085, WZ + .03, WZ + .034))
+    for x in joints():
+        p.add("Brackets", "gunmetal", box(x - .04, x + .04, .25 if x < da - .01 else 1.32, 2.04, WZ, WZ + .015))
+        p.add("Bracket_Bolts", "alloy", *[box(x - .012, x + .012, y - .012, y + .012, WZ + .015, WZ + .024) for y in ((.6, 1.6) if x < da - .01 else (1.5, 1.9))])
+        p.add("Hook_Clamps", "gunmetal", *[box(x - .05, x + .05, y - .02, y + .04, WZ + .03, WZ + .06) for y in ((.3, 2.06) if x < da - .01 else (2.06,))])
+    p.add("End_Cheek_L", "gunmetal", bev(EP - .01, D - .04, Y0, H - .04, .008, .004, 1, -W / 2 + EP / 2, WZ + (D - .04) / 2))
+    # bench (bays 1-4): gunmetal box, latched white lift lids, recessed kick
+    a0, a1 = -W / 2 + EP, da
+    p.add("Bench_Box", "gunmetal", bev(a1 - a0 - .01, D - .06, Y0, .42, .025, .01, 3, (a0 + a1) / 2, WZ + (D - .06) / 2))
+    p.add("Bench_Kick", "gunmetal", bev(a1 - a0 - .06, D - .14, 0, Y0, .02, .006, 2, (a0 + a1) / 2, WZ + (D - .14) / 2))
+    for k, (_, cx, w) in enumerate(b_[:4], 1):
+        p.add(f"Bench_Lid_{k}", "white", bev(w - .02, D - .05, .42, .465, .035, .014, 3, cx, WZ + (D - .05) / 2))
+        p.add(f"Lid_Latch_{k}", "amber", box(cx - .03, cx + .03, .435, .45, ZF - .028, ZF - .02))
+        p.add(f"Lid_Pull_{k}", "alloy", bev(.16, .012, .44, .452, .005, .002, 1, cx - .12, ZF - .022))
+    # hook rail (empty) + strapped cubbies
+    p.add("Hook_Bar", "gunmetal", bev(a1 - a0 - .04, .015, 1.52, 1.58, .006, .003, 1, (a0 + a1) / 2, WZ + .0225))
+    for x in np.linspace(a0 + .12, a1 - .12, 12):
+        p.add("Coat_Hooks", "alloy", box(x - .008, x + .008, 1.53, 1.57, WZ + .03, WZ + .1), box(x - .008, x + .008, 1.57, 1.61, WZ + .085, WZ + .1))
+    for k, (_, cx, w) in enumerate(b_[:4], 1):
+        p.add("Cubby_Shelves", "gunmetal", bev(w - .02, .32, 1.8, 1.82, .006, .004, 1, cx, WZ + .17), bev(w - .02, .32, YT - .02, YT, .006, .004, 1, cx, WZ + .17))
+        p.add("Cubby_Dividers", "alloy", bev(.02, .32, 1.82, YT - .02, .005, .003, 1, cx + w / 2 - .01, WZ + .17))
+        p.add(f"Cubby_Strap_{k}", "slatefab", box(cx - w / 2 + .03, cx + w / 2 - .03, 1.88, 1.915, WZ + .308, WZ + .32))
+        p.add("Cubby_Buckles", "amber", box(cx + w / 2 - .09, cx + w / 2 - .05, 1.888, 1.907, WZ + .32, WZ + .328))
+    # dock alcove: proud gunmetal cheeks (from floor), alloy edge, charging collar header, recessed-look pad, wall coupler
+    zc1 = ZF + PROUD
+    for x, nm in ((da, "L"), (db, "R")):
+        sx = -1 if nm == "L" else 1
+        p.add(f"Dock_Cheek_{nm}", "gunmetal", bev(.04, zc1 - ZB, 0, YT, .01, .005, 2, x + sx * .0 - sx * 0, (ZB + zc1) / 2))
+        p.add(f"Dock_Cheek_Edge_{nm}", "alloy", bev(.044, .02, 0, YT, .006, .003, 1, x, zc1 - .01))
+    p.add("Dock_Collar", "gunmetal", bev(dw + .04, zc1 - ZB, 1.2, 1.28, .02, .008, 2, dcx, (ZB + zc1) / 2))
+    p.add("Dock_Collar_Light", "amber", box(dcx - .3, dcx + .3, 1.2 - .004, 1.2, zc1 - .1, zc1 - .03))
+    p.add("Dock_Status", "green", box(dcx - .1, dcx + .1, 1.23, 1.25, zc1, zc1 + .004))
+    p.add("Dock_Shelf", "gunmetal", bev(dw - .04, D - .06, YT - .02, YT, .006, .004, 1, dcx, WZ + (D - .06) / 2))
+    p.add("Dock_Pad", "gunmetal", bev(dw - .06, zc1 - ZB - .02, 0, .015, .05, .006, 3, dcx, (ZB + zc1) / 2))      # 15 mm low-ramp pad
+    p.add("Dock_Pad_Ring", "amber", xf(dc.torus_ring(.2, .006, 20, 3), t=(dcx, .016, .1)))
+    p.add("Dock_Coupler_Plate", "gunmetal", bev(.2, .012, .35, .55, .02, .004, 2, dcx, ZB + .006))          # bolted to wall surface
+    p.add("Dock_Coupler_Port", "amber", box(dcx - .03, dcx + .03, .42, .48, ZB + .012, ZB + .016))
+    p.add("Dock_Floor_Clamps", "gunmetal", *[box(x - .03, x + .03, 0, .06, zc1 - .08, zc1 - .02) for x in (da + .05, db - .05)])
+    p.add("Dock_Clamp_Lights", "amber", *[box(x - .015, x + .015, .03, .045, zc1 - .02, zc1 - .016) for x in (da + .05, db - .05)])
+    return p
+
+def sprocket_geo(dcx):
+    sc = trimesh.load(SPROCKET); out = {}; z_off = ZB + .016 - (-.346)
+    for n, g in sc.geometry.items():
+        m = g.copy(); m.apply_translation((dcx, .015, z_off)); ln = n.lower()
+        mk = ("violet" if "rfid" in ln else "gunmetal" if any(k in ln for k in ("track", "eye", "claw")) else "alloy" if any(k in ln for k in ("servo", "gimbal", "brow")) else "white")
+        out["SPROCKET_" + n] = (mk, np.array(m.vertices), np.array(m.vertex_normals), np.array(m.faces))
+    return out, z_off + .423
+
+def final_main():
+    p = final_mudroom(); gp = os.path.join(dc.ROOT, "godot/assets/models/coat_closet_mudroom.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    _, dcx, _ = bays()[4]; sg, sfront = sprocket_geo(dcx)
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "bad", bad)
+    print("sprocket front z", round(sfront, 3), "overhang vs closet face", round(sfront - ZF, 3), "vs alcove cheeks", round(sfront - (ZF + PROUD), 3))
+    saved = tonemap(); top, front, side, iso = views()
+    def rv(g, R, s, sh):
+        im = render_view(g, R, size=s, shadow=sh); ns = render_view(g, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
+    g2 = dict(geo); g2.update(sg)
+    ims = [rv(geo, top, 700, False), rv(geo, front, 700, True), rv(geo, side, 600, True), rv(geo, iso, 700, True), rv(g2, iso, 700, True)]
+    FMAT.update(saved)
+    bg = "#F4F2EC"; fig = plt.figure(figsize=(15, 11), facecolor=bg); gs = fig.add_gridspec(3, 3, width_ratios=[1, 1, .45], height_ratios=[.45, 1, 1])
+    for ax, im, t in ((fig.add_subplot(gs[0, :2]), ims[0], "Top"), (fig.add_subplot(gs[:, 2]), ims[2], "Side"),
+                      (fig.add_subplot(gs[1, 0]), ims[1], "Front"), (fig.add_subplot(gs[1, 1]), ims[3], "Iso"),
+                      (fig.add_subplot(gs[2, :2]), ims[4], "Iso with Sprocket docked (visual only, not in glb)")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, y=-0.08, fontsize=10, color="#555")
+    fig.suptitle("Final  Mudroom Bench + Sprocket Dock (empty)", fontsize=12, color="#444"); plt.tight_layout()
+    fig.savefig(os.path.join(OUT, "final_mudroom_sheet.png"), dpi=100, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
