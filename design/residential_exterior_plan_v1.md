@@ -22,7 +22,7 @@ Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interio
 | 10 | Extra: Spin Streets crossed the pedestrian promenade and tram band | FIXED | The streets now end at the promenade (Z -9). Carts stay out of the plaza. |
 | 11 | Extra: Plot SW/SE sat on the promenade, and contour ticks overlapped Plot W | FIXED | SW/SE are now at Z -9..-3, behind the promenade. The floor-rise ticks moved into the left margin. |
 | 12 | Extra: Sprocket secondary route on the east sidewalk was redundant and crossed the nook | FIXED | Removed, because the exit hub is on the corridor side. The service route runs lane → ramp → door and is checked clear. |
-| 13 | Extra: rectangle overlap audit | PASS | All ground zones (with only declared parent/child nesting) and all 63 objects (planters, ramps, pad, shelter, nook, beds, poles) were checked pairwise: 0 overlaps, 0 objects off a walk or green zone, 0 off-map. |
+| 13 | Extra: rectangle overlap audit | PASS | All ground zones (with only declared parent/child nesting) and all 60 objects (planters, ramps, pad, shelter, nook, beds, poles) were checked pairwise: 0 overlaps, 0 objects off a walk or green zone, 0 off-map. |
 | 14 | Extra: asset counts | FIXED | Light poles 23 → 30 and platform kerb 7 → 6. The service apron is now the ramp. The tri total is about 209k. See the asset list. |
 | 15 | Section PNG | PASS | Curvature numbers and labels are unchanged. It was regenerated from the same script. |
 
