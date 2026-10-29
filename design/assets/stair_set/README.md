@@ -24,3 +24,18 @@ Generator: `assets/src/stair_set_generator.py` (it asserts the riser check). glb
 - **Spin-down anchoring:** bolted gunmetal anchor plates on both core walls and the shell face, plus a floor shoe at the flight 1 base.
 - **#4 interface:** alloy guard sockets on the well edges, the mid-landing edge and the L2 landing edge, plus alloy handrail wall brackets at 0.9 m above the nosings on both walls.
 - **Manufacture and service:** the flights can be cast or bolted modules made in the cylinder. Sprocket uses lift #51, so the stair is human-first and needs no Sprocket features.
+
+# #4 Stair glass guards + handrails
+Generator: `assets/src/stair_guard_generator.py` (it imports `stair_set_generator` for the geometry). glb: `godot/assets/models/stair_guard_handrail.glb`, 2,816 tris, closed meshes, not placed anywhere. It uses the same origin as `stair_set_switchback.glb`, so the two overlay at identity. Sheet: `final_stair_guard_sheet.png`, which shows #3 and #4 together.
+
+- **Guards:** 1.1 m laminated glass, 12 mm, in alloy clamps on alloy posts with a cap rail and a gunmetal shoe channel, plus an amber latch light on every panel. The panels are latched for spin-down and lift out for service. The glass material is `alphaMode BLEND`, double-sided.
+  - Guard runs: the flight 1 well edge (X −0.37), the flight 2 well edge (X 0.37), the mid-landing well edge (Z −7.43, X −0.37..0.37) and the L2 landing edge (Z −4.83, X −1.89..0.37).
+  - The corridor opening at Z −0.8 has no guard, because the plan shows none there.
+- **Handrails:** rail top at 0.9 m, Ø40 alloy.
+  - Wall side: continuous from the flight 1 foot, around the mid-landing walls (west wall, shell face, east wall) and up flight 2. It sits on saddles over the #3 wall brackets, plus 5 new landing-turn wall brackets.
+  - Well side: on standoffs from the guard posts, continuous around the mid-landing turn.
+
+## Checks
+- **Guard height:** the guard top is 1.100 m above the nosing line on the flights and above the landing finish at every break point. The cap-rail top measures 1.097–1.100 m everywhere except where flight 2 starts, where the nosing line steps up one riser (0.1615 m) from the mid-landing.
+- **Posts:** 14 posts on the 14 #3 Guard_Sockets, 0.000 m XZ offset. Each post base is the socket top; on flight 2 it is 6 mm higher, on the stringer plate.
+- **Clashes:** I sampled 4,000 points per #4 part against every #3 solid (all of which are convex). There are no clashes, except the glass edge and shoe seating into the #3 Guard_Sockets, which is the bolt-in engagement by design.
