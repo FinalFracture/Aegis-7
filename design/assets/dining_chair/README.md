@@ -15,3 +15,12 @@ This is a ceramic-polymer chair printed in-cylinder by additive manufacturing. I
 
 ## iter_05: Floor-Clamped Swivel (748 tris)
 A swivel seat sits on an alloy column, and the column is bolted to a chamfered floor clamp plate. An amber light on the plate shows when the lock is engaged. It has a spoked foot ring, a padded seat on a metal shell, a single-spine backrest and a violet back inset. Because it is fixed, it suits shared mess areas and stays secure during spin-down. The seat lifts off the swivel hub for service.
+
+## Final: Floor-Clamped Swivel (1,480 tris)
+This is the refined iter_05, built with `python3 assets/src/dining_chair_generator.py final` (`swivel_final()`). It is exported to `godot/assets/models/dining_chair_swivel.glb` and `final_swivel.glb`, and the sheet is `final_swivel_sheet.png`.
+- **Parts:** It has 10 named parts: FloorPlate, Column, SwivelHub, FootRing, Seat_Cushion, Seat_Pan, BackSpine, Back_Panel, LockLight and AccentInset. Each part is a closed, watertight mesh.
+- **Geometry:** Round parts are lofted (a 20-segment column with a flared foot and collar, and a 24×6 torus foot ring). Four spokes run from the column surface to the ring.
+- **Edges:** The octagonal floor plate is chamfered. The seat pan, back panel and spine are beveled. The cushion has a rounded, padded crown.
+- **Back mounting:** The spine has an L-bracket and a gusset under the seat pan.
+- **Normals:** Normals are split at a 30° auto-smooth angle and written explicitly to the glb.
+- **Materials:** Brushed alloy (metallic 0.9, roughness 0.35), gunmetal for the plate and hub, slate fabric (roughness 0.85), an amber #FFA53A lock light and a violet inset.
