@@ -344,13 +344,17 @@ def final_capsule():
     Ai[0, 1] = Bi[-1, 1] = D / 2 - T; Ai[-1, 0] = Bi[0, 0] = W / 2 - T
     p.add("Floor_Cove", "composite", thick_path(Ai, 0.035, FL, FL + 0.035), thick_path(Bi, 0.035, FL, FL + 0.035))
     # shower: rounded corner tray, grate, alloy head, real glass screen
-    shower_tray(p, -1.04, -0.2, -1.04, -0.2, r=0.49)
-    p.P["Shower"] = ("ceramic", p.P["Shower"][1])
-    p.add("Drain_Grate", "gunmetal", *[blk(-0.95, -0.80, FL + 0.04, FL + 0.044, -0.66 + i * 0.03, -0.65 + i * 0.03, 0.003, 1) for i in range(6)])
-    p.P.pop("Drain")
+    # open shower: near-flush ceramic tray inset (4 mm) + 18 mm rounded ceramic lip, no glass
+    tw, tc = 0.84, -0.62
+    p.add("Shower", "ceramic", xf(loft(rrect(tw - 0.05, tw - 0.05, 0.46, 6), [(FL, 1, 1), (FL + 0.004, 1, 1)]), t=(tc, 0, tc)))
+    ring = rrect(tw, tw, 0.49, 6); ring = np.vstack([ring, ring[:1]])
+    lip = thick_path(ring, 0.025, FL, FL + 0.014)
+    lip_top = thick_path(rrect(tw - 0.006, tw - 0.006, 0.487, 6)[list(range(28)) + [0]], 0.013, FL + 0.014, FL + 0.018)
+    p.add("Shower_Lip", "ceramic", xf(lip, t=(tc, 0, tc)), xf(lip_top, t=(tc, 0, tc)))
+    p.zone("Shower", -0.99, -0.25, -0.99, -0.25)
+    p.add("Drain_Grate", "gunmetal", *[blk(-0.95, -0.80, FL + 0.004, FL + 0.007, -0.66 + i * 0.03, -0.65 + i * 0.03, 0.002, 1) for i in range(6)])
     p.add("Shower_Fixture", "alloy", cyl(-0.86, -0.86, 0.015, 1.0, 2.02, 10), cyl(-0.86, -0.86, 0.075, 1.99, 2.02, 20),
           blk(-0.89, -0.83, 1.05, 1.15, -0.95, -0.9, 0.01, 2))
-    screen(p, -0.2, -0.185, -1.0, -0.42)
     # WC + sink (ceramic, alloy fittings), shifted to clear the recycler bay
     wc(p, 0.3, -1.04, "+z")
     for k in ("WC",): p.P[k] = ("ceramic", p.P[k][1])
@@ -400,7 +404,7 @@ def tonemap_mats():
 def final_main():
     pod = final_capsule()
     for n, (mk, m) in pod.P.items(): assert m.is_watertight or True
-    paths = [os.path.join(ROOT, "godot/assets/models/bath_pod_capsule.glb"), os.path.join(OUT, "final_capsule.glb")]
+    paths = [os.path.join(ROOT, "godot/assets/models/bath_pod_capsule.glb")]
     tris, geo = export_final(pod.P, paths)
     for pth in paths: set_glass_blend(pth)
     allv = np.vstack([g[1] for g in geo.values()])
