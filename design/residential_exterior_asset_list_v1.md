@@ -1,5 +1,5 @@
 # Residential Exterior + 20 m Ring: Asset List v1 (Vance, Oct 29 2026)
-Source: the approved `residential_exterior_plan_v1.md` and its plan PNG. Checked against `godot/assets/models/` (24 glb files).
+Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** `residential_exterior_plan_v1_1_plan.png` (counts updated for v1.1: poles 23→30, platform kerb 7→6). Checked against `godot/assets/models/` (24 glb files).
 ~~Struck through~~ means already modeled as a glb (path cited). Sizes are rough W × D × H in meters. Tris are per instance (LOD0); already-modeled items are not counted. Instanced kits are batched with MultiMesh.
 
 ## A. Doors, building fixtures and service
@@ -7,8 +7,8 @@ Source: the approved `residential_exterior_plan_v1.md` and its plan PNG. Checked
 |---|---|---|---|---|---|
 | 1 | ~~Force-field door frame (2.0 m variant)~~ `godot/assets/models/rfid_forcefield_door.glb` | Maintenance north service door | 1 | 2.0 × 0.2 × 2.3 | — |
 | 2 | ~~Bulkhead Hub~~ `godot/assets/models/door_hub_bulkhead.glb` | service door | 1 | 0.40 × 0.20 × 0.80 | — |
-| 3 | Exterior Sprocket floor pad + coupler arm (same mesh as rev C pad) | service apron | 1 | 1.2 × 1.2 | 900 |
-| 4 | Service apron slab (scuff/track decal) | north wall, X 1..6 | 1 | 5.0 × 2.1 | 300 |
+| 3 | Exterior Sprocket floor pad + coupler arm (same mesh as rev C pad) | north sidewalk at X 6.4..7.6, beside the service ramp | 1 | 1.2 × 1.2 | 900 |
+| 4 | Service ramp coping + scuff/track decal (ramp is the apron, v1.1) | north wall, X 1..5.6 | 1 | 4.6 × 2.65 | 300 |
 | 5 | Door canopy hood | Sector-4 exit, service door | 2 | 3.2 × 1.2 × 0.3 | 600 |
 
 ## B. Facade kits
@@ -28,7 +28,7 @@ Source: the approved `residential_exterior_plan_v1.md` and its plan PNG. Checked
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
 | 15 | Tram stop shelter (lived-in) | promenade, X 10..16 | 1 | 6.0 × 1.3 × 2.8 | 6,000 |
-| 16 | Tram platform kerb module | stop, X 6..20 | 7 | 2.0 × 1.9 × 0.3 | 300 |
+| 16 | Tram platform kerb module | stop platform, X 9..21 | 6 | 2.0 × 1.9 × 0.3 | 300 |
 | 17 | Tram rail module (twin track, axial) | Z -19..-22 | 10 | 10 × 3.5 | 400 |
 | 18 | Catenary mast + wire span | along tram line | 5 | 0.3 × 3.5 × 6.0 | 900 |
 | 19 | Tram vehicle (live, 2-car) | tram line | 1 | 24 × 2.6 × 3.4 | 18,000 |
@@ -37,7 +37,7 @@ Source: the approved `residential_exterior_plan_v1.md` and its plan PNG. Checked
 ## D. Lighting
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 21 | Street light pole (amber) | promenade, lane, Spin Sts, exit | 23 | 0.3 × 0.3 × 5.0 | 1,200 |
+| 21 | Street light pole (amber) | promenade, plaza, sidewalks, outer sidewalks, kerb walk (v1.1: none in roads) | 30 | 0.3 × 0.3 × 5.0 | 1,200 |
 | 22 | Low bollard light | plaza | 6 | 0.2 × 0.2 × 0.9 | 200 |
 
 ## E. Plinth masking (approved: hidden)
@@ -107,11 +107,11 @@ Source: the approved `residential_exterior_plan_v1.md` and its plan PNG. Checked
 
 ## Counts
 - **Total items: 55.** Already modeled as glb: **5** (#1, 2, 53, 54, 55). Still to model: **50**.
-- The ring totals about **201k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
+- The ring totals about **209k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
 
 ## Suggested modeling order (most reused first)
-1. Curb segment (68), Residential facade panel (60), Canal edge module (47), Curved road segment (34), Exterior window unit (24), Street light pole (23), Flat road / lane segment (20), Long masking planter (19), Bollard (12), Tram rail module (10), Bench (8), Accessible kerb ramp (8)
-2. Mid-reuse kit: catenary mast (5), bins (6), plaza bollard lights (6), tram platform kerb (7), wayfinding totems and street blades (4 each)
+1. Curb segment (68), Residential facade panel (60), Canal edge module (47), Curved road segment (34), Street light pole (30), Exterior window unit (24), Flat road / lane segment (20), Long masking planter (19), Bollard (12), Tram rail module (10), Bench (8), Accessible kerb ramp (8)
+2. Mid-reuse kit: catenary mast (5), bins (6), plaza bollard lights (6), tram platform kerb (6), wayfinding totems and street blades (4 each)
 3. Hero pieces: tram stop shelter, tram vehicle, the 5 neighbour facades, roof parapet, door canopies
 4. Hydro co-op and planters: sidewalk planters, beds, grow racks, pump cabinet
 5. Story singles: memorial nook set, shelter sleeper set, notice board, hand cart, exterior Sprocket pad/apron, decal sets
