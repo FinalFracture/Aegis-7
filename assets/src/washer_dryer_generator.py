@@ -133,5 +133,79 @@ def main():
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.axis("off"); ax.set_title(f"{i}. {n}", fontsize=12, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .93)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=85, facecolor="#F4F2EC"); plt.close(fig)
 
+# ---------- final: iter_02 alloy frame + cassettes, iter_05 reclaim as a SHARED side tower ----------
+from dining_chair_generator import export_final, render_view, shade_split
+from kitchen_counter_generator import crop, tonemap
+from bath_pod_generator import views
+TW = .28; SX = -TW / 2          # stack centre offset so stack+tower is bottom-centred; tower on +X
+def final_alloy_reclaim():
+    p = Pod("Alloy Frame + Cassettes + Reclaim Tower (final)")
+    x0, x1 = SX - W / 2, SX + W / 2
+    for sx in (x0 + .05, x1 - .05):     # bolted plates + clamps + isolation pads under the frame
+        for sz in (ZB + .07, ZF - .07):
+            p.add("Floor_Plates", "gunmetal", bev(.13, .13, 0, .012, .015, .004, 1, sx, sz))
+            p.add("Floor_Clamps", "gunmetal", box(sx - .035, sx + .035, .012, .045, sz - .035, sz + .035))
+            p.add("Clamp_Bolts", "alloy", box(sx - .055, sx - .035, .012, .02, sz - .055, sz - .035), box(sx + .035, sx + .055, .012, .02, sz + .035, sz + .055))
+    p.add("Wall_Plate", "gunmetal", bev(W + TW, .02, .1, H, .006, .004, 1, 0, ZB - .01))
+    p.add("Wall_Rail", "alloy", *[blk(x0 + .02, x1 + TW - .02, y, y + .04, ZB, ZB + .03, .01, 1) for y in (.3, 1.84)])
+    p.add("Hook_Clamps", "gunmetal", *[box(x - .05, x + .05, y - .02, y + .06, ZB + .03, ZB + .06) for x in (x0 + .15, x1 - .15) for y in (.3, 1.84)])
+    for px in (x0 + .02, x1 - .02):
+        for pz in (ZB + .05, ZF - .03):
+            p.add("Frame_Posts", "alloy", bev(.04, .04, .045, H, .008, .004, 1, px, pz))
+    p.add("Frame_Base", "alloy", bev(W, D - .06, .045, .08, .01, .004, 1, SX, .01), )
+    p.add("Frame_Top", "alloy", bev(W, D - .06, H - .03, H, .01, .004, 1, SX, .01))
+    p.add("Frame_Mid_Rail", "alloy", bev(W, .04, .97, 1.0, .008, .004, 1, SX, ZF - .03))
+    p.add("Accent_Band", "violet", box(x0 + .03, x1 - .03, .98, .99, ZF - .01, ZF - .006))
+    p.add("Dampers", "gunmetal", *[cyl(SX + sx * .25, sz * .25, .03, .08, .12, 12) for sx in (-1, 1) for sz in (-1, 1)])
+    p.add("Dampers", "slatefab", *[cyl(SX + sx * .25, sz * .25, .034, 1.0, 1.03, 12) for sx in (-1, 1) for sz in (-1, 1)])
+    for nm, y0, y1, mat in (("Washer", .12, .96, "white"), ("Dryer", 1.03, H - .05, "white")):
+        p.add(f"{nm}_Cassette", mat, bev(W - .1, D - .12, y0, y1, .05, .02, 3, SX, 0))
+        zf = (D - .12) / 2; yc = (y0 + y1) / 2 - .05
+        p.add(f"{nm}_Door_Ring", "alloy", xf(zring(0, yc, zf + .02, .18, .022), t=(SX, 0, 0)))
+        p.add(f"{nm}_Door_Glass", "slate", xf(zdisc(0, yc, zf, zf + .02, .17), t=(SX, 0, 0)))
+        p.add(f"{nm}_Door_Latch", "amber", box(SX + .16, SX + .21, yc - .015, yc + .015, zf + .02, zf + .03))
+        p.add(f"{nm}_Controls", "gunmetal", bev(.4, .012, y1 - .1, y1 - .045, .01, .004, 1, SX, zf + .006))
+        p.add("Status_Lights", "green", box(SX - .17, SX - .11, y1 - .08, y1 - .07, zf + .012, zf + .016))
+        p.add(f"{nm}_Cassette_Latches", "amber", *[box(SX + d - .015, SX + d + .015, y1 - .08, y1 - .05, zf, zf + .012) for d in (-W / 2 + .1, W / 2 - .1)])
+    # shared reclaim / recycler tower (all parts prefixed Reclaim_ so the paired unit can hide them)
+    tx = x1 + TW / 2; tz = .0
+    p.add("Reclaim_Tower", "gunmetal", bev(TW - .02, D - .1, .02, H - .01, .04, .015, 3, tx, tz - .02))
+    p.add("Reclaim_Cartridge_Drawer", "white", bev(TW - .06, .02, 1.0, 1.35, .02, .006, 2, tx, ZF - .06))
+    p.add("Reclaim_Drawer_Latch", "amber", box(tx + .05, tx + .1, 1.31, 1.325, ZF - .05, ZF - .044))
+    p.add("Reclaim_Lint_Drawer", "alloy", bev(TW - .06, .02, 1.45, 1.55, .02, .006, 2, tx, ZF - .06))
+    p.add("Reclaim_Vents", "alloy", *[box(tx - .1, tx + .1, y, y + .012, ZF - .07, ZF - .064) for y in (1.65, 1.69, 1.73, 1.77)])
+    p.add("Reclaim_Status", "green", box(tx - .04, tx + .04, 1.83, 1.845, ZF - .07, ZF - .066))
+    p.add("Reclaim_Service_Hatch", "gunmetal", bev(TW - .06, .02, .3, .6, .02, .006, 2, tx, ZF - .06))
+    p.add("Reclaim_Sprocket_Port", "amber", box(tx - .02, tx + .02, .43, .47, ZF - .05, ZF - .046))
+    p.add("Reclaim_Pipes", "alloy", *[xf(xf(loft(circle(.02, 10), [(0, 1, 1), (.06, 1, 1)]), trimesh.transformations.rotation_matrix(-np.pi / 2, [0, 0, 1])), t=(x1 - .02, y, -.15)) for y in (.3, 1.3)])
+    p.add("Reclaim_Floor_Clamps", "gunmetal", *[box(tx - .03, tx + .03, 0, .02, z - .05, z + .05) for z in (-.25, .2)])
+    return p
+
+def mirror_geo(geo, xm, drop="Reclaim_"):
+    out = {}
+    for n, (mk, V, N, F) in geo.items():
+        if n.startswith(drop): continue
+        V2 = V.copy(); V2[:, 0] = 2 * xm - V2[:, 0]; N2 = N.copy(); N2[:, 0] *= -1
+        out["B_" + n] = (mk, V2, N2, F[:, ::-1])
+    return out
+
+def final_main():
+    p = final_alloy_reclaim(); gp = os.path.join(dc.ROOT, "godot/assets/models/washer_dryer_alloy_reclaim.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    xm = SX + W / 2 + TW / 2; pair = dict(geo); pair.update(mirror_geo(geo, xm + TW / 2 - TW / 2 + 0))
+    saved = tonemap(); top, front, side, iso = views()
+    def rv(g, R, s, sh):
+        im = render_view(g, R, size=s, shadow=sh); ns = render_view(g, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
+    ims = [rv(geo, top, 600, False), rv(geo, front, 600, True), rv(geo, side, 600, True), rv(geo, iso, 640, True), rv(pair, iso, 700, True)]
+    FMAT.update(saved)
+    bg = "#F4F2EC"; fig, axs = plt.subplots(1, 5, figsize=(22, 7), facecolor=bg, gridspec_kw={"width_ratios": [1, 1, 1, 1.1, 1.5]})
+    for ax, im, t in zip(axs, ims, ("Top", "Front", "Side", "Iso", "Pair Iso (shared tower; unit B mirrored, Reclaim_* hidden)")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=10, color="#555")
+    fig.suptitle("Final  Alloy Frame + Cassettes + Shared Reclaim Tower", fontsize=12, color="#444"); plt.tight_layout(rect=(0, 0, 1, .93))
+    fig.savefig(os.path.join(OUT, "final_alloy_reclaim_sheet.png"), dpi=90, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
