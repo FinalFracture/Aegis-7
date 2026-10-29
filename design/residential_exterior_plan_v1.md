@@ -1,6 +1,6 @@
 # Residential rev C — Exterior + 20 m City Ring (plan v1)
 
-**Status: v1.2 pending Jared review.** The v1 design decisions are approved, and Jared thumbs-upped v1.1. This is design only. The v1 and v1.1 plan PNGs are kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
+**Status: APPROVED v1.2 by Jared 2026-10-29.** The v1 design decisions are approved, and Jared thumbs-upped v1.1. This is design only. The v1 and v1.1 plan PNGs are kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
 Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interior_overhaul_spec.md` and `residential_apartment_layout_v2.md` (rev C)
 
 ![Plan v1.2](residential_exterior_plan_v1_2_plan.png)
