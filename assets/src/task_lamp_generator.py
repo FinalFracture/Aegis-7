@@ -69,4 +69,38 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
+
+# ---------- final: polished iter_02 Rail Slider (pivot = front-centre of the 40 mm wall rail) ----------
+def final_lamp(with_rail=False):
+    p = Pod("Rail_Slider_Final")
+    if with_rail: p.add("Rail_Section_Preview", "alloy", blk(-.18, .18, -.02, .02, -.03, 0, .004, 1))
+    # slider: front block + top/bottom hooks wrapping the rail
+    p.add("Slider_Body", "gunmetal", bev(.08, .03, -.035, .045, .008, .004, 2, 0, .015))
+    p.add("Slider_Hooks", "gunmetal", blk(-.035, .035, .02, .03, -.034, 0, .003, 1), blk(-.035, .035, -.03, -.02, -.034, 0, .003, 1))
+    p.add("Slider_Latch", "amber", box(-.03, -.016, -.012, .012, .03, .033), box(.016, .03, -.012, .012, .03, .033))
+    p.add("Slider_Status", "violet", box(-.01, .01, .036, .04, .03, .032))
+    # mast with latch collars
+    p.add("Mast_Socket", "alloy", cyl(0, .015, .017, .045, .07, 16))
+    p.add("Mast", "alloy", cyl(0, .015, .011, .07, .41, 14))
+    p.add("Boom_Knuckle", "gunmetal", blk(-.016, .016, .4, .44, -.005, .035, .008, 2))
+    p.add("Joint_Latches", "amber", xf(torus_ring(.019, .004, 16, 4), t=(0, .07, .015)), xf(torus_ring(.019, .004, 16, 4), t=(0, .395, .015)))
+    # boom + head knuckle
+    p.add("Boom", "white", blk(-.011, .011, .408, .432, .035, .19, .009, 3))
+    p.add("Head_Knuckle", "gunmetal", cyl(0, .2, .016, .395, .44, 14))
+    p.add("Head_Latch", "amber", xf(torus_ring(.019, .004, 16, 4), t=(0, .43, .2)))
+    p.add("Head_Shell", "white", xf(dc.loft(dc.circle(.055, 28), [(0, .86, .86), (.008, 1, 1), (.03, 1, 1), (.036, .92, .92)]), t=(0, .358, .2)))
+    p.add("Head_Lens", "violet", cyl(0, .2, .047, .355, .359, 24))
+    p.add("Service_Lug", "amber", box(-.012, .012, .37, .385, .255, .262))
+    return p
+
+def final_main():
+    from dining_chair_generator import export_final
+    gp = os.path.join(dc.ROOT, "godot/assets/models/task_lamp_rail_slider.glb")
+    p = final_lamp(); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), (V.max(0) - V.min(0)).round(3), "bad", bad, "parts", list(p.P))
+    sp = os.path.join(OUT, "final_rail_slider_sheet.png"); r = sheet(final_lamp(True), sp, "Final  Rail Slider task lamp (#27, qty 3: 201/104/204; rail section shown)")
+    os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "final": final_main(); sys.exit()
+
 if __name__ == "__main__": main()
