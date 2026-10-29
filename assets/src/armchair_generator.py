@@ -98,6 +98,11 @@ def final_swivel():
     p.add("Arm_Pads", "fabric", *[soft(.1, .6, .64, .68, .02, sd * .425, .1) for sd in (-1, 1)])
     p.add("Cushion_Clips", "gunmetal", *[box(x - .025, x + .025, .3, .33, ZF - .07, ZF - .058) for x in (-.2, .2)])
     p.add("Clip_Lights", "amber", *[box(x - .012, x + .012, .31, .318, ZF - .058, ZF - .054) for x in (-.2, .2)])
+    # back cushion clips (top edge, tab from shell back onto the cushion) + arm pad clips (front ends)
+    p.add("Cushion_Clips", "gunmetal", *[box(x - .025, x + .025, .875, .905, ZB + .14, ZB + .16) for x in (-.28, .28)],
+          *[box(sd * .425 - .025, sd * .425 + .025, .63, .67, .4, .412) for sd in (-1, 1)])
+    p.add("Clip_Lights", "amber", *[box(x - .012, x + .012, .885, .893, ZB + .16, ZB + .164) for x in (-.28, .28)],
+          *[box(sd * .425 - .012, sd * .425 + .012, .645, .653, .412, .416) for sd in (-1, 1)])
     return p
 def final_main():
     from dining_chair_generator import export_final
