@@ -19,8 +19,9 @@ A white carcass with a latched three-drawer stack and a cupboard (left), a lit d
 
 **Recommendation:** iter_05. It is the most useful storage mix, it has the bed's clamps and the Sprocket chute, and it stays in the white-composite family. If floor space is tight, iter_01's sliding doors are the pick.
 
-## Final: Open Bays on Wall Rails (2,544 tris)
+## Final: Open Bays on Wall Rails (1,776 tris)
 This combines iter_02's open alloy bays with iter_03's wall-rail mounting, built with `python3 assets/src/wardrobe_generator.py final`. It is exported only to `godot/assets/models/wardrobe_openbays_rails.glb`, and the sheet is `final_openbays_rails_sheet.png`. Overall it is 2.7 W × 0.5 D × 2.1 H m, and the bays hang 0.15 m clear of the floor with no kick.
-- **Layout:** two bay types: 0.9 m hanging (alloy bar plus a gunmetal retainer bar, no straps, four simple garment shapes) and 0.6 m shelves (five evenly spaced gunmetal shelves, one slate strap per compartment at the same height, with an amber buckle latch). Default 2.7 = 0.15 end + 0.9 H + 0.6 S + 0.9 H + 0.15 end. 2.5 = 0.05 slim ends + H S H. 3.0 = 0.05 slim ends + H S S H.
+- **Layout:** two bay types: 0.9 m hanging (alloy bar plus a gunmetal retainer bar, no straps) and 0.6 m shelves (five evenly spaced gunmetal shelves, one slate strap per compartment at the same height, with an amber buckle latch). Default 2.7 = 0.15 end + 0.9 H + 0.6 S + 0.9 H + 0.15 end. 2.5 = 0.05 slim ends + H S H. 3.0 = 0.05 slim ends + H S S H.
 - **Mounting:** a full-length bolted gunmetal wall plate with two alloy rails (a thin violet strip on the top rail). Each bay joint has a chamfered alloy upright, a gunmetal bracket with two bolts and a gunmetal hook clamp on each rail, all aligned. The gunmetal end panels hang at the same height.
+- **No clothes; designed later.** The final has no garment or folded-clothes shapes.
 - **Meshes:** every part is a closed mesh. Shelves, uprights and panels are chamfered, with hard edges over 30°.

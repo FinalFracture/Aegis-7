@@ -212,8 +212,7 @@ def final_openbays():
         if t == "H":
             p.add(f"Hanging_Bar_{i + 1}", "alloy", blk(a, b, 1.82, 1.845, -.012, .012, .012, 2))
             p.add(f"Retainer_Bar_{i + 1}", "gunmetal", blk(a, b, 1.9, 1.915, -.02, .02, .005, 1))
-            for k, xx in enumerate(np.linspace(a + .14, b - .14, 4)):
-                p.add("Garments", "warmgrey", bev(.06, .38, 1.0 if k % 2 else .85, 1.8, .03, .01, 2, xx, 0))
+            # no garments: clothes are designed later
         else:
             for y0, y1 in zip(ys[:-1], ys[1:]):          # one strap per compartment, same height
                 sy = y0 + .17
