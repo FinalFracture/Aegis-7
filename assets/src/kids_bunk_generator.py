@@ -88,4 +88,45 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+
+# ---------- final: polished iter_02 Wall_Clamped (wall on -X, foot/ladder end +Z, bottom-centre pivot) ----------
+def final_wall_clamped():
+    p = Pod("Kids_Bunk_Wall_Clamped")
+    p.add("Wall_Plate", "gunmetal", bev(.04, 1.9, 0, H, .012, .004, 2, X0 + .02, 0))
+    p.add("Wall_Bolts", "alloy", *[box(X0 + .04, X0 + .046, y - .015, y + .015, z - .015, z + .015) for y in (.1, .85, 1.6) for z in (-.88, 0, .88)])
+    p.add("Wall_Rails", "alloy", *[blk(X0 + .04, X0 + .07, y - .02, y + .02, Z0 + .03, Z1 - .03, .008, 1) for y in (.2, 1.0, 1.55)])
+    for y, tag in ((YLO, "Lo"), (YUP, "Up")):
+        p.add("Decks", "white", bev(.83, 1.86, y - .06, y, .025, .008, 2, .035, 0))
+        p.add("Deck_Lip", "white", bev(.03, 1.86, y, y + .05, .01, .004, 1, X1 - .015, 0))
+        p.add(f"Mattress_{tag}", "slatefab", soft(.78, 1.8, y, y + .12, .04, .015, 0))
+        p.add("Mattress_Latches", "amber", *[box(X1 - .035, X1 - .025, y + .03, y + .1, z - .03, z + .03) for z in (-.6, .6)],
+              *[box(-.4, .43, y + .12, y + .126, z - .02, z + .02) for z in (-.6, .6)])
+        p.add("Rail_Clamps", "gunmetal", *[blk(X0 + .07, X0 + .11, y - .12, y - .04, z - .05, z + .05, .008, 1) for z in (-.7, 0, .7)])
+        p.add("Clamp_Latches", "amber", *[box(X0 + .11, X0 + .114, y - .1, y - .07, z - .015, z + .015) for z in (-.7, 0, .7)])
+    p.add("Front_Post", "alloy", cyl(X1 - .03, Z1 - .04, .025, 0, YUP + .42, 14))
+    p.add("Post_Foot", "gunmetal", cyl(X1 - .03, Z1 - .04, .045, 0, .02, 14))
+    # upper guard: room side full length to the ladder gap, wall side full length, head end panel
+    p.add("Guard_Rails", "alloy", blk(X1 - .03, X1, YUP + .38, YUP + .42, Z0 + .02, .42, .008, 1),
+          blk(X0 + .07, X0 + .1, YUP + .38, YUP + .42, Z0 + .02, Z1 - .06, .008, 1), blk(X0 + .07, X1, YUP + .38, YUP + .42, Z0, Z0 + .03, .008, 1),
+          *[box(X1 - .025, X1 - .005, YUP, YUP + .38, z - .012, z + .012) for z in np.linspace(Z0 + .06, .38, 5)],
+          *[box(x - .012, x + .012, YUP, YUP + .38, Z0 + .005, Z0 + .025) for x in np.linspace(X0 + .12, X1 - .06, 4)])
+    p.add("Guard_Latches", "amber", box(X1 - .03, X1 + .004, YUP + .3, YUP + .36, .4, .44))
+    # ladder at the foot (+Z), hooked to the upper deck lip, latched
+    lx0, lx1, lz = .05, .4, Z1 - .04
+    p.add("Ladder", "alloy", blk(lx0, lx0 + .03, 0, YUP + .4, lz - .02, lz + .02, .008, 1), blk(lx1 - .03, lx1, 0, YUP + .4, lz - .02, lz + .02, .008, 1),
+          *[blk(lx0 + .03, lx1 - .03, y - .015, y + .015, lz - .02, lz + .02, .006, 1) for y in np.arange(.4, YUP, .27)])
+    p.add("Ladder_Treads", "slate", *[box(lx0 + .03, lx1 - .03, y + .015, y + .02, lz - .02, lz + .02) for y in np.arange(.4, YUP, .27)])
+    p.add("Ladder_Latch", "amber", box(lx1, lx1 + .015, YUP + .25, YUP + .31, lz - .015, lz + .015), box(lx0 - .015, lx0, YUP + .25, YUP + .31, lz - .015, lz + .015))
+    p.add("Reading_Light", "violet", box(X0 + .04, X0 + .045, YUP + .3, YUP + .33, Z0 + .2, Z0 + .6), box(X0 + .04, X0 + .045, YLO + .5, YLO + .53, Z0 + .2, Z0 + .6))
+    p.add("Floor_Anchors", "gunmetal", box(X0 + .0, X0 + .1, 0, .015, -.9, -.8), box(X0, X0 + .1, 0, .015, .8, .9))
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    p = final_wall_clamped(); gp = os.path.join(dc.ROOT, "godot/assets/models/kids_bunk_wall_clamped.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "lo", V.min(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_wall_clamped_sheet.png"); wg.sheet(p, sp, "Final  #20 kids' bunk, Wall Clamped (qty 2: 103 / 202)"); os.remove(sp.replace("_sheet.png", ".glb"))
+
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
