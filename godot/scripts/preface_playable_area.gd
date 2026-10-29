@@ -131,23 +131,32 @@ const RING_FEET_OFFSET := 0.10         # body origin sits ~0.12 m below capsule 
 const CORE_TRANSIT_DURATION := 4.0
 const CORE_PAD_RADIUS := 1.4
 
-# [t38u] Rotating distant outer starfield cylinder & RFID sliding doors
+# [t38u] Rotating distant outer starfield cylinder & RFID doors ([t45u] force-field)
 const STARFIELD_CYL_RADIUS := 2200.0
 const STARFIELD_CYL_LENGTH := 4800.0
 const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s around longitudinal cylinder axis)
 const DOOR_SCAN_RANGE := 4.8
-const DOOR_SLIDE_SPEED := 2.0
+const DOOR_DISSOLVE_TIME := 0.8
 
-# [t39u]-[t40u] Dynamic interior model despawn/respawn streaming + 5-Design RFID Door Tournament
+# [t39u]-[t40u] Dynamic interior model despawn/respawn streaming
 const INTERIOR_DESPAWN_Z := -9.40
 const INTERIOR_RESPAWN_Z := -9.15
-const DOOR_DESIGN_NAMES := {
-	1: "CANDIDATE 01 // HEAVY BI-PARTING INDUSTRIAL BULKHEAD DOOR",
-	2: "CANDIDATE 02 // VERTICAL COUNTERBALANCED BLAST-SHUTTER DOOR",
-	3: "CANDIDATE 03 // ASYMMETRIC POCKET-SLIDE AIRLOCK DOOR",
-	4: "CANDIDATE 04 // ANGLED INTERLOCKING CHEVRON BULKHEAD DOOR",
-	5: "CANDIDATE 05 // TWIN-TRACK RECESSED SECURITY FRAME DOOR"
-}
+
+# [t45u] RFID force-field door (Rook's model + shader; swap paths here)
+const FORCEFIELD_DOOR_GLB := "res://assets/models/rfid_forcefield_door.glb"
+const FORCEFIELD_DOOR_SHADER := "res://shaders/forcefield_door.gdshader"
+const DOORS_ROOT_NAME := "SectorRFIDForceFieldDoors"
+const FF_OPEN_W := 1.50
+const FF_OPEN_H := 2.45
+const FF_FRAME_HALF_W := 0.91
+const FF_FRAME_H := 2.61
+const FF_DEFAULT_COLOR := Color(0.72, 0.35, 1.0, 1.0)   # in-game violet (shader default stays cyan)
+const FF_EMITTER_ENERGY := {"EmitterStrip": 2.5, "EmitterNodes": 3.0, "Conduits": 1.6}
+const FF_DEFAULT_OPACITY := 0.45
+const FF_LIGHT_GREEN := Color("#3FAF6A")
+# Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
+const DOOR_FIELD_JSON := "res://config/door_fields.json"
+const DOOR_FIELD_POLL_SEC := 0.5
 
 var _arch_container: Node3D
 var _props_container: Node3D
@@ -204,8 +213,14 @@ var _flashlight: SpotLight3D
 var _qa_hand: bool = false
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
-var _qa_door_tournament: bool = false
-var _active_door_design: int = 1
+var _qa_ff_door: bool = false
+var _ff_shader: Shader = null
+var _ff_gltf_doc: GLTFDocument = null
+var _ff_gltf_state: GLTFState = null
+var _door_json_mtime: int = -1
+var _door_json_hash: int = 0
+var _door_json_poll_t: float = 0.0
+var _door_json_recheck_until: float = 0.0
 var _interiors_loaded: bool = true
 var _interior_managed_count: int = 0
 var _interior_detached_records: Array[Dictionary] = []
@@ -262,13 +277,9 @@ func _ready() -> void:
 		elif arg == "--qa-reticle-stars-doors":
 			_qa_t38 = true
 			_qa_hand = true
-		elif arg == "--qa-door-tournament":
-			_qa_door_tournament = true
+		elif arg == "--qa-forcefield-door":
+			_qa_ff_door = true
 			_qa_hand = true
-		elif arg.begins_with("--door-design="):
-			var d_val: int = int(arg.substr("--door-design=".length()))
-			if d_val >= 1 and d_val <= 5:
-				_active_door_design = d_val
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -297,8 +308,8 @@ func _ready() -> void:
 	if _qa_hand:
 		if _qa_cyl:
 			_run_cylinder_gravity_qa.call_deferred()
-		elif _qa_door_tournament:
-			_run_door_tournament_qa.call_deferred()
+		elif _qa_ff_door:
+			_run_forcefield_door_qa.call_deferred()
 		elif _qa_t38:
 			_run_reticle_stars_doors_qa.call_deferred()
 		else:
@@ -797,7 +808,7 @@ func _populate_pickups_and_wrist_rig() -> void:
 	_spawn_interior_pickups(true)
 
 	# [t38u]/[t39u] Functional RFID doors across all 6 Residential Sector portals
-	_build_rfid_sliding_doors(_props_container, _active_door_design)
+	_build_rfid_forcefield_doors(_props_container)
 
 	# #04 Bio-Luminescent Neural Tendon Smart-Sleeve (lower-left of 1st-person view)
 	if _camera != null:
@@ -3082,7 +3093,7 @@ func _run_cylinder_gravity_qa() -> void:
 
 
 # ------------------------------------------------------------------------------
-# [t38u] 1. Viewport-centered Reticle + 2. Rotating Distant Starfield Cylinder + 3. RFID Sliding Doors
+# [t38u] 1. Viewport-centered Reticle + 2. Rotating Distant Starfield Cylinder + 3. RFID Force-Field Doors ([t45u])
 # ------------------------------------------------------------------------------
 func _sync_reticle_to_viewport_center() -> void:
 	var vp: Viewport = get_viewport()
@@ -3246,7 +3257,7 @@ func _despawn_building_interiors() -> int:
 			keep_items.append(it)
 	_interactables = keep_items
 	for ch: Node in _props_container.get_children():
-		if String(ch.name) == "SectorRFIDSlidingDoors":
+		if String(ch.name) == DOORS_ROOT_NAME:
 			continue
 		_props_container.remove_child(ch)
 		ch.queue_free()
@@ -3341,26 +3352,17 @@ func get_interior_streaming_status() -> Dictionary:
 		"detached_nodes": _interior_detached_records.size(),
 		"live_pickups": n_pick,
 		"collected_ids": _collected_pickup_ids.keys(),
-		"active_door_design": _active_door_design
+		"door_type": "rfid_forcefield"
 	}
 
 
 # ------------------------------------------------------------------------------
-# [t39u]-[t40u] 5-candidate sci-fi RFID doors
+# [t45u] RFID FORCE-FIELD DOOR (single design, all 6 portals)
+#   Model : FORCEFIELD_DOOR_GLB (Rook: Frame, FrameInset, EmitterStrip, RFIDPanel, StatusLight, FieldPlane;
+#           bottom-centre pivot, +Z = player-facing side, 1.50 x 2.45 m clear opening, 1.82 x 2.61 m outer frame)
+#   Shader: FORCEFIELD_DOOR_SHADER (Rook, used as-is; one ShaderMaterial per door on FieldPlane.material_override)
+#   Python UI hook: set_door_field(door_id, opacity, color) + DOOR_FIELD_JSON polling (tools/door_field_ui.py)
 # ------------------------------------------------------------------------------
-func _door_mat(col: Color, metal: float, rough: float, tex_name: String = "", uv: Vector2 = Vector2.ONE) -> StandardMaterial3D:
-	var m: StandardMaterial3D = StandardMaterial3D.new()
-	m.albedo_color = col
-	m.metallic = metal
-	m.roughness = rough
-	if tex_name != "":
-		var t: Texture2D = _load_tex(tex_name)
-		if t != null:
-			m.albedo_texture = t
-			m.uv1_scale = Vector3(uv.x, uv.y, 1.0)
-	return m
-
-
 func _dbox(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material, rot_deg: Vector3 = Vector3.ZERO, shadow: bool = true) -> MeshInstance3D:
 	var mi: MeshInstance3D = MeshInstance3D.new()
 	mi.name = nm
@@ -3376,40 +3378,78 @@ func _dbox(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material,
 	return mi
 
 
-func _dcyl(parent: Node3D, nm: String, r: float, h: float, pos: Vector3, mat: Material, rot_deg: Vector3 = Vector3(90.0, 0.0, 0.0), segs: int = 6) -> MeshInstance3D:
-	var mi: MeshInstance3D = MeshInstance3D.new()
-	mi.name = nm
-	var cm: CylinderMesh = CylinderMesh.new()
-	cm.top_radius = r
-	cm.bottom_radius = r
-	cm.height = h
-	cm.radial_segments = segs
-	cm.rings = 1
-	mi.mesh = cm
-	mi.position = pos
-	mi.rotation_degrees = rot_deg
-	mi.material_override = mat
-	parent.add_child(mi)
-	return mi
-
-
-func _make_door_leaf(droot: Node3D, nm: String, size: Vector2, center: Vector3, depth: float) -> StaticBody3D:
+func _ff_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3) -> CollisionShape3D:
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = nm
-	body.position = center
-	droot.add_child(body)
-	if not _batch_render:
-		var cs: CollisionShape3D = CollisionShape3D.new()
-		cs.name = "DoorLeafCollider"
-		var bs: BoxShape3D = BoxShape3D.new()
-		bs.size = Vector3(size.x, size.y, maxf(depth, 0.12))
-		cs.shape = bs
-		body.add_child(cs)
-	return body
+	body.position = pos
+	parent.add_child(body)
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = nm + "_Shape"
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = sz
+	cs.shape = bs
+	body.add_child(cs)
+	return cs
+
+
+func _ff_load_shader() -> Shader:
+	if _ff_shader != null:
+		return _ff_shader
+	var abs_p: String = _resolve_path(FORCEFIELD_DOOR_SHADER)
+	if FileAccess.file_exists(abs_p):
+		var sh: Shader = Shader.new()
+		sh.code = FileAccess.get_file_as_string(abs_p)
+		_ff_shader = sh
+	else:
+		push_error("[FORCEFIELD] shader missing: " + FORCEFIELD_DOOR_SHADER)
+	return _ff_shader
+
+
+func _ff_instance_model() -> Node3D:
+	if _ff_gltf_state == null:
+		var abs_p: String = _resolve_path(FORCEFIELD_DOOR_GLB)
+		if not FileAccess.file_exists(abs_p):
+			push_error("[FORCEFIELD] glb missing: " + FORCEFIELD_DOOR_GLB)
+			return null
+		var doc: GLTFDocument = GLTFDocument.new()
+		var st: GLTFState = GLTFState.new()
+		if doc.append_from_file(abs_p, st) != OK:
+			push_error("[FORCEFIELD] glb load failed: " + abs_p)
+			return null
+		_ff_gltf_doc = doc
+		_ff_gltf_state = st
+	var root: Node = _ff_gltf_doc.generate_scene(_ff_gltf_state)
+	if not (root is Node3D):
+		if root != null:
+			root.free()
+		return null
+	var r3: Node3D = root as Node3D
+	# Runtime GLTF import may yield ImporterMeshInstance3D nodes: convert to plain MeshInstance3D (names kept).
+	var stack: Array[Node] = [r3]
+	var imps: Array[ImporterMeshInstance3D] = []
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if c is ImporterMeshInstance3D:
+			imps.append(c as ImporterMeshInstance3D)
+		for ch: Node in c.get_children():
+			stack.append(ch)
+	for imp: ImporterMeshInstance3D in imps:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.transform = imp.transform
+		mi.mesh = imp.mesh.get_mesh() if imp.mesh != null else null
+		var p: Node = imp.get_parent()
+		var nm: String = String(imp.name)
+		var idx: int = imp.get_index()
+		p.remove_child(imp)
+		imp.free()
+		mi.name = nm
+		p.add_child(mi)
+		p.move_child(mi, idx)
+	return r3
 
 
 func _clear_rfid_doors(parent: Node3D) -> void:
-	var old: Node = parent.get_node_or_null("SectorRFIDSlidingDoors")
+	var old: Node = parent.get_node_or_null(DOORS_ROOT_NAME)
 	if old != null:
 		parent.remove_child(old)
 		old.free()
@@ -3421,259 +3461,123 @@ func _clear_rfid_doors(parent: Node3D) -> void:
 	_interactables = keep
 
 
-func _build_rfid_sliding_doors(parent: Node3D, design_id: int = 1) -> void:
-	# [t38u] Functional RFID doors across all 6 Residential Sector portals (open smoothly on [F] RFID scan).
-	# [t39u]-[t40u] design_id 1..5 selects one of the 5 tournament candidates.
+func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 	_clear_rfid_doors(parent)
-	design_id = clampi(design_id, 1, 5)
-	_active_door_design = design_id
 	var doors_root: Node3D = Node3D.new()
-	doors_root.name = "SectorRFIDSlidingDoors"
-	doors_root.set_meta("door_design", design_id)
+	doors_root.name = DOORS_ROOT_NAME
 	parent.add_child(doors_root)
-
-	# Shared candidate palettes
-	var m_frame: StandardMaterial3D = _door_mat(Color(0.26, 0.29, 0.33), 0.80, 0.34, "facade_titanium_gunmetal_hull.png", Vector2(2.0, 2.0))
-	var m_dark: StandardMaterial3D = _door_mat(Color(0.12, 0.14, 0.16), 0.75, 0.40)
-	var m_bolt: StandardMaterial3D = _door_mat(Color(0.72, 0.74, 0.76), 0.95, 0.22)
-	var m_glass: StandardMaterial3D = StandardMaterial3D.new()
-	m_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m_glass.albedo_color = Color(0.30, 0.44, 0.52, 0.30)
-	m_glass.roughness = 0.06
-	m_glass.metallic = 0.20
-	m_glass.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var m_smoke: StandardMaterial3D = m_glass.duplicate() as StandardMaterial3D
-	m_smoke.albedo_color = Color(0.08, 0.10, 0.12, 0.55)
-	var m_hazard: StandardMaterial3D = _door_mat(Color(0.78, 0.58, 0.14), 0.35, 0.48)
-	var m_leaf: StandardMaterial3D
-	match design_id:
-		1:
-			m_leaf = _door_mat(Color(0.66, 0.70, 0.75), 0.72, 0.30, "facade_brushed_steel_gantry.png", Vector2(1.5, 2.0))
-		2:
-			m_leaf = _door_mat(Color(0.62, 0.64, 0.66), 0.40, 0.50, "facade_brushed_steel_gantry.png", Vector2(2.0, 1.5))
-		3:
-			m_leaf = _door_mat(Color(0.52, 0.56, 0.60), 0.78, 0.36, "facade_brushed_steel_gantry.png", Vector2(2.0, 2.0))
-		4:
-			m_leaf = _door_mat(Color(0.50, 0.56, 0.62), 0.45, 0.42, "facade_brushed_steel_gantry.png", Vector2(1.5, 1.5))
-		_:
-			m_leaf = _door_mat(Color(0.58, 0.60, 0.61), 0.20, 0.72)
-	if design_id == 5:
-		m_frame = _door_mat(Color(0.17, 0.18, 0.20), 0.85, 0.30)
+	var shader: Shader = _ff_load_shader()
+	var m_infill: StandardMaterial3D = StandardMaterial3D.new()
+	m_infill.albedo_color = Color(0.78, 0.80, 0.83)
+	m_infill.metallic = 0.35
+	m_infill.roughness = 0.38
 
 	var door_specs: Array[Dictionary] = [
-		{"id": "DOOR_APT201", "label": "APT 201 // RFID DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
-		{"id": "DOOR_APT202", "label": "APT 202 // RFID DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
-		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
-		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID BULKHEAD DOOR", "pos": Vector3(0.0, 0.12, -8.90), "w": 2.60, "h": 2.80}
+		{"id": "DOOR_APT201", "label": "APT 201 // RFID FORCE-FIELD DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID FORCE-FIELD DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
+		{"id": "DOOR_APT202", "label": "APT 202 // RFID FORCE-FIELD DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID FORCE-FIELD DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
+		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID FORCE-FIELD DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
+		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID FORCE-FIELD DOOR", "pos": Vector3(0.0, 0.12, -8.90), "w": 2.60, "h": 2.80}
 	]
-
 	for spec: Dictionary in door_specs:
 		var did: String = String(spec["id"])
 		var dpos: Vector3 = spec["pos"] as Vector3
-		var dw: float = float(spec["w"])
-		var dh: float = float(spec["h"])
-		var lh: float = dh - 0.04
-		# Front (player-facing) trim sits on the -Z face for room portals, +Z face for exterior/alcove portals.
-		var fz: float = -1.0 if (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C") else 1.0
-
+		var pw: float = float(spec["w"])
+		var ph: float = float(spec["h"])
+		# Player-facing (atrium) side is world -Z for the 4 room portals, +Z for Sector-4 exit & Alcove 2C.
+		var face_neg_z: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
 		var droot: Node3D = Node3D.new()
 		droot.name = did
 		droot.position = dpos
+		droot.rotation_degrees = Vector3(0.0, 180.0 if face_neg_z else 0.0, 0.0)  # model +Z -> player side
 		doors_root.add_child(droot)
 
-		var led_mat: StandardMaterial3D = StandardMaterial3D.new()
-		led_mat.albedo_color = COLOR_AMBER
-		led_mat.emission_enabled = true
-		led_mat.emission = COLOR_AMBER
-		led_mat.emission_energy_multiplier = 1.25
+		var model: Node3D = _ff_instance_model()
+		if model == null:
+			continue
+		model.name = "ForceFieldDoorModel"
+		droot.add_child(model)
+		var n_field: MeshInstance3D = model.find_child("FieldPlane", true, false) as MeshInstance3D
+		var n_light: MeshInstance3D = model.find_child("StatusLight", true, false) as MeshInstance3D
+		var n_panel: Node3D = model.find_child("RFIDPanel", true, false) as Node3D
+		# Panel pocket sits beside the 1.82 m frame (x 1.06..1.20); in the narrower baked portals that falls
+		# inside the 0.30 m wall, so nudge panel + light 6 mm proud of the wall face to stay visible (glb untouched).
+		if n_panel != null:
+			n_panel.position.z += 0.006
+		if n_light != null:
+			n_light.position.z += 0.006
 
-		var leaves: Array[Node3D] = []
-		var closed_pos: Array[Vector3] = []
-		var open_pos: Array[Vector3] = []
+		var fmat: ShaderMaterial = ShaderMaterial.new()
+		fmat.shader = shader
+		fmat.set_shader_parameter("field_color", FF_DEFAULT_COLOR)
+		fmat.set_shader_parameter("opacity", FF_DEFAULT_OPACITY)
+		fmat.set_shader_parameter("dissolve", 0.0)
+		if n_field != null:
+			n_field.material_override = fmat
+			n_field.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		# One emissive material per emitter part per door, tinted to the field colour by set_door_field().
+		var emit_mats: Dictionary = {}
+		for en: String in FF_EMITTER_ENERGY.keys():
+			var n_e: MeshInstance3D = model.find_child(en, true, false) as MeshInstance3D
+			if n_e == null:
+				continue
+			var em_m: StandardMaterial3D = StandardMaterial3D.new()
+			em_m.albedo_color = FF_DEFAULT_COLOR
+			em_m.emission_enabled = true
+			em_m.emission = FF_DEFAULT_COLOR
+			em_m.emission_energy_multiplier = float(FF_EMITTER_ENERGY[en])
+			n_e.material_override = em_m
+			emit_mats[en] = em_m
+		var lmat: StandardMaterial3D = StandardMaterial3D.new()
+		lmat.albedo_color = COLOR_AMBER
+		lmat.emission_enabled = true
+		lmat.emission = COLOR_AMBER
+		lmat.emission_energy_multiplier = 2.0
+		if n_light != null:
+			n_light.material_override = lmat
 
-		# Static surround frame (both faces) — distinct profile per candidate, never inside the clear opening.
-		var frame_root: Node3D = Node3D.new()
-		frame_root.name = "DoorSurroundFrame"
-		droot.add_child(frame_root)
-		for face: float in [-1.0, 1.0]:
-			var zf: float = face * 0.150
-			match design_id:
-				1:
-					for sx: float in [-1.0, 1.0]:
-						_dbox(frame_root, "Jamb", Vector3(0.22, dh + 0.22, 0.05), Vector3(sx * (dw * 0.5 + 0.11), (dh + 0.22) * 0.5, zf), m_frame)
-					_dbox(frame_root, "Header", Vector3(dw + 0.44, 0.22, 0.05), Vector3(0.0, dh + 0.11, zf), m_frame)
-					# 12 hex frame bolts
-					for bi: int in range(4):
-						var by: float = 0.35 + float(bi) * (dh - 0.5) / 3.0
-						for sx2: float in [-1.0, 1.0]:
-							_dcyl(frame_root, "HexBolt", 0.028, 0.03, Vector3(sx2 * (dw * 0.5 + 0.11), by, zf + face * 0.035), m_bolt)
-					for bx: float in [-dw * 0.25, dw * 0.25]:
-						for sy: float in [0.0, 1.0]:
-							_dcyl(frame_root, "HexBolt", 0.028, 0.03, Vector3(bx, dh + 0.06 + sy * 0.10, zf + face * 0.035), m_bolt)
-					for sx3: float in [-1.0, 1.0]:
-						_dbox(frame_root, "TelemetryStrip", Vector3(0.035, dh * 0.80, 0.02), Vector3(sx3 * (dw * 0.5 + 0.03), dh * 0.5, zf + face * 0.03), led_mat, Vector3.ZERO, false)
-				2:
-					for sx: float in [-1.0, 1.0]:
-						_dbox(frame_root, "GuideColumn", Vector3(0.26, dh + 0.30, 0.10), Vector3(sx * (dw * 0.5 + 0.13), (dh + 0.30) * 0.5, zf), m_dark)
-						_dbox(frame_root, "RFIDStatusBar", Vector3(0.05, dh - 0.10, 0.03), Vector3(sx * (dw * 0.5 + 0.13), dh * 0.5, zf + face * 0.06), led_mat, Vector3.ZERO, false)
-						for hi: int in range(6):
-							_dbox(frame_root, "HazardChevron", Vector3(0.30, 0.06, 0.02), Vector3(sx * (dw * 0.5 + 0.13), 0.20 + float(hi) * 0.18, zf + face * 0.055), m_hazard, Vector3(0.0, 0.0, 35.0 * sx))
-					_dbox(frame_root, "ShutterHousing", Vector3(dw + 0.52, 0.34, 0.16), Vector3(0.0, dh + 0.17, zf), m_dark)
-					_dbox(frame_root, "ThresholdSill", Vector3(dw + 0.10, 0.025, 0.30), Vector3(0.0, 0.0125, 0.0), m_hazard)
-				3:
-					# Asymmetric heavy pocket housing on +X side, slim jamb on -X side
-					_dbox(frame_root, "PocketHousing", Vector3(0.42, dh + 0.26, 0.12), Vector3(dw * 0.5 + 0.21, (dh + 0.26) * 0.5, zf), m_dark)
-					_dbox(frame_root, "LatchJamb", Vector3(0.16, dh + 0.26, 0.08), Vector3(-dw * 0.5 - 0.08, (dh + 0.26) * 0.5, zf), m_frame)
-					_dbox(frame_root, "Header", Vector3(dw + 0.58, 0.26, 0.10), Vector3(0.05, dh + 0.13, zf), m_frame)
-					for ci: int in range(3):
-						_dbox(frame_root, "StatusChevron_%d" % ci, Vector3(0.16, 0.05, 0.02), Vector3(dw * 0.5 + 0.21 - 0.05, dh * 0.55 + float(ci) * 0.16, zf + face * 0.07), led_mat, Vector3(0.0, 0.0, 40.0), false)
-						_dbox(frame_root, "StatusChevronB_%d" % ci, Vector3(0.16, 0.05, 0.02), Vector3(dw * 0.5 + 0.21 + 0.05, dh * 0.55 + float(ci) * 0.16, zf + face * 0.07), led_mat, Vector3(0.0, 0.0, -40.0), false)
-				4:
-					for sx: float in [-1.0, 1.0]:
-						_dbox(frame_root, "Jamb", Vector3(0.20, dh + 0.20, 0.07), Vector3(sx * (dw * 0.5 + 0.10), (dh + 0.20) * 0.5, zf), m_frame)
-						# 45 deg corner armor gussets
-						_dbox(frame_root, "CornerGussetTop", Vector3(0.40, 0.14, 0.06), Vector3(sx * (dw * 0.5 - 0.06), dh - 0.08, zf + face * 0.03), m_dark, Vector3(0.0, 0.0, -45.0 * sx))
-						_dbox(frame_root, "CornerGussetBot", Vector3(0.40, 0.14, 0.06), Vector3(sx * (dw * 0.5 - 0.06), 0.10, zf + face * 0.03), m_dark, Vector3(0.0, 0.0, 45.0 * sx))
-					_dbox(frame_root, "Header", Vector3(dw + 0.40, 0.20, 0.07), Vector3(0.0, dh + 0.10, zf), m_frame)
-				_:
-					# Chamfered dark gunmetal frame + flush full-width horizontal light-pipe header
-					for sx: float in [-1.0, 1.0]:
-						_dbox(frame_root, "Jamb", Vector3(0.18, dh + 0.24, 0.06), Vector3(sx * (dw * 0.5 + 0.09), (dh + 0.24) * 0.5, zf), m_frame)
-						_dbox(frame_root, "JambChamfer", Vector3(0.06, dh + 0.10, 0.06), Vector3(sx * (dw * 0.5 + 0.005), (dh + 0.10) * 0.5, zf), m_frame, Vector3(0.0, 45.0 * sx, 0.0))
-					_dbox(frame_root, "Header", Vector3(dw + 0.36, 0.26, 0.06), Vector3(0.0, dh + 0.13, zf), m_frame)
-					_dbox(frame_root, "LightPipeHeader", Vector3(dw + 0.20, 0.045, 0.02), Vector3(0.0, dh + 0.13, zf + face * 0.035), led_mat, Vector3.ZERO, false)
-					_dbox(frame_root, "TrackRailTop", Vector3(dw * 2.0, 0.03, 0.03), Vector3(0.0, dh - 0.01, zf * 0.4), m_dark)
+		# Wall fit: close any gap between the 1.82 x 2.61 m frame and the wider/taller baked portal opening.
+		# Visual infill stays 5 mm inside the 0.30 m wall faces (no coplanar faces -> no z-fighting).
+		var half_pw: float = pw * 0.5
+		var infill_d: float = 0.29
+		if half_pw > FF_FRAME_HALF_W + 0.005:
+			var iw: float = half_pw - FF_FRAME_HALF_W + 0.03
+			for sx: float in [-1.0, 1.0]:
+				_dbox(droot, "PortalInfill_%s" % ("L" if sx < 0.0 else "R"), Vector3(iw, ph + 0.03, infill_d),
+					Vector3(sx * (FF_FRAME_HALF_W + iw * 0.5), (ph + 0.03) * 0.5, 0.0), m_infill)
+		if ph > FF_FRAME_H + 0.005:
+			var ih: float = ph - FF_FRAME_H + 0.03
+			_dbox(droot, "PortalInfill_Top", Vector3(FF_FRAME_HALF_W * 2.0, ih, infill_d), Vector3(0.0, FF_FRAME_H + ih * 0.5, 0.0), m_infill)
+		# Colliders: everything outside the 1.50 x 2.45 m clear opening is solid; the field itself is a toggled box.
+		var field_cs: CollisionShape3D = null
+		if not _batch_render:
+			var side_w: float = maxf(half_pw, FF_FRAME_HALF_W) - FF_OPEN_W * 0.5 + 0.03
+			for sx2: float in [-1.0, 1.0]:
+				_ff_static_box(droot, "PortalJambCollider_%s" % ("L" if sx2 < 0.0 else "R"), Vector3(side_w, ph + 0.03, 0.30),
+					Vector3(sx2 * (FF_OPEN_W * 0.5 + side_w * 0.5), (ph + 0.03) * 0.5, 0.0))
+			var top_h: float = maxf(ph, FF_FRAME_H) - FF_OPEN_H + 0.03
+			_ff_static_box(droot, "PortalHeaderCollider", Vector3(maxf(pw, FF_FRAME_HALF_W * 2.0), top_h, 0.30), Vector3(0.0, FF_OPEN_H + top_h * 0.5, 0.0))
+			field_cs = _ff_static_box(droot, "FieldCollider", Vector3(FF_OPEN_W, FF_OPEN_H, 0.20), Vector3(0.0, FF_OPEN_H * 0.5, 0.0))
 
-		# Leaves
-		match design_id:
-			1:
-				# Heavy bi-parting industrial bulkhead: two beveled leaves, recessed weather seal, vision windows
-				var lw: float = dw * 0.5
-				var slide: float = maxf(dw * 0.48, lw - 0.04)
-				for si: int in range(2):
-					var sg: float = -1.0 if si == 0 else 1.0
-					var cpos: Vector3 = Vector3(sg * lw * 0.5, lh * 0.5, 0.0)
-					var lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si == 0 else "R"], Vector2(lw, lh), cpos, 0.12)
-					_dbox(lf, "LeafCore", Vector3(lw - 0.012, lh, 0.085), Vector3.ZERO, m_leaf)
-					_dbox(lf, "LowerArmorBevel", Vector3(lw - 0.10, lh * 0.40, 0.03), Vector3(0.0, -lh * 0.28, fz * 0.05), m_leaf)
-					_dbox(lf, "StiffenerRib", Vector3(lw - 0.06, 0.05, 0.03), Vector3(0.0, -lh * 0.05, fz * 0.055), m_frame)
-					_dbox(lf, "StiffenerRib2", Vector3(lw - 0.06, 0.05, 0.03), Vector3(0.0, -lh * 0.46, fz * 0.055), m_frame)
-					_dbox(lf, "VisionFrame", Vector3(lw * 0.52, lh * 0.26, 0.03), Vector3(-sg * lw * 0.08, lh * 0.22, fz * 0.05), m_dark)
-					_dbox(lf, "VisionWindow", Vector3(lw * 0.42, lh * 0.20, 0.035), Vector3(-sg * lw * 0.08, lh * 0.22, fz * 0.055), m_glass, Vector3.ZERO, false)
-					_dbox(lf, "WeatherSealSeam", Vector3(0.022, lh, 0.095), Vector3(-sg * (lw * 0.5 - 0.011), 0.0, 0.0), m_dark)
-					_dbox(lf, "RFIDStatusStrip", Vector3(0.028, lh * 0.60, 0.02), Vector3(-sg * (lw * 0.5 - 0.05), -lh * 0.05, fz * 0.055), led_mat, Vector3.ZERO, false)
-					leaves.append(lf)
-					closed_pos.append(cpos)
-					open_pos.append(cpos + Vector3(sg * slide, 0.0, 0.0))
-			2:
-				# Vertical counterbalanced blast shutter: upper 70% leaf retracts up, lower 30% drop plate sinks into sill
-				var up_h: float = lh * 0.70
-				var lo_h: float = lh * 0.30
-				var up_c: Vector3 = Vector3(0.0, lo_h + up_h * 0.5, 0.0)
-				var up_lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_UpperBlast" % did, Vector2(dw, up_h), up_c, 0.14)
-				_dbox(up_lf, "BlastCore", Vector3(dw - 0.01, up_h, 0.11), Vector3.ZERO, m_leaf)
-				for ri: int in range(5):
-					_dbox(up_lf, "HorizontalRib", Vector3(dw - 0.08, 0.07, 0.04), Vector3(0.0, -up_h * 0.5 + 0.14 + float(ri) * (up_h - 0.28) / 4.0, fz * 0.07), m_frame)
-				_dbox(up_lf, "ViewportSlitFrame", Vector3(dw * 0.46, 0.12, 0.05), Vector3(0.0, up_h * 0.5 - 0.30, fz * 0.075), m_dark)
-				_dbox(up_lf, "ViewportSlit", Vector3(dw * 0.40, 0.06, 0.055), Vector3(0.0, up_h * 0.5 - 0.30, fz * 0.08), m_glass, Vector3.ZERO, false)
-				_dbox(up_lf, "BottomSealLip", Vector3(dw - 0.02, 0.04, 0.12), Vector3(0.0, -up_h * 0.5 + 0.02, 0.0), m_dark)
-				leaves.append(up_lf)
-				closed_pos.append(up_c)
-				open_pos.append(up_c + Vector3(0.0, up_h + 0.06, 0.0))
-				var lo_c: Vector3 = Vector3(0.0, lo_h * 0.5, 0.0)
-				var lo_lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_LowerDropPlate" % did, Vector2(dw, lo_h), lo_c, 0.14)
-				_dbox(lo_lf, "DropPlateCore", Vector3(dw - 0.01, lo_h, 0.11), Vector3.ZERO, m_leaf)
-				_dbox(lo_lf, "DropPlateBevel", Vector3(dw - 0.12, lo_h - 0.10, 0.03), Vector3(0.0, 0.0, fz * 0.065), m_frame)
-				for hz: int in range(7):
-					_dbox(lo_lf, "HazardStripe", Vector3(0.09, lo_h - 0.16, 0.02), Vector3(-dw * 0.36 + float(hz) * dw * 0.12, 0.0, fz * 0.085), m_hazard, Vector3(0.0, 0.0, 30.0))
-				leaves.append(lo_lf)
-				closed_pos.append(lo_c)
-				open_pos.append(lo_c - Vector3(0.0, lo_h + 0.03, 0.0))
-			3:
-				# Asymmetric pocket-slide airlock: one wide armored leaf slides into +X wall pocket
-				var cpos3: Vector3 = Vector3(0.0, lh * 0.5, 0.0)
-				var lf3: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_Pocket" % did, Vector2(dw, lh), cpos3, 0.13)
-				_dbox(lf3, "ArmorCore", Vector3(dw - 0.01, lh, 0.10), Vector3.ZERO, m_leaf)
-				for ri3: int in range(4):
-					_dbox(lf3, "HeavyRib", Vector3(dw - 0.10, 0.08, 0.045), Vector3(0.0, -lh * 0.5 + 0.22 + float(ri3) * (lh - 0.44) / 3.0, fz * 0.07), m_dark)
-				var slit_x: float = -dw * 0.30
-				_dbox(lf3, "SlitOuterFrame", Vector3(0.20, lh * 0.52, 0.05), Vector3(slit_x, lh * 0.08, fz * 0.08), m_frame)
-				_dbox(lf3, "SlitInnerFrame", Vector3(0.13, lh * 0.46, 0.055), Vector3(slit_x, lh * 0.08, fz * 0.085), m_dark)
-				_dbox(lf3, "ViewportSlit", Vector3(0.07, lh * 0.42, 0.06), Vector3(slit_x, lh * 0.08, fz * 0.09), m_glass, Vector3.ZERO, false)
-				_dcyl(lf3, "PressureWheelHub", 0.20, 0.05, Vector3(dw * 0.12, 0.02, fz * 0.08), m_frame, Vector3(90.0, 0.0, 0.0), 24)
-				_dcyl(lf3, "PressureWheelCap", 0.07, 0.07, Vector3(dw * 0.12, 0.02, fz * 0.09), m_bolt, Vector3(90.0, 0.0, 0.0), 12)
-				for sp_i: int in range(4):
-					_dbox(lf3, "WheelSpoke", Vector3(0.40, 0.035, 0.03), Vector3(dw * 0.12, 0.02, fz * 0.10), m_bolt, Vector3(0.0, 0.0, 45.0 * float(sp_i)))
-				_dbox(lf3, "LeadingEdgeSeal", Vector3(0.05, lh, 0.11), Vector3(-dw * 0.5 + 0.025, 0.0, 0.0), m_dark)
-				_dbox(lf3, "RFIDStatusStrip", Vector3(0.025, lh * 0.55, 0.02), Vector3(-dw * 0.5 + 0.09, 0.0, fz * 0.065), led_mat, Vector3.ZERO, false)
-				leaves.append(lf3)
-				closed_pos.append(cpos3)
-				open_pos.append(cpos3 + Vector3(dw + 0.04, 0.0, 0.0))
-			4:
-				# Angled interlocking chevron bulkhead: sawtooth teeth alternate along the parting seam
-				var lw4: float = dw * 0.5
-				var tooth: float = 0.15
-				var n_teeth: int = 7
-				var slide4: float = lw4 + tooth + 0.04
-				for si4: int in range(2):
-					var sg4: float = -1.0 if si4 == 0 else 1.0
-					var cpos4: Vector3 = Vector3(sg4 * lw4 * 0.5, lh * 0.5, 0.0)
-					var lf4: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si4 == 0 else "R"], Vector2(lw4, lh), cpos4, 0.12)
-					_dbox(lf4, "LeafCore", Vector3(lw4 - tooth * 0.5, lh, 0.09), Vector3(sg4 * tooth * 0.25, 0.0, 0.0), m_leaf)
-					var pitch: float = lh / float(n_teeth)
-					for ti: int in range(n_teeth):
-						if (ti % 2 == 0) != (si4 == 0):
-							continue
-						var ty: float = -lh * 0.5 + pitch * (float(ti) + 0.5)
-						_dbox(lf4, "ChevronTooth_%d" % ti, Vector3(pitch * 0.70, pitch * 0.70, 0.09), Vector3(-sg4 * (lw4 * 0.5 - tooth * 0.35), ty, 0.0), m_leaf, Vector3(0.0, 0.0, 45.0))
-						_dbox(lf4, "ChevronSeamGlow_%d" % ti, Vector3(pitch * 0.40, 0.022, 0.02), Vector3(-sg4 * (lw4 * 0.5 - tooth * 0.20), ty + pitch * 0.22, fz * 0.055), led_mat, Vector3(0.0, 0.0, 45.0 * -sg4), false)
-					for oy: float in [lh * 0.24, -lh * 0.16]:
-						_dcyl(lf4, "OctPortholeRim", 0.13, 0.04, Vector3(sg4 * lw4 * 0.10, oy, fz * 0.055), m_dark, Vector3(90.0, 22.5, 0.0), 8)
-						_dcyl(lf4, "OctPortholeGlass", 0.09, 0.045, Vector3(sg4 * lw4 * 0.10, oy, fz * 0.06), m_glass, Vector3(90.0, 22.5, 0.0), 8)
-					_dbox(lf4, "DiagonalArmorRib", Vector3(lw4 * 0.9, 0.06, 0.03), Vector3(sg4 * lw4 * 0.05, -lh * 0.40, fz * 0.055), m_frame, Vector3(0.0, 0.0, 18.0 * sg4))
-					leaves.append(lf4)
-					closed_pos.append(cpos4)
-					open_pos.append(cpos4 + Vector3(sg4 * slide4, 0.0, 0.0))
-			_:
-				# Twin-track recessed security frame: matte ceramic-titanium leaves, smoked slits, micro-bevels
-				var lw5: float = dw * 0.5
-				var slide5: float = maxf(dw * 0.48, lw5 - 0.04)
-				for si5: int in range(2):
-					var sg5: float = -1.0 if si5 == 0 else 1.0
-					var track_z: float = 0.025 * sg5
-					var cpos5: Vector3 = Vector3(sg5 * lw5 * 0.5, lh * 0.5, track_z)
-					var lf5: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si5 == 0 else "R"], Vector2(lw5, lh), cpos5, 0.12)
-					_dbox(lf5, "CeramicCore", Vector3(lw5 - 0.006, lh, 0.06), Vector3.ZERO, m_leaf)
-					for py: float in [-lh * 0.30, lh * 0.05, lh * 0.38]:
-						_dbox(lf5, "MicroBevelLine", Vector3(lw5 - 0.08, 0.008, 0.066), Vector3(0.0, py, 0.0), m_dark)
-					_dbox(lf5, "MicroBevelVertical", Vector3(0.008, lh - 0.12, 0.066), Vector3(sg5 * lw5 * 0.30, 0.0, 0.0), m_dark)
-					_dbox(lf5, "SmokedSlitFrame", Vector3(0.12, lh * 0.56, 0.068), Vector3(-sg5 * lw5 * 0.22, lh * 0.08, 0.0), m_frame)
-					_dbox(lf5, "SmokedGlassSlit", Vector3(0.07, lh * 0.50, 0.072), Vector3(-sg5 * lw5 * 0.22, lh * 0.08, 0.0), m_smoke, Vector3.ZERO, false)
-					_dbox(lf5, "EdgeLightPipe", Vector3(0.016, lh * 0.86, 0.07), Vector3(-sg5 * (lw5 * 0.5 - 0.012), 0.0, 0.0), led_mat, Vector3.ZERO, false)
-					leaves.append(lf5)
-					closed_pos.append(cpos5)
-					open_pos.append(cpos5 + Vector3(sg5 * slide5, 0.0, 0.0))
-
-		# Register an RFID transponder anchor at mid-height of the doorway so [F] telemetry lists the door
 		var tag_anchor: Node3D = Node3D.new()
 		tag_anchor.name = did + "_RFIDTag"
 		tag_anchor.position = Vector3(0.0, 1.35, 0.0)
 		droot.add_child(tag_anchor)
-
 		var d_entry: Dictionary = {
 			"id": did,
 			"label": String(spec["label"]),
 			"root": droot,
 			"center": dpos + Vector3(0.0, 1.25, 0.0),
-			"leaves": leaves,
-			"closed_pos": closed_pos,
-			"open_pos": open_pos,
-			"design": design_id,
-			"led_mat": led_mat,
+			"field_mat": fmat,
+			"emit_mats": emit_mats,
+			"led_mat": lmat,
+			"field_collider": field_cs,
+			"tween": null,
 			"open": false,
-			"blend": 0.0
+			"dissolve": 0.0,
+			"opacity": FF_DEFAULT_OPACITY,
+			"field_color": FF_DEFAULT_COLOR
 		}
 		_rfid_doors.append(d_entry)
 		_interactables.append({
@@ -3684,27 +3588,86 @@ func _build_rfid_sliding_doors(parent: Node3D, design_id: int = 1) -> void:
 			"collected": false,
 			"pickup": false
 		})
+	print("[FORCEFIELD] doors=%d glb=%s shader=%s" % [_rfid_doors.size(), FORCEFIELD_DOOR_GLB, FORCEFIELD_DOOR_SHADER])
 
 
-func _set_door_blend_immediate(door: Dictionary, blend: float) -> void:
-	door["blend"] = blend
-	var s: float = smoothstep(0.0, 1.0, blend)
-	var leaves: Array = door["leaves"] as Array
-	var cp: Array = door["closed_pos"] as Array
-	var op: Array = door["open_pos"] as Array
-	for i: int in range(leaves.size()):
-		var lf: Node3D = leaves[i] as Node3D
-		if lf != null and is_instance_valid(lf):
-			lf.position = (cp[i] as Vector3).lerp(op[i] as Vector3, s)
+func _find_door(door_id: String) -> Dictionary:
+	for d: Dictionary in _rfid_doors:
+		if String(d["id"]) == door_id:
+			return d
+	return {}
+
+
+func _door_dissolve(door: Dictionary) -> float:
+	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
+	return float(m.get_shader_parameter("dissolve")) if m != null else 0.0
+
+
+func _set_door_light(door: Dictionary, open_state: bool) -> void:
+	var lmat: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
+	if lmat != null:
+		var col: Color = FF_LIGHT_GREEN if open_state else COLOR_AMBER
+		lmat.albedo_color = col
+		lmat.emission = col
+
+
+func _finish_door_field(door: Dictionary, open_state: bool) -> void:
+	door["dissolve"] = 1.0 if open_state else 0.0
+	var cs: CollisionShape3D = door["field_collider"] as CollisionShape3D
+	if cs != null and is_instance_valid(cs):
+		cs.set_deferred("disabled", open_state)
+	_set_door_light(door, open_state)
 
 
 func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
+	# Valid [F] scan: tween shader dissolve 0->1 (open) or 1->0 (close) over DOOR_DISSOLVE_TIME;
+	# collision + status light switch only when the tween finishes.
 	door["open"] = open_target
-	var lmat: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
-	if lmat != null:
-		var col: Color = Color("#3FAF6A") if open_target else COLOR_AMBER
-		lmat.albedo_color = col
-		lmat.emission = col
+	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
+	if m == null:
+		return
+	var old_tw: Variant = door["tween"]
+	if old_tw is Tween and (old_tw as Tween).is_valid():
+		(old_tw as Tween).kill()
+	var target: float = 1.0 if open_target else 0.0
+	var dur: float = DOOR_DISSOLVE_TIME * absf(target - _door_dissolve(door))
+	var tw: Tween = create_tween()
+	tw.tween_property(m, "shader_parameter/dissolve", target, maxf(dur, 0.001))
+	tw.tween_callback(_finish_door_field.bind(door, open_target))
+	door["tween"] = tw
+
+
+func _set_door_dissolve_immediate(door: Dictionary, v: float) -> void:
+	# QA/screenshot helper: jump to a dissolve value without tweening.
+	var old_tw: Variant = door["tween"]
+	if old_tw is Tween and (old_tw as Tween).is_valid():
+		(old_tw as Tween).kill()
+	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
+	if m != null:
+		m.set_shader_parameter("dissolve", clampf(v, 0.0, 1.0))
+	door["open"] = v >= 0.999
+	_finish_door_field(door, v >= 0.999)
+	door["dissolve"] = v
+
+
+## Public Python-UI hook: per-door field opacity (0..1) + RGBA colour; tints EmitterStrip, EmitterNodes, Conduits to match.
+func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty():
+		return false
+	var op: float = clampf(opacity, 0.0, 1.0)
+	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
+	if m != null:
+		m.set_shader_parameter("opacity", op)
+		m.set_shader_parameter("field_color", color)
+	var emc: Color = Color(color.r, color.g, color.b, 1.0)
+	for em_v: Variant in (door["emit_mats"] as Dictionary).values():
+		var em: StandardMaterial3D = em_v as StandardMaterial3D
+		em.albedo_color = emc
+		em.emission = emc
+	door["opacity"] = op
+	door["field_color"] = color
+	return true
 
 
 func _scan_rfid_doors(origin: Vector3) -> Array[String]:
@@ -3720,7 +3683,7 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 				_set_door_open_state(door, true)
 				opened_labels.append("%s (OPENED)" % String(door["id"]))
 			else:
-				# If already open and player isn't standing inside the doorway threshold, allow toggling closed
+				# Already open: toggle closed unless the player is standing inside the doorway threshold
 				var horiz_d: float = Vector2(origin.x - dcenter.x, origin.z - dcenter.z).length()
 				if horiz_d > 1.15:
 					_set_door_open_state(door, false)
@@ -3732,28 +3695,66 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 
 func _update_rfid_doors(delta: float) -> void:
 	for door: Dictionary in _rfid_doors:
-		var target: float = 1.0 if bool(door["open"]) else 0.0
-		var cur: float = float(door["blend"])
-		if absf(cur - target) < 0.0001:
+		door["dissolve"] = _door_dissolve(door)
+	_door_json_poll_t += delta
+	if _door_json_poll_t >= DOOR_FIELD_POLL_SEC:
+		_door_json_poll_t = 0.0
+		_poll_door_field_json()
+
+
+func _poll_door_field_json() -> void:
+	# External Python UI writes DOOR_FIELD_JSON = {door_id|"ALL": {"opacity": f, "color": [r,g,b,a]}}.
+	# Re-read only when the modified time changes (plus a short re-check window for same-second writes).
+	var abs_p: String = _resolve_path(DOOR_FIELD_JSON)
+	if not FileAccess.file_exists(abs_p):
+		return
+	var mt: int = int(FileAccess.get_modified_time(abs_p))
+	if mt != _door_json_mtime:
+		_door_json_mtime = mt
+		_door_json_recheck_until = _time + 1.5
+	elif _time > _door_json_recheck_until:
+		return
+	var txt: String = FileAccess.get_file_as_string(abs_p)
+	var hsh: int = txt.hash()
+	if hsh == _door_json_hash:
+		return
+	_door_json_hash = hsh
+	apply_door_field_overrides(JSON.parse_string(txt))
+
+
+func apply_door_field_overrides(data: Variant) -> int:
+	if not (data is Dictionary):
+		return 0
+	var applied: int = 0
+	var dd: Dictionary = data as Dictionary
+	var keys: Array = dd.keys()
+	keys.sort_custom(func(a: Variant, b: Variant) -> bool: return String(a) == "ALL" and String(b) != "ALL")
+	for k: Variant in keys:
+		var e: Variant = dd[k]
+		if not (e is Dictionary):
 			continue
-		cur = move_toward(cur, target, delta * DOOR_SLIDE_SPEED)
-		door["blend"] = cur
-		var s: float = smoothstep(0.0, 1.0, cur)
-		var leaves: Array = door["leaves"] as Array
-		var cp: Array = door["closed_pos"] as Array
-		var op: Array = door["open_pos"] as Array
-		for i: int in range(leaves.size()):
-			var lf: Node3D = leaves[i] as Node3D
-			if lf != null and is_instance_valid(lf):
-				lf.position = (cp[i] as Vector3).lerp(op[i] as Vector3, s)
+		var ed: Dictionary = e as Dictionary
+		var c_arr: Array = ed.get("color", [FF_DEFAULT_COLOR.r, FF_DEFAULT_COLOR.g, FF_DEFAULT_COLOR.b, 1.0]) as Array
+		var col: Color = Color(float(c_arr[0]), float(c_arr[1]), float(c_arr[2]), float(c_arr[3]) if c_arr.size() > 3 else 1.0)
+		var op: float = float(ed.get("opacity", FF_DEFAULT_OPACITY))
+		var ids: Array[String] = []
+		if String(k) == "ALL":
+			for d: Dictionary in _rfid_doors:
+				ids.append(String(d["id"]))
+		else:
+			ids.append(String(k))
+		for id: String in ids:
+			if set_door_field(id, op, col):
+				applied += 1
+	return applied
 
 
 # ------------------------------------------------------------------------------
-# [t39u]-[t40u] Door tournament renders (`-- --qa-door-tournament`)
+# [t45u] Force-field door screenshots (`-- --qa-forcefield-door`)
 # ------------------------------------------------------------------------------
-func _run_door_tournament_qa() -> void:
+func _run_forcefield_door_qa() -> void:
 	if _camera == null:
-		print("[DOOR-TOURNAMENT] FAIL camera missing")
+		print("[FF-DOOR-QA] FAIL camera missing")
 		get_tree().quit(1)
 		return
 	if DisplayServer.get_name() != "headless":
@@ -3763,10 +3764,10 @@ func _run_door_tournament_qa() -> void:
 	_third_person = false
 	_apply_view_mode()
 	await _qa_frames(10)
-	var show_id: String = "DOOR_RM1B"
-	var dpos: Vector3 = Vector3(4.50, 0.12, 2.85)
+	var door: Dictionary = _find_door("DOOR_RM1B")
+	var dpos: Vector3 = (door["root"] as Node3D).global_position
 	var fill: OmniLight3D = OmniLight3D.new()
-	fill.name = "DoorTournamentFillLight"
+	fill.name = "FFDoorFillLight"
 	fill.position = dpos + Vector3(-0.6, 2.25, -1.9)
 	fill.light_color = Color("#F2ECE2")
 	fill.light_energy = 1.6
@@ -3775,44 +3776,31 @@ func _run_door_tournament_qa() -> void:
 	fill.shadow_bias = 0.03
 	add_child(fill)
 	var fill2: OmniLight3D = OmniLight3D.new()
-	fill2.name = "DoorTournamentRimFill"
+	fill2.name = "FFDoorRimFill"
 	fill2.position = dpos + Vector3(1.4, 1.2, -1.2)
 	fill2.light_color = Color("#DCE6F0")
 	fill2.light_energy = 0.55
 	fill2.omni_range = 4.5
 	add_child(fill2)
-	var angles: Array[Dictionary] = [
-		{"pos": Vector3(0.0, 1.42, -2.35), "look": Vector3(0.0, 1.42, 0.0), "fov": 62.0},
-		{"pos": Vector3(-1.45, 1.48, -2.05), "look": Vector3(0.0, 1.35, 0.0), "fov": 60.0},
-		{"pos": Vector3(-0.32, 1.38, -0.98), "look": Vector3(0.0, 1.35, 0.0), "fov": 48.0}
-	]
+	_qa_free_cam(dpos + Vector3(-0.35, 1.40, -2.55), dpos + Vector3(0.10, 1.30, 0.0), Vector3.UP, 62.0)
 	var saved: int = 0
-	for cid: int in range(1, 6):
-		_build_rfid_sliding_doors(_props_container, cid)
-		await _qa_frames(3)
-		var door: Dictionary = {}
-		for d: Dictionary in _rfid_doors:
-			if String(d["id"]) == show_id:
-				door = d
-		for state: String in ["closed", "open"]:
-			var is_open: bool = state == "open"
-			_set_door_open_state(door, is_open)
-			_set_door_blend_immediate(door, 1.0 if is_open else 0.0)
-			for ai: int in range(angles.size()):
-				var a: Dictionary = angles[ai]
-				_qa_free_cam(dpos + (a["pos"] as Vector3), dpos + (a["look"] as Vector3), Vector3.UP, float(a["fov"]))
-				await _qa_idle(4)
-				var fn: String = "_tmp_door_cand_%02d_ang%d_%s.png" % [cid, ai + 1, state]
-				var img: Image = await _qa_capture(fn)
-				if img != null:
-					saved += 1
-		print("[DOOR-TOURNAMENT] Rendered ", DOOR_DESIGN_NAMES[cid])
+	var shots: Array[Array] = [[0.0, "forcefield_door_closed.png"], [0.5, "forcefield_door_mid_dissolve.png"], [1.0, "forcefield_door_open.png"]]
+	for sh: Array in shots:
+		_set_door_dissolve_immediate(door, float(sh[0]))
+		await _qa_idle(6)
+		if await _qa_capture(String(sh[1])) != null:
+			saved += 1
+	_set_door_dissolve_immediate(door, 0.0)
+	set_door_field("DOOR_RM1B", 0.4, Color(0.0, 1.0, 1.0, 1.0))
+	await _qa_idle(6)
+	if await _qa_capture("forcefield_door_custom_color.png") != null:
+		saved += 1
+	set_door_field("DOOR_RM1B", FF_DEFAULT_OPACITY, FF_DEFAULT_COLOR)
 	fill.queue_free()
 	fill2.queue_free()
-	_build_rfid_sliding_doors(_props_container, 1)
 	_qa_player_cam()
-	print("[DOOR-TOURNAMENT] DONE saved=%d/30 active_design=%d" % [saved, _active_door_design])
-	get_tree().quit(0 if saved == 30 else 1)
+	print("[FF-DOOR-QA] DONE saved=%d/4" % saved)
+	get_tree().quit(0 if saved == 4 else 1)
 
 
 func _qa_t38_check(nm: String, ok: bool, detail: String) -> void:
@@ -3899,33 +3887,31 @@ func _run_reticle_stars_doors_qa() -> void:
 					star_diff += 1
 		_qa_t38_check("starfield_pixels_visible_and_moving", star_diff > 15, "changed_sky_sample_pixels=%d" % star_diff)
 
-	# ---------------- 3. ALL 6 RFID SLIDING DOORS: BLOCK WHEN CLOSED -> OPEN ON [F] -> WALK THROUGH ----------------
+	# ---------------- 3. [t45u] ALL 6 RFID FORCE-FIELD DOORS ----------------
 	_qa_t38_check("rfid_doors_count_6", _rfid_doors.size() == 6, "door_count=%d" % _rfid_doors.size())
 	var door_img_closed: Image = null
 	var door_img_opened: Image = null
-
 	for i: int in range(_rfid_doors.size()):
 		var door: Dictionary = _rfid_doors[i]
 		var did: String = String(door["id"])
 		var dpos: Vector3 = (door["root"] as Node3D).global_position
-		# Ensure door starts closed
-		_set_door_open_state(door, false)
-		door["blend"] = 0.0
-		_set_door_blend_immediate(door, 0.0)
+		var fcs: CollisionShape3D = door["field_collider"] as CollisionShape3D
+		var lm: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
+		var fm: ShaderMaterial = door["field_mat"] as ShaderMaterial
+		_set_door_dissolve_immediate(door, 0.0)
 		await _qa_frames(4)
-
-		# Approach from the atrium side: for Sector-4 Exit (Z=-8.90), approach from Z=-7.30 facing South (yaw 0);
-		# for all 5 room portals, approach from Z = dpos.z - 1.55 facing North (yaw 180, -Z local = +Z world).
+		_qa_t38_check("%s_forcefield_shader_material" % did.to_lower(), fm != null and fm.shader != null and fm.shader.code.contains("uniform float dissolve") and (fm.get_shader_parameter("field_color") as Color).is_equal_approx(FF_DEFAULT_COLOR),
+			"shader=%s field_color=%s" % [FORCEFIELD_DOOR_SHADER, (fm.get_shader_parameter("field_color") as Color).to_html()])
+		_qa_t38_check("%s_closed_state" % did.to_lower(), _door_dissolve(door) == 0.0 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(COLOR_AMBER),
+			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
 		var from_south: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
 		var start_z: float = (dpos.z - 1.55) if from_south else (dpos.z + 1.55)
 		var yaw_deg: float = 180.0 if from_south else 0.0
 		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
 		await _qa_frames(12)
-
 		if did == "DOOR_APT201":
 			door_img_closed = await _qa_capture("qa_rfid_door_apt201_closed.png")
-
-		# Walk forward against the closed door for 28 frames — collider must block the player from crossing dpos.z
+		# Walk into the closed field: its collider must stop the player before dpos.z
 		_qa_key(KEY_W, true)
 		await _qa_idle(2)
 		await _qa_frames(28)
@@ -3935,26 +3921,24 @@ func _run_reticle_stars_doors_qa() -> void:
 		var blocked_ok: bool = (z_blocked < dpos.z - 0.30) if from_south else (z_blocked > dpos.z + 0.30)
 		_qa_t38_check("%s_blocks_when_closed" % did.to_lower(), blocked_ok and not bool(door["open"]),
 			"door_z=%.2f player_stopped_at_z=%.2f open=%s" % [dpos.z, z_blocked, door["open"]])
-
-		# Step back 1.45 m in front of the door and press [F] to emit an RFID wrist scan
+		# [F] scan -> dissolve tween 0->1 over 0.8 s, then collision off + light green
 		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
 		await _qa_frames(6)
+		Engine.time_scale = 0.05  # slow the 0.8 s tween so a mid-dissolve sample is reliable under xvfb
 		await _qa_tap(KEY_F)
-		await _qa_frames(48)
-		var opened_ok: bool = bool(door["open"]) and float(door["blend"]) > 0.98
-		_qa_t38_check("%s_opens_on_F_rfid_scan" % did.to_lower(), opened_ok,
-			"open=%s blend=%.3f" % [door["open"], float(door["blend"])])
-
+		await _qa_idle(1)
+		var mid_d: float = _door_dissolve(door)
+		var mid_light_amber: bool = lm.emission.is_equal_approx(COLOR_AMBER)
+		var mid_coll: bool = fcs != null and not fcs.disabled
+		Engine.time_scale = 1.0
+		await get_tree().create_timer(1.0).timeout
+		await _qa_frames(3)
+		var d_open: float = _door_dissolve(door)
+		var opened_ok: bool = bool(door["open"]) and d_open >= 0.999 and fcs != null and fcs.disabled and lm.emission.is_equal_approx(FF_LIGHT_GREEN)
+		_qa_t38_check("%s_F_scan_dissolves_open" % did.to_lower(), opened_ok and mid_d > 0.0 and mid_d < 1.0 and mid_light_amber and mid_coll,
+			"during_tween dissolve=%.3f light_amber=%s collision_on=%s | after dissolve=%.3f collision_off=%s light=%s" % [mid_d, mid_light_amber, mid_coll, d_open, fcs != null and fcs.disabled, lm.emission.to_html(false)])
 		if did == "DOOR_APT201":
-			_rfid_pulse_timer = RFID_PULSE_DURATION * 0.75
-			_arm_raise_blend = 1.0
-			_update_first_person_arm(0.0)
 			door_img_opened = await _qa_capture("qa_rfid_door_apt201_opened.png")
-			_rfid_pulse_timer = 0.0
-			_arm_raise_blend = 0.0
-			_update_first_person_arm(0.0)
-
-		# Walk straight through the opened doorway
 		_qa_key(KEY_W, true)
 		await _qa_idle(2)
 		await _qa_frames(42)
@@ -3964,6 +3948,43 @@ func _run_reticle_stars_doors_qa() -> void:
 		var through_ok: bool = (z_through > dpos.z + 0.45) if from_south else (z_through < dpos.z - 0.45)
 		_qa_t38_check("%s_walk_through_when_open" % did.to_lower(), through_ok,
 			"door_z=%.2f player_crossed_to_z=%.2f" % [dpos.z, z_through])
+		# Close: step back out on the atrium side (>1.15 m) and [F] again -> dissolve 1->0, collision on, amber
+		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		await _qa_frames(6)
+		await _qa_tap(KEY_F)
+		await get_tree().create_timer(1.0).timeout
+		await _qa_frames(3)
+		var closed_ok: bool = not bool(door["open"]) and _door_dissolve(door) <= 0.001 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(COLOR_AMBER)
+		_qa_t38_check("%s_F_scan_closes_back" % did.to_lower(), closed_ok,
+			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
+
+	# set_door_field(): opacity clamp + field colour + emitter tint, per-door material isolation, JSON override path
+	var d0: Dictionary = _find_door("DOOR_RM1B")
+	var d1: Dictionary = _find_door("DOOR_RM1A")
+	var cyan: Color = Color(0.0, 1.0, 1.0, 1.0)
+	var ok_set: bool = set_door_field("DOOR_RM1B", 0.4, cyan)
+	var m0: ShaderMaterial = d0["field_mat"] as ShaderMaterial
+	var em_ok: bool = (d0["emit_mats"] as Dictionary).size() == 3
+	var em_desc: PackedStringArray = PackedStringArray()
+	for en2: String in (d0["emit_mats"] as Dictionary).keys():
+		var e0: StandardMaterial3D = (d0["emit_mats"] as Dictionary)[en2] as StandardMaterial3D
+		em_ok = em_ok and e0.emission.is_equal_approx(cyan) and is_equal_approx(e0.emission_energy_multiplier, float(FF_EMITTER_ENERGY[en2]))
+		em_desc.append("%s=%s@%.1f" % [en2, e0.emission.to_html(false), e0.emission_energy_multiplier])
+	var op0: float = float(m0.get_shader_parameter("opacity"))
+	var c0: Color = m0.get_shader_parameter("field_color") as Color
+	var other_op: float = float((d1["field_mat"] as ShaderMaterial).get_shader_parameter("opacity"))
+	_qa_t38_check("set_door_field_opacity_color_emitter", ok_set and is_equal_approx(op0, 0.4) and c0.is_equal_approx(cyan) and em_ok and is_equal_approx(other_op, FF_DEFAULT_OPACITY),
+		"opacity=%.3f color=%s emitters[%s] other_door_opacity=%.3f" % [op0, c0.to_html(), ", ".join(em_desc), other_op])
+	set_door_field("DOOR_RM1B", 7.0, cyan)
+	var op_hi: float = float(m0.get_shader_parameter("opacity"))
+	set_door_field("DOOR_RM1B", -3.0, cyan)
+	var op_lo: float = float(m0.get_shader_parameter("opacity"))
+	_qa_t38_check("set_door_field_clamps_opacity", is_equal_approx(op_hi, 1.0) and is_equal_approx(op_lo, 0.0), "7.0->%.2f -3.0->%.2f" % [op_hi, op_lo])
+	var n_json: int = apply_door_field_overrides(JSON.parse_string('{"ALL": {"opacity": 0.45, "color": [0.45, 0.92, 1.0, 1.0]}, "DOOR_RM1A": {"opacity": 0.7, "color": [1.0, 0.2, 0.6, 1.0]}}'))
+	var op_a: float = float((d1["field_mat"] as ShaderMaterial).get_shader_parameter("opacity"))
+	_qa_t38_check("door_field_json_overrides", n_json == 7 and is_equal_approx(op_a, 0.7) and is_equal_approx(float(m0.get_shader_parameter("opacity")), 0.45),
+		"applied=%d rm1a_opacity=%.2f rm1b_opacity=%.2f json=%s" % [n_json, op_a, float(m0.get_shader_parameter("opacity")), DOOR_FIELD_JSON])
+	apply_door_field_overrides({"ALL": {"opacity": FF_DEFAULT_OPACITY, "color": [FF_DEFAULT_COLOR.r, FF_DEFAULT_COLOR.g, FF_DEFAULT_COLOR.b, 1.0]}})
 
 	if door_img_closed != null and door_img_opened != null:
 		var combo: Image = Image.create(1920, 1080, false, door_img_closed.get_format())
@@ -3994,7 +4015,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	var st_out: Dictionary = get_interior_streaming_status()
 	var props_left: int = 0
 	for pc: Node in _props_container.get_children():
-		if String(pc.name) != "SectorRFIDSlidingDoors" and not pc.is_queued_for_deletion():
+		if String(pc.name) != DOORS_ROOT_NAME and not pc.is_queued_for_deletion():
 			props_left += 1
 	var actors_in: int = 0
 	for ac: Node in _actors_container.get_children():
@@ -4015,7 +4036,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		"z=-6.0 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_in_tree=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, (wb != null and wb.is_inside_tree())])
 
 	var out: PackedStringArray = PackedStringArray()
-	out.append("# Reticle, Rotating Outer Starfield & RFID Sliding Doors QA ([t38u])")
+	out.append("# Reticle, Rotating Outer Starfield & RFID Force-Field Doors QA ([t38u]/[t45u])")
 	out.append("")
 	out.append("display=%s  failures=%d" % [DisplayServer.get_name(), _qa_failures])
 	out.append("")

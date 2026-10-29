@@ -29,3 +29,66 @@ PASS | door_rm1b_walk_through_when_open | door_z=2.85 player_crossed_to_z=6.15
 PASS | door_sector4_exit_blocks_when_closed | door_z=-8.90 player_stopped_at_z=-8.48 open=false
 PASS | door_sector4_exit_opens_on_F_rfid_scan | open=true blend=1.000
 PASS | door_sector4_exit_walk_through_when_open | door_z=-8.90 player_crossed_to_z=-12.20
+
+---
+
+## [t45u] RFID Force-Field Door QA — 2026-10-28 23:09 CDT
+
+glb: godot/assets/models/rfid_forcefield_door.glb (Rook v2 frame, sha1 0e9b6e46702793fdd228a653006e4abc0d28cbbf) | shader: godot/shaders/forcefield_door.gdshader (Rook, unmodified) | default field_color violet (0.72,0.35,1.0,1.0), opacity 0.45
+
+`--qa-reticle-stars-doors`: failures=0, 0 SCRIPT ERRORs. `--validate-only`: Validate OK (interactables=20). `--qa-forcefield-door`: saved 4/4.
+
+```
+PASS | reticle_project_stretch_settings | mode=canvas_items aspect=expand
+PASS | reticle_centered_1920x1080 | vp=(1920.0, 1080.0) reticle_center=(960.0, 540.0) expected=(960.0, 540.0) err=0.0000 px ray_dot=1.00000000
+PASS | reticle_centered_1600x900 | vp=(1920.0, 1080.0) reticle_center=(960.0, 540.0) expected=(960.0, 540.0) err=0.0000 px ray_dot=1.00000000
+PASS | reticle_centered_1280x800 | vp=(1920.0, 1080.0) reticle_center=(960.0, 540.0) expected=(960.0, 540.0) err=0.0000 px ray_dot=1.00000000
+PASS | reticle_centered_1920x1080 | vp=(1920.0, 1080.0) reticle_center=(960.0, 540.0) expected=(960.0, 540.0) err=0.0000 px ray_dot=1.00000000
+PASS | starfield_outer_cylinder_geometry | exists=true R=2200.0 m L=4800.0 m camera_far=6500.0 m
+PASS | starfield_rotates_while_vessel_stationary | star_drot=0.0720 rad (4.13 deg) hab_dpos=0.000000 hab_drot=0.000000
+PASS | starfield_pixels_visible_and_moving | changed_sky_sample_pixels=749
+PASS | rfid_doors_count_6 | door_count=6
+PASS | door_apt201_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_apt201_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_apt201_blocks_when_closed | door_z=2.75 player_stopped_at_z=2.30 open=false
+PASS | door_apt201_F_scan_dissolves_open | during_tween dissolve=0.033 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_apt201_walk_through_when_open | door_z=2.75 player_crossed_to_z=6.66
+PASS | door_apt201_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_alcove2c_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_alcove2c_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_alcove2c_blocks_when_closed | door_z=-3.55 player_stopped_at_z=-3.10 open=false
+PASS | door_alcove2c_F_scan_dissolves_open | during_tween dissolve=0.033 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_alcove2c_walk_through_when_open | door_z=-3.55 player_crossed_to_z=-4.37
+PASS | door_alcove2c_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_apt202_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_apt202_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_apt202_blocks_when_closed | door_z=2.75 player_stopped_at_z=2.29 open=false
+PASS | door_apt202_F_scan_dissolves_open | during_tween dissolve=0.033 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_apt202_walk_through_when_open | door_z=2.75 player_crossed_to_z=6.02
+PASS | door_apt202_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_rm1a_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_rm1a_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_rm1a_blocks_when_closed | door_z=2.85 player_stopped_at_z=2.40 open=false
+PASS | door_rm1a_F_scan_dissolves_open | during_tween dissolve=0.033 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_rm1a_walk_through_when_open | door_z=2.85 player_crossed_to_z=6.15
+PASS | door_rm1a_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_rm1b_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_rm1b_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_rm1b_blocks_when_closed | door_z=2.85 player_stopped_at_z=2.40 open=false
+PASS | door_rm1b_F_scan_dissolves_open | during_tween dissolve=0.034 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_rm1b_walk_through_when_open | door_z=2.85 player_crossed_to_z=6.15
+PASS | door_rm1b_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_sector4_exit_forcefield_shader_material | shader=res://shaders/forcefield_door.gdshader field_color=b859ffff
+PASS | door_sector4_exit_closed_state | dissolve=0.000 collision_on=true light=c47d2b
+PASS | door_sector4_exit_blocks_when_closed | door_z=-8.90 player_stopped_at_z=-8.45 open=false
+PASS | door_sector4_exit_F_scan_dissolves_open | during_tween dissolve=0.034 light_amber=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_sector4_exit_walk_through_when_open | door_z=-8.90 player_crossed_to_z=-12.20
+PASS | door_sector4_exit_F_scan_closes_back | dissolve=0.000 collision_on=true light=c47d2b
+PASS | set_door_field_opacity_color_emitter | opacity=0.400 color=00ffffff emitters[EmitterStrip=00ffff@2.5, EmitterNodes=00ffff@3.0, Conduits=00ffff@1.6] other_door_opacity=0.450
+PASS | set_door_field_clamps_opacity | 7.0->1.00 -3.0->0.00
+PASS | door_field_json_overrides | applied=7 rm1a_opacity=0.70 rm1b_opacity=0.45 json=res://config/door_fields.json
+PASS | interior_loaded_at_start | status={ "interiors_loaded": true, "managed_count": 25, "detached_nodes": 0, "live_pickups": 9, "collected_ids": [], "door_type": "rfid_forcefield" }
+PASS | pickup_collected_before_exit | collected=["Workbench_BCI_Headband"] inv_bci=1
+PASS | interior_despawn_on_promenade_exit | z=-12.0 loaded=false managed=24 props_left=0 interior_actors_left=0 workbench_in_tree=false doors=6
+PASS | interior_respawn_on_vestibule_reentry | z=-6.0 loaded=true live_pickups=8 (before exit 8) collected_bci_respawned=false interior_actors=9 workbench_in_tree=true
+```
