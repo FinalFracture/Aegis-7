@@ -63,13 +63,13 @@ def nodes():
     put(c, "Dock_Pad", "amber", box(1.0, 1.8, 0, .006, 1.3, 2.1))
     put(c, "Charge_Contact", "gunmetal", bev(.14, .02, .38, .52, .02, .005, 1, 1.4, CZ1 - .04)); put(c, "Charge_Contact_Pin", "amber", box(1.37, 1.43, .43, .47, CZ1 - .065, CZ1 - .05))
     put(c, "Rear_Bumper", "slatefab", box(1.05, 1.75, .08, .3, CZ1 - .05, CZ1 - .03))
-    put(c, "Guide_Shoes", "alloy", box(.74, CX0, .1, .3, 1.55, 1.65), box(.74, CX0, 1.1, 1.3, 1.55, 1.65), box(CX1, 2.06, .1, .3, 1.55, 1.65), box(CX1, 2.06, 1.1, 1.3, 1.55, 1.65))
-    put(c, "Drive_Pinion", "gunmetal", box(CX1, 2.06, .5, .72, 1.68, 1.76)); put(c, "Car_Light", "violet", box(1.1, 1.7, CH - .01, CH, 1.3, 1.9))
+    put(c, "Guide_Shoes", "alloy", box(.744, CX0, .1, .3, 1.55, 1.65), box(.744, CX0, 1.1, 1.3, 1.55, 1.65), box(CX1, 2.056, .1, .3, 1.55, 1.65), box(CX1, 2.056, 1.1, 1.3, 1.55, 1.65))
+    put(c, "Drive_Pinion", "gunmetal", box(CX1, 2.056, .5, .72, 1.68, 1.76)); put(c, "Car_Light", "violet", box(1.1, 1.7, CH - .01, CH, 1.3, 1.9))
     for k, x0 in (("W", CX0 + .03), ("E", CX1 - .03 - .1)):
         cl = node(f"Car_Clamp_{k}", (x0 + .05, .24, 1.75), "Lift_Car", Wp=(x0 + .05, .24, 1.75)); cl["T"] = cl["W"] - CARP
         put(cl, "Clamp_Jaw", "gunmetal", box(x0, x0 + .1, .18, .3, 1.65, 1.85)); put(cl, "Clamp_Latch", "amber", box(x0 + .03, x0 + .07, .3, .306, 1.715, 1.785))
     # stand-in (top level; built like the service-wall one, yawed 180 deg so its back port meets the car's charge contact)
-    sp = node("Sprocket_Standin", SP_DOCK)
+    sp = node("Sprocket_Standin", SP_DOCK - CARP, "Lift_Car", Wp=SP_DOCK)
     R180 = trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0], point=SP_DOCK)
     x0, z0 = SP_DOCK[0], SP_DOCK[2]
     parts = [("Standin_Chassis", "gunmetal", bev(.7, .7, .08, .32, .05, .015, 2, x0, z0)),
@@ -85,79 +85,149 @@ def nodes():
 # ---------------- clips ----------------
 def doors(lv, u, N):  # u: 0 closed .. 1 open
     return {f"Door_{lv}_{k}": (N[f"Door_{lv}_{k}"]["T"] + [DOPEN[k] * u, 0, 0], QI, np.ones(3)) for k in DOPEN}
-def car(y, N, clamp_u, sp_on=True, spz=None):
+SP_LOC = SP_DOCK - CARP; EXIT_Z = -.1      # stand-in is a child of Lift_Car (local z); exits to world Z -0.1 on the landing
+def car(y, N, clamp_u, spz_world=None):
     o = {"Lift_Car": (CARP + [0, y, 0], QI, np.ones(3))}
-    for k, s in (("W", 1), ("E", -1)): o[f"Car_Clamp_{k}"] = (N[f"Car_Clamp_{k}"]["T"] + [s * CLAMP_IN * clamp_u, 0, 0], QI, np.ones(3))
-    o["Sprocket_Standin"] = (np.array([SP_DOCK[0], y, SP_DOCK[2] if spz is None else spz]), QI, np.ones(3)); return o
-def clip_call(t, N): o = doors("L1", ss(t, .3, 1.7), N); o.update(car(0, N, 0)); o.update(doors("L2", 0, N)); return o
-def clip_board(t, N):
-    o = doors("L1", 1, N); z = SP_OUT[2] + (SP_DOCK[2] - SP_OUT[2]) * ss(t, .2, 2.6); o.update(car(0, N, ss(t, 2.7, 3.3), spz=z)); return o
-def clip_up(t, N):
-    o = doors("L1", 1 - ss(t, 0, 1.2), N); o.update(doors("L2", ss(t, 5.1, 6.5), N)); o.update(car(L2 * ss(t, 1.8, 5.0), N, ss(t, 1.2, 1.7))); return o
-def clip_down(t, N):
-    o = doors("L2", 1 - ss(t, 0, 1.2), N); o.update(doors("L1", ss(t, 5.1, 6.5), N)); o.update(car(L2 * (1 - ss(t, 1.8, 5.0)), N, 1 - ss(t, 4.6, 5.0))); return o
-def clip_idle(t, N): o = doors("L1", 0, N); o.update(doors("L2", 0, N)); o.update(car(0, N, 0)); return o
-CLIPS = [("call_open_L1", clip_call, 2.0), ("sprocket_board", clip_board, 3.5), ("ride_up", clip_up, 6.5), ("ride_down", clip_down, 6.5), ("idle", clip_idle, 2.0)]
+    for k, s_ in (("W", 1), ("E", -1)): o[f"Car_Clamp_{k}"] = (N[f"Car_Clamp_{k}"]["T"] + [s_ * CLAMP_IN * clamp_u, 0, 0], QI, np.ones(3))
+    z = SP_DOCK[2] if spz_world is None else spz_world
+    o["Sprocket_Standin"] = (np.array([0, 0, z - CARP[2]]), QI, np.ones(3)); return o
+def lerp(a, b, u): return a + (b - a) * u
+def st(lv1, lv2, y, cl, spz=None): o = doors("L1", lv1, N_); o.update(doors("L2", lv2, N_)); o.update(car(y, N_, cl, spz)); return o
+# clip timings (s)
+def clip_call(t, N):   return st(ss(t, .3, 1.7), 0, 0, 0)
+def clip_board(t, N):  return st(1, 0, 0, ss(t, 2.7, 3.3), lerp(EXIT_Z, SP_DOCK[2], ss(t, .2, 2.6)))
+def clip_up(t, N):     return st(1 - ss(t, 0, 1.5), 0, L2 * ss(t, 2.6, 6.0), ss(t, 1.7, 2.3))
+def clip_arr2(t, N):   return st(0, ss(t, .2, 1.8), L2, 1)
+def clip_exit2(t, N):  return st(0, 1, L2, 1 - ss(t, 0, .6), lerp(SP_DOCK[2], EXIT_Z, ss(t, .8, 3.2)))
+def clip_down(t, N):   return st(0, 1 - ss(t, 0, 1.5), L2 * (1 - ss(t, 2.6, 6.0)), ss(t, 1.7, 2.3))
+def clip_arr1(t, N):   return st(ss(t, .2, 1.8), 0, 0, 1)
+def clip_exit1(t, N):  return st(1, 0, 0, 1 - ss(t, 0, .6), lerp(SP_DOCK[2], EXIT_Z, ss(t, .8, 3.2)))
+def clip_idle(t, N):   return st(0, 0, 0, 0)
+CLIPS = [("call_open_L1", clip_call, 2.0), ("sprocket_board", clip_board, 3.5), ("ride_up", clip_up, 6.5), ("arrive_open_L2", clip_arr2, 2.0),
+         ("sprocket_exit_L2", clip_exit2, 3.5), ("ride_down", clip_down, 6.5), ("arrive_open_L1", clip_arr1, 2.0), ("sprocket_exit_L1", clip_exit1, 3.5), ("idle", clip_idle, 2.0)]
+N_ = None
 
 def exporter():
     src = inspect.getsource(sw.export_anim_glb).replace("if np.allclose(vals, vals[0]) and np.allclose(vals[0], R0[n][k]): continue",
         "if np.allclose(vals, vals[0]) and np.allclose(vals[0], R0[n][k]) and not (cname == 'idle' and k == 0 and n == 'Lift_Car'): continue")
     ns = dict(sw.__dict__); ns["CLIPS"] = CLIPS; exec(src, ns); return ns["export_anim_glb"]
 
-def bounds(G, pre):
-    V = [v for k, (mk, v, n, f) in G.items() if k.startswith(pre)]; V = np.vstack(V); return V.min(0), V.max(0)
-def checks(N):
-    worst = dict(car_vs_shaft=9.0, standin_vs_car=9.0, car_vs_riser=9.0); door_ok = True
-    for cname, fn, dur in CLIPS:
-        for t in np.arange(0, dur + 1e-6, 1 / 15):
-            P = rest(N); P.update(fn(t, N)); G = world_geo(N, P)
-            lo, hi = bounds({k: v for k, v in G.items() if k.startswith(("Lift_Car", "Car_Clamp"))}, "")
-            worst["car_vs_shaft"] = min(worst["car_vs_shaft"], lo[0] - (SX0 + WT), (SX1 - WT) - hi[0], lo[2] - (.875), (SZ1 - WT) - hi[2], lo[1] - (PIT + .03), (CAP - .1) - hi[1])
-            worst["car_vs_riser"] = min(worst["car_vs_riser"], 2.4 - hi[2])
-            slo, shi = bounds(G, "Sprocket_Standin")
-            if slo[2] > CZ0:   # fully inside the car
-                cy = P["Lift_Car"][0][1]; clo, chi = bounds(G, "Sprocket_Standin/Standin_Chassis")
-                worst["standin_vs_car"] = min(worst["standin_vs_car"], clo[0] - (CX0 + .03 + .1 + CLAMP_IN * P["Car_Clamp_W"][0][0].__sub__(N["Car_Clamp_W"]["T"][0]) / CLAMP_IN), (CX1 - .03 - .1 - (N["Car_Clamp_E"]["T"][0] - P["Car_Clamp_E"][0][0])) - chi[0], (CZ1 - .065) - shi[2], (cy + CH) - shi[1])
-            for lv in ("L1", "L2"):
-                dl, dh = bounds(G, f"Door_{lv}_"); door_ok &= dl[0] >= SX0 + .02 - 1e-6 and dh[0] <= SX1 - .02 + 1e-6 and dl[2] >= .825 - 1e-6 and dh[2] <= .875 + 1e-6
-    worst = {k: round(float(v), 3) for k, v in worst.items()}; worst["doors_inside_wall_cavity"] = bool(door_ok); return worst
+# ---------- glb-driven sampler + real clash check ----------
+def glb_poses(gp):
+    """Reload the glb; return {clip: (times, {node: {path: values}})} sampled straight from the accessors."""
+    import pygltflib
+    g = pygltflib.GLTF2().load(gp); blob = g.binary_blob()
+    def acc(i):
+        a = g.accessors[i]; bv = g.bufferViews[a.bufferView]; n = {"SCALAR": 1, "VEC3": 3, "VEC4": 4}[a.type]
+        return np.frombuffer(blob, np.float32, a.count * n, bv.byteOffset + (a.byteOffset or 0)).reshape(a.count, n)
+    out = {}
+    for an in g.animations:
+        ch = {}; ts = None
+        for c in an.channels:
+            smp = an.samplers[c.sampler]; ts = acc(smp.input)[:, 0]; ch.setdefault(g.nodes[c.target.node].name, {})[c.target.path] = acc(smp.output)
+        out[an.name] = (ts, ch)
+    return g, out
+def pose_from_glb(N, ch, i):
+    P = rest(N)
+    for n, d in ch.items():
+        T, R, S = P[n]
+        if "translation" in d: T = d["translation"][i].astype(float)
+        if "rotation" in d: R = d["rotation"][i].astype(float)
+        if "scale" in d: S = d["scale"][i].astype(float)
+        P[n] = (T, R, S)
+    return P
+def comps(G, pred):
+    out = []
+    for k, (mk, V, Nn, F) in G.items():
+        if not pred(k): continue
+        m = trimesh.Trimesh(V, F, process=True)
+        for c in m.split(only_watertight=False): out.append((k, c.bounds[0], c.bounds[1]))
+    return out
+def gap(a, b):   # AABB separation (negative = penetration depth along the least-overlap axis)
+    d = np.maximum(a[1] - b[2], b[1] - a[2]); return float(d.max())
+CAR_P = lambda k: k.startswith(("Lift_Car/", "Car_Clamp_", "Sprocket_Standin/"))
+def clash_table(N, gp):
+    g, clips = glb_poses(gp); best = {}; frames = 0
+    stat0 = None
+    for cname, (ts, ch) in clips.items():
+        for i in range(len(ts)):
+            P = pose_from_glb(N, ch, i); G = world_geo(N, P); frames += 1
+            if stat0 is None: stat0 = comps(G, lambda k: k.startswith("Shaft_Static/"))
+            car = comps(G, CAR_P); drs = comps(G, lambda k: k.startswith("Door_"))
+            cr = [c for c in car if not c[0].startswith("Sprocket_Standin/")]; sp = [c for c in car if c[0].startswith("Sprocket_Standin/")]
+            def upd(key, A, B, allow=()):
+                m = min(gap(a, b) for a in A for b in B) if A and B else 9
+                if key not in best or m < best[key][0]: best[key] = (round(m, 4), cname, round(float(ts[i]), 3))
+            for part in sorted({c[0] for c in stat0}):
+                upd(("car+clamps", part.split("/")[1]), cr, [c for c in stat0 if c[0] == part])
+                upd(("standin", part.split("/")[1]), [c for c in sp], [c for c in stat0 if c[0] == part])
+            for dn in sorted({c[0].split("/")[0] for c in drs}):
+                upd(("car+clamps", dn), cr, [c for c in drs if c[0].startswith(dn)])
+                ins = sp[0][1][2] > CZ0 - .01 if sp else True
+                upd(("standin", dn), sp, [c for c in drs if c[0].startswith(dn)])
+            # stand-in vs car (charge pin contact allowed at 0.000)
+            upd(("standin", "car body"), sp, [c for c in cr if "Charge_Contact_Pin" not in c[0] and "Dock_Pad" not in c[0]])
+            upd(("standin", "charge pin (contact)"), sp, [c for c in cr if "Charge_Contact_Pin" in c[0]])
+    return frames, best, [a.name for a in g.animations]
 
 def main():
+    global N_
     import pygltflib
     from PIL import Image, ImageDraw, ImageFont
-    os.makedirs(OUT, exist_ok=True); N = nodes(); gp = os.path.join(dc.ROOT, "godot/assets/models/sprocket_lift.glb")
+    os.makedirs(OUT, exist_ok=True); N = nodes(); N_ = N; gp = os.path.join(dc.ROOT, "godot/assets/models/sprocket_lift.glb")
     tris = exporter()(N, gp)
-    st = tris["Shaft_Static"]; sp = tris["Sprocket_Standin"]; mv = sum(tris.values()) - st - sp
-    print("tris static", st, "moving", mv, "standin", sp, "total", sum(tris.values()))
+    stt = tris["Shaft_Static"]; spt = tris["Sprocket_Standin"]; mv = sum(tris.values()) - stt - spt
+    print("tris static", stt, "moving", mv, "standin", spt, "total", sum(tris.values()))
     bad = [f"{n}/{p}" for n, nd in N.items() for p, (mk, m) in nd["parts"].items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
-    print("non-watertight", bad); print("checks", checks(N))
-    g = pygltflib.GLTF2().load(gp); print("nodes", [n.name for n in g.nodes])
+    print("non-watertight", bad)
+    g = pygltflib.GLTF2().load(gp)
+    print("nodes", [(n.name, [g.nodes[c].name for c in n.children]) for n in g.nodes])
     print("anims", [(a.name, len(a.channels), round(float(g.accessors[a.samplers[0].input].max[0]), 2)) for a in g.animations])
+    frames, best, names = clash_table(N, gp); print("frames sampled", frames)
+    fails = {k: v for k, v in best.items() if v[0] < -1e-4 and not (k[1].startswith("Standin_Back") or "pin" in k[1])}
+    for k, v in sorted(best.items(), key=lambda kv: kv[1][0]): print("CLR", k, v)
+    print("FAILS", fails)
+    import json; json.dump({f"{a} | {b}": v for (a, b), v in best.items()}, open("/tmp/lift_clearance.json", "w"), indent=0)
+    # ----- renders -----
     saved = tonemap(); top, front, side, iso = views(); a = np.pi; Ry = np.array([[np.cos(a), 0, np.sin(a)], [0, 1, 0], [-np.sin(a), 0, np.cos(a)]])
     def rv(G, R, s, sh=True):
         im = render_view(G, R, size=s, shadow=sh); ns = render_view(G, R, size=s, shadow=False) if sh else im
         fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
     G0 = world_geo(N, rest(N), skip=("Sprocket_Standin",))
-    cut = lambda G: {k: v for k, v in G.items() if not k.startswith("Shaft_Static/Shaft_Wall_") or k.endswith("_W") or k.endswith("_N")}
-    ims = [rv(G0, top, 500, False), rv(G0, front @ Ry, 650), rv(G0, side, 650), rv(G0, iso @ Ry, 700), rv(cut(world_geo(N, rest(N))), iso @ Ry, 700)]
+    FRONT = ("Shaft_Static/Shaft_Wall_S", "Shaft_Static/Shaft_Wall_E", "Shaft_Static/Door_Jambs", "Shaft_Static/Call_Panel", "Shaft_Static/Status_", "Shaft_Static/Sills", "Shaft_Static/Fire_Separation")
+    def cut(G): return {k: v for k, v in G.items() if not k.startswith(FRONT)}
+    def ghost(G):   # doors as tinted glass so they read but never hide the car
+        return {k: (("glass",) + v[1:]) if k.startswith("Door_") else v for k, v in G.items()}
+    from bath_pod_generator import render_glass
+    ims = [rv(G0, top, 500, False), rv(G0, front @ Ry, 650), rv(G0, side, 650), rv(G0, iso @ Ry, 700), crop(render_glass(ghost(cut(world_geo(N, rest(N)))), iso @ Ry, 700, True))]
     import matplotlib.pyplot as plt
     bg = "#F4F2EC"; fig, axs = plt.subplots(1, 5, figsize=(20, 8), facecolor=bg)
-    for ax, im, t in zip(axs, ims, ("Top", "Front (corridor face)", "Side", "Iso", "Iso cutaway (S + E walls hidden), Sprocket docked")):
+    for ax, im, t in zip(axs, ims, ("Top", "Front (corridor face)", "Side", "Iso", "Iso cutaway (front + east walls hidden, doors ghosted), Sprocket docked")):
         ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=10, color="#555")
     fig.suptitle("Final  #51 Sprocket bot lift (v1.1 option 1, SW stack)", fontsize=12, color="#444"); plt.tight_layout(rect=(0, 0, 1, .94))
     fig.savefig(os.path.join(OUT, "final_lift_sheet.png"), dpi=90, facecolor=bg); plt.close(fig)
-    fr = [("call_open_L1", 0), ("call_open_L1", 2.0), ("sprocket_board", 1.2), ("sprocket_board", 3.5), ("ride_up", 1.0), ("ride_up", 2.6),
-          ("ride_up", 4.0), ("ride_up", 6.5), ("ride_down", 1.2), ("ride_down", 3.4), ("ride_down", 6.5), ("idle", 0)]
-    fn = {c: f for c, f, d in CLIPS}; font = ImageFont.truetype("DejaVuSans.ttf", 16); tiles = []
-    Rv = iso @ Ry
-    for c, t in fr:
-        P = rest(N); P.update(fn[c](t, N)); G = cut(world_geo(N, P))
-        G["_a"] = ("gunmetal", np.array([[SX0, PIT, SZ0 - .6], [SX1, CAP, SZ1], [(SX0 + SX1) / 2, 3, 1.5]]), np.array([[0, 0, 1.]] * 3), np.array([[0, 1, 2]]))
-        im = render_view(G, Rv, size=440, shadow=True); tiles.append((f"{c} t={t:.1f}s", Image.fromarray((np.clip(im, 0, 1) * 255).astype(np.uint8))))
+    _, clips = glb_poses(gp)
+    fr = [("call_open_L1", 0), ("call_open_L1", 2.0), ("sprocket_board", 1.4), ("sprocket_board", 3.5), ("ride_up", .8), ("ride_up", 1.6), ("ride_up", 2.4),
+          ("ride_up", 4.3), ("ride_up", 6.5), ("arrive_open_L2", 2.0), ("sprocket_exit_L2", 2.0), ("sprocket_exit_L2", 3.5),
+          ("ride_down", 4.3), ("arrive_open_L1", 2.0), ("sprocket_exit_L1", 3.5), ("idle", 0)]
+    def anchor(G):  # zero-area (collinear) framing triangle: fixes the camera across frames, draws nothing
+        p0, p1 = np.array([SX0 - .1, PIT, EXIT_Z - .45]), np.array([SX1 + .1, CAP, SZ1])
+        G["_anchor"] = ("gunmetal", np.array([p0, p1, (p0 + p1) / 2]), np.array([[0, 0, 1.]] * 3), np.array([[0, 1, 2]])); return G
+    def frame(c, t, big):
+        ts, ch = clips[c]; i = int(np.argmin(np.abs(ts - t))); P = pose_from_glb(N, ch, i); G = world_geo(N, P)
+        if big: return render_glass(anchor(ghost(cut(G))), iso @ Ry, 900, True)
+        return render_view(anchor(G), iso @ Ry, size=320, shadow=True)
+    for big, name, cols, fs in ((False, "final_lift_sequence", 8, 13), (True, "final_lift_cutaway_sequence", 4, 20)):
+        font = ImageFont.truetype("DejaVuSans.ttf", fs); tiles = []
+        for c, t in fr:
+            im = frame(c, t, big); tiles.append((f"{c} t={t:.1f}s", Image.fromarray((np.clip(im, 0, 1) * 255).astype(np.uint8))))
+        tw, th = tiles[0][1].size; rows = (len(tiles) + cols - 1) // cols; S = Image.new("RGB", (cols * tw, rows * (th + fs + 12)), (244, 242, 236)); d = ImageDraw.Draw(S)
+        for k, (lab, im) in enumerate(tiles):
+            x, y = (k % cols) * tw, (k // cols) * (th + fs + 12); S.paste(im, (x, y + fs + 12)); d.text((x + 8, y + 4), f"{k + 1}. {lab}", fill=(60, 60, 60), font=font)
+        S.save(os.path.join(OUT, name + ".png"))
+        gif = []
+        for lab, im in tiles:
+            im = im.copy(); ImageDraw.Draw(im).text((8, 6), lab, fill=(60, 60, 60), font=font); gif.append(im)
+        gif[0].save(os.path.join(OUT, name + ".gif"), save_all=True, append_images=gif[1:], duration=700, loop=0)
     FMAT.update(saved)
-    tw, th = tiles[0][1].size; cols = 6; S = Image.new("RGB", (cols * tw, 2 * (th + 26)), (244, 242, 236)); d = ImageDraw.Draw(S)
-    for k, (lab, im) in enumerate(tiles):
-        x, y = (k % cols) * tw, (k // cols) * (th + 26); S.paste(im, (x, y + 26)); d.text((x + 8, y + 4), f"{k + 1}. {lab}", fill=(70, 70, 70), font=font)
-    S.save(os.path.join(OUT, "final_lift_sequence.png"))
-    tiles[0][1].save(os.path.join(OUT, "final_lift_sequence.gif"), save_all=True, append_images=[im for _, im in tiles[1:]], duration=600, loop=0)
 if __name__ == "__main__": main()
