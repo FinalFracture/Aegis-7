@@ -186,5 +186,57 @@ def main():
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", y=-0.1, fontsize=11, color="#555")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
 
+# ---------- final: iter_02 open alloy bays hung on iter_03 wall rails ----------
+FBAYS = [("H", .9), ("S", .6), ("H", .9)]; FEP = .15     # 2.7 = 0.15 + 0.9 + 0.6 + 0.9 + 0.15
+
+def final_openbays():
+    p = Pod("Open Bays on Wall Rails (final)"); WZ = ZB + .02; Y0, YT = .15, 2.06; zf = ZF - .02
+    p.add("Wall_Plate", "gunmetal", bev(W, .02, .1, H, .006, .004, 1, 0, ZB + .01))
+    p.add("Wall_Rail", "alloy", *[blk(-W / 2 + .02, W / 2 - .02, y, y + .04, WZ, WZ + .03, .01, 1) for y in (.3, 2.06)])
+    p.add("Accent_Strip", "violet", box(-W / 2 + .05, W / 2 - .05, 2.07, 2.085, WZ + .03, WZ + .034))
+    x = -W / 2 + FEP; joints = [x]
+    for t, w in FBAYS: x += w; joints.append(x)
+    for x in joints:
+        p.add("Uprights", "alloy", bev(.03, D - .04, Y0, YT, .006, .004, 1, x, WZ + (D - .04) / 2))
+        p.add("Brackets", "gunmetal", box(x - .04, x + .04, .25, 2.04, WZ, WZ + .015))
+        p.add("Bracket_Bolts", "alloy", *[box(x - .012, x + .012, y - .012, y + .012, WZ + .015, WZ + .024) for y in (.6, 1.6)])
+        p.add("Hook_Clamps", "gunmetal", *[box(x - .05, x + .05, y - .02, y + .04, WZ + .03, WZ + .06) for y in (.3, 2.06)])
+    for s in (-1, 1):   # end panels: gunmetal cheeks with alloy edge, same hang height
+        cx = s * (W / 2 - FEP / 2)
+        p.add("End_Panels", "gunmetal", bev(FEP - .04, D - .04, Y0, H, .02, .008, 2, cx, WZ + (D - .04) / 2))
+    x = -W / 2 + FEP
+    for i, (t, w) in enumerate(FBAYS):
+        cx = x + w / 2; x += w; a, b = cx - w / 2 + .015, cx + w / 2 - .015
+        ys = [Y0, YT - .02] if t == "H" else list(np.linspace(Y0, YT - .02, 5))
+        p.add(f"Shelves_{i + 1}", "gunmetal", *[bev(b - a, D - .06, y, y + .02, .006, .004, 1, cx, WZ + (D - .06) / 2 + .01) for y in ys])
+        if t == "H":
+            p.add(f"Hanging_Bar_{i + 1}", "alloy", blk(a, b, 1.82, 1.845, -.012, .012, .012, 2))
+            p.add(f"Retainer_Bar_{i + 1}", "gunmetal", blk(a, b, 1.9, 1.915, -.02, .02, .005, 1))
+            for k, xx in enumerate(np.linspace(a + .14, b - .14, 4)):
+                p.add("Garments", "warmgrey", bev(.06, .38, 1.0 if k % 2 else .85, 1.8, .03, .01, 2, xx, 0))
+        else:
+            for y0, y1 in zip(ys[:-1], ys[1:]):          # one strap per compartment, same height
+                sy = y0 + .17
+                p.add(f"Straps_{i + 1}", "slatefab", box(a, b, sy, sy + .035, zf - .012, zf))
+                p.add("Buckle_Latches", "amber", box(b - .06, b - .02, sy + .008, sy + .027, zf, zf + .008))
+    return p
+
+def final_main():
+    p = final_openbays(); gp = os.path.join(dc.ROOT, "godot/assets/models/wardrobe_openbays_rails.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "non-watertight:", bad)
+    saved = tonemap(); top, front, side, iso = views()
+    def rv(R, s, sh):
+        im = render_view(geo, R, size=s, shadow=sh); ns = render_view(geo, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
+    ims = [rv(top, 700, False), rv(front, 700, True), rv(side, 600, True), rv(iso, 760, True)]; FMAT.update(saved)
+    bg = "#F4F2EC"; fig = plt.figure(figsize=(14, 10), facecolor=bg); gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, .45], height_ratios=[.4, 1])
+    for ax, im, t in ((fig.add_subplot(gs[0, :2]), ims[0], "Top"), (fig.add_subplot(gs[:, 2]), ims[2], "Side"),
+                      (fig.add_subplot(gs[1, 0]), ims[1], "Front"), (fig.add_subplot(gs[1, 1]), ims[3], "Iso")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, y=-0.08, fontsize=11, color="#555")
+    fig.suptitle("Final  Open Bays on Wall Rails", fontsize=12, color="#444"); plt.tight_layout()
+    fig.savefig(os.path.join(OUT, "final_openbays_rails_sheet.png"), dpi=100, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
