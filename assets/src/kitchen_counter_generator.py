@@ -198,5 +198,99 @@ def main():
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
     for r in rows: print(*r)
 
+# ---------- final: polished Galley Rail + Wall Pods (iter_03) ----------
+def bev(w, d, y0, y1, r, e=0.012, n=3, cx=0, cz=0):
+    """Rounded-plan slab with chamfer-bevelled top and bottom edges (closed loft)."""
+    sx, sz = 1 - 2 * e / w, 1 - 2 * e / d
+    return xf(loft(rrect(w, d, r, min(n, 2)), [(y0, sx, sz), (y0 + e, 1, 1), (y1 - e, 1, 1), (y1, sx, sz)]), t=(cx, 0, cz))
+
+def box(x0, x1, y0, y1, z0, z1):   # 16-tri closed box for small hardware
+    return xf(loft(np.array([(x1 - x0) / 2, (z1 - z0) / 2]) * np.array([(1, 1), (-1, 1), (-1, -1), (1, -1)]), [(y0, 1, 1), (y1, 1, 1)]), t=((x0 + x1) / 2, 0, (z0 + z1) / 2))
+
+def ffronts(p, cx, kind, y0, y1, z, gap=.008):
+    x0, x1 = cx - (MW - .05) / 2 + gap, cx + (MW - .05) / 2 - gap
+    n = {"Cold": 1, "Store": 3, "Sink": 1, "Hob": 2}[kind]; hs = np.linspace(y0, y1, n + 1)
+    for a, b in zip(hs[:-1], hs[1:]):
+        p.add(f"Module_{kind}", "white", blk(x0, x1, a + gap, b - gap, z, z + .02, .012, 1))
+        hx = (x1 - .05, x1 - .03, a + .1, b - .12) if kind == "Cold" else (cx - .17, cx + .17, b - .055, b - .04)
+        p.add("Handles", "alloy", box(hx[0], hx[1], hx[2], hx[3], z + .02, z + .038))
+        p.add("Latch_Lights", "green" if kind == "Cold" else "amber", box(cx + .2, cx + .25, b - .05, b - .038, z + .02, z + .03))
+
+def bolt(x, y, z):   # bolt head on the strongback face (+Z)
+    return box(x - .014, x + .014, y - .014, y + .014, z, z + .012)
+
+def final_wallpods():
+    FMAT["white"] = _PBR(name="WhiteComposite", baseColorFactor=(0.92, 0.93, 0.94, 1), metallicFactor=0.0, roughnessFactor=0.35)
+    FMAT["lamp"] = _PBR(name="HoodLight", baseColorFactor=(1, .95, .85, 1), metallicFactor=0, roughnessFactor=.4, emissiveFactor=(1, .92, .78))
+    p = Pod("Galley Rail + Wall Pods (final)"); WZ = ZB + .025; TY = TOP - .04
+    # strongback on the wall plane + rails
+    p.add("Strongback", "gunmetal", bev(L, .025, .22, 2.0, .008, .006, 1, 0, ZB + .0125))
+    p.add("Wall_Rail", "alloy", *[blk(-L / 2 + .02, L / 2 - .02, y, y + .045, WZ, WZ + .03, .012, 1) for y in (.62, 1.86)])
+    p.add("Utensil_Rail", "alloy", bev(2.0, .02, TOP + .3, TOP + .32, .009, .004, 2, -.2, WZ + .01))
+    p.add("Rail_Clips", "gunmetal", *[box(x - .01, x + .01, TOP + .19, TOP + .33, WZ + .015, WZ + .03) for x in np.linspace(-1.0, .6, 5)])
+    # cleats every 0.6 m at module joints, bolted
+    joints = [-L / 2 + EC + MW * k for k in range(6)]
+    for x in joints:
+        p.add("Cleats", "gunmetal", box(x - .011, x + .011, .28, TY, WZ, ZB + DEP - .07),
+              box(x - .035, x + .035, .28, TY, WZ, WZ + .02), box(x - .025, x + .025, 1.38, 1.98, WZ, WZ + .02))
+        p.add("Bolt_Heads", "alloy", *[bolt(x + d, y, WZ + .02) for y in (.36, 1.46) for d in (0,)])
+    # low pods (hung, no floor contact) + high pods + hood
+    for k, i, cx in slots():
+        y0 = .16 if k == "Cold" else .3
+        p.add("Pods_Low", "white", bev(MW - .05, DEP - .1, y0, TY - .005, .05, .015, 3, cx, WZ + (DEP - .1) / 2))
+        ffronts(p, cx, k, y0 + .02, TY - .02, WZ + DEP - .1)
+        p.add("Hook_Clamps", "gunmetal", *[box(cx + d - .04, cx + d + .04, .6, .7, WZ + .03, WZ + .07) for d in (0,)])
+        if k == "Hob":
+            p.add("Hood", "white", bev(MW - .05, .42, 1.55, 1.98, .05, .015, 3, cx, WZ + .21))
+            p.add("Hood_Vent", "gunmetal", bev(MW - .14, .03, 1.545, 1.552, .008, .002, 1, cx, WZ + .37))
+            p.add("Hood_Light", "lamp", bev(MW - .14, .02, 1.545, 1.551, .006, .002, 1, cx, WZ + .3))
+            p.add("Accent_Band", "violet", bev(MW - .06, .006, 1.6, 1.61, .002, .001, 1, cx, WZ + .423))
+        else:
+            p.add("Pods_High", "white", bev(MW - .05, .33, 1.42, 1.98, .05, .015, 3, cx, WZ + .165))
+            p.add("Latch_Lights", "amber", box(cx + .17, cx + .23, 1.465, 1.477, WZ + .33, WZ + .34))
+        p.add("Hook_Clamps", "gunmetal", *[box(cx + d - .04, cx + d + .04, 1.84, 1.94, WZ + .03, WZ + .07) for d in (0,)])
+    for s in (-1, 1):   # end caps: hung white returns
+        cx = s * (L / 2 - EC / 2); p.add("EndCap", "white", bev(EC - .03, DEP - .1, .3, TY - .005, .04, .012, 3, cx, WZ + (DEP - .1) / 2))
+    # worktop with a real sink opening (4 slabs) + lips
+    sx0, sx1, sz0, sz1 = -.22, .22, -.2, .16
+    for a, b, c, d in ((-L / 2, sx0, ZB, ZF), (sx1, L / 2, ZB, ZF), (sx0, sx1, ZB, sz0), (sx0, sx1, sz1, ZF)):
+        p.add("Worktop", "slate", blk(a, b, TY, TOP, c, d, .004, 1))
+    p.add("Worktop_Edge", "slate", blk(-L / 2, L / 2, TY - .005, TOP, ZF - .03, ZF, .012, 1))
+    p.add("Lip", "gunmetal", box(-L / 2, L / 2, TOP, TOP + .08, ZB, ZB + .025), box(-L / 2, -L / 2 + .02, TOP, TOP + .03, ZB + .025, ZF),
+          box(L / 2 - .02, L / 2, TOP, TOP + .03, ZB + .025, ZF), box(-L / 2 + .02, L / 2 - .02, TOP, TOP + .012, ZF - .018, ZF))
+    ring = rrect(sx1 - sx0, sz1 - sz0, .04, 3); ring = np.vstack([ring, ring[:1]])
+    p.add("Sink_Basin", "alloy", xf(thick_path(ring, .012, TOP - .2, TOP + .004), t=(0, 0, (sz0 + sz1) / 2)),
+          blk(sx0 + .005, sx1 - .005, TOP - .21, TOP - .19, sz0 + .005, sz1 - .005, .04, 3))
+    p.add("Sink_Drain", "gunmetal", cyl(-.1, -.02, .025, TOP - .19, TOP - .186, 10))      # spinward (-X)
+    p.add("Sink_Tap", "alloy", cyl(0, -.24, .015, TOP, TOP + .28, 10), blk(-.012, .012, TOP + .26, TOP + .285, -.24, -.1, .008, 1))
+    cx, y = .6, TOP   # hob: slate-glass panel, violet induction rings, alloy pan fences (box posts), amber status
+    p.add("Hob_Surface", "hobglass", blk(cx - .27, cx + .27, y, y + .008, -.25, .22, .02, 1))
+    for dx, dz, R in ((-.12, -.08, .09), (.13, .06, .075)):
+        p.add("Hob_InductionRings", "violet", xf(torus_ring(R, .004, 12, 3), t=(cx + dx, y + .009, dz)))
+        for a in np.linspace(0, 2 * np.pi, 4, endpoint=False) + .4:
+            px, pz = cx + dx + (R + .03) * np.cos(a), dz + (R + .03) * np.sin(a)
+            p.add("Hob_PanFence", "alloy", box(px - .006, px + .006, y, y + .03, pz - .006, pz + .006))
+    p.add("Hob_Status", "amber", box(cx + .18, cx + .24, y + .008, y + .011, .17, .2))
+    recycler(p, 0, .3, .5, WZ, WZ + .12)
+    return p
+
+def final_main():
+    p = final_wallpods(); gp = os.path.join(dc.ROOT, "godot/assets/models/kitchen_counter_wallpods.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "non-watertight:", bad)
+    saved = tonemap(); top, front, side, iso = views(); bgc = np.array([0.955, 0.948, 0.925])
+    def rv(R, s, sh):
+        im = render_view(geo, R, size=s, shadow=sh); ns = render_view(geo, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03            # object mask (no contact shadow)
+        im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)       # sheet-only exposure lift
+    ims = [rv(top, 900, False), rv(front, 900, True), rv(side, 520, True), rv(iso, 820, True)]; FMAT.update(saved)
+    bg = "#F4F2EC"; fig = plt.figure(figsize=(14, 9), facecolor=bg); gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 0.55], height_ratios=[1, 1.25])
+    for ax, im, t in ((fig.add_subplot(gs[0, :2]), ims[0], "Top"), (fig.add_subplot(gs[0, 2]), ims[2], "Side"),
+                      (fig.add_subplot(gs[1, 0]), ims[1], "Front"), (fig.add_subplot(gs[1, 1:]), ims[3], "Iso")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, y=-0.1, fontsize=11, color="#555")
+    fig.suptitle("Final  Galley Rail + Wall Pods", fontsize=12, color="#444"); plt.tight_layout()
+    fig.savefig(os.path.join(OUT, "final_wallpods_sheet.png"), dpi=100, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
