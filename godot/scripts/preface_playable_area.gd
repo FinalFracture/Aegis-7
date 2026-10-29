@@ -139,8 +139,8 @@ const DOOR_SCAN_RANGE := 4.8
 const DOOR_DISSOLVE_TIME := 0.8
 
 # [t39u]-[t40u] Dynamic interior model despawn/respawn streaming
-const INTERIOR_DESPAWN_Z := -9.40
-const INTERIOR_RESPAWN_Z := -9.15
+const INTERIOR_DESPAWN_Z := -14.0   # [QA-FF-02] despawn farther out than respawn (hysteresis band 1 m)
+const INTERIOR_RESPAWN_Z := -13.0
 
 # [t45u] RFID force-field door (Rook's model + shader; swap paths here)
 const FORCEFIELD_DOOR_GLB := "res://assets/models/rfid_forcefield_door.glb"
@@ -155,8 +155,13 @@ const FF_EMITTER_ENERGY := {"EmitterStrip": 2.5, "EmitterNodes": 3.0, "Conduits"
 const FF_DEFAULT_OPACITY := 0.45
 const FF_LIGHT_GREEN := Color("#3FAF6A")
 # Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
-const DOOR_FIELD_JSON := "res://config/door_fields.json"
+# [QA-FF-04] editor/dev run -> res://config/door_fields.json (godot/config/, gitignored);
+#            exported build -> user://door_fields.json (res:// is read-only inside the PCK).
+const DOOR_FIELD_JSON_DEV := "res://config/door_fields.json"
+const DOOR_FIELD_JSON_USER := "user://door_fields.json"
 const DOOR_FIELD_POLL_SEC := 0.5
+const FF_OCCUPANCY_DEPTH := 0.60
+const FF_CLOSE_RETRY_SEC := 0.5
 
 var _arch_container: Node3D
 var _props_container: Node3D
@@ -1889,6 +1894,9 @@ func _build_hud() -> void:
 	reticle_box.size = Vector2(24, 24)
 	reticle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(reticle_box)
+	reticle_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
+	reticle_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	reticle_box.grow_vertical = Control.GROW_DIRECTION_BOTH
 	_reticle_box = reticle_box
 	_sync_reticle_to_viewport_center()
 	var vp: Viewport = get_viewport()
@@ -3102,10 +3110,14 @@ func _sync_reticle_to_viewport_center() -> void:
 	var vp_sz: Vector2 = vp.get_visible_rect().size
 	if _reticle_box == null or not is_instance_valid(_reticle_box):
 		return
-	var c: Vector2 = vp_sz * 0.5
-	_reticle_center_px = c
-	_reticle_box.position = c - Vector2(12.0, 12.0)
-	_reticle_box.size = Vector2(24.0, 24.0)
+	# [QA-FF-05] anchor-centred (PRESET_CENTER, grow both) so the layout engine keeps it centred in any
+	# parent rect (Windows embedded Game view, live resize); no manual pixel positioning.
+	_reticle_center_px = vp_sz * 0.5
+	if _reticle_box.anchor_left != 0.5 or _reticle_box.anchor_top != 0.5 or _reticle_box.size != Vector2(24.0, 24.0):
+		_reticle_box.size = Vector2(24.0, 24.0)
+		_reticle_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
+		_reticle_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		_reticle_box.grow_vertical = Control.GROW_DIRECTION_BOTH
 
 
 func _make_procedural_starfield_texture() -> ImageTexture:
@@ -3332,11 +3344,20 @@ func _respawn_building_interiors() -> int:
 func _update_interior_streaming(player_pos: Vector3) -> void:
 	if _props_container == null or _arch_container == null:
 		return
+	# [QA-FF-02] interiors stay loaded while the Sector-4 exit field is open or opening (line of sight inside).
+	var exit_open: bool = _sector4_exit_open_or_opening()
 	if _interiors_loaded:
-		if player_pos.z < INTERIOR_DESPAWN_Z and not _in_gravity_ring(player_pos):
+		if player_pos.z < INTERIOR_DESPAWN_Z and not _in_gravity_ring(player_pos) and not exit_open:
 			_despawn_building_interiors()
-	elif player_pos.z >= INTERIOR_RESPAWN_Z or _in_gravity_ring(player_pos):
+	elif player_pos.z >= INTERIOR_RESPAWN_Z or _in_gravity_ring(player_pos) or exit_open:
 		_respawn_building_interiors()
+
+
+func _sector4_exit_open_or_opening() -> bool:
+	var d: Dictionary = _find_door("DOOR_SECTOR4_EXIT")
+	if d.is_empty():
+		return false
+	return bool(d["open"]) or _door_dissolve(d) > 0.0
 
 
 func get_interior_streaming_status() -> Dictionary:
@@ -3502,11 +3523,12 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 		var n_light: MeshInstance3D = model.find_child("StatusLight", true, false) as MeshInstance3D
 		var n_panel: Node3D = model.find_child("RFIDPanel", true, false) as Node3D
 		# Panel pocket sits beside the 1.82 m frame (x 1.06..1.20); in the narrower baked portals that falls
-		# inside the 0.30 m wall, so nudge panel + light 6 mm proud of the wall face to stay visible (glb untouched).
+		# inside the 0.30 m wall, so nudge panel + light proud of the wall face to stay visible (glb untouched).
+		# [QA-FF-03] panel +10 mm; light +14 mm so its face stays ~5 mm proud of the panel face (no z-fight).
 		if n_panel != null:
-			n_panel.position.z += 0.006
+			n_panel.position.z += 0.010
 		if n_light != null:
-			n_light.position.z += 0.006
+			n_light.position.z += 0.014
 
 		var fmat: ShaderMaterial = ShaderMaterial.new()
 		fmat.shader = shader
@@ -3574,6 +3596,9 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			"led_mat": lmat,
 			"field_collider": field_cs,
 			"tween": null,
+			"close_pending": false,
+			"close_retry_t": 0.0,
+			"close_blocker": "",
 			"open": false,
 			"dissolve": 0.0,
 			"opacity": FF_DEFAULT_OPACITY,
@@ -3589,6 +3614,7 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			"pickup": false
 		})
 	print("[FORCEFIELD] doors=%d glb=%s shader=%s" % [_rfid_doors.size(), FORCEFIELD_DOOR_GLB, FORCEFIELD_DOOR_SHADER])
+	print("[FORCEFIELD] door field overrides: %s  (user dir: %s)" % [_resolve_path(_door_field_json_path()), OS.get_user_data_dir()])
 
 
 func _find_door(door_id: String) -> Dictionary:
@@ -3619,9 +3645,54 @@ func _finish_door_field(door: Dictionary, open_state: bool) -> void:
 	_set_door_light(door, open_state)
 
 
+func _door_opening_blocker(door: Dictionary) -> String:
+	# [QA-FF-01] Overlap test of the 1.50 x 2.45 m opening (0.60 m deep = 0.15 m past both wall faces).
+	var droot: Node3D = door["root"] as Node3D
+	if droot == null or not is_instance_valid(droot) or not droot.is_inside_tree():
+		return ""
+	var xf: Transform3D = droot.global_transform
+	# a) Physics bodies (player CharacterBody3D, RigidBody3D props); static wall/door bodies are ignored.
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = Vector3(FF_OPEN_W, FF_OPEN_H, FF_OCCUPANCY_DEPTH)
+	q.shape = bs
+	q.transform = xf * Transform3D(Basis.IDENTITY, Vector3(0.0, FF_OPEN_H * 0.5, 0.0))
+	q.collide_with_bodies = true
+	q.collide_with_areas = false
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space != null:
+		for hit: Dictionary in space.intersect_shape(q, 16):
+			var col: Object = hit.get("collider")
+			if col is CharacterBody3D or col is RigidBody3D:
+				return String((col as Node).name)
+	# b) Collider-less actors (Johnny-5 bots, citizens) and props: test their origin against the box (+0.25 m body margin).
+	var inv: Transform3D = xf.affine_inverse()
+	for cont: Node3D in [_actors_container, _props_container]:
+		if cont == null:
+			continue
+		for ch: Node in cont.get_children():
+			if not (ch is Node3D) or String(ch.name) == DOORS_ROOT_NAME or ch.is_queued_for_deletion() or not (ch as Node3D).visible:
+				continue
+			var lp: Vector3 = inv * (ch as Node3D).global_position
+			if absf(lp.x) < FF_OPEN_W * 0.5 + 0.25 and absf(lp.z) < FF_OCCUPANCY_DEPTH * 0.5 + 0.25 and lp.y > -0.3 and lp.y < FF_OPEN_H:
+				return String(ch.name)
+	return ""
+
+
 func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
 	# Valid [F] scan: tween shader dissolve 0->1 (open) or 1->0 (close) over DOOR_DISSOLVE_TIME;
 	# collision + status light switch only when the tween finishes.
+	if open_target:
+		door["close_pending"] = false
+	elif bool(door["open"]) or _door_dissolve(door) > 0.0:
+		# [QA-FF-01] never close the field on something standing in the opening: hold open, retry every 0.5 s.
+		var blocker: String = _door_opening_blocker(door)
+		if blocker != "":
+			door["close_pending"] = true
+			door["close_retry_t"] = FF_CLOSE_RETRY_SEC
+			door["close_blocker"] = blocker
+			return
+		door["close_pending"] = false
 	door["open"] = open_target
 	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
 	if m == null:
@@ -3645,6 +3716,7 @@ func _set_door_dissolve_immediate(door: Dictionary, v: float) -> void:
 	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
 	if m != null:
 		m.set_shader_parameter("dissolve", clampf(v, 0.0, 1.0))
+	door["close_pending"] = false
 	door["open"] = v >= 0.999
 	_finish_door_field(door, v >= 0.999)
 	door["dissolve"] = v
@@ -3687,7 +3759,10 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 				var horiz_d: float = Vector2(origin.x - dcenter.x, origin.z - dcenter.z).length()
 				if horiz_d > 1.15:
 					_set_door_open_state(door, false)
-					opened_labels.append("%s (CLOSED)" % String(door["id"]))
+					if bool(door["close_pending"]):
+						opened_labels.append("%s (CLOSE HELD: %s IN DOORWAY)" % [String(door["id"]), String(door["close_blocker"])])
+					else:
+						opened_labels.append("%s (CLOSED)" % String(door["id"]))
 				else:
 					opened_labels.append("%s (OPEN)" % String(door["id"]))
 	return opened_labels
@@ -3696,16 +3771,24 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 func _update_rfid_doors(delta: float) -> void:
 	for door: Dictionary in _rfid_doors:
 		door["dissolve"] = _door_dissolve(door)
+		if bool(door["close_pending"]):
+			door["close_retry_t"] = float(door["close_retry_t"]) - delta
+			if float(door["close_retry_t"]) <= 0.0:
+				_set_door_open_state(door, false)
 	_door_json_poll_t += delta
 	if _door_json_poll_t >= DOOR_FIELD_POLL_SEC:
 		_door_json_poll_t = 0.0
 		_poll_door_field_json()
 
 
+func _door_field_json_path() -> String:
+	return DOOR_FIELD_JSON_DEV if OS.has_feature("editor") else DOOR_FIELD_JSON_USER
+
+
 func _poll_door_field_json() -> void:
 	# External Python UI writes DOOR_FIELD_JSON = {door_id|"ALL": {"opacity": f, "color": [r,g,b,a]}}.
 	# Re-read only when the modified time changes (plus a short re-check window for same-second writes).
-	var abs_p: String = _resolve_path(DOOR_FIELD_JSON)
+	var abs_p: String = _resolve_path(_door_field_json_path())
 	if not FileAccess.file_exists(abs_p):
 		return
 	var mt: int = int(FileAccess.get_modified_time(abs_p))
@@ -3958,6 +4041,53 @@ func _run_reticle_stars_doors_qa() -> void:
 		_qa_t38_check("%s_F_scan_closes_back" % did.to_lower(), closed_ok,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
 
+	# [QA-FF-01] close is held while a bot / rigid body is in the opening, then completes once it is clear
+	var ob_door: Dictionary = _find_door("DOOR_RM1B")
+	var ob_root: Node3D = ob_door["root"] as Node3D
+	var ob_cs: CollisionShape3D = ob_door["field_collider"] as CollisionShape3D
+	var bot: Node3D = _actors_container.get_node_or_null("Hammerhead05_Kelvin_0204_Science") as Node3D
+	_qa_place(Vector3(0.0, 0.25, -6.0), 0.0, 0.0)
+	await _qa_frames(4)
+	if bot != null:
+		var bot_home: Vector3 = bot.global_position
+		_set_door_dissolve_immediate(ob_door, 1.0)
+		await _qa_frames(3)
+		bot.global_position = ob_root.global_position + Vector3(0.0, -0.06, 0.0)
+		_set_door_open_state(ob_door, false)
+		await get_tree().create_timer(1.3).timeout
+		var held_ok: bool = bool(ob_door["close_pending"]) and bool(ob_door["open"]) and _door_dissolve(ob_door) >= 0.999 and ob_cs.disabled
+		_qa_t38_check("qa_ff_01_close_held_while_bot_in_doorway", held_ok,
+			"blocker=%s pending=%s open=%s dissolve=%.3f collision_off=%s (after 1.3 s, 2 retries)" % [String(ob_door["close_blocker"]), ob_door["close_pending"], ob_door["open"], _door_dissolve(ob_door), ob_cs.disabled])
+		bot.global_position = bot_home
+		await get_tree().create_timer(0.6 + DOOR_DISSOLVE_TIME + 0.3).timeout
+		await _qa_frames(3)
+		var lm1: StandardMaterial3D = ob_door["led_mat"] as StandardMaterial3D
+		_qa_t38_check("qa_ff_01_closes_once_bot_clear", not bool(ob_door["close_pending"]) and not bool(ob_door["open"]) and _door_dissolve(ob_door) <= 0.001 and not ob_cs.disabled and lm1.emission.is_equal_approx(COLOR_AMBER),
+			"pending=%s open=%s dissolve=%.3f collision_on=%s light=%s" % [ob_door["close_pending"], ob_door["open"], _door_dissolve(ob_door), not ob_cs.disabled, lm1.emission.to_html(false)])
+	else:
+		_qa_t38_check("qa_ff_01_close_held_while_bot_in_doorway", false, "Kelvin bot missing")
+	# Rigid body (crate) in the opening
+	var crate: RigidBody3D = RigidBody3D.new()
+	crate.name = "QA_DoorwayCrate"
+	crate.freeze = true
+	var crate_cs: CollisionShape3D = CollisionShape3D.new()
+	var crate_bs: BoxShape3D = BoxShape3D.new()
+	crate_bs.size = Vector3(0.4, 0.4, 0.4)
+	crate_cs.shape = crate_bs
+	crate.add_child(crate_cs)
+	add_child(crate)
+	_set_door_dissolve_immediate(ob_door, 1.0)
+	crate.global_position = ob_root.global_position + Vector3(0.3, 0.25, 0.0)
+	await _qa_frames(4)
+	_set_door_open_state(ob_door, false)
+	await _qa_frames(2)
+	var crate_held: bool = bool(ob_door["close_pending"]) and bool(ob_door["open"]) and String(ob_door["close_blocker"]) == "QA_DoorwayCrate"
+	crate.queue_free()
+	await get_tree().create_timer(0.6 + DOOR_DISSOLVE_TIME + 0.3).timeout
+	await _qa_frames(3)
+	_qa_t38_check("qa_ff_01_rigidbody_blocks_then_closes", crate_held and not bool(ob_door["open"]) and _door_dissolve(ob_door) <= 0.001 and not ob_cs.disabled,
+		"held_by=%s then open=%s dissolve=%.3f collision_on=%s" % ["QA_DoorwayCrate" if crate_held else "none", ob_door["open"], _door_dissolve(ob_door), not ob_cs.disabled])
+
 	# set_door_field(): opacity clamp + field colour + emitter tint, per-door material isolation, JSON override path
 	var d0: Dictionary = _find_door("DOOR_RM1B")
 	var d1: Dictionary = _find_door("DOOR_RM1A")
@@ -3983,7 +4113,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	var n_json: int = apply_door_field_overrides(JSON.parse_string('{"ALL": {"opacity": 0.45, "color": [0.45, 0.92, 1.0, 1.0]}, "DOOR_RM1A": {"opacity": 0.7, "color": [1.0, 0.2, 0.6, 1.0]}}'))
 	var op_a: float = float((d1["field_mat"] as ShaderMaterial).get_shader_parameter("opacity"))
 	_qa_t38_check("door_field_json_overrides", n_json == 7 and is_equal_approx(op_a, 0.7) and is_equal_approx(float(m0.get_shader_parameter("opacity")), 0.45),
-		"applied=%d rm1a_opacity=%.2f rm1b_opacity=%.2f json=%s" % [n_json, op_a, float(m0.get_shader_parameter("opacity")), DOOR_FIELD_JSON])
+		"applied=%d rm1a_opacity=%.2f rm1b_opacity=%.2f json=%s" % [n_json, op_a, float(m0.get_shader_parameter("opacity")), _door_field_json_path()])
 	apply_door_field_overrides({"ALL": {"opacity": FF_DEFAULT_OPACITY, "color": [FF_DEFAULT_COLOR.r, FF_DEFAULT_COLOR.g, FF_DEFAULT_COLOR.b, 1.0]}})
 
 	if door_img_closed != null and door_img_opened != null:
@@ -4010,7 +4140,16 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_bci=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["bci"])])
 	var live_before: int = int(get_interior_streaming_status()["live_pickups"])
 	var wb: Node = _arch_container.find_child("Apartment_Workbench", true, false)
-	_qa_place(Vector3(0.0, 0.25, -12.0), 0.0, 0.0)
+	_qa_t38_check("qa_ff_02_thresholds", is_equal_approx(INTERIOR_DESPAWN_Z, -14.0) and is_equal_approx(INTERIOR_RESPAWN_Z, -13.0) and INTERIOR_DESPAWN_Z < INTERIOR_RESPAWN_Z,
+		"despawn_z=%.2f respawn_z=%.2f" % [INTERIOR_DESPAWN_Z, INTERIOR_RESPAWN_Z])
+	# Exit door open -> interiors must stay loaded even beyond the despawn line
+	var exit_d: Dictionary = _find_door("DOOR_SECTOR4_EXIT")
+	_set_door_dissolve_immediate(exit_d, 1.0)
+	_qa_place(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
+	await _qa_frames(8)
+	_qa_t38_check("qa_ff_02_stays_loaded_while_exit_open", _interiors_loaded, "z=-16.0 exit_open=%s loaded=%s" % [exit_d["open"], _interiors_loaded])
+	_set_door_dissolve_immediate(exit_d, 0.0)
+	_qa_place(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
 	await _qa_frames(8)
 	var st_out: Dictionary = get_interior_streaming_status()
 	var props_left: int = 0
@@ -4022,9 +4161,12 @@ func _run_reticle_stars_doors_qa() -> void:
 		if ac is Node3D and (ac as Node3D).position.z > -7.5:
 			actors_in += 1
 	_qa_t38_check("interior_despawn_on_promenade_exit", not _interiors_loaded and _interior_managed_count > 0 and props_left == 0 and actors_in == 0 and (wb == null or not wb.is_inside_tree()) and _rfid_doors.size() == 6,
-		"z=-12.0 loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_in_tree=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, (wb != null and wb.is_inside_tree()), _rfid_doors.size()])
+		"z=-16.0 (exit closed) loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_in_tree=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, (wb != null and wb.is_inside_tree()), _rfid_doors.size()])
 	await _qa_capture("qa_interior_despawned_promenade.png")
-	_qa_place(Vector3(0.0, 0.25, -6.0), 180.0, 0.0)
+	_qa_place(Vector3(0.0, 0.25, -13.5), 180.0, 0.0)
+	await _qa_frames(6)
+	_qa_t38_check("qa_ff_02_hysteresis_band_stays_despawned", not _interiors_loaded, "z=-13.5 loaded=%s" % _interiors_loaded)
+	_qa_place(Vector3(0.0, 0.25, -12.5), 180.0, 0.0)
 	await _qa_frames(8)
 	var st_in: Dictionary = get_interior_streaming_status()
 	var bci_respawned: bool = _props_container.get_node_or_null("Workbench_BCI_Headband") != null
@@ -4033,7 +4175,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		if ac2 is Node3D and (ac2 as Node3D).position.z > -7.5:
 			actors_back += 1
 	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and (wb == null or wb.is_inside_tree()) and int(_inventory["bci"]) == inv_before + 1,
-		"z=-6.0 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_in_tree=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, (wb != null and wb.is_inside_tree())])
+		"z=-12.5 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_in_tree=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, (wb != null and wb.is_inside_tree())])
 
 	var out: PackedStringArray = PackedStringArray()
 	out.append("# Reticle, Rotating Outer Starfield & RFID Force-Field Doors QA ([t38u]/[t45u])")

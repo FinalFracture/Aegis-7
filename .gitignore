@@ -15,3 +15,6 @@ __pycache__/
 Thumbs.db
 *.tmp
 *~
+
+# Local door-field overrides written by tools/door_field_ui.py ([QA-FF-04])
+godot/config/

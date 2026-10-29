@@ -92,3 +92,13 @@ PASS | pickup_collected_before_exit | collected=["Workbench_BCI_Headband"] inv_b
 PASS | interior_despawn_on_promenade_exit | z=-12.0 loaded=false managed=24 props_left=0 interior_actors_left=0 workbench_in_tree=false doors=6
 PASS | interior_respawn_on_vestibule_reentry | z=-6.0 loaded=true live_pickups=8 (before exit 8) collected_bci_respawned=false interior_actors=9 workbench_in_tree=true
 ```
+
+---
+
+### [QA 129b91d fixes] — Gage, 2026-10-28 23:36 CDT
+- **QA-FF-01 RESOLVED:** before a close, `_door_opening_blocker()` overlap-tests the 1.50 × 2.45 × 0.60 m opening (physics `intersect_shape` for CharacterBody3D/RigidBody3D plus an origin test of collider-less bots/props). If anything is inside, the close is held (field open, collision off) and retried every 0.5 s until clear. QA: bot held 2 retries then closed, rigid crate held then closed. PASS 3/3.
+- **QA-FF-02 RESOLVED:** `INTERIOR_DESPAWN_Z` -14.0 / `INTERIOR_RESPAWN_Z` -13.0 (1 m hysteresis); interiors stay loaded while `DOOR_SECTOR4_EXIT` is open or opening. QA: thresholds, loaded at z=-16 with the exit open, despawn at -16 with it closed, still despawned at -13.5, respawn at -12.5. PASS 5/5.
+- **QA-FF-03 RESOLVED:** RFID panel +10 mm, StatusLight +14 mm (light face ~5 mm proud of the panel face instead of 1 mm).
+- **QA-FF-04 RESOLVED:** `tools/door_field_ui.py` lazy-imports tkinter; `--set DOOR_ID|ALL --opacity X --color r,g,b[,a]` writes JSON and exits; `--user` / `--user-dir` / `--print-paths`. Game reads `res://config/door_fields.json` when `OS.has_feature("editor")`, else `user://door_fields.json` (exact user folder printed at boot). `godot/config/` gitignored. py_compile + `--set` round-trip verified.
+- **QA-FF-05 HARDENED:** reticle uses `PRESET_CENTER` anchors + `GROW_DIRECTION_BOTH` (no manual positioning). Centering QA still 0.000 px at all 4 sizes; Windows embedded-Game-view repro still pending (needs Jared's Windows run).
+- Full run `--qa-reticle-stars-doors`: 58 PASS / 0 FAIL, 0 script errors; `--validate-only` OK.
