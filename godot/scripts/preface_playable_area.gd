@@ -106,7 +106,7 @@ const RFID_PULSE_DURATION := 1.8
 const INTERACT_REACH_DURATION := 0.65
 const ARM_LOWERED_POS := Vector3(-0.26, 0.97, -0.28)       # _player_body local (wrist pivot)
 const ARM_LOWERED_ROT_DEG := Vector3(-14.0, -22.0, -10.0)   # forearm extends from left hip forward-down to wrist
-const ARM_RAISED_POS := Vector3(-0.24, -0.19, -0.42)       # _camera local (wrist pivot)
+const ARM_RAISED_POS := Vector3(-0.20, -0.15, -0.42)       # _camera local (wrist pivot) [HW-02]
 const ARM_RAISED_ROT_DEG := Vector3(24.0, -24.0, -10.0)
 const ARM_RAISE_SPEED := 4.5
 const WALK_SWING_Z := 0.22
@@ -130,6 +130,13 @@ const RING_ORIENT_RATE := 3.5          # rad/s max basis re-orientation (smooth 
 const RING_FEET_OFFSET := 0.10         # body origin sits ~0.12 m below capsule bottom
 const CORE_TRANSIT_DURATION := 4.0
 const CORE_PAD_RADIUS := 1.4
+
+# [t38u] Rotating distant outer starfield cylinder & RFID sliding doors
+const STARFIELD_CYL_RADIUS := 2200.0
+const STARFIELD_CYL_LENGTH := 4800.0
+const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s around longitudinal cylinder axis)
+const DOOR_SCAN_RANGE := 4.8
+const DOOR_SLIDE_SPEED := 2.0
 
 var _arch_container: Node3D
 var _props_container: Node3D
@@ -185,7 +192,12 @@ var _walk_swing_amp: float = 0.0
 var _flashlight: SpotLight3D
 var _qa_hand: bool = false
 var _qa_cyl: bool = false
+var _qa_t38: bool = false
 var _ring_root: Node3D
+var _starfield_cylinder: Node3D
+var _rfid_doors: Array[Dictionary] = []
+var _reticle_box: Control
+var _reticle_center_px: Vector2 = Vector2(960.0, 540.0)
 var _gravity_boxes: Array[Dictionary] = []
 var _core_transits: Array[Dictionary] = []
 var _player_transit: Dictionary = {}
@@ -229,6 +241,9 @@ func _ready() -> void:
 		elif arg == "--qa-cylinder-gravity":
 			_qa_cyl = true
 			_qa_hand = true  # reuse the interactive (non-batch, non-validate) QA boot path
+		elif arg == "--qa-reticle-stars-doors":
+			_qa_t38 = true
+			_qa_hand = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -257,6 +272,8 @@ func _ready() -> void:
 	if _qa_hand:
 		if _qa_cyl:
 			_run_cylinder_gravity_qa.call_deferred()
+		elif _qa_t38:
+			_run_reticle_stars_doors_qa.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 
@@ -468,6 +485,8 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 		cyl_node.position = Vector3(0.0, -200.0, 0.0)
 		_set_tree_cast_shadow(cyl_node, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 		cyl_pivot.add_child(cyl_node)
+
+	_build_starfield_outer_cylinder(hab_root)
 
 	# 2. Walkable Exterior Sector-4 Promenade Plaza Deck (Z = -9.0m..-45.0m, X = -18.0m..+18.0m, Y = 0.0m)
 	var plaza_root: Node3D = Node3D.new()
@@ -725,6 +744,9 @@ func _populate_pickups_and_wrist_rig() -> void:
 	_props_container.add_child(term)
 	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
 
+	# [t38u] Normal functional RFID sliding doors across all 6 Residential Sector portals
+	_build_rfid_sliding_doors(_props_container)
+
 	# #04 Bio-Luminescent Neural Tendon Smart-Sleeve (lower-left of 1st-person view)
 	if _camera != null:
 		if _fp_wrist_holder != null and is_instance_valid(_fp_wrist_holder):
@@ -831,6 +853,26 @@ func _build_first_person_wrist_pulse_rings() -> void:
 		_pulse_rings_root.add_child(ring)
 		_pulse_rings.append(ring)
 
+	# [HW-03] Connected tactical forearm sleeve extension behind the wrist cuff so looking down never shows a floating glove
+	if _fp_wrist_model.get_node_or_null("ForearmSleeveExtension") == null:
+		var sleeve_mi: MeshInstance3D = MeshInstance3D.new()
+		sleeve_mi.name = "ForearmSleeveExtension"
+		var scm: CylinderMesh = CylinderMesh.new()
+		scm.top_radius = 0.046
+		scm.bottom_radius = 0.058
+		scm.height = 0.34
+		scm.radial_segments = 16
+		sleeve_mi.mesh = scm
+		sleeve_mi.position = Vector3(0.0, 0.175, 0.25)
+		sleeve_mi.rotation_degrees = Vector3(84.0, 0.0, 0.0)
+		var sl_mat: StandardMaterial3D = StandardMaterial3D.new()
+		sl_mat.albedo_color = Color(0.14, 0.17, 0.21, 1.0)
+		sl_mat.roughness = 0.62
+		sl_mat.metallic = 0.25
+		sleeve_mi.material_override = sl_mat
+		sleeve_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_fp_wrist_model.add_child(sleeve_mi)
+
 
 func _update_pulse_rings() -> void:
 	if _pulse_rings_root == null:
@@ -895,7 +937,7 @@ func _wrist_world_points() -> PackedVector3Array:
 	var st: Array[Node] = [_fp_wrist_model]
 	while not st.is_empty():
 		var c: Node = st.pop_back()
-		if c is MeshInstance3D and (c as MeshInstance3D).mesh != null and not String(c.name).begins_with("RFID_PulseRing"):
+		if c is MeshInstance3D and (c as MeshInstance3D).mesh != null and not String(c.name).begins_with("RFID_PulseRing") and String(c.name) != "ForearmSleeveExtension":
 			var mi: MeshInstance3D = c as MeshInstance3D
 			var bb: AABB = mi.get_aabb()
 			for k: int in range(8):
@@ -1283,7 +1325,7 @@ func apply_camera_preset(idx: int) -> void:
 		return
 	var c: Dictionary = CAMERAS[idx]
 	_camera.near = 0.02
-	_camera.far = 2500.0
+	_camera.far = 6500.0
 	_camera.fov = float(c["fov"])
 	_camera.global_position = c["pos"] as Vector3
 	_camera.look_at(c["target"] as Vector3, Vector3.UP)
@@ -1348,7 +1390,7 @@ func _setup_player_controller() -> void:
 		_camera.transform = Transform3D.IDENTITY
 		_camera.fov = 70.0
 		_camera.near = 0.02
-		_camera.far = 2500.0
+		_camera.far = 6500.0
 		_camera.current = true
 
 	if _rostov_root != null:
@@ -1588,6 +1630,10 @@ func _physics_process(delta: float) -> void:
 				b.global_position += up
 
 	b.move_and_slide()
+	for sc_i: int in range(b.get_slide_collision_count()):
+		var scol: KinematicCollision3D = b.get_slide_collision(sc_i)
+		if scol.get_collider() is RigidBody3D:
+			(scol.get_collider() as RigidBody3D).apply_central_impulse(-scol.get_normal() * 1.4)
 
 	if not in_ring and b.global_position.y < -8.0:
 		_respawn()
@@ -1655,6 +1701,8 @@ func _interact() -> void:
 		_show_toast("%s  (%s)\n\"%s\"" % [String(it["label"]), String(it["dept"]), String(it["status"])], 4.5)
 		var bot_node: Node3D = it["node"] as Node3D
 		_play_actor_anim(bot_node, ["Celebrate", "Idle"], 0.0)
+	elif kind == "rfid_door":
+		_trigger_rfid_pulse()
 	elif kind == "terminal":
 		var total: int = 0
 		var have: int = 0
@@ -1675,6 +1723,9 @@ func _trigger_rfid_pulse() -> void:
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("#04 WRIST RFID PULSE // 13.56 MHz // RANGE 12.0m")
 	var pp: Vector3 = _player_probe_point()
+	var door_changes: Array[String] = _scan_rfid_doors(pp)
+	for dc: String in door_changes:
+		lines.append("  > DOOR ACTUATOR: " + dc)
 	var found: Array[Dictionary] = []
 	for it: Dictionary in _interactables:
 		if bool(it["collected"]):
@@ -1698,7 +1749,8 @@ func _trigger_rfid_pulse() -> void:
 		_hud_scan.text = "\n".join(lines)
 		_hud_scan.visible = true
 	_scan_t = 6.0
-	_show_toast("RFID PULSE EMITTED // %d TAG(S) RESPONDED" % found.size(), 2.2)
+	var door_note: String = (" // " + ", ".join(door_changes)) if not door_changes.is_empty() else ""
+	_show_toast("RFID PULSE EMITTED // %d TAG(S) RESPONDED%s" % [found.size(), door_note], 2.4)
 
 
 # ------------------------------------------------------------------------------
@@ -1761,18 +1813,18 @@ func _build_hud() -> void:
 	_hud_light = _make_label(tl, Vector2(16, 92), "LIGHTING: --", 15, white)
 	_hud_inv = _make_label(tl, Vector2(16, 120), "BCI: 0/1 | JELLY: 0/1 | WIRE: 0/3 | BATT: 0/4", 15, Color("#E2C79A"))
 
-	# Precision-centered geometric HUD reticle (dead-center at 50.0%, 50.0% viewport center)
-	var center_container: CenterContainer = CenterContainer.new()
-	center_container.name = "CrosshairCenterContainer"
-	center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(center_container)
-
+	# [t38u] Precision-centered geometric HUD reticle synced directly to get_viewport().get_visible_rect().size * 0.5
 	var reticle_box: Control = Control.new()
 	reticle_box.name = "ReticleBox"
 	reticle_box.custom_minimum_size = Vector2(24, 24)
+	reticle_box.size = Vector2(24, 24)
 	reticle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	center_container.add_child(reticle_box)
+	root.add_child(reticle_box)
+	_reticle_box = reticle_box
+	_sync_reticle_to_viewport_center()
+	var vp: Viewport = get_viewport()
+	if vp != null and not vp.size_changed.is_connected(_sync_reticle_to_viewport_center):
+		vp.size_changed.connect(_sync_reticle_to_viewport_center)
 
 	for r: Rect2 in [
 		Rect2(11, 11, 2, 2),  # Exact 2x2 center dot at (11..13, 11..13) of 24x24 box -> (959..961, 539..541)
@@ -1851,8 +1903,12 @@ func _update_hud() -> void:
 	if _nearest.is_empty() or _preset_active >= 0:
 		_hud_prompt.text = ""
 	else:
-		var verb: String = "PICK UP" if bool(_nearest["pickup"]) else "QUERY"
-		_hud_prompt.text = "[E] %s %s" % [verb, String(_nearest["label"])]
+		var knd: String = String(_nearest["kind"])
+		if knd == "rfid_door":
+			_hud_prompt.text = "[F] RFID SCAN // %s" % String(_nearest["label"])
+		else:
+			var verb: String = "PICK UP" if bool(_nearest["pickup"]) else "QUERY"
+			_hud_prompt.text = "[E] %s %s" % [verb, String(_nearest["label"])]
 
 
 func _show_toast(msg: String, dur: float) -> void:
@@ -1869,6 +1925,10 @@ func _show_toast(msg: String, dur: float) -> void:
 func _process(delta: float) -> void:
 	_frame_counter += 1
 	_time += delta
+	if _starfield_cylinder != null and is_instance_valid(_starfield_cylinder):
+		_starfield_cylinder.rotate_z(STARFIELD_ROT_SPEED * delta)
+	_update_rfid_doors(delta)
+	_sync_reticle_to_viewport_center()
 	if _batch_render:
 		_process_batch_render()
 		return
@@ -2571,7 +2631,7 @@ func _build_cylinder_gravity_ring(parent: Node3D) -> void:
 	var box_cols: Array = [Color("#D95B26"), Color("#2E96B2"), Color("#C47D2B"), Color("#7B5CFF"), Color("#3FAF6A"), Color("#E0C060"), Color("#B03A48"), Color("#8C98A4")]
 	for bi: int in range(8):
 		_spawn_ring_box("RingBox_%03d" % (bi * 45), float(bi * 45), RING_BOX_Z, box_cols[bi])
-	_spawn_ring_box("CoreTransitBox", 0.0, RING_SHAFT_Z, Color("#F2F2F2"))
+	_spawn_ring_box("CoreTransitBox", 0.0, RING_SHAFT_Z - 0.55, Color("#F2F2F2"))
 
 
 func _spawn_ring_box(nm: String, theta_deg: float, z: float, col: Color) -> RigidBody3D:
@@ -2959,4 +3019,541 @@ func _run_cylinder_gravity_qa() -> void:
 		fa.store_string("\n".join(out) + "\n")
 		fa.close()
 	print("[CYL-QA] DONE failures=", _qa_failures, " log=", fn)
+	get_tree().quit(1 if _qa_failures > 0 else 0)
+
+
+# ------------------------------------------------------------------------------
+# [t38u] 1. Viewport-centered Reticle + 2. Rotating Distant Starfield Cylinder + 3. RFID Sliding Doors
+# ------------------------------------------------------------------------------
+func _sync_reticle_to_viewport_center() -> void:
+	var vp: Viewport = get_viewport()
+	if vp == null:
+		return
+	var vp_sz: Vector2 = vp.get_visible_rect().size
+	if _reticle_box == null or not is_instance_valid(_reticle_box):
+		return
+	var c: Vector2 = vp_sz * 0.5
+	_reticle_center_px = c
+	_reticle_box.position = c - Vector2(12.0, 12.0)
+	_reticle_box.size = Vector2(24.0, 24.0)
+
+
+func _make_procedural_starfield_texture() -> ImageTexture:
+	if _tex_cache.has("__procedural_starfield__"):
+		return _tex_cache["__procedural_starfield__"] as ImageTexture
+	var w: int = 1024
+	var h: int = 512
+	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0.008, 0.011, 0.018, 1.0))
+
+	# Subtle galactic dust / nebula band undulating across the cylinder sky
+	for y: int in range(h):
+		var v: float = float(y) / float(h)
+		var band_dist: float = absf(v - 0.50)
+		if band_dist < 0.24:
+			var w_band: float = 1.0 - (band_dist / 0.24)
+			w_band = w_band * w_band
+			for x: int in range(w):
+				var u: float = float(x) / float(w)
+				var wave: float = 0.5 + 0.5 * sin(u * TAU * 2.0 + sin(u * TAU * 5.0) * 0.6)
+				var neb: float = w_band * (0.35 + 0.65 * wave)
+				var base_c: Color = img.get_pixel(x, y)
+				var tint: Color = Color(0.045, 0.085, 0.145, 1.0) if int(x + y) % 2 == 0 else Color(0.075, 0.055, 0.130, 1.0)
+				img.set_pixel(x, y, base_c.lerp(tint, neb * 0.55))
+
+	# Deterministic PRNG for multi-scale stars (pinpoint field stars + medium stars + bright navigational beacons)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 704192026
+	var palette: Array[Color] = [
+		Color(0.96, 0.98, 1.00, 1.0),
+		Color(0.78, 0.90, 1.00, 1.0),
+		Color(1.00, 0.92, 0.78, 1.0),
+		Color(0.68, 0.86, 1.00, 1.0),
+		Color(1.00, 0.80, 0.62, 1.0),
+		Color(0.86, 0.78, 1.00, 1.0)
+	]
+	# 2600 pinpoint stars
+	for i: int in range(2600):
+		var sx: int = rng.randi_range(0, w - 1)
+		var sy: int = rng.randi_range(0, h - 1)
+		var b: float = rng.randf_range(0.55, 1.0)
+		var col: Color = palette[i % palette.size()] * b
+		col.a = 1.0
+		img.set_pixel(sx, sy, col)
+	# 420 medium 2x2 / cross stars
+	for i: int in range(420):
+		var mx: int = rng.randi_range(2, w - 3)
+		var my: int = rng.randi_range(2, h - 3)
+		var mc: Color = palette[i % palette.size()]
+		img.set_pixel(mx, my, Color(1.0, 1.0, 1.0, 1.0))
+		for off: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var p: Vector2i = Vector2i(mx, my) + off
+			img.set_pixel(p.x, p.y, img.get_pixel(p.x, p.y).lerp(mc, 0.82))
+	# 95 bright navigational cluster beacons with soft glow & diffraction cross
+	for i: int in range(95):
+		var bx: int = rng.randi_range(4, w - 5)
+		var by: int = rng.randi_range(4, h - 5)
+		var bc: Color = palette[i % palette.size()]
+		for dy: int in range(-3, 4):
+			for dx: int in range(-3, 4):
+				var dist: float = sqrt(float(dx * dx + dy * dy))
+				if dist <= 3.2:
+					var falloff: float = clampf(1.0 - dist / 3.2, 0.0, 1.0)
+					if dx == 0 or dy == 0:
+						falloff = maxf(falloff, 0.65 * (1.0 - dist / 3.5))
+					var px: int = clampi(bx + dx, 0, w - 1)
+					var py: int = clampi(by + dy, 0, h - 1)
+					img.set_pixel(px, py, img.get_pixel(px, py).lerp(bc, falloff))
+		img.set_pixel(bx, by, Color(1.0, 1.0, 1.0, 1.0))
+
+	img.generate_mipmaps()
+	var tex: ImageTexture = ImageTexture.create_from_image(img)
+	_tex_cache["__procedural_starfield__"] = tex
+	return tex
+
+
+func _build_starfield_outer_cylinder(parent: Node3D) -> void:
+	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7 axis (Y = 185.5m, Z-axis).
+	# The outer starfield cylinder rotates in _process(delta) while CylinderHab7_FullScale_World stays 100% stationary!
+	_starfield_cylinder = Node3D.new()
+	_starfield_cylinder.name = "StarfieldOuterCylinder"
+	_starfield_cylinder.position = Vector3(0.0, 185.5, -135.0)
+	parent.add_child(_starfield_cylinder)
+
+	var star_tex: ImageTexture = _make_procedural_starfield_texture()
+	var smat: StandardMaterial3D = StandardMaterial3D.new()
+	smat.resource_name = "Mat_StarfieldOuterCylinder"
+	smat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	smat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	smat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
+	smat.albedo_texture = star_tex
+	smat.uv1_scale = Vector3(6.0, 3.0, 1.0)
+	smat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+
+	var barrel: MeshInstance3D = MeshInstance3D.new()
+	barrel.name = "StarfieldOuterBarrelMesh"
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = STARFIELD_CYL_RADIUS
+	cm.bottom_radius = STARFIELD_CYL_RADIUS
+	cm.height = STARFIELD_CYL_LENGTH
+	cm.radial_segments = 96
+	cm.rings = 1
+	cm.cap_top = true
+	cm.cap_bottom = true
+	barrel.mesh = cm
+	# CylinderMesh height is along local Y; rotate 90 deg around X so the cylinder axis aligns with world Z.
+	barrel.rotation = Vector3(PI * 0.5, 0.0, 0.0)
+	barrel.material_override = smat
+	barrel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	barrel.extra_cull_margin = 16384.0
+	_starfield_cylinder.add_child(barrel)
+
+
+func _build_rfid_sliding_doors(parent: Node3D) -> void:
+	# [t38u] Normal functional sliding doors across all 6 Residential Sector portals that open smoothly on [F] RFID scan.
+	_rfid_doors.clear()
+	var doors_root: Node3D = Node3D.new()
+	doors_root.name = "SectorRFIDSlidingDoors"
+	parent.add_child(doors_root)
+
+	var frame_mat: StandardMaterial3D = StandardMaterial3D.new()
+	frame_mat.albedo_color = Color(0.28, 0.32, 0.37, 1.0)
+	frame_mat.metallic = 0.78
+	frame_mat.roughness = 0.32
+	var hull_tex: Texture2D = _load_tex("facade_titanium_gunmetal_hull.png")
+	if hull_tex != null:
+		frame_mat.albedo_texture = hull_tex
+		frame_mat.uv1_scale = Vector3(2.0, 2.0, 1.0)
+
+	var leaf_mat: StandardMaterial3D = StandardMaterial3D.new()
+	leaf_mat.albedo_color = Color(0.62, 0.67, 0.73, 1.0)
+	leaf_mat.metallic = 0.68
+	leaf_mat.roughness = 0.30
+	var clad_tex: Texture2D = _load_tex("facade_brushed_steel_gantry.png")
+	if clad_tex != null:
+		leaf_mat.albedo_texture = clad_tex
+		leaf_mat.uv1_scale = Vector3(1.5, 2.0, 1.0)
+
+	var glass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_mat.albedo_color = Color(0.32, 0.46, 0.54, 0.28)
+	glass_mat.roughness = 0.08
+	glass_mat.metallic = 0.18
+	glass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	var door_specs: Array[Dictionary] = [
+		{"id": "DOOR_APT201", "label": "APT 201 // RFID SLIDING DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID SLIDING DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
+		{"id": "DOOR_APT202", "label": "APT 202 // RFID SLIDING DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID SLIDING DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
+		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID SLIDING DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
+		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID BULKHEAD DOOR", "pos": Vector3(0.0, 0.12, -8.90), "w": 2.60, "h": 2.80}
+	]
+
+	for spec: Dictionary in door_specs:
+		var did: String = String(spec["id"])
+		var dpos: Vector3 = spec["pos"] as Vector3
+		var dw: float = float(spec["w"])
+		var dh: float = float(spec["h"])
+		var leaf_w: float = dw * 0.50
+		var leaf_h: float = dh - 0.04
+		var slide_dist: float = maxf(dw * 0.48, (dw * 0.5) - 0.04)
+
+		var droot: Node3D = Node3D.new()
+		droot.name = did
+		droot.position = dpos
+		doors_root.add_child(droot)
+
+		var led_mat: StandardMaterial3D = StandardMaterial3D.new()
+		led_mat.albedo_color = COLOR_AMBER
+		led_mat.emission_enabled = true
+		led_mat.emission = COLOR_AMBER
+		led_mat.emission_energy_multiplier = 0.95
+
+		var leaves: Array[Node3D] = []
+		var closed_x: Array[float] = [-leaf_w * 0.5, leaf_w * 0.5]
+		var open_x: Array[float] = [-(leaf_w * 0.5 + slide_dist), leaf_w * 0.5 + slide_dist]
+
+		for side_i: int in range(2):
+			var sgn: float = -1.0 if side_i == 0 else 1.0
+			var leaf_body: StaticBody3D = StaticBody3D.new()
+			leaf_body.name = "%s_Leaf_%s" % [did, "L" if side_i == 0 else "R"]
+			leaf_body.position = Vector3(closed_x[side_i], leaf_h * 0.5, 0.0)
+			droot.add_child(leaf_body)
+
+			if not _batch_render:
+				var cs: CollisionShape3D = CollisionShape3D.new()
+				cs.name = "DoorLeafCollider"
+				var bshape: BoxShape3D = BoxShape3D.new()
+				bshape.size = Vector3(leaf_w, leaf_h, 0.12)
+				cs.shape = bshape
+				leaf_body.add_child(cs)
+
+			# Lower solid armored panel
+			var low_h: float = leaf_h * 0.46
+			var low_mi: MeshInstance3D = MeshInstance3D.new()
+			low_mi.name = "LowerPanel"
+			var low_bm: BoxMesh = BoxMesh.new()
+			low_bm.size = Vector3(leaf_w - 0.01, low_h, 0.085)
+			low_mi.mesh = low_bm
+			low_mi.position = Vector3(0.0, -leaf_h * 0.5 + low_h * 0.5, 0.0)
+			low_mi.material_override = leaf_mat
+			leaf_body.add_child(low_mi)
+
+			# Upper header panel
+			var top_h: float = leaf_h * 0.20
+			var top_mi: MeshInstance3D = MeshInstance3D.new()
+			top_mi.name = "UpperPanel"
+			var top_bm: BoxMesh = BoxMesh.new()
+			top_bm.size = Vector3(leaf_w - 0.01, top_h, 0.085)
+			top_mi.mesh = top_bm
+			top_mi.position = Vector3(0.0, leaf_h * 0.5 - top_h * 0.5, 0.0)
+			top_mi.material_override = leaf_mat
+			leaf_body.add_child(top_mi)
+
+			# Outer & inner vertical stiles framing the vision lite window
+			var mid_h: float = leaf_h - low_h - top_h
+			var mid_y: float = -leaf_h * 0.5 + low_h + mid_h * 0.5
+			var stile_w: float = 0.14
+			for st_sgn: float in [-1.0, 1.0]:
+				var st_mi: MeshInstance3D = MeshInstance3D.new()
+				var st_bm: BoxMesh = BoxMesh.new()
+				st_bm.size = Vector3(stile_w, mid_h, 0.085)
+				st_mi.mesh = st_bm
+				st_mi.position = Vector3(st_sgn * (leaf_w * 0.5 - stile_w * 0.5 - 0.005), mid_y, 0.0)
+				st_mi.material_override = frame_mat
+				leaf_body.add_child(st_mi)
+
+			# Tempered translucent vision panel so rooms and exterior promenade stay visually readable
+			var win_w: float = maxf(leaf_w - stile_w * 2.0 - 0.01, 0.18)
+			var win_mi: MeshInstance3D = MeshInstance3D.new()
+			win_mi.name = "VisionWindow"
+			var win_bm: BoxMesh = BoxMesh.new()
+			win_bm.size = Vector3(win_w, mid_h - 0.02, 0.028)
+			win_mi.mesh = win_bm
+			win_mi.position = Vector3(0.0, mid_y, 0.0)
+			win_mi.material_override = glass_mat
+			win_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			leaf_body.add_child(win_mi)
+
+			# Center parting seam RFID status indicator bar (shifts Amber -> Green on RFID pulse)
+			var led_mi: MeshInstance3D = MeshInstance3D.new()
+			led_mi.name = "RFIDStatusStrip"
+			var led_bm: BoxMesh = BoxMesh.new()
+			led_bm.size = Vector3(0.032, leaf_h * 0.72, 0.098)
+			led_mi.mesh = led_bm
+			led_mi.position = Vector3(-sgn * (leaf_w * 0.5 - 0.035), 0.0, 0.0)
+			led_mi.material_override = led_mat
+			led_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			leaf_body.add_child(led_mi)
+
+			leaves.append(leaf_body)
+
+		# Overhead RFID transceiver status bar on both sides of the doorway header
+		var hdr_led: MeshInstance3D = MeshInstance3D.new()
+		hdr_led.name = "HeaderRFIDStatusBar"
+		var hbm: BoxMesh = BoxMesh.new()
+		hbm.size = Vector3(dw * 0.65, 0.035, 0.30)
+		hdr_led.mesh = hbm
+		hdr_led.position = Vector3(0.0, dh - 0.02, 0.0)
+		hdr_led.material_override = led_mat
+		hdr_led.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		droot.add_child(hdr_led)
+
+		# Register an RFID transponder anchor at mid-height of the doorway so [F] telemetry lists the door
+		var tag_anchor: Node3D = Node3D.new()
+		tag_anchor.name = did + "_RFIDTag"
+		tag_anchor.position = Vector3(0.0, 1.35, 0.0)
+		droot.add_child(tag_anchor)
+
+		var d_entry: Dictionary = {
+			"id": did,
+			"label": String(spec["label"]),
+			"root": droot,
+			"center": dpos + Vector3(0.0, 1.25, 0.0),
+			"leaves": leaves,
+			"closed_x": closed_x,
+			"open_x": open_x,
+			"led_mat": led_mat,
+			"open": false,
+			"blend": 0.0
+		}
+		_rfid_doors.append(d_entry)
+		_interactables.append({
+			"node": tag_anchor,
+			"kind": "rfid_door",
+			"label": String(spec["label"]),
+			"door_id": did,
+			"collected": false,
+			"pickup": false
+		})
+
+
+func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
+	door["open"] = open_target
+	var lmat: StandardMaterial3D = door["led_mat"] as StandardMaterial3D
+	if lmat != null:
+		var col: Color = Color("#3FAF6A") if open_target else COLOR_AMBER
+		lmat.albedo_color = col
+		lmat.emission = col
+
+
+func _scan_rfid_doors(origin: Vector3) -> Array[String]:
+	var opened_labels: Array[String] = []
+	for door: Dictionary in _rfid_doors:
+		var droot: Node3D = door["root"] as Node3D
+		if droot == null or not is_instance_valid(droot):
+			continue
+		var dcenter: Vector3 = door["center"] as Vector3
+		var dist: float = origin.distance_to(dcenter)
+		if dist <= DOOR_SCAN_RANGE:
+			if not bool(door["open"]):
+				_set_door_open_state(door, true)
+				opened_labels.append("%s (OPENED)" % String(door["id"]))
+			else:
+				# If already open and player isn't standing inside the doorway threshold, allow toggling closed
+				var horiz_d: float = Vector2(origin.x - dcenter.x, origin.z - dcenter.z).length()
+				if horiz_d > 1.15:
+					_set_door_open_state(door, false)
+					opened_labels.append("%s (CLOSED)" % String(door["id"]))
+				else:
+					opened_labels.append("%s (OPEN)" % String(door["id"]))
+	return opened_labels
+
+
+func _update_rfid_doors(delta: float) -> void:
+	for door: Dictionary in _rfid_doors:
+		var target: float = 1.0 if bool(door["open"]) else 0.0
+		var cur: float = float(door["blend"])
+		if absf(cur - target) < 0.0001:
+			continue
+		cur = move_toward(cur, target, delta * DOOR_SLIDE_SPEED)
+		door["blend"] = cur
+		var s: float = smoothstep(0.0, 1.0, cur)
+		var leaves: Array = door["leaves"] as Array
+		var cx: Array = door["closed_x"] as Array
+		var ox: Array = door["open_x"] as Array
+		for i: int in range(leaves.size()):
+			var lf: Node3D = leaves[i] as Node3D
+			if lf != null and is_instance_valid(lf):
+				lf.position.x = lerpf(float(cx[i]), float(ox[i]), s)
+
+
+func _qa_t38_check(nm: String, ok: bool, detail: String) -> void:
+	var line: String = "%s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail]
+	print("[T38-QA] ", line)
+	_qa_log.append(line)
+	if not ok:
+		_qa_failures += 1
+
+
+func _run_reticle_stars_doors_qa() -> void:
+	if _player_body == null or _camera == null:
+		_qa_t38_check("setup", false, "player/camera missing")
+		get_tree().quit(1)
+		return
+	if _hud_toast != null:
+		_hud_toast.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(15)
+
+	# ---------------- 1. RETICLE / CROSSHAIR CENTERING & RAYCAST ALIGNMENT ----------------
+	var stretch_mode: String = String(ProjectSettings.get_setting("display/window/stretch/mode", ""))
+	var stretch_aspect: String = String(ProjectSettings.get_setting("display/window/stretch/aspect", ""))
+	_qa_t38_check("reticle_project_stretch_settings", stretch_mode == "canvas_items" and stretch_aspect == "expand",
+		"mode=%s aspect=%s" % [stretch_mode, stretch_aspect])
+
+	var test_sizes: Array[Vector2i] = [Vector2i(1920, 1080), Vector2i(1600, 900), Vector2i(1280, 800), Vector2i(1920, 1080)]
+	for sz: Vector2i in test_sizes:
+		if DisplayServer.get_name() != "headless":
+			DisplayServer.window_set_size(sz)
+		else:
+			get_viewport().size = sz
+		await _qa_idle(3)
+		_sync_reticle_to_viewport_center()
+		var vp_sz: Vector2 = get_viewport().get_visible_rect().size
+		var expected_c: Vector2 = vp_sz * 0.5
+		var box_center: Vector2 = _reticle_box.position + _reticle_box.size * 0.5 if _reticle_box != null else Vector2(-999, -999)
+		var err_px: float = box_center.distance_to(expected_c)
+		var ray_dir: Vector3 = _camera.project_ray_normal(expected_c).normalized()
+		var cam_fwd: Vector3 = (-_camera.global_transform.basis.z).normalized()
+		var dot_align: float = ray_dir.dot(cam_fwd)
+		_qa_t38_check("reticle_centered_%dx%d" % [sz.x, sz.y], err_px < 0.01 and dot_align > 0.999999,
+			"vp=%s reticle_center=%s expected=%s err=%.4f px ray_dot=%.8f" % [str(vp_sz), str(box_center), str(expected_c), err_px, dot_align])
+
+	# Aim inside APT 201 at the workbench and capture reticle centered check
+	_qa_place(Vector3(-8.50, 4.30, 6.10), 180.0, -10.0)
+	await _qa_frames(15)
+	_sync_reticle_to_viewport_center()
+	await _qa_capture("qa_reticle_centered_check.png")
+
+	# ---------------- 2. ROTATING DISTANT STARFIELD CYLINDER vs STATIONARY VESSEL ----------------
+	var hab_world: Node3D = _arch_container.get_node_or_null("CylinderHab7_FullScale_World") as Node3D
+	var star_barrel: MeshInstance3D = _starfield_cylinder.get_node_or_null("StarfieldOuterBarrelMesh") as MeshInstance3D if _starfield_cylinder != null else null
+	var star_cyl_mesh: CylinderMesh = star_barrel.mesh as CylinderMesh if star_barrel != null else null
+	var star_r: float = star_cyl_mesh.top_radius if star_cyl_mesh != null else 0.0
+	var star_l: float = star_cyl_mesh.height if star_cyl_mesh != null else 0.0
+	_qa_t38_check("starfield_outer_cylinder_geometry", _starfield_cylinder != null and star_r >= 1800.0 and star_l >= 4000.0 and _camera.far >= 5000.0,
+		"exists=%s R=%.1f m L=%.1f m camera_far=%.1f m" % [_starfield_cylinder != null, star_r, star_l, _camera.far])
+
+	# Place player outside on the Sector-4 Promenade deck looking toward the forward end-cap starfield vista
+	_qa_place(Vector3(0.0, 0.25, -32.0), 0.0, 12.0)
+	await _qa_frames(15)
+	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
+	var star_rot0: float = _starfield_cylinder.rotation.z if _starfield_cylinder != null else 0.0
+	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
+	await _qa_frames(90)
+	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
+	var star_rot1: float = _starfield_cylinder.rotation.z if _starfield_cylinder != null else 0.0
+	# Advance starfield rotation by an extra visual arc so the two screenshots clearly show star rotation
+	if _starfield_cylinder != null:
+		_starfield_cylinder.rotate_z(deg_to_rad(14.0))
+	var img_star2: Image = await _qa_capture("qa_outer_starfield_rotating_2.png")
+	var d_star_rot: float = absf(star_rot1 - star_rot0)
+	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
+	var d_hab_rot: float = hab_xf0.basis.get_rotation_quaternion().angle_to(hab_xf1.basis.get_rotation_quaternion())
+	_qa_t38_check("starfield_rotates_while_vessel_stationary", d_star_rot > 0.04 and d_hab_pos < 0.0001 and d_hab_rot < 0.0001,
+		"star_drot=%.4f rad (%.2f deg) hab_dpos=%.6f hab_drot=%.6f" % [d_star_rot, rad_to_deg(d_star_rot), d_hab_pos, d_hab_rot])
+	if img_star1 != null and img_star2 != null:
+		var star_diff: int = 0
+		for py: int in range(60, 420, 8):
+			for px: int in range(560, 1360, 8):
+				if img_star1.get_pixel(px, py).to_abgr32() != img_star2.get_pixel(px, py).to_abgr32():
+					star_diff += 1
+		_qa_t38_check("starfield_pixels_visible_and_moving", star_diff > 15, "changed_sky_sample_pixels=%d" % star_diff)
+
+	# ---------------- 3. ALL 6 RFID SLIDING DOORS: BLOCK WHEN CLOSED -> OPEN ON [F] -> WALK THROUGH ----------------
+	_qa_t38_check("rfid_doors_count_6", _rfid_doors.size() == 6, "door_count=%d" % _rfid_doors.size())
+	var door_img_closed: Image = null
+	var door_img_opened: Image = null
+
+	for i: int in range(_rfid_doors.size()):
+		var door: Dictionary = _rfid_doors[i]
+		var did: String = String(door["id"])
+		var dpos: Vector3 = (door["root"] as Node3D).global_position
+		# Ensure door starts closed
+		_set_door_open_state(door, false)
+		door["blend"] = 0.0
+		var leaves: Array = door["leaves"] as Array
+		var cx: Array = door["closed_x"] as Array
+		for li: int in range(leaves.size()):
+			(leaves[li] as Node3D).position.x = float(cx[li])
+		await _qa_frames(4)
+
+		# Approach from the atrium side: for Sector-4 Exit (Z=-8.90), approach from Z=-7.30 facing South (yaw 0);
+		# for all 5 room portals, approach from Z = dpos.z - 1.55 facing North (yaw 180, -Z local = +Z world).
+		var from_south: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
+		var start_z: float = (dpos.z - 1.55) if from_south else (dpos.z + 1.55)
+		var yaw_deg: float = 180.0 if from_south else 0.0
+		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		await _qa_frames(12)
+
+		if did == "DOOR_APT201":
+			door_img_closed = await _qa_capture("qa_rfid_door_apt201_closed.png")
+
+		# Walk forward against the closed door for 28 frames — collider must block the player from crossing dpos.z
+		_qa_key(KEY_W, true)
+		await _qa_idle(2)
+		await _qa_frames(28)
+		_qa_key(KEY_W, false)
+		await _qa_idle(2)
+		var z_blocked: float = _player_body.global_position.z
+		var blocked_ok: bool = (z_blocked < dpos.z - 0.30) if from_south else (z_blocked > dpos.z + 0.30)
+		_qa_t38_check("%s_blocks_when_closed" % did.to_lower(), blocked_ok and not bool(door["open"]),
+			"door_z=%.2f player_stopped_at_z=%.2f open=%s" % [dpos.z, z_blocked, door["open"]])
+
+		# Step back 1.45 m in front of the door and press [F] to emit an RFID wrist scan
+		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		await _qa_frames(6)
+		await _qa_tap(KEY_F)
+		await _qa_frames(48)
+		var opened_ok: bool = bool(door["open"]) and float(door["blend"]) > 0.98
+		_qa_t38_check("%s_opens_on_F_rfid_scan" % did.to_lower(), opened_ok,
+			"open=%s blend=%.3f" % [door["open"], float(door["blend"])])
+
+		if did == "DOOR_APT201":
+			_rfid_pulse_timer = RFID_PULSE_DURATION * 0.75
+			_arm_raise_blend = 1.0
+			_update_first_person_arm(0.0)
+			door_img_opened = await _qa_capture("qa_rfid_door_apt201_opened.png")
+			_rfid_pulse_timer = 0.0
+			_arm_raise_blend = 0.0
+			_update_first_person_arm(0.0)
+
+		# Walk straight through the opened doorway
+		_qa_key(KEY_W, true)
+		await _qa_idle(2)
+		await _qa_frames(42)
+		_qa_key(KEY_W, false)
+		await _qa_idle(2)
+		var z_through: float = _player_body.global_position.z
+		var through_ok: bool = (z_through > dpos.z + 0.45) if from_south else (z_through < dpos.z - 0.45)
+		_qa_t38_check("%s_walk_through_when_open" % did.to_lower(), through_ok,
+			"door_z=%.2f player_crossed_to_z=%.2f" % [dpos.z, z_through])
+
+	if door_img_closed != null and door_img_opened != null:
+		var combo: Image = Image.create(1920, 1080, false, door_img_closed.get_format())
+		var left_im: Image = door_img_closed.duplicate() as Image
+		var right_im: Image = door_img_opened.duplicate() as Image
+		combo.blit_rect(left_im, Rect2i(480, 0, 960, 1080), Vector2i(0, 0))
+		combo.blit_rect(right_im, Rect2i(480, 0, 960, 1080), Vector2i(960, 0))
+		combo.fill_rect(Rect2i(958, 0, 4, 1080), Color(0.90, 0.95, 1.0, 1.0))
+		combo.save_png(_resolve_path(QA_DIR) + "/qa_rfid_door_closed_vs_opened.png")
+		print("[T38-QA] Saved qa_rfid_door_closed_vs_opened.png")
+
+	var out: PackedStringArray = PackedStringArray()
+	out.append("# Reticle, Rotating Outer Starfield & RFID Sliding Doors QA ([t38u])")
+	out.append("")
+	out.append("display=%s  failures=%d" % [DisplayServer.get_name(), _qa_failures])
+	out.append("")
+	out.append_array(_qa_log)
+	var dir_abs: String = _resolve_path(QA_DIR)
+	DirAccess.make_dir_recursive_absolute(dir_abs)
+	var fn: String = dir_abs + ("/reticle_stars_doors_qa_log_headless.md" if DisplayServer.get_name() == "headless" else "/reticle_stars_doors_qa_log.md")
+	var fa: FileAccess = FileAccess.open(fn, FileAccess.WRITE)
+	if fa != null:
+		fa.store_string("\n".join(out) + "\n")
+		fa.close()
+	print("[T38-QA] DONE failures=", _qa_failures, " log=", fn)
 	get_tree().quit(1 if _qa_failures > 0 else 0)
