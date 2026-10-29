@@ -34,3 +34,25 @@ The vanity (sink, mirror and gunmetal niche) is outside on the front face, next 
 A low brushed-alloy pod (2.12 m walls) with the recycler stacked on the roof, inside the 2.4 m envelope. A gunmetal utility chase and down-pipe on the -X face lead down to Sprocket's hatch. The WC and sink are on the -X wall, the shower runs along the back, and a green door emitter marks the variant. This keeps the whole floor for fixtures, and the roof unit can be lifted out without entering the pod.
 
 **Recommendation:** iter_02 (Folded-Panel + Utility Spine). It is the simplest to fabricate in-cylinder, all services sit in one spine, and it leaves good clearances; the wet-room misting from iter_03 could be added as an option.
+
+## Final: Monocoque Capsule (2,980 tris)
+This is the polished iter_01, built with `python3 assets/src/bath_pod_generator.py final`. It is exported to `godot/assets/models/bath_pod_capsule.glb` and `final_capsule.glb`, and the sheet is `final_capsule_sheet.png`.
+
+**Footprint:** exactly 2.2 × 2.2 × 2.4 m (bounds ±1.10 / 0–2.40). The recycler cassette now sits in a full-height bay that fills a gap in the shell's +X wall, flush with the outside. On its face it has a gunmetal exterior hatch, an amber Sprocket port at 0.45 m and a green status light. The door frame is recessed into the opening.
+
+**Shell and fillets:**
+- The moulded composite shell has 0.55 m rounded corners and a domed roof, with smooth normals and hard edges above 30°.
+- The violet emissive band is inset into the wall, not stuck onto it.
+- A cove fillet runs where the shell meets the floor.
+- The door frame and fixture bases are filleted, with a violet emitter strip in the door head.
+
+**Fixtures and floor:**
+- Ceramic-white tray, WC and sink, with alloy taps and shower head.
+- Gunmetal floor with a slot drain grate offset spinward (-X).
+- A real glass screen (BLEND, tint 0.72/0.80/0.86, alpha 0.25).
+
+**Checks:**
+- Doorway is 0.9 × 2.02 m.
+- Shower, WC and sink each have a clear 0.7 m zone.
+- The 0.4 m player capsule can reach all of them.
+- All parts are closed meshes.

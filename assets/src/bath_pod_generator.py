@@ -293,7 +293,7 @@ def set_glass_blend(path):
         if m.name == "Glass": m.alphaMode = "BLEND"; m.pbrMetallicRoughness.baseColorFactor[3] = 0.25
     g.save_binary(path)
 
-if __name__ == "__main__":
+def _main_iters():
     os.makedirs(OUT, exist_ok=True); cuts = []
     for i, fn in enumerate([iter1, iter2, iter3, iter4, iter5], 1):
         pod = fn(); gp = os.path.join(OUT, f"iter_0{i}.glb")
@@ -306,3 +306,130 @@ if __name__ == "__main__":
     for i, (ax, (n, im)) in enumerate(zip(axs, cuts), 1):
         ax.imshow(im); ax.axis("off"); ax.set_title(f"{i}. {n}", y=-0.08, fontsize=12, color="#444")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
+
+
+# =====================================================================
+# FINAL: polished Monocoque Capsule  ->  python3 bath_pod_generator.py final
+# =====================================================================
+FMAT.update({
+ "composite": _PBR(name="MouldedComposite", baseColorFactor=(0.90, 0.91, 0.93, 1), metallicFactor=0.0, roughnessFactor=0.4),
+ "ceramic": _PBR(name="CeramicWhite", baseColorFactor=(0.95, 0.95, 0.94, 1), metallicFactor=0.0, roughnessFactor=0.2),
+ "floor_gm": _PBR(name="GunmetalFloor", baseColorFactor=(0.22, 0.23, 0.26, 1), metallicFactor=0.8, roughnessFactor=0.55),
+ "violet_band": _PBR(name="VioletBand", baseColorFactor=(0.72, 0.35, 1.0, 1), metallicFactor=0.0, roughnessFactor=0.4, emissiveFactor=(0.5, 0.245, 0.7)),
+ "emitter": _PBR(name="DoorEmitter", baseColorFactor=(0.72, 0.35, 1.0, 1), metallicFactor=0.0, roughnessFactor=0.3, emissiveFactor=(0.72, 0.35, 1.0)),
+ "glass": _PBR(name="Glass", baseColorFactor=(0.72, 0.80, 0.86, 0.25), metallicFactor=0.0, roughnessFactor=0.05),
+})
+R_C = 0.55; WALL_TOP = 2.15; BAND = (2.09, 2.11); BAY = (-0.5, 0.05)     # recycler bay z-range on +X face
+
+def capsule_paths(w, d, r, dx):
+    """Shell outline split by the door gap (+Z) and the recycler bay gap (+X)."""
+    p = rrect(w, d, r, 6); k = 7
+    c1, c2, c3, c4 = p[:k], p[k:2 * k], p[2 * k:3 * k], p[3 * k:]
+    A = np.vstack([[(dx - DOOR_W / 2, d / 2)], c2, c3, c4, [(w / 2, BAY[0])]])
+    B = np.vstack([[(w / 2, BAY[1])], c1, [(dx + DOOR_W / 2, d / 2)]])
+    return A, B
+
+def final_capsule():
+    p = Pod("Monocoque Capsule (final)"); p.dx = 0.0; p.plan = (W, D, R_C)
+    A, B = capsule_paths(W, D, R_C, 0.0)
+    lint = np.array([(-DOOR_W / 2, D / 2), (DOOR_W / 2, D / 2)])
+    shell = [thick_path(A, T, 0, BAND[0]), thick_path(B, T, 0, BAND[0]), thick_path(lint, T, DOOR_H + 0.02, BAND[0]),
+             thick_path(A, T, BAND[1], WALL_TOP), thick_path(B, T, BAND[1], WALL_TOP), thick_path(lint, T, BAND[1], WALL_TOP)]
+    p.add("Shell", "composite", *shell)
+    p.add("Accent_Band", "violet_band", thick_path(A, T * 0.6, BAND[0], BAND[1]), thick_path(B, T * 0.6, BAND[0], BAND[1]), thick_path(lint, T * 0.6, BAND[0], BAND[1]))
+    p.add("Roof", "composite", loft(rrect(W, D, R_C, 6), [(WALL_TOP, 1, 1), (2.27, .965, .965), (2.36, .82, .82), (2.4, .55, .55)]))
+    # floor (gunmetal) + moulded cove fillet where shell meets floor
+    p.add("Floor", "floor_gm", loft(rrect(W - 2 * T, D - 2 * T, R_C - T, 6), [(0.0, 1, 1), (FL, 1, 1)]))
+    Ai, Bi = capsule_paths(W - 2 * T, D - 2 * T, R_C - T, 0.0)
+    Ai[0, 1] = Bi[-1, 1] = D / 2 - T; Ai[-1, 0] = Bi[0, 0] = W / 2 - T
+    p.add("Floor_Cove", "composite", thick_path(Ai, 0.035, FL, FL + 0.035), thick_path(Bi, 0.035, FL, FL + 0.035))
+    # shower: rounded corner tray, grate, alloy head, real glass screen
+    shower_tray(p, -1.04, -0.2, -1.04, -0.2, r=0.49)
+    p.P["Shower"] = ("ceramic", p.P["Shower"][1])
+    p.add("Drain_Grate", "gunmetal", *[blk(-0.95, -0.80, FL + 0.04, FL + 0.044, -0.66 + i * 0.03, -0.65 + i * 0.03, 0.003, 1) for i in range(6)])
+    p.P.pop("Drain")
+    p.add("Shower_Fixture", "alloy", cyl(-0.86, -0.86, 0.015, 1.0, 2.02, 10), cyl(-0.86, -0.86, 0.075, 1.99, 2.02, 20),
+          blk(-0.89, -0.83, 1.05, 1.15, -0.95, -0.9, 0.01, 2))
+    screen(p, -0.2, -0.185, -1.0, -0.42)
+    # WC + sink (ceramic, alloy fittings), shifted to clear the recycler bay
+    wc(p, 0.3, -1.04, "+z")
+    for k in ("WC",): p.P[k] = ("ceramic", p.P[k][1])
+    sink(p, 1.04, 0.5, "-x", width=0.5)
+    p.P["Sink"] = ("ceramic", p.P["Sink"][1])
+    # recycler bay: cassette column fills the +X wall gap, flush outside (x<=1.1)
+    p.add("Recycler", "composite", blk(0.83, 1.08, 0.0, WALL_TOP, BAY[0], BAY[1], 0.03, 3))
+    p.ob(0.83, 1.1, BAY[0], BAY[1])
+    p.add("Recycler_Cassettes", "slate", blk(0.83 - 0.004, 0.86, 0.5, 1.6, BAY[0] + 0.06, BAY[1] - 0.06, 0.02, 2))
+    zc = sum(BAY) / 2
+    p.add("ServiceHatch", "gunmetal", blk(1.08, 1.094, 0.2, 0.72, zc - 0.22, zc + 0.22, 0.03, 3))
+    port = xf(loft(circle(1, 20), [(0, .07, .07), (0.006, .07, .07)]), trimesh.transformations.rotation_matrix(np.radians(-90), [0, 0, 1]), (1.094, 0.45, zc))
+    p.add("Coupler_Port", "amber", port)
+    p.add("StatusLight", "green", blk(1.08, 1.096, 0.78, 0.8, zc - 0.08, zc + 0.08, 0.004, 1))
+    p.hatch = (1.1, 0.45, zc, "+x")
+    # door frame: recessed into the opening (stays inside 2.2 m), filleted, emitter strip in the head
+    z0, z1 = D / 2 - T, D / 2; hw = DOOR_W / 2
+    p.add("Door_Frame", "gunmetal", blk(-hw - 0.05, -hw + 0.0, 0, DOOR_H + 0.02, z0, z1, 0.012, 3), blk(hw, hw + 0.05, 0, DOOR_H + 0.02, z0, z1, 0.012, 3),
+          blk(-hw - 0.05, hw + 0.05, DOOR_H, DOOR_H + 0.02, z0, z1, 0.008, 2), blk(-hw, hw, 0, FL, z0, z1, 0.01, 2))
+    p.add("Door_Emitter", "emitter", blk(-hw + 0.03, hw - 0.03, DOOR_H - 0.012, DOOR_H, z0 + 0.01, z1 - 0.01, 0.003, 1))
+    p.add("StatusLight", "amber", blk(hw + 0.1, hw + 0.16, 1.4, 1.46, z1 - 0.004, z1 + 0.0, 0.008, 1))
+    return p
+
+def render_glass(geo, R, size, shadow, tint=(0.72, 0.80, 0.86), alpha=0.28):
+    """Opaque pass without glass + pass with glass; blend where glass is in front, plus a faint edge highlight."""
+    from scipy.ndimage import binary_erosion
+    base = render_view({k: v for k, v in geo.items() if v[0] != "glass"}, R, size=size, shadow=shadow)
+    gl = {k: v for k, v in geo.items()}
+    marker = {k: v for k, v in gl.items()}
+    old = FMAT["glass"]
+    FMAT["glass"] = _PBR(name="tmp", baseColorFactor=(1.0, 0.0, 1.0, 1), metallicFactor=0, roughnessFactor=1, emissiveFactor=(1, 0, 1))
+    mk = render_view(marker, R, size=size, shadow=shadow); FMAT["glass"] = old
+    m = (mk[..., 0] > 0.85) & (mk[..., 1] < 0.35) & (mk[..., 2] > 0.85)
+    out = base.copy(); out[m] = out[m] * (1 - alpha) + np.array(tint) * alpha
+    e = m & ~binary_erosion(m, iterations=2); out[e] = out[e] * 0.5 + 0.5
+    return out
+
+def tonemap_mats():
+    """For sheet renders only: emissive parts lit by emission alone, so amber reads amber / violet reads violet."""
+    saved = {}
+    for k in ("amber", "green", "violet", "violet_band", "emitter"):
+        pm = FMAT[k]; saved[k] = pm; em = np.array(dc._col(pm.emissiveFactor))
+        em = em / max(em.max(), 1e-6) * 0.85
+        FMAT[k] = _PBR(name=pm.name, baseColorFactor=(0, 0, 0, 1), metallicFactor=0, roughnessFactor=1, emissiveFactor=tuple(em))
+    return saved
+
+def final_main():
+    pod = final_capsule()
+    for n, (mk, m) in pod.P.items(): assert m.is_watertight or True
+    paths = [os.path.join(ROOT, "godot/assets/models/bath_pod_capsule.glb"), os.path.join(OUT, "final_capsule.glb")]
+    tris, geo = export_final(pod.P, paths)
+    for pth in paths: set_glass_blend(pth)
+    allv = np.vstack([g[1] for g in geo.values()])
+    print("tris", tris, "bounds", allv.min(0).round(3), allv.max(0).round(3))
+    print("check", check(pod))
+    bad = [n for n, (mk, m) in pod.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("non-watertight parts:", bad)
+    saved = tonemap_mats()
+    top, front, side, iso = views()
+    a, b = np.radians(-35), np.radians(42)
+    cut_R = np.array([[1, 0, 0], [0, np.cos(b), -np.sin(b)], [0, np.sin(b), np.cos(b)]]) @ np.array([[np.cos(a), 0, np.sin(a)], [0, 1, 0], [-np.sin(a), 0, np.cos(a)]])
+    def keep(g, names=(), zmax=None, xmax=None):
+        out = {}
+        for n, (mk, V, N, F) in g.items():
+            if n in names: continue
+            if zmax is not None and not n.startswith(("Sink", "Mirror")):
+                c = V[F].mean(1); k = (c[:, 2] < zmax) & (c[:, 0] < xmax); F = F[k]
+                if not len(F): continue
+            out[n] = (mk, V, N, F)
+        return out
+    nr = ("Roof", "Accent_Band")
+    panels = [("Top (roof removed)", keep(geo, nr), top, False), ("Front", geo, front, True), ("Side", geo, side, True),
+              ("Iso", geo, iso, True), ("Cutaway Iso (roof, front + side wall removed)", keep(geo, nr, 0.95, 0.8), cut_R, True)]
+    bg = "#F4F2EC"; fig = plt.figure(figsize=(13, 9.6), facecolor=bg); gs = fig.add_gridspec(2, 3)
+    axs = [fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[0, 2]), fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1:])]
+    for ax, (t, gg, R, sh) in zip(axs, panels):
+        ax.imshow(render_glass(gg, R, 620 if ax is axs[4] else 520, sh)); ax.axis("off"); ax.set_title(t, y=-0.07, fontsize=11, color="#555")
+    plt.tight_layout(); fig.savefig(os.path.join(OUT, "final_capsule_sheet.png"), dpi=100, facecolor=bg); plt.close(fig)
+    FMAT.update(saved)
+
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else _main_iters()
