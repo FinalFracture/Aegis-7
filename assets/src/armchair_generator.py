@@ -74,4 +74,37 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+
+# ---------- final: polished iter_04 Swivel Pedestal, in the dining_chair_swivel vocabulary ----------
+def final_swivel():
+    import trimesh
+    from dining_chair_generator import rrect, circle, loft, xf, merge, torus_ring
+    p = Pod("Armchair_Swivel_Pedestal"); c = circle(1, 24)
+    p.add("FloorPlate", "gunmetal", loft(rrect(.54, .54, .07, 1), [(0, 1, 1), (.018, 1, 1), (.03, .93, .93)]))
+    p.add("FloorBolts", "alloy", *[xf(loft(circle(.014, 8), [(.029, 1, 1), (.037, 1, 1)]), t=(x, 0, z)) for x in (-.2, .2) for z in (-.2, .2)])
+    p.add("LockLight", "amber", xf(loft(rrect(.08, .014, .005, 2), [(.029, 1, 1), (.035, 1, 1), (.037, .85, .6)]), t=(0, 0, .21)))
+    p.add("Column", "alloy", loft(c, [(.03, .11, .11), (.04, .11, .11), (.075, .07, .07), (.2, .065, .065), (.215, .075, .075)]))
+    p.add("SwivelLock_Ring", "amber", loft(c, [(.15, .072, .072), (.158, .076, .076), (.17, .076, .076), (.176, .072, .072)]))
+    p.add("SwivelHub", "gunmetal", loft(c, [(.215, .12, .12), (.225, .14, .14), (.245, .14, .14), (.252, .13, .13)]))
+    p.add("Seat_Pan", "alloy", loft(rrect(.84, .8, .08, 3), [(.252, .95, .95), (.262, 1, 1), (.29, 1, 1)]))
+    # moulded shell: base tub + back + arms, white composite with bevels
+    p.add("Shell", "white", bev(.92, .86, .29, .33, .08, .02, 3, 0, .02), bev(.96, .12, .29, .95, .1, .03, 3, 0, ZB + .08),
+          *[bev(.11, .76, .29, .64, .05, .015, 3, sd * .425, .06) for sd in (-1, 1)])
+    p.add("AccentInset", "violet", box(-.2, .2, .87, .885, ZB + .14, ZB + .144))
+    # cushions (smooth), clipped
+    p.add("Seat_Cushion", "fabric", soft(.72, .74, .33, .45, .06, 0, .07))
+    p.add("Back_Cushion", "fabric", tilt(soft(.72, .14, .45, .9, .06, 0, ZB + .21), -8, [0, .45, ZB + .21]))
+    p.add("Arm_Pads", "fabric", *[soft(.1, .6, .64, .68, .02, sd * .425, .1) for sd in (-1, 1)])
+    p.add("Cushion_Clips", "gunmetal", *[box(x - .025, x + .025, .3, .33, ZF - .07, ZF - .058) for x in (-.2, .2)])
+    p.add("Clip_Lights", "amber", *[box(x - .012, x + .012, .31, .318, ZF - .058, ZF - .054) for x in (-.2, .2)])
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    p = final_swivel(); gp = os.path.join(dc.ROOT, "godot/assets/models/armchair_swivel_pedestal.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "lo", V.min(0).round(3), "bad", bad, list(p.P))
+    sp = os.path.join(OUT, "final_swivel_pedestal_sheet.png"); wg.sheet(p, sp, "Final  #16 armchair, Swivel Pedestal (qty 2: 102 / 203)"); os.remove(sp.replace("_sheet.png", ".glb"))
+
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
