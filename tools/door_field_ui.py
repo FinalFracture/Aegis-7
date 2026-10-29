@@ -5,16 +5,18 @@ File format: {"DOOR_RM1B": {"opacity": 0.4, "color": [r, g, b, a]}, "ALL": {...}
 The running game polls the file every 0.5 s, re-applies it when its modified time changes and calls
 set_door_field(door_id, opacity, color) on each door ("ALL" = every door, applied first).
 
-Where the game reads it:
-  * editor / dev run (`godot --path godot`):  res://config/door_fields.json  = godot/config/door_fields.json
-    (default target of this tool; godot/config/ is gitignored)
-  * exported build:                          user://door_fields.json
-    user:// is Godot's app_userdata/<project name>/ folder:
+Where the game reads it ([QA-FF-06]):
+  Every run (editor, `godot --path godot`, exported build) polls BOTH files below and applies whichever
+  exists with the NEWER modified time, so either target works for a dev run:
+  * res://config/door_fields.json  = godot/config/door_fields.json   (default target; gitignored;
+    not present in exported builds)
+  * user://door_fields.json         = Godot's app_userdata/<project name>/ folder (--user / --user-dir):
       Linux   ~/.local/share/godot/app_userdata/<name>/
       Windows %APPDATA%\Godot\app_userdata\<name>\
       macOS   ~/Library/Application Support/Godot/app_userdata/<name>/
-    The game prints the exact folder at boot ("[FORCEFIELD] door field overrides: ... (user dir: ...)").
-    Target it with --user (guessed folder) or --user-dir <that folder>; --print-paths shows both.
+    Use --user for exported builds. The game prints the exact user folder at boot
+    ("[FORCEFIELD] door field overrides: ... (user dir: ...)"); pass it with --user-dir if the guess is off.
+    --print-paths shows both paths.
 
 Run:  python3 tools/door_field_ui.py                       GUI (needs python3-tk)
       python3 tools/door_field_ui.py --set DOOR_RM1B --opacity 0.4 --color 0,1,1,1

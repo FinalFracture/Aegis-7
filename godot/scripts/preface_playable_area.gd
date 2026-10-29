@@ -155,8 +155,8 @@ const FF_EMITTER_ENERGY := {"EmitterStrip": 2.5, "EmitterNodes": 3.0, "Conduits"
 const FF_DEFAULT_OPACITY := 0.45
 const FF_LIGHT_GREEN := Color("#3FAF6A")
 # Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
-# [QA-FF-04] editor/dev run -> res://config/door_fields.json (godot/config/, gitignored);
-#            exported build -> user://door_fields.json (res:// is read-only inside the PCK).
+# [QA-FF-04/06] every run polls BOTH res://config/door_fields.json (godot/config/, gitignored) and
+#            user://door_fields.json and applies whichever has the newer mtime (exports: user:// in practice).
 const DOOR_FIELD_JSON_DEV := "res://config/door_fields.json"
 const DOOR_FIELD_JSON_USER := "user://door_fields.json"
 const DOOR_FIELD_POLL_SEC := 0.5
@@ -223,6 +223,7 @@ var _ff_shader: Shader = null
 var _ff_gltf_doc: GLTFDocument = null
 var _ff_gltf_state: GLTFState = null
 var _door_json_mtime: int = -1
+var _door_json_src: String = ""
 var _door_json_hash: int = 0
 var _door_json_poll_t: float = 0.0
 var _door_json_recheck_until: float = 0.0
@@ -3524,11 +3525,11 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 		var n_panel: Node3D = model.find_child("RFIDPanel", true, false) as Node3D
 		# Panel pocket sits beside the 1.82 m frame (x 1.06..1.20); in the narrower baked portals that falls
 		# inside the 0.30 m wall, so nudge panel + light proud of the wall face to stay visible (glb untouched).
-		# [QA-FF-03] panel +10 mm; light +14 mm so its face stays ~5 mm proud of the panel face (no z-fight).
+		# [QA-FF-03] panel +10 mm; light +20 mm so its face stands ~11 mm proud of the panel face (>=10 mm, no z-fight).
 		if n_panel != null:
 			n_panel.position.z += 0.010
 		if n_light != null:
-			n_light.position.z += 0.014
+			n_light.position.z += 0.020
 
 		var fmat: ShaderMaterial = ShaderMaterial.new()
 		fmat.shader = shader
@@ -3614,7 +3615,8 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			"pickup": false
 		})
 	print("[FORCEFIELD] doors=%d glb=%s shader=%s" % [_rfid_doors.size(), FORCEFIELD_DOOR_GLB, FORCEFIELD_DOOR_SHADER])
-	print("[FORCEFIELD] door field overrides: %s  (user dir: %s)" % [_resolve_path(_door_field_json_path()), OS.get_user_data_dir()])
+	print("[FORCEFIELD] door field overrides: newer of %s | %s  (user dir: %s)" % [_resolve_path(DOOR_FIELD_JSON_DEV), _resolve_path(DOOR_FIELD_JSON_USER), OS.get_user_data_dir()])
+	_poll_door_field_json()  # apply any saved overrides at boot
 
 
 func _find_door(door_id: String) -> Dictionary:
@@ -3782,18 +3784,33 @@ func _update_rfid_doors(delta: float) -> void:
 
 
 func _door_field_json_path() -> String:
+	# [QA-FF-06] poll BOTH res://config/door_fields.json (dev checkout; absent/unreadable in exports) and
+	# user://door_fields.json in every run, and use whichever exists with the newer modified time.
+	var best: String = ""
+	var best_mt: int = -1
+	for cand: String in [DOOR_FIELD_JSON_DEV, DOOR_FIELD_JSON_USER]:
+		var ap: String = _resolve_path(cand)
+		if FileAccess.file_exists(ap):
+			var mt: int = int(FileAccess.get_modified_time(ap))
+			if mt > best_mt:
+				best_mt = mt
+				best = cand
+	if best != "":
+		return best
 	return DOOR_FIELD_JSON_DEV if OS.has_feature("editor") else DOOR_FIELD_JSON_USER
 
 
 func _poll_door_field_json() -> void:
 	# External Python UI writes DOOR_FIELD_JSON = {door_id|"ALL": {"opacity": f, "color": [r,g,b,a]}}.
 	# Re-read only when the modified time changes (plus a short re-check window for same-second writes).
-	var abs_p: String = _resolve_path(_door_field_json_path())
+	var src: String = _door_field_json_path()
+	var abs_p: String = _resolve_path(src)
 	if not FileAccess.file_exists(abs_p):
 		return
 	var mt: int = int(FileAccess.get_modified_time(abs_p))
-	if mt != _door_json_mtime:
+	if mt != _door_json_mtime or src != _door_json_src:
 		_door_json_mtime = mt
+		_door_json_src = src
 		_door_json_recheck_until = _time + 1.5
 	elif _time > _door_json_recheck_until:
 		return
@@ -3802,7 +3819,8 @@ func _poll_door_field_json() -> void:
 	if hsh == _door_json_hash:
 		return
 	_door_json_hash = hsh
-	apply_door_field_overrides(JSON.parse_string(txt))
+	var n_applied: int = apply_door_field_overrides(JSON.parse_string(txt))
+	print("[FORCEFIELD] applied %d door field override(s) from %s" % [n_applied, src])
 
 
 func apply_door_field_overrides(data: Variant) -> int:
