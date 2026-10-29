@@ -1,0 +1,125 @@
+# Residential Building Layout v2, rev C: 10 Generous Units, Minimal Public Space (Vance, Oct 29 2026)
+Rev C (Jared): 10 units total = 8 apartments + 1 Laundry + 1 Maintenance; generous rooms; minimal public space (tight corridor + stair core, no lobby/atrium); 201 absorbs the old 2C alcove; Maintenance holds Sprocket pads, the substation role and the risers; all doors Bulkhead Hub; all apartments enterable; 4 interior kits re-mapped; doors seated on the real wall face (QA-BK-01). Rev B kept as `residential_apartment_layout_v2_revB.md`. **Plan only, no build until Jared approves.**
+Shell unchanged: 28.0 m (X -14..+14) × 18.0 m (Z -9..+9) × 8.8 m; L1 Y 0.00, L2 Y +4.20. South wall (Z -9) faces the Valley A Promenade; Sector-4 exit stays at Z -9, X 0.
+- **Exterior v1 (approved 2026-10-29):** Maintenance gains a **2.0 m north service door** (Z +9 wall, X 3.2, force-field + Bulkhead Hub, rev C door spec) for Sprocket access and as the 2nd fire exit. See `residential_exterior_plan_v1.md`.
+
+## Circulation (public space ≈ 65 m² per floor, 13% of the floor)
+- **Corridor:** one east–west corridor per floor, **1.6 m clear** between wall faces (Z -0.8..+0.8), running only **X -10..+10** (the end strips go to the corner units). Fits 2 people passing, or 1 person + Sprocket (0.78 m).
+- **Stair core:** X -2..+2, Z -9..-0.8 (4.0 × 8.2 m), opening straight off the corridor with no door. Two 1.5 m switchback flights, 24 risers at 0.175 m, landing at the north end. L1: the south 2.5 m is the exit vestibule behind the Sector-4 door. L2: the same 2.5 m is the top landing with the promenade window. No lobby, no atrium, no double-height void.
+- **Partitions:** 0.20 m thick; all dimensions below are to partition centerlines.
+
+## Level 1 (Y 0.00): 4 apartments + Laundry + Maintenance
+| Unit | X, Z | Size | Door (on corridor wall face) |
+|---|---|---|---|
+| 101 apt | -14..-4.5, +0.8..+9 | 77.9 m² | Z +0.8 face, X -6.5, 1.4 m |
+| Laundry (1A) | -4.5..+0.5, +0.8..+9 | 41.0 m² | Z +0.8 face, X -2.0, 1.4 m |
+| Maintenance (was 1B) | +0.5..+6, +0.8..+9 | 45.1 m² | Z +0.8 face, X +3.2, **2.0 m** (Sprocket) |
+| 102 apt | +6..+14, +0.8..+9 | 65.6 m² | Z +0.8 face, X +8.0, 1.4 m |
+| 103 apt | -14..-2, -9..-0.8 (+ end strip -14..-10, -0.8..+0.8) | 104.8 m² | Z -0.8 face, X -4.5, 1.4 m |
+| Stair core + vestibule | -2..+2, -9..-0.8 | 32.8 m² | Sector-4 exit: Z -9 face, X 0, 2.6 m |
+| 104 apt | +2..+14, -9..-0.8 (+ end strip +10..+14) | 104.8 m² | Z -0.8 face, X +4.5, 1.4 m |
+
+```
+LEVEL 1  (north = +Z at top)
+X -14            -4.5      +0.5    +6              +14
++----------------+---------+-------+----------------+  Z +9
+|                | LAUNDRY | MAINT |                |
+|      101       |  41 m²  | [P][P]|      102       |
+|    77.9 m²     |         | [P] R |    65.6 m²     |
++------[B]-------+---[B]---+--[B]--+------[B]-------+  Z +0.8
+|    |<========== CORRIDOR 1.6 m ==========>|      |
++------------[B]-----+ STAIR  +-----[B]-------------+  Z -0.8
+|                    | /\/\/\ |                    |
+|        103         | switch-|        104         |
+|      104.8 m²       |  back  |      104.8 m²      |
+|   (promenade wdw)  |--------|  (promenade wdw)   |
+|                    | VESTIB.|                    |
++--------------------+==[B]===+--------------------+  Z -9
+X -14               -2  exit +2                  +14
+[B] force-field door + Bulkhead Hub, frame seated in the wall   [P] Sprocket floor pad   R riser shaft
+```
+
+## Level 2 (Y +4.20): 4 apartments
+| Unit | X, Z | Size | Door |
+|---|---|---|---|
+| **201 player apt** | -14..0, +0.8..+9 | **114.8 m²** (absorbs the old 2C alcove as a workshop nook) | Z +0.8 face, X -3.0, 1.4 m |
+| 202 apt | 0..+14, +0.8..+9 | 114.8 m² (riser runs in a sealed 1.0 × 1.0 m wall chase in its SW corner) | Z +0.8 face, X +3.0, 1.4 m |
+| 203 apt | -14..-2, -9..-0.8 (+ end strip) | 104.8 m² | Z -0.8 face, X -4.5, 1.4 m |
+| Stair core + top landing | -2..+2, -9..-0.8 | 32.8 m² | open to corridor; window on Z -9 |
+| 204 apt | +2..+14, -9..-0.8 (+ end strip) | 104.8 m² | Z -0.8 face, X +4.5, 1.4 m |
+
+```
+LEVEL 2  (north = +Z at top)
+X -14                     0                       +14
++-------------------------+-------------------------+  Z +9
+|          201            |          202            |
+|   PLAYER  114.8 m²      |        114.8 m²         |
+| (workbench + ex-2C nook)|R                        |
++----------[B]------------+-----------[B]-----------+  Z +0.8
+|    |<========== CORRIDOR 1.6 m ==========>|      |
++------------[B]-----+ STAIR  +-----[B]-------------+  Z -0.8
+|        203         | /\/\/\ |        204         |
+|      104.8 m²       |        |      104.8 m²      |
+|   (promenade wdw)  | LANDING|  (promenade wdw)   |
+|                    | window |                    |
++--------------------+--------+--------------------+  Z -9
+```
+
+## Doors (11 Bulkhead Hubs) and QA-BK-01
+- 10 unit doors + the Sector-4 exit, all force-field in the v2 frame with a **Bulkhead Hub** (0.40 × 0.80 × 0.20 m panel at 1.0–1.8 m, 0.9 m Sprocket coupler socket, no dock flap) on the latch-side jamb, corridor side.
+- **QA-BK-01 fix:** each door is defined by its partition (the wall line in the tables), never by a free coordinate. The frame is centered in the 0.20 m partition; the hub's back face sits on the corridor-side wall face (Z ±0.8 or Z -9 for the exit), within 30 mm, on a jamb pier with its own StaticBody (also covers REAL-01).
+- **Sprocket:** 3 open 1.2 × 1.2 m floor pads with coupler arms, all in Maintenance; no wall docks anywhere. Maintenance also holds the substation cabinet and the riser shaft base (R), which rises through the sealed chase in 202.
+
+## Other audit items (carried from rev B)
+- REAL-02: the stair rail and any glass get their own colliders from the same mesh.
+- REAL-03: one Area3D per unit matching its partitions, used for both HUD zone names and interior streaming; each shell must pass the 72-ray closed check.
+- REAL-04: recheck stair width and headroom (≥2.1 m) after the rebuild.
+- REAL-05: no leftover open areas; public space is only the corridor and stair core.
+
+## Interiors: 4 kits mapped to the 7 non-player apartments
+Kits: **K1** Shift Tech Studio (Engineering amber), **K2** Family home (Agri emerald), **K3** Researcher (Science violet), **K4** Civic Elder (Civic teal). Larger units get an extra room zone (bedroom/study) from the same kit.
+| Unit | Kit | Story beat (Chapter 1, Solar Flare) |
+|---|---|---|
+| 101 | K1 | Night-shift tech: bunk still down, half-eaten meal, Sprocket's spare charge cable. |
+| 102 | K4 | Elder sheltering in place: suit missing from its hook, plants knocked over by the 0.35G drop. |
+| 103 | K2 | Family left in a hurry; toys drifted toward the window (Coriolis tell). |
+| 104 | K3 | Researcher's flare-monitor desk; every slate shows the same red solar glyph. |
+| 201 | Bespoke | Player apartment; existing workbench, sleeve, headband, spool; ex-2C becomes a tool and cable nook. |
+| 202 | K2 (mirrored) | Neighbor family; a wordless drawing of the player taped up; riser chase as a boxed-in corner. |
+| 203 | K4 (mirrored) | Retired pilot; Aldrin Cycler route model on the wall; Battery Charge pickup. |
+| 204 | K1 (mirrored) | Engineer's bench with a dismantled field emitter (teaches the door system); a stuck Sweep bot to free (Mechanic B). |
+Laundry: lockers, 4 washer/dryer stacks, folding counter. Maintenance: substation cabinet, 3 pads, riser base, tool wall.
+
+## Budgets and streaming
+| Unit type | Tris | Materials | Dynamic lights | Physics props |
+|---|---|---|---|---|
+| 201 (player) | ≤ 28,000 | ≤ 8 | 3 (1 shadowed) | ≤ 35 |
+| 103, 104, 202, 203, 204 (~105–115 m²) | ≤ 20,000 | ≤ 6 | 2 (1 shadowed) | ≤ 30 |
+| 101, 102 (~66–78 m²) | ≤ 16,000 | ≤ 6 | 2 (1 shadowed) | ≤ 25 |
+| Maintenance | ≤ 14,000 | ≤ 5 | 2 | ≤ 15 |
+| Laundry | ≤ 10,000 | ≤ 4 | 1 | ≤ 10 |
+Shell, corridor and stair core: ≤ 12,000 tris per floor.
+- **Live:** player inside the unit, or on the same floor within 10 m of its door → full interior, physics on.
+- **Warm:** same floor 10–16 m, or door field closed → visible, props frozen, baked light only.
+- **Cold:** other floor, or more than 20 m → unloaded; window shows a lit interior card. Hysteresis: reload at 16 m, unload at 20 m.
+- At most about 3 units are Live/Warm at once (≈ 60k tris for interiors).
+
+## Rook: what to model
+1. Rebuild `preface_residential_sector.glb` to this grid: 0.20 m partitions, the 1.6 m corridors (X -10..+10), the 4.0 m stair core with switchback and its colliders; remove the atrium, mezzanine and old open areas.
+2. One door frame kit + one Bulkhead Hub, instanced 11 times, seated per the QA-BK-01 rule.
+3. 3 floor pads with coupler arms, substation cabinet and riser shaft (Maintenance) plus the 202 chase.
+4. Interior kits K1–K4 (with the extra room zone for big units), 7 story sets, the Laundry and Maintenance fit-outs, the 201 extension into the ex-2C nook, and one window card per unit.
+
+## Gage: what to change
+1. Replace the building scene; rebuild collision and navmesh; one Area3D per unit for zone names and streaming.
+2. Re-place the player spawn in 201 and check it after the rebuild.
+3. Door logic for all 11 doors: wrist [F] at the hub → amber standby, scanning, `#3FAF6A` granted, violet field drops. All apartments are enterable.
+4. Live/Warm/Cold streaming with 16/20 m hysteresis.
+5. Sprocket pathing to the Maintenance pads and to door coupler sockets.
+6. Light probes and occlusion for the smaller core (no atrium light; add a skylight over the stair core).
+
+## 2D floor plans
+- `design/residential_floorplan_rev_c_L1.png`
+- `design/residential_floorplan_rev_c_L2.png`
+(generated by `design/residential_floorplan_rev_c.py`)
+- Room layouts: `design/residential_roomlayout_rev_c_L1.png`, `design/residential_roomlayout_rev_c_L2.png` (generated by `design/residential_roomlayout_rev_c.py`)

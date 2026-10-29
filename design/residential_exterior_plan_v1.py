@@ -27,10 +27,10 @@ for x in range(-8,9,2): ax.plot([x,x],[-18.5,-9],color="#E3CFB4",lw=0.6,zorder=2
 R_(ax,-17,-14,-9,11.5,PAVE); R_(ax,14,17,-9,11.5,PAVE); R_(ax,-14,14,9,11.5,PAVE)
 R_(ax,-47,47,-26,-22.5,PAVE); R_(ax,-47,47,-42,-26,WATER); T(ax,0,-33.5,"VALLEY A CANAL ESPLANADE (context)",8,color="#3B5966")
 # neighbor plots / building edges
-for (x0,x1,z0,z1,lab) in [(-43,-26,-8,22,"PLOT W  - R-6 residential\n(neighbor edge X -26)"),(26,46,-8,22,"PLOT E  - civic clinic /\nmarket hall (edge X +26)"),
-                          (2,16,18,40,"PLOT N-E  - workshop row\n(edge Z +18)"),(-43,-26,-17,-10,"PLOT SW kiosk row")]:
+for (x0,x1,z0,z1,lab) in [(-43,-26,-8,22,"PLOT W  - R-6 residential\nFACADE ONLY (edge X -26)"),(26,46,-8,22,"PLOT E  - clinic / market\nFACADE ONLY (edge X +26)"),
+                          (2,16,18,40,"PLOT N-E  - workshop row\nFACADE ONLY (edge Z +18)"),(-43,-26,-17,-10,"PLOT SW kiosks (facade)")]:
     R_(ax,x0,x1,z0,z1,"#E3E6EA",ec=GRAPH,lw=1.6,z=3,hatch="//"); T(ax,(x0+x1)/2,(z0+z1)/2,lab,7.5,weight="bold",bbox=dict(fc="white",ec="none",pad=1.5))
-R_(ax,26,46,-17,-10,"#E3E6EA",ec=GRAPH,lw=1.6,z=3,hatch="//"); T(ax,36,-13.5,"PLOT SE tram depot edge",7.5,weight="bold",bbox=dict(fc="white",ec="none",pad=1.5))
+R_(ax,26,46,-17,-10,"#E3E6EA",ec=GRAPH,lw=1.6,z=3,hatch="//"); T(ax,36,-13.5,"PLOT SE depot (facade)",7.5,weight="bold",bbox=dict(fc="white",ec="none",pad=1.5))
 # hydro / green
 R_(ax,-21,-5,18,28,"#CFEBD8",ec=GRN,lw=1.5,z=3); T(ax,-13,25.5,"HYDRO CO-OP BEDS\n(community, patched liners)",7.5,color="#1F6B3E",weight="bold")
 for z in (19.5,21.5,23.5): R_(ax,-20,-6,z,z+0.9,GRN,z=4,alpha=0.7)
@@ -46,12 +46,17 @@ for x0,x1,z in [(-13,-5,9),(-4,0,9),(6.8,13.2,9),(-13,-3,-9),(3,13,-9)]:
     ax.plot([x0,x1],[z,z],color=VIO,lw=3.2,zorder=7)
 for z0,z1,x in [(-8,8,-14),(-8,8,14)]: ax.plot([x,x],[z0,z1],color=VIO,lw=3.2,zorder=7)
 ax.plot([-1.2,1.2],[-9.35,-9.35],color=VIO,lw=3.2,ls=(0,(1,1)),zorder=7)
+# plinth masking (approved): planters + ramps along +-Z walls (no curvature along X, so none on +-X walls)
+for zc,(x0s) in ((-9.55,(-13.6,-11.2,-8.8,-6.4,-4.0,3.0,5.4,7.8,10.2,12.6)),(9.55,(-13.6,-11.2,-8.8,-6.4,-4.0,-1.6,6.6,9.0,11.4))):
+    for x0 in x0s: R_(ax,x0,x0+2.0,zc-0.45,zc+0.45,"#9ED9B1",ec=GRN,lw=0.8,z=7)
+for x0,x1,zc in ((-1.8,1.8,-9.55),(0.9,5.6,9.55)): R_(ax,x0,x1,zc-0.45,zc+0.45,"#F4F5F7",ec=GRAPH,lw=0.8,z=7,hatch="---")
+T(ax,-8.5,10.8,"planters + ramps hide 0.22 m step (both Z walls)",6.3,color="#1F6B3E")
 # doors
 R_(ax,-1.3,1.3,-9.25,-8.75,"white",ec=VIO,lw=2.2,z=8); R_(ax,1.45,1.85,-9.6,-9.25,AMB,ec=WALL,lw=1,z=8)
 T(ax,0,-7.6,"SECTOR-4 EXIT  2.6 m\n(only resident entrance)",7.5,weight="bold")
-T(ax,-3.6,-10.1,"L2 promenade window above",6.5,color=VIO)
-R_(ax,2.2,4.2,8.75,9.25,"white",ec=ORG,lw=2.2,z=8); R_(ax,4.35,4.75,9.25,9.6,AMB,ec=WALL,lw=1,z=8)
-T(ax,3.2,7.6,"PROPOSED service door 2.0 m\n(Maintenance, X 0.5..6)",7,color=ORG,weight="bold")
+T(ax,-4.6,-10.7,"L2 promenade window above",6.5,color=VIO)
+R_(ax,2.2,4.2,8.75,9.25,"white",ec=VIO,lw=2.2,z=8); R_(ax,4.35,4.75,9.25,9.6,AMB,ec=WALL,lw=1,z=8)
+T(ax,3.2,7.4,"SERVICE DOOR 2.0 m + Bulkhead Hub\n(Maintenance; Sprocket + 2nd fire exit)",7,color=WALL,weight="bold")
 R_(ax,1,6,9.3,11.4,"#FCE3D3",ec=ORG,lw=1,z=4); R_(ax,1.4,2.6,9.8,11.0,GRN,ec=WALL,lw=0.8,z=5); T(ax,4.6,10.4,"apron",6.5,color=ORG)
 # plaza / promenade labels, tram stop, shrine
 T(ax,-28,-13.6,"",7)
@@ -59,8 +64,8 @@ T(ax,0,-12.6,"SECTOR-4 PLAZA\n16 x 9.5 m",8,weight="bold")
 T(ax,-31,-11.5,"",7)
 T(ax,-34,-20.5,"TRAM  (axial line)",7.5,weight="bold",color="white")
 R_(ax,6,20,-18.5,-16.6,"#DADDE2",ec=GRAPH,lw=1,z=4); R_(ax,10,16,-18.3,-17.0,GRAPH,z=5)
-T(ax,13,-15.6,"TRAM STOP - repurposed shelter",7,weight="bold")
-ax.add_patch(Circle((15.8,-6.0),1.0,fc="#F2E6FF",ec=VIO,lw=1.5,zorder=6)); T(ax,15.6,-3.4,"memorial\nnook",6.5,color=VIO,weight="bold")
+T(ax,13,-15.6,"TRAM STOP (LIVE) - lived-in shelter",7,weight="bold")
+ax.add_patch(Circle((15.1,-6.0),0.8,fc="#F2E6FF",ec=VIO,lw=1.5,zorder=6)); T(ax,15.1,-3.9,"memorial\nnook",6.5,color=VIO,weight="bold",bbox=dict(fc="white",ec="none",pad=0.6))
 T(ax,-31,-16,"",7)
 T(ax,-24.5,-12.4,"SECTOR-4 PROMENADE\n(Valley A frontage)",8,weight="bold",ha="left")
 T(ax,-20,2.5,"SPIN ST W",7.5,weight="bold",rotation=90); T(ax,20,2.5,"SPIN ST E",7.5,weight="bold",rotation=90)
@@ -69,7 +74,7 @@ T(ax,-9,13.5,"SERVICE LANE  4 m  (Sprocket + carts)",7.5,weight="bold")
 ax.plot([13,6,0.6],[-17.4,-13,-9.4],color=AMB,lw=2.2,ls=(0,(4,2)),zorder=9); T(ax,10.2,-13.6,"worn desire path",6.5,color="#B36A00",ha="left")
 ax.plot([-31,-10,-1],[-15.5,-15.5,-9.4],color=AMB,lw=1.2,ls=(0,(4,2)),zorder=9,alpha=0.8)
 ax.plot([20,20,10,3.2,3.2],[42,13.5,13.5,13.5,9.4],color=GRN,lw=2.4,ls=(0,(2,1.5)),zorder=9)
-ax.plot([3.2,15.5,15.5,1.9],[13.5,13.5,-11,-11],color=GRN,lw=1.4,ls=(0,(2,1.5)),zorder=9,alpha=0.85)
+ax.plot([3.2,16.6,16.6,1.9],[13.5,13.5,-11,-11],color=GRN,lw=1.4,ls=(0,(2,1.5)),zorder=9,alpha=0.85)
 T(ax,24.0,16.3,"Sprocket route from\nnorth grid depot",7,color="#1F6B3E",weight="bold",ha="left",bbox=dict(fc="white",ec="none",pad=1))
 # lighting poles
 poles=[(x,-18.2) for x in range(-40,41,10)]+[(x,15.8) for x in (-21,-9,3,15)]+[(-17.4,z) for z in (-30,-4,8,30)]+[(17.4,z) for z in (-30,-4,8,30)]+[(-7.6,-9.6),(7.6,-9.6)]
@@ -94,11 +99,11 @@ T(ax,cx,cz+5,"SPINWARD +Z",7,weight="bold"); T(ax,cx,cz-4.9,"ANTISPINWARD -Z",7,
 T(ax,cx-5.2,cz+1.3,"FORE",6.5); T(ax,cx+5.4,cz+1.3,"AFT",6.5); T(ax,cx,cz-2.0,"",6)
 T(ax,cx+0.3,cz-7.0,"X = AXIAL (flat)   up = to axis",6.5,color="#555")
 R_(ax,-45,-35,-40,-39.4,WALL,z=12); R_(ax,-45,-40,-40,-39.4,"white",ec=WALL,lw=1,z=12); T(ax,-40,-41.0,"0        5        10 m",7)
-lg=[("white",VIO,"force-field door + Bulkhead Hub"),(VIO,VIO,"unit windows (outer walls)"),(GRN,GRN,"Sprocket route / pad"),(AMB,AMB,"light pole / worn path"),("#E3E6EA",GRAPH,"neighbor plot edge")]
+lg=[("white",VIO,"force-field door + Bulkhead Hub"),("#9ED9B1",GRN,"masking planter / ramp"),(VIO,VIO,"unit windows (outer walls)"),(GRN,GRN,"Sprocket route / pad"),(AMB,AMB,"light pole / worn path"),("#E3E6EA",GRAPH,"neighbor plot edge")]
 for i,(fc,ec,lab) in enumerate(lg):
-    R_(ax,-31,-29.6,-36.2-i*1.4,-35.5-i*1.4,fc,ec=ec,lw=1,z=12); T(ax,-29,-35.85-i*1.4,lab,6.8,ha="left")
+    R_(ax,-31,-29.6,-34.9-i*1.3,-34.2-i*1.3,fc,ec=ec,lw=1,z=12); T(ax,-29,-34.55-i*1.3,lab,6.8,ha="left")
 R_(ax,-32,-6,-42,-34.4+1.0,"white",ec=GRAPH,lw=0.8,z=11,alpha=0.85)
-ax.set_title("RESIDENTIAL rev C - EXTERIOR + 20 m CITY RING (plan, L1)   |   Cylinder Hab-7, Valley A, Sector-4   |   floor R 185.5 m",fontsize=11.5,weight="bold",color=WALL)
+ax.set_title("RESIDENTIAL rev C - EXTERIOR + 20 m CITY RING (plan, L1) - APPROVED 2026-10-29   |   Cylinder Hab-7, Valley A, Sector-4   |   floor R 185.5 m",fontsize=11.5,weight="bold",color=WALL)
 ax.set_xlim(-47,47); ax.set_ylim(-42,42); ax.set_aspect("equal"); ax.axis("off")
 fig.savefig("residential_exterior_plan_v1_plan.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
 # ---------------- SECTION ----------------
@@ -117,7 +122,7 @@ for s in (9,29,39):
         ax.plot(x,y,"o",color=VIO,ms=4,zorder=7)
     T(ax,R*math.sin(s/R)+0.6,rise(s)*VE+{9:-2.2,29:0,39:1.5}[s],f"Z+{s}: +{rise(s):.2f} m, {ang(s):.1f} deg",7.2,color=VIO,ha="left" if s<39 else "right",weight="bold",bbox=dict(fc="white",ec="none",pad=0.5))
 T(ax,-R*math.sin(29/R)-0.6,rise(29)*VE+2.2,"+20 m out\n(study edge)",7,color=VIO,ha="right")
-T(ax,R*math.sin(9/R)+0.4,-3.4,"plinth levels 0.22 m at walls",6.5,color=ORG,ha="left")
+T(ax,R*math.sin(9/R)+0.4,-3.4,"0.22 m step hidden by ramps + planters",6.5,color=ORG,ha="left")
 # player on promenade at s=-12.5, eye line along local horizontal
 sp=-12.5; th=sp/R; P=(R*math.sin(th),rise(sp)); up=(-math.sin(th),math.cos(th)); E=(P[0]+1.7*up[0],P[1]+1.7*up[1]); t=(math.cos(th),math.sin(th))
 ax.plot([P[0],E[0]],[P[1]*VE,E[1]*VE],color=AMB,lw=3); ax.plot(E[0],E[1]*VE,"o",color=AMB,ms=7,zorder=8)
