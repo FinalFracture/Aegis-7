@@ -126,3 +126,31 @@ PASS | hub_coupler_arm_stowed_by_default_x6 | stowed_deg=90.0
 PASS | hub_arm_deploys_on_sprocket_dock_rm1b | marker=SprocketDock_DOOR_RM1B parked_deg=0.0 after_leave_deg=90.0
 PASS | hub_sprocket_dock_hook | hook parked_deg=0.0 released_deg=90.0
 ```
+
+---
+
+## [QA-HUB-01] single-target [E] hub scan — 2026-10-29 04:42 CDT
+
+`--qa-reticle-stars-doors`: 80 PASS / 0 FAIL, 0 script errors; `--validate-only` OK.
+
+```
+PASS | door_apt201_E_scan_dissolves_open | during_tween dissolve=0.034 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_apt201_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | door_alcove2c_E_scan_dissolves_open | during_tween dissolve=0.034 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_alcove2c_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | door_apt202_E_scan_dissolves_open | during_tween dissolve=0.034 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_apt202_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | door_rm1a_E_scan_dissolves_open | during_tween dissolve=0.033 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_rm1a_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | door_rm1b_E_scan_dissolves_open | during_tween dissolve=0.032 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_rm1b_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | door_sector4_exit_E_scan_dissolves_open | during_tween dissolve=0.034 glow_not_yet_green=true collision_on=true | after dissolve=1.000 collision_off=true light=3faf6a
+PASS | door_sector4_exit_E_scan_closes_back_glow_amber | dissolve=0.000 collision_on=true light=ff9500
+PASS | qa_hub_01_scan_toggles_only_rm1b | rm1b_open=true apt202_open=false apt202_dissolve=0.00 doors_open=1 prompt='[E] RFID SCAN // RM 1B SUBSTATION // RFID FORCE-FIELD DOOR // OPEN'
+PASS | qa_hub_01_scan_close_held_while_occupied | held=true then open=false dissolve=0.000
+PASS | qa_hub_01_facing_away_noop | rm1b_open=false dissolve=0.00 prompt=''
+PASS | qa_hub_01_out_of_range_noop | dist=2.74 m any_door_open=false
+PASS | qa_hub_01_far_side_of_wall_noop | dist=1.24 m (in range) rm1b_open=false
+PASS | qa_hub_01_E_toggles_door_not_pickup | rm1b_open=true pickup=SUPER-WIRE SPOOL in_reach=true collected=false inventory_unchanged=true
+PASS | qa_hub_01_player_on_dock_pad_can_close | open=false pending=false blocker='Hammerhead05_Kelvin_0204_Science' dissolve=0.000 dist_to_scanzone=1.13
+```

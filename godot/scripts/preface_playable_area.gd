@@ -135,7 +135,8 @@ const CORE_PAD_RADIUS := 1.4
 const STARFIELD_CYL_RADIUS := 2200.0
 const STARFIELD_CYL_LENGTH := 4800.0
 const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s around longitudinal cylinder axis)
-const DOOR_SCAN_RANGE := 4.8
+const SCAN_ZONE_RANGE := 1.4          # [QA-HUB-01] max 3D distance probe point -> hub ScanZone
+const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward . dir-to-ScanZone
 const DOOR_DISSOLVE_TIME := 0.8
 
 # [t39u]-[t40u] Dynamic interior model despawn/respawn streaming
@@ -174,7 +175,7 @@ const SPROCKET_NODE := "Hammerhead05_Sprocket_0419_Engineering"
 const DOOR_FIELD_JSON_DEV := "res://config/door_fields.json"
 const DOOR_FIELD_JSON_USER := "user://door_fields.json"
 const DOOR_FIELD_POLL_SEC := 0.5
-const FF_OCCUPANCY_DEPTH := 0.60
+const FF_OCCUPANCY_DEPTH := 0.35       # [QA-HUB-01] thin box exactly in the opening, centred on the field plane
 const FF_CLOSE_RETRY_SEC := 0.5
 
 var _arch_container: Node3D
@@ -1774,6 +1775,14 @@ func _interact() -> void:
 	if _player_body != null and _start_core_transit(_player_body, true):
 		_show_toast("CORIOLIS CORE LIFT // TRANSITING TO OPPOSITE FLOOR", 2.4)
 		return
+	# [QA-HUB-01] [E] at a hub (in range, facing it, on its side of the wall) toggles that ONE door and takes
+	# priority over pickups; otherwise [E] behaves as before.
+	var door_changes: Array[String] = _scan_rfid_doors(_player_probe_point())
+	if not door_changes.is_empty():
+		if _fp_wrist_model != null and not _third_person:
+			_play_actor_anim(_fp_wrist_model, ["RFIDPulse", "Idle"], 0.0)
+		_show_toast("RFID ACCESS // " + ", ".join(door_changes), 2.4)
+		return
 	var it: Dictionary = _find_nearest_interactable(INTERACT_RANGE)
 	if it.is_empty():
 		_show_toast("NOTHING IN REACH // MOVE WITHIN 2.8m", 1.6)
@@ -1815,9 +1824,7 @@ func _trigger_rfid_pulse() -> void:
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("#04 WRIST RFID PULSE // 13.56 MHz // RANGE 12.0m")
 	var pp: Vector3 = _player_probe_point()
-	var door_changes: Array[String] = _scan_rfid_doors(pp)
-	for dc: String in door_changes:
-		lines.append("  > DOOR ACTUATOR: " + dc)
+	var door_changes: Array[String] = []  # [QA-HUB-01] doors are opened with [E] at their hub, not by the [F] pulse
 	var found: Array[Dictionary] = []
 	for it: Dictionary in _interactables:
 		if bool(it["collected"]):
@@ -1997,12 +2004,16 @@ func _update_hud() -> void:
 		int(_inventory["bci"]), int(_inventory_max["bci"]), int(_inventory["jelly"]), int(_inventory_max["jelly"]),
 		int(_inventory["wire"]), int(_inventory_max["wire"]), int(_inventory["batt"]), int(_inventory_max["batt"])]
 	_nearest = _find_nearest_interactable(INTERACT_RANGE)
-	if _nearest.is_empty() or _preset_active >= 0:
+	# [QA-HUB-01] the door prompt mirrors exactly what an [E] press would do (same single-target rule; door first).
+	var scan_door: Dictionary = _scan_target_door(_player_probe_point()) if _preset_active < 0 else {}
+	if _preset_active >= 0 or (_nearest.is_empty() and scan_door.is_empty()):
 		_hud_prompt.text = ""
+	elif not scan_door.is_empty():
+		_hud_prompt.text = "[E] RFID SCAN // %s // %s" % [String(scan_door["label"]), "CLOSE" if bool(scan_door["open"]) else "OPEN"]
 	else:
 		var knd: String = String(_nearest["kind"])
 		if knd == "rfid_door":
-			_hud_prompt.text = "[F] RFID SCAN // %s" % String(_nearest["label"])
+			_hud_prompt.text = ""
 		else:
 			var verb: String = "PICK UP" if bool(_nearest["pickup"]) else "QUERY"
 			_hud_prompt.text = "[E] %s %s" % [verb, String(_nearest["label"])]
@@ -3594,7 +3605,7 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			_ff_static_box(droot, "PortalHeaderCollider", Vector3(maxf(pw, FF_FRAME_HALF_W * 2.0), top_h, 0.30), Vector3(0.0, FF_OPEN_H + top_h * 0.5, 0.0))
 			field_cs = _ff_static_box(droot, "FieldCollider", Vector3(FF_OPEN_W, FF_OPEN_H, 0.20), Vector3(0.0, FF_OPEN_H * 0.5, 0.0))
 
-		# [F] RFID scan target = the hub's ScanZone (fallback: a doorway anchor if the hub glb is missing).
+		# [E] RFID scan target = the hub's ScanZone (fallback: a doorway anchor if the hub glb is missing).
 		var tag_anchor: Node3D = hub.get("scan_zone") as Node3D
 		if tag_anchor == null:
 			tag_anchor = Node3D.new()
@@ -3798,7 +3809,8 @@ func _finish_door_field(door: Dictionary, open_state: bool) -> void:
 
 
 func _door_opening_blocker(door: Dictionary) -> String:
-	# [QA-FF-01] Overlap test of the 1.50 x 2.45 m opening (0.60 m deep = 0.15 m past both wall faces).
+	# [QA-FF-01 / QA-HUB-01] Overlap test of a thin box exactly in the opening: 1.50 x 2.45 m x 0.35 m deep,
+	# centred on the field plane. The hub front / Sprocket dock pad (>= 0.6 m out) never counts.
 	var droot: Node3D = door["root"] as Node3D
 	if droot == null or not is_instance_valid(droot) or not droot.is_inside_tree():
 		return ""
@@ -3817,7 +3829,7 @@ func _door_opening_blocker(door: Dictionary) -> String:
 			var col: Object = hit.get("collider")
 			if col is CharacterBody3D or col is RigidBody3D:
 				return String((col as Node).name)
-	# b) Collider-less actors (Johnny-5 bots, citizens) and props: test their origin against the box (+0.25 m body margin).
+	# b) Collider-less actors (Johnny-5 bots, citizens) and props: their origin must be inside the same box.
 	var inv: Transform3D = xf.affine_inverse()
 	for cont: Node3D in [_actors_container, _props_container]:
 		if cont == null:
@@ -3826,13 +3838,13 @@ func _door_opening_blocker(door: Dictionary) -> String:
 			if not (ch is Node3D) or String(ch.name) == DOORS_ROOT_NAME or ch.is_queued_for_deletion() or not (ch as Node3D).visible:
 				continue
 			var lp: Vector3 = inv * (ch as Node3D).global_position
-			if absf(lp.x) < FF_OPEN_W * 0.5 + 0.25 and absf(lp.z) < FF_OCCUPANCY_DEPTH * 0.5 + 0.25 and lp.y > -0.3 and lp.y < FF_OPEN_H:
+			if absf(lp.x) <= FF_OPEN_W * 0.5 and absf(lp.z) <= FF_OCCUPANCY_DEPTH * 0.5 and lp.y >= -0.10 and lp.y <= FF_OPEN_H:
 				return String(ch.name)
 	return ""
 
 
 func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
-	# Valid [F] scan: tween shader dissolve 0->1 (open) or 1->0 (close) over DOOR_DISSOLVE_TIME;
+	# Valid [E] hub scan: tween shader dissolve 0->1 (open) or 1->0 (close) over DOOR_DISSOLVE_TIME;
 	# collision + status light switch only when the tween finishes.
 	if open_target:
 		door["close_pending"] = false
@@ -3895,29 +3907,52 @@ func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
 	return true
 
 
-func _scan_rfid_doors(origin: Vector3) -> Array[String]:
-	var opened_labels: Array[String] = []
+func _scan_target_door(origin: Vector3) -> Dictionary:
+	# [QA-HUB-01] An [E] door scan acts on ONE door: the one whose hub ScanZone is nearest, within SCAN_ZONE_RANGE
+	# (3D, so other floors never qualify) and roughly in front of the camera (flattened dot >= SCAN_FACING_DOT).
+	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3.FORWARD
+	fwd.y = 0.0
+	if fwd.length() < 0.001:
+		return {}
+	fwd = fwd.normalized()
+	var best: Dictionary = {}
+	var best_d: float = SCAN_ZONE_RANGE
 	for door: Dictionary in _rfid_doors:
 		var droot: Node3D = door["root"] as Node3D
-		if droot == null or not is_instance_valid(droot):
+		if droot == null or not is_instance_valid(droot) or not droot.is_inside_tree():
 			continue
-		var dcenter: Vector3 = door["center"] as Vector3
-		var dist: float = origin.distance_to(dcenter)
-		if dist <= DOOR_SCAN_RANGE:
-			if not bool(door["open"]):
-				_set_door_open_state(door, true)
-				opened_labels.append("%s (OPENED)" % String(door["id"]))
-			else:
-				# Already open: toggle closed unless the player is standing inside the doorway threshold
-				var horiz_d: float = Vector2(origin.x - dcenter.x, origin.z - dcenter.z).length()
-				if horiz_d > 1.15:
-					_set_door_open_state(door, false)
-					if bool(door["close_pending"]):
-						opened_labels.append("%s (CLOSE HELD: %s IN DOORWAY)" % [String(door["id"]), String(door["close_blocker"])])
-					else:
-						opened_labels.append("%s (CLOSED)" % String(door["id"]))
-				else:
-					opened_labels.append("%s (OPEN)" % String(door["id"]))
+		var target: Vector3 = door["center"] as Vector3
+		var d: float = origin.distance_to(target)
+		if d > best_d:
+			continue
+		var flat: Vector3 = target - origin
+		flat.y = 0.0
+		if flat.length() > 0.05 and fwd.dot(flat.normalized()) < SCAN_FACING_DOT:
+			continue
+		# Must be on the hub's side of the wall: (player - hub) . hub outward +Z normal > 0
+		var hub_n: Node3D = door.get("hub") as Node3D
+		if hub_n != null and (origin - hub_n.global_position).dot(hub_n.global_transform.basis.z.normalized()) <= 0.0:
+			continue
+		best_d = d
+		best = door
+	return best
+
+
+func _scan_rfid_doors(origin: Vector3) -> Array[String]:
+	var opened_labels: Array[String] = []
+	var door: Dictionary = _scan_target_door(origin)
+	if door.is_empty():
+		return opened_labels
+	if not bool(door["open"]):
+		_set_door_open_state(door, true)
+		opened_labels.append("%s (OPENED)" % String(door["id"]))
+	else:
+		# Close; the occupancy test (QA-FF-01) holds it open while anything (incl. the player) is in the opening.
+		_set_door_open_state(door, false)
+		if bool(door["close_pending"]):
+			opened_labels.append("%s (CLOSE HELD: %s IN DOORWAY)" % [String(door["id"]), String(door["close_blocker"])])
+		else:
+			opened_labels.append("%s (CLOSED)" % String(door["id"]))
 	return opened_labels
 
 
@@ -4183,7 +4218,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		await _qa_frames(4)
 		_qa_t38_check("%s_forcefield_shader_material" % did.to_lower(), fm != null and fm.shader != null and fm.shader.code.contains("uniform float dissolve") and (fm.get_shader_parameter("field_color") as Color).is_equal_approx(FF_DEFAULT_COLOR),
 			"shader=%s field_color=%s" % [FORCEFIELD_DOOR_SHADER, (fm.get_shader_parameter("field_color") as Color).to_html()])
-		# [Bulkhead Hub] present at the door-local mount offset, [F] target is its ScanZone, 8 glow parts amber
+		# [Bulkhead Hub] present at the door-local mount offset, [E] target is its ScanZone, 8 glow parts amber
 		var hub_n: Node3D = door.get("hub") as Node3D
 		var exp_xf: Transform3D = (door["root"] as Node3D).global_transform * Transform3D(Basis.IDENTITY, HUB_MOUNT_OFFSET + Vector3(0.0, 0.0, HUB_WALL_STANDOFF))
 		var hub_err: float = hub_n.global_position.distance_to(exp_xf.origin) if hub_n != null else 99.0
@@ -4216,11 +4251,13 @@ func _run_reticle_stars_doors_qa() -> void:
 		var blocked_ok: bool = (z_blocked < dpos.z - 0.30) if from_south else (z_blocked > dpos.z + 0.30)
 		_qa_t38_check("%s_blocks_when_closed" % did.to_lower(), blocked_ok and not bool(door["open"]),
 			"door_z=%.2f player_stopped_at_z=%.2f open=%s" % [dpos.z, z_blocked, door["open"]])
-		# [F] scan -> dissolve tween 0->1 over 0.8 s, then collision off + light green
-		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		# [E] hub scan -> dissolve tween 0->1 over 0.8 s, then collision off + light green
+		# [QA-HUB-01] scans now need to be within 1.4 m of (and facing) the hub ScanZone
+		var scan_spot: Vector3 = (door["root"] as Node3D).global_transform * Vector3(0.80, 0.05, 1.0)
+		_qa_place(scan_spot, yaw_deg, -4.0)
 		await _qa_frames(6)
 		Engine.time_scale = 0.05  # slow the 0.8 s tween so a mid-dissolve sample is reliable under xvfb
-		await _qa_tap(KEY_F)
+		await _qa_tap(KEY_E)
 		await _qa_idle(1)
 		var mid_d: float = _door_dissolve(door)
 		var mid_light_amber: bool = not lm.emission.is_equal_approx(FF_LIGHT_GREEN)  # glow still tweening toward green
@@ -4230,7 +4267,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		await _qa_frames(3)
 		var d_open: float = _door_dissolve(door)
 		var opened_ok: bool = bool(door["open"]) and d_open >= 0.999 and fcs != null and fcs.disabled and lm.emission.is_equal_approx(FF_LIGHT_GREEN)
-		_qa_t38_check("%s_F_scan_dissolves_open" % did.to_lower(), opened_ok and mid_d > 0.0 and mid_d < 1.0 and mid_light_amber and mid_coll,
+		_qa_t38_check("%s_E_scan_dissolves_open" % did.to_lower(), opened_ok and mid_d > 0.0 and mid_d < 1.0 and mid_light_amber and mid_coll,
 			"during_tween dissolve=%.3f glow_not_yet_green=%s collision_on=%s | after dissolve=%.3f collision_off=%s light=%s" % [mid_d, mid_light_amber, mid_coll, d_open, fcs != null and fcs.disabled, lm.emission.to_html(false)])
 		var glow_green: bool = (door["glow_nodes"] as Array).size() == 8 and lm.emission.is_equal_approx(FF_LIGHT_GREEN)
 		for gn1: Variant in door["glow_nodes"]:
@@ -4238,6 +4275,8 @@ func _run_reticle_stars_doors_qa() -> void:
 		_qa_t38_check("%s_hub_8_glow_parts_green_on_grant" % did.to_lower(), glow_green, "parts=%d emission=%s" % [(door["glow_nodes"] as Array).size(), lm.emission.to_html(false)])
 		if did == "DOOR_APT201":
 			door_img_opened = await _qa_capture("qa_rfid_door_apt201_opened.png")
+		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		await _qa_frames(4)
 		_qa_key(KEY_W, true)
 		await _qa_idle(2)
 		await _qa_frames(42)
@@ -4247,15 +4286,104 @@ func _run_reticle_stars_doors_qa() -> void:
 		var through_ok: bool = (z_through > dpos.z + 0.45) if from_south else (z_through < dpos.z - 0.45)
 		_qa_t38_check("%s_walk_through_when_open" % did.to_lower(), through_ok,
 			"door_z=%.2f player_crossed_to_z=%.2f" % [dpos.z, z_through])
-		# Close: step back out on the atrium side (>1.15 m) and [F] again -> dissolve 1->0, collision on, amber
-		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
+		# Close: step back out to the hub and [E] again -> dissolve 1->0, collision on, amber
+		_qa_place(scan_spot, yaw_deg, -4.0)
 		await _qa_frames(6)
-		await _qa_tap(KEY_F)
+		await _qa_tap(KEY_E)
 		await get_tree().create_timer(1.0).timeout
 		await _qa_frames(3)
 		var closed_ok: bool = not bool(door["open"]) and _door_dissolve(door) <= 0.001 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(HUB_AMBER)
-		_qa_t38_check("%s_F_scan_closes_back_glow_amber" % did.to_lower(), closed_ok,
+		_qa_t38_check("%s_E_scan_closes_back_glow_amber" % did.to_lower(), closed_ok,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
+
+	# [QA-HUB-01] single-target scan: RM1B only (APT202 upstairs untouched), facing away / out of range = no-op
+	var h_rb: Dictionary = _find_door("DOOR_RM1B")
+	var h_up: Dictionary = _find_door("DOOR_APT202")
+	for dq: Dictionary in _rfid_doors:
+		_set_door_dissolve_immediate(dq, 0.0)
+	var h_xf: Transform3D = (h_rb["root"] as Node3D).global_transform
+	_qa_place(h_xf * Vector3(0.80, 0.05, 1.0), 180.0, -4.0)
+	await _qa_frames(6)
+	_update_hud()
+	var prompt_txt: String = _hud_prompt.text if _hud_prompt != null else ""
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(1.0).timeout
+	var n_open: int = 0
+	for dq2: Dictionary in _rfid_doors:
+		if bool(dq2["open"]):
+			n_open += 1
+	_qa_t38_check("qa_hub_01_scan_toggles_only_rm1b", bool(h_rb["open"]) and not bool(h_up["open"]) and _door_dissolve(h_up) == 0.0 and n_open == 1 and prompt_txt.contains("RM 1B") and prompt_txt.ends_with("OPEN"),
+		"rm1b_open=%s apt202_open=%s apt202_dissolve=%.2f doors_open=%d prompt='%s'" % [h_rb["open"], h_up["open"], _door_dissolve(h_up), n_open, prompt_txt])
+	# Held close via a real scan while a bot stands in the opening
+	var h_bot: Node3D = _actors_container.get_node_or_null("Hammerhead05_Kelvin_0204_Science") as Node3D
+	if h_bot != null:
+		var h_home: Vector3 = h_bot.global_position
+		h_bot.global_position = (h_rb["root"] as Node3D).global_position
+		await _qa_tap(KEY_E)
+		await _qa_frames(3)
+		var held_scan: bool = bool(h_rb["close_pending"]) and bool(h_rb["open"])
+		h_bot.global_position = h_home
+		await get_tree().create_timer(0.6 + DOOR_DISSOLVE_TIME + 0.3).timeout
+		_qa_t38_check("qa_hub_01_scan_close_held_while_occupied", held_scan and not bool(h_rb["open"]) and _door_dissolve(h_rb) <= 0.001,
+			"held=%s then open=%s dissolve=%.3f" % [held_scan, h_rb["open"], _door_dissolve(h_rb)])
+	_set_door_dissolve_immediate(h_rb, 0.0)
+	_qa_place(h_xf * Vector3(0.80, 0.05, 1.0), 0.0, -4.0)  # facing away from the hub
+	await _qa_frames(6)
+	_update_hud()
+	var prompt_away: String = _hud_prompt.text if _hud_prompt != null else ""
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(0.4).timeout
+	_qa_t38_check("qa_hub_01_facing_away_noop", not bool(h_rb["open"]) and _door_dissolve(h_rb) == 0.0 and not prompt_away.contains("RFID SCAN"),
+		"rm1b_open=%s dissolve=%.2f prompt='%s'" % [h_rb["open"], _door_dissolve(h_rb), prompt_away])
+	_qa_place(h_xf * Vector3(0.80, 0.05, 2.70), 180.0, -4.0)  # ~2.3 m from the ScanZone, facing it
+	await _qa_frames(6)
+	var far_d: float = _player_probe_point().distance_to(h_rb["center"] as Vector3)
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(0.4).timeout
+	var any_open: bool = false
+	for dq3: Dictionary in _rfid_doors:
+		any_open = any_open or bool(dq3["open"])
+	_qa_t38_check("qa_hub_01_out_of_range_noop", not any_open and far_d > SCAN_ZONE_RANGE, "dist=%.2f m any_door_open=%s" % [far_d, any_open])
+	# Far side of the wall (inside RM1B, facing the hub through the wall): no-op
+	_qa_place(h_xf * Vector3(0.95, 0.05, -0.55), 0.0, -4.0)  # behind the wall, ~0.75 m from the ScanZone, facing it
+	await _qa_frames(6)
+	var far_side_d: float = _player_probe_point().distance_to(h_rb["center"] as Vector3)
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(0.4).timeout
+	_qa_t38_check("qa_hub_01_far_side_of_wall_noop", not bool(h_rb["open"]) and _door_dissolve(h_rb) == 0.0 and far_side_d < SCAN_ZONE_RANGE,
+		"dist=%.2f m (in range) rm1b_open=%s" % [far_side_d, h_rb["open"]])
+	# [E] at the hub with a pickup in reach: door toggles, nothing is picked up
+	var pk: Dictionary = {}
+	for itp: Dictionary in _interactables:
+		if bool(itp["pickup"]) and not bool(itp["collected"]) and is_instance_valid(itp["node"]):
+			pk = itp
+			break
+	var hub_spot: Vector3 = h_xf * Vector3(0.80, 0.05, 1.0)
+	if not pk.is_empty():
+		var pk_node: Node3D = pk["node"] as Node3D
+		var pk_home: Vector3 = pk_node.global_position
+		var inv_snapshot: String = str(_inventory)
+		_qa_place(hub_spot, 180.0, -4.0)
+		pk_node.global_position = hub_spot + Vector3(0.0, 1.0, -0.35)
+		await _qa_frames(4)
+		var pk_in_reach: bool = not _find_nearest_interactable(INTERACT_RANGE).is_empty() and bool(_find_nearest_interactable(INTERACT_RANGE)["pickup"])
+		await _qa_tap(KEY_E)
+		await get_tree().create_timer(1.0).timeout
+		var not_picked: bool = not bool(pk["collected"]) and str(_inventory) == inv_snapshot
+		_qa_t38_check("qa_hub_01_E_toggles_door_not_pickup", bool(h_rb["open"]) and not_picked and pk_in_reach,
+			"rm1b_open=%s pickup=%s in_reach=%s collected=%s inventory_unchanged=%s" % [h_rb["open"], String(pk["label"]), pk_in_reach, pk["collected"], str(_inventory) == inv_snapshot])
+		pk_node.global_position = pk_home
+	else:
+		_qa_t38_check("qa_hub_01_E_toggles_door_not_pickup", false, "no live pickup to test with")
+	# Player standing on the Sprocket dock pad can close the door (pad is outside the thin occupancy box)
+	_set_door_dissolve_immediate(h_rb, 1.0)
+	var pad_pos: Vector3 = (h_rb["dock_marker"] as Marker3D).global_position
+	_qa_place(pad_pos, 180.0, -4.0)
+	await _qa_frames(6)
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(1.1).timeout
+	_qa_t38_check("qa_hub_01_player_on_dock_pad_can_close", not bool(h_rb["open"]) and not bool(h_rb["close_pending"]) and _door_dissolve(h_rb) <= 0.001,
+		"open=%s pending=%s blocker='%s' dissolve=%.3f dist_to_scanzone=%.2f" % [h_rb["open"], h_rb["close_pending"], String(h_rb["close_blocker"]), _door_dissolve(h_rb), _player_probe_point().distance_to(h_rb["center"] as Vector3)])
 
 	# [QA-FF-01] close is held while a bot / rigid body is in the opening, then completes once it is clear
 	var ob_door: Dictionary = _find_door("DOOR_RM1B")
