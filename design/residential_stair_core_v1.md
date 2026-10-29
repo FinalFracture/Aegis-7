@@ -1,14 +1,14 @@
 # Residential rev C — Stair Core v1 (assets #3, #4, #5)
 
-**Status: PENDING JARED APPROVAL.** This is a plan diagram only. Rook does no modeling until Jared approves.
+**Status: APPROVED arrangement; v1.1 lift + skylight pending Jared review.** This is design only. The v1 PNGs are kept for comparison (`residential_stair_core_v1_plan.png`, `_section.png`).
 Generator: `design/residential_stair_core_v1.py`, which asserts the QC checks below.
 Scope, from `residential_asset_list_rev_c.md`:
 - **#3** switchback stair set (2 flights + landings), 4.0 × 8.2 m, 4.2 m rise
 - **#4** stair glass + handrail (own collider), about 12 m run, 1.1 m high
 - **#5** skylight strip, stair core roof
 
-![Plan](residential_stair_core_v1_plan.png)
-![Section](residential_stair_core_v1_section.png)
+![Plan v1.1](residential_stair_core_v1_1_plan.png)
+![Section v1.1](residential_stair_core_v1_1_section.png)
 
 ## Conflict: preface atrium stair vs rev C switchback
 | | Preface spec (`preface_playable_residential_sector_spec.md` §3) | Rev C (`residential_apartment_layout_v2.md`) |
@@ -86,8 +86,49 @@ L2 services run through the **riser chase** (Maintenance → the sealed chase in
 | 7 | No overlaps among solid objects | PASS |
 | 8 | Labels | PASS (Read on both PNGs; leaders for the under-stair store and skylight notes) |
 
+## v1.1 decisions (Jared, 2026-10-29)
+1. **APPROVED:** the corrected switchback (south mid-landing, 16/10 flights, 26 × 0.1615 m risers, window at the mid-landing). `residential_apartment_layout_v2.md` (text, ASCII, tables) and asset list items #3 and #4 are updated to match.
+2. **Skylight #5 shrinks to 3.8 × 4.0 m**, over the stair void only (Z -8.9..-4.88). Updated in the asset list.
+3. **ADD a 1.2 × 1.2 m Sprocket bot lift serving L1 and L2.** Added as asset #51. Placement is below.
+4. **No smoke curtain.** It is removed from the open questions.
+
+## Bot lift placement
+The shaft is 1.6 × 1.6 m gross: a 1.4 × 1.4 m clear well holds the 1.2 × 1.2 m car with 0.1 m running clearance. It runs through both levels, so it has to fit at the same XZ inside Maintenance (L1, faces X 0.6..5.9) **and** inside 202 (L2, faces X 0.1..13.9).
+
+| Option | Placement | Pros | Cons |
+|---|---|---|---|
+| **1 (recommended)** | SW corner, X 0.6..2.2, Z 0.8..2.4, door onto the corridor at both levels. The riser is re-aligned directly north of it (X 0.6..1.6, Z 2.4..3.4). | Services stack (riser + lift + controller in one SW chase). It **fixes an existing fault**: the L1 riser (X 0.7..1.7, Z 1..2) and the L2 chase (X 0..1, Z 0.8..1.8) were 0.7 m out of line, so they could not have been one shaft. The lift opens onto the public corridor, so Sprocket never enters 202. It sits 1.5 m from the Maintenance door. | 202 also loses a 0.5 m sliver west of the shaft, sealed as the lift-controller slot. The 202 wardrobe moves 0.5 m north. |
+| 2 | East of the Maintenance door, X 4.3..5.9, Z 0.8..2.4, corridor doors | 202 only loses 2.56 m² with no sliver | Not stacked with the riser. The substation has to move. The 202 kitchen counter shifts about 1 m. The riser misalignment still needs a separate fix. |
+| 3 | SW corner as option 1, with a through-car (L1 door into Maintenance, L2 door onto the corridor) | Sprocket rides straight from the pads | Needs a 1.2 m landing inside Maintenance, which pushes the tool wall and a pad. Two door types. |
+
+**Area lost (option 1):**
+- **Maintenance L1:** the 2.56 m² shaft, so 45.1 → **42.5 m²**. The riser just moves within the room, so its area is unchanged.
+- **202 L2:** the 2.56 m² shaft, plus 1.0 m² for the re-aligned riser and 1.56 m² for the controller slot, minus the old 1.0 m² chase, which is returned. Net loss is 4.1 m², so 114.8 → **109.7 m²** (still the largest north unit along with 201).
+
+**Kept clear in Maintenance:**
+- A straight **2.0 m fire-egress lane (X 2.2..4.2)** runs from the corridor door to the north service door. In v1 this path was blocked: the pads at X 2.2..3.4 sat in it and left only a 0.8 m gap.
+- The re-planned pads are at X 0.8..2.0 / Z 6.6..7.8 and X 4.4..5.6 / Z 4.0..5.2 and 6.6..7.8. Each is within 0.3 m of the lane.
+- The substation stays at X 5.3..5.9, Z 1.0..3.5. The tool wall is at Z 3.6..6.4, the spares shelf at X 4.3..5.9, and the coupler mounts stay on the north wall.
+
+**Landings:**
+- L1 and L2 landings are 1.2 × 1.2 m in the corridor (Z -0.4..0.8, X 0.8..2.0).
+- They are checked clear of the Laundry, Maintenance and 202 door zones and of the stair-core opening.
+- The call panel is on the west jamb, Bulkhead Hub style.
+- The shaft cap is at Y 6.6. The lift is machine-room-less, with its controller in the 202 slot.
+
+## QC v1.1 (asserted in the .py; PNGs checked with Read)
+| # | Check | Result |
+|---|---|---|
+| 1 | All v1 stair checks (risers, tread, fit 8.1 m, headroom 2.93 / 2.33, door head, clear zones, overlaps) | PASS (re-run) |
+| 2 | Maintenance solids: no overlaps; none in the egress lane, the lift landing or the corridor door zones | PASS (FIXED: pads moved out of the lane) |
+| 3 | L2 solids (shaft, riser chase, controller slot, moved wardrobe, kitchen) don't overlap and stay out of the lift landing, the 202 entry path and the 202 door zone | PASS |
+| 4 | Lift landings ≥ 1.2 × 1.2, door ≥ 0.98 (Sprocket 0.78 + 0.2), car 1.2 with 0.1 clearance | PASS |
+| 5 | Shaft and riser at the same XZ inside Maintenance and 202; the riser touches the shaft | PASS (FIXED: old riser misalignment) |
+| 6 | Egress lane 2.0 m, straight door-to-door; every pad within 0.3 m of it | PASS |
+| 7 | Lift landings clear of the core opening and the 202, Laundry and Maintenance door zones | PASS |
+| 8 | Labels: unit labels backed, the service-door hub moved outside (it overlapped the coupler mounts), the lift inset sits beside the section | FIXED |
+
 ## Open questions for Jared
-1. Approve the **corrected arrangement** (mid-landing south, L2 arrival north, unequal 16/10 flights) and the **window moved to the mid-landing**? If approved, I'll update the rev C doc. It currently says 24 × 0.175 risers, a north landing and a south L2 window landing.
-2. **Skylight strip size:** 3.8 × 4.0 m over the void only, instead of #5's 4.0 × 8.2 m. Should the asset list change?
-3. **Sprocket on L2:** keep it L1-only (L2 hubs serviced by a human, or Sweep stays stuck as a story beat), or add a 1.2 × 1.2 m bot lift?
-4. **Smoke curtain:** add a force-field smoke curtain at the core-to-corridor openings for fire egress? It would add one emitter per level.
+1. Approve **option 1** (SW corner, corridor doors, riser re-aligned) and the **Maintenance re-plan** for the egress lane?
+2. The 202 net area becomes 109.7 m². Is that acceptable, or should the controller slot go elsewhere (it could sit at the roof with a machine-on-top lift)?
+3. The rev C room-layout PNGs (`residential_roomlayout_rev_c_*.png`) still show the old pads, riser and wardrobe. Should I regenerate them after approval?

@@ -5,7 +5,11 @@ Shell unchanged: 28.0 m (X -14..+14) × 18.0 m (Z -9..+9) × 8.8 m; L1 Y 0.00, L
 
 ## Circulation (public space ≈ 65 m² per floor, 13% of the floor)
 - **Corridor:** one east–west corridor per floor, **1.6 m clear** between wall faces (Z -0.8..+0.8), running only **X -10..+10** (the end strips go to the corner units). Fits 2 people passing, or 1 person + Sprocket (0.78 m).
-- **Stair core:** X -2..+2, Z -9..-0.8 (4.0 × 8.2 m), opening straight off the corridor with no door. Two 1.5 m switchback flights, 24 risers at 0.175 m, landing at the north end. L1: the south 2.5 m is the exit vestibule behind the Sector-4 door. L2: the same 2.5 m is the top landing with the promenade window. No lobby, no atrium, no double-height void.
+- **Stair core (approved 2026-10-29, see `residential_stair_core_v1.md`):** X -2..+2, Z -9..-0.8 (4.0 × 8.2 m; 3.8 × 8.1 m clear), opening straight off the corridor with no door.
+  - **Flights:** two 1.5 m switchback flights, **26 risers × 0.1615 m, treads 0.28 m**, split unequally: **flight 1 (west) 16 R** climbs south from the L1 bottom landing (2.4 m deep, by the corridor) to a **south mid-landing at Y 2.585** (Z -8.9..-7.4, 1.5 m deep, soffit 2.335 m, above the exit vestibule and clear of the 2.3 m exit door head). **Flight 2 (east) 10 R** climbs north to a **4.1 m L2 landing** that opens onto the L2 corridor.
+  - **L1:** residents walk from the corridor under flight 2 (≥ 2.33 m headroom) to the vestibule and the Sector-4 door. The space under flight 1 is closed (store + strap locker).
+  - **Window and light:** the promenade window is a tall slot on Z -9 at the mid-landing (Y 3.0–7.0). The skylight strip (3.8 × 4.0 m) sits over the stair void only.
+  - Glass guards 1.1 m, handrails 0.9 m both sides. No lobby, no atrium, no double-height public void.
 - **Partitions:** 0.20 m thick; all dimensions below are to partition centerlines.
 
 ## Level 1 (Y 0.00): 4 apartments + Laundry + Maintenance
@@ -13,7 +17,7 @@ Shell unchanged: 28.0 m (X -14..+14) × 18.0 m (Z -9..+9) × 8.8 m; L1 Y 0.00, L
 |---|---|---|---|
 | 101 apt | -14..-4.5, +0.8..+9 | 77.9 m² | Z +0.8 face, X -6.5, 1.4 m |
 | Laundry (1A) | -4.5..+0.5, +0.8..+9 | 41.0 m² | Z +0.8 face, X -2.0, 1.4 m |
-| Maintenance (was 1B) | +0.5..+6, +0.8..+9 | 45.1 m² | Z +0.8 face, X +3.2, **2.0 m** (Sprocket) |
+| Maintenance (was 1B) | +0.5..+6, +0.8..+9 | 45.1 m² gross, **42.5 m² net** (bot-lift shaft 1.6 × 1.6 in the SW corner, v1.1) | Z +0.8 face, X +3.2, **2.0 m** (Sprocket); north service door Z +9, X 3.2 |
 | 102 apt | +6..+14, +0.8..+9 | 65.6 m² | Z +0.8 face, X +8.0, 1.4 m |
 | 103 apt | -14..-2, -9..-0.8 (+ end strip -14..-10, -0.8..+0.8) | 104.8 m² | Z -0.8 face, X -4.5, 1.4 m |
 | Stair core + vestibule | -2..+2, -9..-0.8 | 32.8 m² | Sector-4 exit: Z -9 face, X 0, 2.6 m |
@@ -24,28 +28,28 @@ LEVEL 1  (north = +Z at top)
 X -14            -4.5      +0.5    +6              +14
 +----------------+---------+-------+----------------+  Z +9
 |                | LAUNDRY | MAINT |                |
-|      101       |  41 m²  | [P][P]|      102       |
-|    77.9 m²     |         | [P] R |    65.6 m²     |
+|      101       |  41 m²  |[P] [P]|      102       |
+|    77.9 m²     |         |LF R[P]|    65.6 m²     |
 +------[B]-------+---[B]---+--[B]--+------[B]-------+  Z +0.8
 |    |<========== CORRIDOR 1.6 m ==========>|      |
 +------------[B]-----+ STAIR  +-----[B]-------------+  Z -0.8
-|                    | /\/\/\ |                    |
-|        103         | switch-|        104         |
-|      104.8 m²       |  back  |      104.8 m²      |
-|   (promenade wdw)  |--------|  (promenade wdw)   |
+|                    |F1^ walk|                    |
+|        103         |16R |F2 |        104         |
+|      104.8 m²       | ^  |und|      104.8 m²      |
+|   (promenade wdw)  |-midlnd-|  (promenade wdw)   |
 |                    | VESTIB.|                    |
 +--------------------+==[B]===+--------------------+  Z -9
 X -14               -2  exit +2                  +14
-[B] force-field door + Bulkhead Hub, frame seated in the wall   [P] Sprocket floor pad   R riser shaft
+[B] force-field door + Bulkhead Hub, frame seated in the wall   [P] Sprocket floor pad   R riser shaft   LF Sprocket bot lift (v1.1)
 ```
 
 ## Level 2 (Y +4.20): 4 apartments
 | Unit | X, Z | Size | Door |
 |---|---|---|---|
 | **201 player apt** | -14..0, +0.8..+9 | **114.8 m²** (absorbs the old 2C alcove as a workshop nook) | Z +0.8 face, X -3.0, 1.4 m |
-| 202 apt | 0..+14, +0.8..+9 | 114.8 m² (riser runs in a sealed 1.0 × 1.0 m wall chase in its SW corner) | Z +0.8 face, X +3.0, 1.4 m |
+| 202 apt | 0..+14, +0.8..+9 | 114.8 m² gross, **109.7 m² net** (SW corner, v1.1: bot-lift shaft 1.6 × 1.6, riser chase 1.0 × 1.0 re-aligned to X 0.6..1.6, Z 2.4..3.4 so it stacks with L1, and a sealed 0.5 m slot for the lift controller) | Z +0.8 face, X +3.0, 1.4 m |
 | 203 apt | -14..-2, -9..-0.8 (+ end strip) | 104.8 m² | Z -0.8 face, X -4.5, 1.4 m |
-| Stair core + top landing | -2..+2, -9..-0.8 | 32.8 m² | open to corridor; window on Z -9 |
+| Stair core + L2 landing | -2..+2, -9..-0.8 | 32.8 m² | open to corridor (4.1 m L2 landing at the north); promenade window on Z -9 at the mid-landing |
 | 204 apt | +2..+14, -9..-0.8 (+ end strip) | 104.8 m² | Z -0.8 face, X +4.5, 1.4 m |
 
 ```
@@ -54,14 +58,14 @@ X -14                     0                       +14
 +-------------------------+-------------------------+  Z +9
 |          201            |          202            |
 |   PLAYER  114.8 m²      |        114.8 m²         |
-| (workbench + ex-2C nook)|R                        |
+| (workbench + ex-2C nook)|LF R                     |
 +----------[B]------------+-----------[B]-----------+  Z +0.8
 |    |<========== CORRIDOR 1.6 m ==========>|      |
 +------------[B]-----+ STAIR  +-----[B]-------------+  Z -0.8
-|        203         | /\/\/\ |        204         |
-|      104.8 m²       |        |      104.8 m²      |
-|   (promenade wdw)  | LANDING|  (promenade wdw)   |
-|                    | window |                    |
+|        203         |L2 LAND.|        204         |
+|      104.8 m²       |--guard-|      104.8 m²      |
+|   (promenade wdw)  |void|F2^|  (promenade wdw)   |
+|                    |mid+wdw |                    |
 +--------------------+--------+--------------------+  Z -9
 ```
 
@@ -69,6 +73,11 @@ X -14                     0                       +14
 - 10 unit doors + the Sector-4 exit, all force-field in the v2 frame with a **Bulkhead Hub** (0.40 × 0.80 × 0.20 m panel at 1.0–1.8 m, 0.9 m Sprocket coupler socket, no dock flap) on the latch-side jamb, corridor side.
 - **QA-BK-01 fix:** each door is defined by its partition (the wall line in the tables), never by a free coordinate. The frame is centered in the 0.20 m partition; the hub's back face sits on the corridor-side wall face (Z ±0.8 or Z -9 for the exit), within 30 mm, on a jamb pier with its own StaticBody (also covers REAL-01).
 - **Sprocket:** 3 open 1.2 × 1.2 m floor pads with coupler arms, all in Maintenance; no wall docks anywhere. Maintenance also holds the substation cabinet and the riser shaft base (R), which rises through the sealed chase in 202.
+- **v1.1 Sprocket bot lift (pending Jared review):**
+  - **Shaft:** 1.6 × 1.6 m gross at X 0.6..2.2, Z 0.8..2.4 (Maintenance SW corner at L1, 202 SW corner at L2). It holds a 1.2 × 1.2 m car and serves L1 and L2.
+  - **Doors:** 1.0 × 1.3 m doors open onto the **corridor** at both levels, each with a 1.2 × 1.2 m landing and a Bulkhead Hub style call panel.
+  - **Services stacking:** the riser now sits directly north of the shaft at the same XZ on both levels. The old L1 and L2 risers were 0.7 m out of line.
+  - **Maintenance re-plan:** the pads move out of a straight 2.0 m fire-egress lane (X 2.2..4.2) between the corridor door and the north service door, to X 0.8..2.0 / Z 6.6..7.8 and X 4.4..5.6 / Z 4.0..5.2 and 6.6..7.8. The tool wall moves to Z 3.6..6.4 and the spares shelf to X 4.3..5.9. The substation stays.
 
 ## Other audit items (carried from rev B)
 - REAL-02: the stair rail and any glass get their own colliders from the same mesh.

@@ -1,4 +1,4 @@
-# Residential rev C stair core v1 (assets #3 stair set, #4 glass + handrail, #5 skylight). DESIGN ONLY.
+# Residential rev C stair core v1.1 (bot lift #51 added; writes *_v1_1_*.png, v1 PNGs kept) (assets #3 stair set, #4 glass + handrail, #5 skylight). DESIGN ONLY.
 # Plan coords: X (axial, fore -X / aft +X), Z (+Z spinward, -Z antispinward = Sector-4 promenade side). Y up (toward axis).
 import math, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -57,18 +57,46 @@ QC.append(("L1 walk + exit zone headroom >= 2.1 m",hl))
 mh=min(min(over_flight(Z1b-k*T_-0.01,1) for k in range(N1-1)),min(over_flight(ZL+k*T_+0.01,2) for k in range(N2-1)))
 QC.append((f"headroom over flights >= 2.1 m (min {mh:.2f})",mh>=HR))
 QC.append(("min L1 walk soffit (m)",round(min(soffit_over(x/10,z/10) for x in range(-3,19) for z in range(int(ZS*10),int(ZN*10)+1)),3)))
+
+# ---- v1.1: Sprocket bot lift + Maintenance re-plan (riser re-aligned so services stack) ----
+SHAFT=(0.6,2.2,0.8,2.4); CAR=(0.8,2.0,1.0,2.2); LDOOR=(0.9,1.9); RISER=(0.6,1.6,2.4,3.4)
+MAINT=(0.6,5.9,0.9,8.9); U202=(0.1,13.9,0.9,8.9)
+M_SOL=[("lift shaft",)+SHAFT,("riser (re-aligned)",)+RISER,("tool wall",0.6,1.1,3.6,6.4),("substation",5.3,5.9,1.0,3.5),
+       ("pad W",0.8,2.0,6.6,7.8),("pad E1",4.4,5.6,4.0,5.2),("pad E2",4.4,5.6,6.6,7.8),("spares shelf",4.3,5.9,8.4,8.9),("coupler mounts",0.6,1.9,8.4,8.9)]
+M_CLR=[("egress lane corridor door -> service door (2.0 m)",2.2,4.2,0.9,8.9),("lift landing L1 (corridor) 1.2",0.8,2.0,-0.4,0.8)]
+L2_SOL=[("lift shaft",)+SHAFT,("riser chase (re-aligned)",)+RISER,("202 services slot: lift controller + chase",0.1,0.6,0.9,3.4),
+        ("202 wardrobe (moved)",0.1,0.6,3.5,6.5),("202 kitchen counter",5.0,9.0,0.9,1.5)]
+L2_CLR=[("lift landing L2 (corridor) 1.2",0.8,2.0,-0.4,0.8),("202 entry path",2.55,3.45,0.9,7.8),("202 door clear",2.3,3.7,-0.1,0.8)]
+CORE_L=[c for c in CLEAR if "door" in c[0] or "opening" in c[0]]
+QC.append(("L1 Maintenance solid overlaps",[(a[0],b[0]) for i,a in enumerate(M_SOL) for b in M_SOL[i+1:] if ov(a,b)]))
+QC.append(("L1 solids in egress lane / lift landing / corridor door zones",[(a[0],c[0]) for a in M_SOL for c in M_CLR+CORE_L if ov(a,c)]))
+QC.append(("L1 lift landing vs other door/core zones",[c[0] for c in CORE_L if ov(M_CLR[1],c)]))
+QC.append(("L2 solid overlaps",[(a[0],b[0]) for i,a in enumerate(L2_SOL) for b in L2_SOL[i+1:] if ov(a,b)]))
+QC.append(("L2 solids in lift landing / 202 path / door zones",[(a[0],c[0]) for a in L2_SOL for c in L2_CLR if ov(a,c)]))
+QC.append(("L2 lift landing vs 202 door + core opening",[c[0] for c in L2_CLR[2:]+CORE_L[-1:] if ov(L2_CLR[0],c)]))
+inside=lambda r,b: b[0]<=r[0] and r[1]<=b[1] and b[2]<=r[2]+0.1 and r[3]<=b[3]
+QC.append(("shaft + riser inside Maintenance (L1) and 202 (L2), same XZ both levels",inside(SHAFT,MAINT) and inside(SHAFT,U202) and inside(RISER,MAINT) and inside(RISER,U202)))
+QC.append(("riser touches shaft (services stack)",abs(RISER[2]-SHAFT[3])<1e-9))
+QC.append(("car 1.2 x 1.2 with >= 0.1 running clearance",CAR[1]-CAR[0]>=1.2-1e-9 and CAR[0]-SHAFT[0]>=0.1 and SHAFT[1]-CAR[1]>=0.1))
+QC.append(("lift door >= Sprocket 0.78 + 0.2",LDOOR[1]-LDOOR[0]>=0.98))
+QC.append(("lift landings >= 1.2 x 1.2",all(min(c[2]-c[1],c[4]-c[3])>=1.2-1e-9 for c in (M_CLR[1],L2_CLR[0]))))
+QC.append(("egress lane >= 0.9 and straight door-to-door",M_CLR[0][2]-M_CLR[0][1]>=0.9))
+QC.append(("each pad within 0.3 m of the egress lane",all(min(abs(p_[2]-2.2),abs(p_[1]-4.2))<=0.3 for p_ in M_SOL if p_[0].startswith("pad"))))
+AREA=dict(maint_lost=(SHAFT[1]-SHAFT[0])*(SHAFT[3]-SHAFT[2]),u202_shaft=(SHAFT[1]-SHAFT[0])*(SHAFT[3]-SHAFT[2]),u202_slot=0.6*2.6,u202_riser=1.0,old_chase=1.0)
+print("AREA",AREA)
 for q in QC: print("QC:",q)
-assert all((v is True) or (isinstance(v,list) and not v) or isinstance(v,float) for _,v in QC), "QC failed"
+bad=[k for k,v in QC if not ((v is True) or (isinstance(v,list) and not v) or isinstance(v,float))]
+assert not bad, ("QC failed",bad)
 # ---- PLAN PNG: L1 | L2 ----
 def R(ax,x0,x1,z0,z1,fc,ec="none",lw=0,z=2,**k): ax.add_patch(Rectangle((x0,z0),x1-x0,z1-z0,fc=fc,ec=ec,lw=lw,zorder=z,**k))
 def T(ax,x,z,s,fs=7,**k): ax.text(x,z,s,ha=k.pop("ha","center"),va=k.pop("va","center"),fontsize=fs,color=k.pop("color",WALL),zorder=30,**k)
 B=dict(fc="white",ec="none",pad=0.8)
-fig,axs=plt.subplots(1,2,figsize=(16,8.2),dpi=150)
+fig,axs=plt.subplots(1,2,figsize=(16,13.5),dpi=150)
 for lvl,ax in zip(("L1",'L2'),axs):
     R(ax,-6.5,6.5,-0.8,0.8,PEARL); T(ax,-4.9,0,"CORRIDOR 1.6 m",6.5,color="#555")
     names=[("103" if lvl=="L1" else "203",-6.5,-2,-9,-0.8),("104" if lvl=="L1" else "204",2,6.5,-9,-0.8)]
-    names+= [("LAUNDRY",-6.5,0.5,0.8,2.0),("MAINT.",0.5,6.5,0.8,2.0)] if lvl=="L1" else [("201",-6.5,0,0.8,2.0),("202",0,6.5,0.8,2.0)]
-    for n,x0,x1,z0,z1 in names: R(ax,x0,x1,z0,z1,U,ec=WALL,lw=2.5); T(ax,(x0+x1)/2+(0 if z0>0 else (-1.0 if x0<0 else 1.0)),(z0+z1)/2 if z0>0 else -6.0,n,9,weight="bold")
+    names+= [("LAUNDRY",-6.5,0.5,0.8,9.0),("MAINT.\n42.5 m2",0.5,6.0,0.8,9.0),("102",6.0,6.5,0.8,9.0)] if lvl=="L1" else [("201",-6.5,0,0.8,9.0),("202  109.7 m2",0,6.5,0.8,9.0)]
+    for n,x0,x1,z0,z1 in names: R(ax,x0,x1,z0,z1,U,ec=WALL,lw=2.5); (n!="102") and T(ax,(x0+x1)/2+(0 if z0>0 else (-1.0 if x0<0 else 1.0)) + (1.2 if n.startswith("202") else 0),((2.9 if n.startswith("MAINT") else 7.6) if z0>0 else -6.0),n,8.5,weight="bold",bbox=dict(fc="#EEF1F5",ec="none",pad=1))
     for x in (-2,2): ax.plot([x,x],[-9,-0.8],color=WALL,lw=4,zorder=5)
     ax.plot([-6.5,6.5],[-9,-9],color=WALL,lw=6,zorder=5)
     dz=[("103",-4.5,1.4,-0.8),("104",4.5,1.4,-0.8),("LAUNDRY",-2.0,1.4,0.8),("MAINT.",3.2,2.0,0.8)] if lvl=="L1" else [("203",-4.5,1.4,-0.8),("204",4.5,1.4,-0.8),("201",-3.0,1.4,0.8),("202",3.0,1.4,0.8)]
@@ -107,17 +135,38 @@ for lvl,ax in zip(("L1",'L2'),axs):
         T(ax,0,-9.7,"PROMENADE WINDOW Y 3.0-7.0 (at mid-landing, seen from L2) faces promenade + tram",7,weight="bold",color=VIO)
         gp=[(-1.9,-2.0),(1.9,-2.0),(1.9,-8.4),(-1.9,-8.4)]
         for x,z in [(-1.5,-1.3),(1.5,-1.3),(-1.5,-8.6),(1.5,-8.6)]: ax.add_patch(Circle((x,z),0.12,fc="white",ec=ORG,lw=1.5,zorder=10))
+
+    if lvl=="L1":
+        for (n,x0,x1,z0,z1) in M_SOL:
+            fc={"lift shaft":"#C9CED6","pad W":GRN,"pad E1":GRN,"pad E2":GRN}.get(n,"#88929E" if "riser" in n else "#B9C0C9")
+            R(ax,x0,x1,z0,z1,fc,ec=WALL,lw=1.0,z=6)
+        T(ax,5.6,2.25,"sub-\nstation",5.5,rotation=90); T(ax,0.85,5.0,"tool wall",5.5,rotation=90); T(ax,5.1,8.65,"spares",5.5)
+        T(ax,1.25,8.65,"coupler mounts",5); T(ax,1.1,2.9,"R",7,weight="bold")
+        for (n,x0,x1,z0,z1) in [p_ for p_ in M_SOL if p_[0].startswith("pad")]: T(ax,(x0+x1)/2,(z0+z1)/2,"pad",6,color="white",weight="bold")
+        R(ax,2.2,4.2,0.9,8.9,GRN,z=3,alpha=0.10); ax.annotate("",xy=(3.2,8.6),xytext=(3.2,1.2),arrowprops=dict(arrowstyle="->",color=GRN,lw=1.5,ls="--"),zorder=9)
+        T(ax,3.2,5.6,"FIRE EGRESS\nLANE 2.0 m\n(kept clear)",6,color="#1F6B3E",weight="bold",bbox=B)
+        R(ax,2.2,4.2,8.88,9.12,"white",ec=VIO,lw=2.2,z=8); R(ax,4.35,4.75,9.14,9.4,AMB,ec=WALL,lw=0.8,z=8)
+        T(ax,1.6,9.6,"SERVICE DOOR 2.0 m (X 3.2) -> exterior ramp",6.5,weight="bold")
+    else:
+        for (n,x0,x1,z0,z1) in L2_SOL:
+            fc="#C9CED6" if "shaft" in n else "#88929E" if ("riser" in n or "slot" in n) else "#E3E6EA"
+            R(ax,x0,x1,z0,z1,fc,ec=WALL,lw=1.0,z=6)
+        T(ax,1.1,2.9,"R",7,weight="bold"); T(ax,0.35,1.6,"ctrl",5,rotation=90,color="white"); T(ax,0.35,5.0,"wardrobe",5,rotation=90)
+        T(ax,5.75,1.2,"kitchen",5.5); R(ax,2.55,3.45,0.9,7.8,VIO,z=3,alpha=0.06)
+    R(ax,CAR[0],CAR[1],CAR[2],CAR[3],"none",ec=GRAPH,lw=1,z=7,ls="--"); T(ax,1.4,1.6,"BOT\nLIFT",6,weight="bold")
+    R(ax,LDOOR[0],LDOOR[1],0.68,0.92,"white",ec=VIO,lw=2,z=8); R(ax,0.45,0.85,0.48,0.68,AMB,ec=WALL,lw=0.8,z=8)
+    R(ax,0.8,2.0,-0.4,0.8,GRN,z=3,alpha=0.16); T(ax,1.4,-0.12,"lift landing 1.2",5.5,color="#1F6B3E")
     for x,z in gp: R(ax,x-0.09,x+0.09,z-0.18,z+0.18,GRN,ec=WALL,lw=0.6,z=10)
     ax.set_title(f"{lvl}  (Y {'0.00' if lvl=='L1' else '4.20'})",fontsize=11,weight="bold")
-    ax.set_xlim(-6.6,6.6); ax.set_ylim(-10.9,2.2); ax.set_aspect("equal"); ax.axis("off")
+    ax.plot([-6.5,6.5],[9,9],color=WALL,lw=6,zorder=5); ax.set_xlim(-6.6,6.6); ax.set_ylim(-10.9,9.9); ax.set_aspect("equal"); ax.axis("off")
     R(ax,-6.4,-4.4,-10.6,-10.45,WALL,z=9); R(ax,-6.4,-5.4,-10.6,-10.45,"white",ec=WALL,lw=0.8,z=9); T(ax,-5.4,-10.25,"0    1    2 m",6)
     ax.annotate("",xy=(6.1,-9.6),xytext=(6.1,-10.6),arrowprops=dict(arrowstyle="-|>",color=WALL)); T(ax,6.1,-9.35,"+Z spinward",6)
-fig.text(0.5,0.05,"Legend:  violet = glass guard 1.1 m (latched/clamped)   amber = handrail 0.9 m (both sides)   green bar = mag-lock grab point   orange ring = strap anchor   "
-         "violet tint = door clear zone   green tint = exit clear zone   [orange] Bulkhead Hub",ha="center",fontsize=7.5)
-fig.suptitle("RESIDENTIAL rev C - STAIR CORE v1 (assets #3 #4 #5)  |  X -2..2, Z -9..-0.8  |  26 R x 0.1615, T 0.28, flights 1.5 m  |  PENDING JARED APPROVAL",fontsize=11.5,weight="bold")
-fig.savefig("residential_stair_core_v1_plan.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
+fig.text(0.5,0.06,"Legend:  violet = glass guard 1.1 m (latched/clamped)   amber = handrail 0.9 m (both sides)   green bar = mag-lock grab point   orange ring = strap anchor   "
+         "violet tint = door clear zone   green tint = exit / egress / lift landing   [orange] Bulkhead Hub / lift call panel",ha="center",fontsize=7.5)
+fig.suptitle("RESIDENTIAL rev C - STAIR CORE v1.1 (assets #3 #4 #5 + #51 bot lift)  |  X -2..2, Z -9..-0.8  |  26 R x 0.1615, T 0.28, flights 1.5 m  |  v1.1 pending Jared review",fontsize=11.5,weight="bold")
+fig.savefig("residential_stair_core_v1_1_plan.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
 # ---- SECTION PNG (longitudinal, along Z) ----
-fig,ax=plt.subplots(figsize=(15,9.5),dpi=150)
+fig=plt.figure(figsize=(19,9.5),dpi=150); ax=fig.add_axes([0.05,0.08,0.66,0.84])
 R(ax,-10.2,1.8,-0.35,0,"#B9C0C9"); R(ax,-9.1,-8.9,0,ROOF+0.3,"#C9CED6",ec=WALL,lw=1.2)
 R(ax,-9.1,-8.9,0,DOOR_H,"white",ec=VIO,lw=1.5,z=4); T(ax,-9.55,1.15,"EXIT\n2.6 W\n2.3 H",6.5,weight="bold")
 R(ax,-9.12,-8.88,3.0,7.0,"#E9E3FF",ec=VIO,lw=2,z=4); T(ax,-9.6,5.0,"promenade\nwindow\nY 3.0-7.0",6.5,color=VIO,weight="bold")
@@ -158,5 +207,19 @@ T(ax,-4.2,7.55,curv,6.8,color="#333",bbox=dict(fc="#F7F8FA",ec=GRAPH,lw=0.6,pad=
 ax.set_xlim(-10.3,1.9); ax.set_ylim(-1.0,9.9); ax.set_aspect("equal")
 ax.set_xlabel("Z (m)   <- antispinward / Sector-4 promenade          corridor ->",fontsize=8); ax.set_ylabel("Y (m, up = toward axis)",fontsize=8)
 for s_ in ("top","right"): ax.spines[s_].set_visible(False)
-ax.set_title("STAIR CORE v1 - LONGITUDINAL SECTION along Z (X = -1.15 cut through flight 1, flight 2 beyond)  |  PENDING JARED APPROVAL",fontsize=11,weight="bold")
-fig.savefig("residential_stair_core_v1_section.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
+ax.set_title("STAIR CORE v1.1 - LONGITUDINAL SECTION along Z (X = -1.15 cut through flight 1, flight 2 beyond)  |  v1.1",fontsize=11,weight="bold")
+
+ia=fig.add_axes([0.76,0.10,0.22,0.80])
+R(ia,-1.2,0.7,-0.35,0,"#B9C0C9"); R(ia,0.7,0.9,0,ROOF,"#C9CED6",ec=WALL,lw=0.8); R(ia,2.3,2.4,0,6.6,"#C9CED6",ec=WALL,lw=0.8)
+R(ia,-1.2,0.7,RISE-SLAB2,RISE,GRAPH); R(ia,2.4,3.6,RISE-SLAB2,RISE,GRAPH); R(ia,0.9,2.3,6.5,6.6,GRAPH); R(ia,-1.2,3.6,ROOF,ROOF+0.3,GRAPH)
+R(ia,2.4,3.4,0,ROOF,"#88929E",ec=WALL,lw=0.8); T(ia,2.9,7.6,"RISER\n(re-aligned,\nstacks)",6,color="white",weight="bold")
+for y0,lab in ((0,"L1"),(RISE,"L2")):
+    R(ia,0.7,0.9,y0,y0+1.3,"white",ec=VIO,lw=1.5,z=5); T(ia,-0.6,y0+0.65,f"{lab} door\n1.0 x 1.3\n+ call panel",6,color=VIO)
+R(ia,1.0,2.2,0.05,1.45,"none",ec=GRAPH,lw=1.5,z=4); R(ia,1.0,2.2,RISE+0.05,RISE+1.45,"none",ec=GRAPH,lw=1,ls="--",z=4)
+ia.add_patch(Rectangle((1.2,0.1),0.78,1.03,fc=AMB,alpha=0.5,zorder=5)); T(ia,1.6,0.62,"Sprocket\n1.03",5.5)
+ia.annotate("",xy=(1.6,RISE+0.1),xytext=(1.6,1.6),arrowprops=dict(arrowstyle="<->",color=GRN)); T(ia,1.6,2.9,"travel\n4.2 m",6,color="#1F6B3E",bbox=B)
+T(ia,1.6,7.2,"shaft cap Y 6.6\n(MRL, ctrl in\n202 slot)",6); T(ia,-0.25,-0.75,"corridor",6,color="#555"); T(ia,1.6,-0.75,"shaft",6,color="#555")
+ia.set_xlim(-1.3,3.7); ia.set_ylim(-1.0,9.4); ia.set_aspect("equal"); ia.set_xticks([0.8,2.4]); ia.set_xticklabels(["Z 0.8","Z 2.4"],fontsize=6); ia.tick_params(labelsize=6)
+for s_ in ("top","right"): ia.spines[s_].set_visible(False)
+ia.set_title("INSET: bot lift section along Z at X 1.4\n(not in the stair cut)",fontsize=8,weight="bold")
+fig.savefig("residential_stair_core_v1_1_section.png",bbox_inches="tight",facecolor="white"); plt.close(fig)
