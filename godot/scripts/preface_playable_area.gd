@@ -138,6 +138,17 @@ const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s around longitudinal 
 const DOOR_SCAN_RANGE := 4.8
 const DOOR_SLIDE_SPEED := 2.0
 
+# [t39u]-[t40u] Dynamic interior model despawn/respawn streaming + 5-Design RFID Door Tournament
+const INTERIOR_DESPAWN_Z := -9.40
+const INTERIOR_RESPAWN_Z := -9.15
+const DOOR_DESIGN_NAMES := {
+	1: "CANDIDATE 01 // HEAVY BI-PARTING INDUSTRIAL BULKHEAD DOOR",
+	2: "CANDIDATE 02 // VERTICAL COUNTERBALANCED BLAST-SHUTTER DOOR",
+	3: "CANDIDATE 03 // ASYMMETRIC POCKET-SLIDE AIRLOCK DOOR",
+	4: "CANDIDATE 04 // ANGLED INTERLOCKING CHEVRON BULKHEAD DOOR",
+	5: "CANDIDATE 05 // TWIN-TRACK RECESSED SECURITY FRAME DOOR"
+}
+
 var _arch_container: Node3D
 var _props_container: Node3D
 var _actors_container: Node3D
@@ -193,6 +204,13 @@ var _flashlight: SpotLight3D
 var _qa_hand: bool = false
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
+var _qa_door_tournament: bool = false
+var _active_door_design: int = 1
+var _interiors_loaded: bool = true
+var _interior_managed_count: int = 0
+var _interior_detached_records: Array[Dictionary] = []
+var _collected_pickup_ids: Dictionary = {}
+var _pickup_templates: Dictionary = {}
 var _ring_root: Node3D
 var _starfield_cylinder: Node3D
 var _rfid_doors: Array[Dictionary] = []
@@ -244,6 +262,13 @@ func _ready() -> void:
 		elif arg == "--qa-reticle-stars-doors":
 			_qa_t38 = true
 			_qa_hand = true
+		elif arg == "--qa-door-tournament":
+			_qa_door_tournament = true
+			_qa_hand = true
+		elif arg.begins_with("--door-design="):
+			var d_val: int = int(arg.substr("--door-design=".length()))
+			if d_val >= 1 and d_val <= 5:
+				_active_door_design = d_val
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -272,6 +297,8 @@ func _ready() -> void:
 	if _qa_hand:
 		if _qa_cyl:
 			_run_cylinder_gravity_qa.call_deferred()
+		elif _qa_door_tournament:
+			_run_door_tournament_qa.call_deferred()
 		elif _qa_t38:
 			_run_reticle_stars_doors_qa.call_deferred()
 		else:
@@ -701,16 +728,63 @@ func _assemble_open_doorless_sector() -> void:
 # ------------------------------------------------------------------------------
 # Pickups & #04 Wrist rig (BUG-06)
 # ------------------------------------------------------------------------------
-func _spawn_pickup(path: String, nm: String, kind: String, label: String, pos: Vector3, sc: float) -> void:
-	var node: Node3D = _load_glb_scene(path, 0.85)
+func _instantiate_pickup_model(path: String, kind: String) -> Node3D:
+	if _pickup_templates.has(kind):
+		var tpl: Node3D = _pickup_templates[kind] as Node3D
+		if tpl != null and is_instance_valid(tpl):
+			return tpl.duplicate() as Node3D
+	var loaded: Node3D = _load_glb_scene(path, 0.85)
+	if loaded != null:
+		_pickup_templates[kind] = loaded.duplicate()
+	return loaded
+
+
+func _spawn_pickup(path: String, nm: String, kind: String, label: String, pos: Vector3, sc: float, count_max: bool = true) -> void:
+	if count_max:
+		_inventory_max[kind] = int(_inventory_max[kind]) + 1
+	if _collected_pickup_ids.has(nm):
+		return
+	var node: Node3D = _instantiate_pickup_model(path, kind)
 	if node == null:
 		return
 	node.name = nm
 	node.position = pos
 	node.scale = Vector3(sc, sc, sc)
 	_props_container.add_child(node)
-	_inventory_max[kind] = int(_inventory_max[kind]) + 1
-	_interactables.append({"node": node, "kind": kind, "label": label, "collected": false, "pickup": true})
+	_interactables.append({"node": node, "id": nm, "kind": kind, "label": label, "collected": false, "pickup": true})
+
+
+func _spawn_interior_pickups(initial_setup: bool = false) -> int:
+	var wire_path: String = _find_first_existing(PICKUP_WIRE_PATHS)
+	var batt_path: String = _find_first_existing(PICKUP_BATT_PATHS)
+	var bci_path: String = _find_first_existing(PICKUP_BCI_PATHS)
+	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
+
+	var specs: Array[Array] = [
+		[wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-9.05, 5.12, 7.60), 1.10],
+		[bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-8.50, 5.12, 7.62), 1.15],
+		[jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-8.00, 5.12, 7.62), 1.10],
+		[batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.45, 5.12, 7.60), 1.10],
+		[wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.85, 5.02, -4.95), 1.15],
+		[batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-11.05, 5.02, -4.95), 1.15],
+		[batt_path, "Apt202_Desk_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(10.70, 5.10, 7.20), 1.10],
+		[wire_path, "Room1A_Laundry_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-6.15, 0.98, 7.25), 1.15],
+		[batt_path, "Room1B_Substation_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(7.20, 0.98, 7.10), 1.15]
+	]
+	var spawned: int = 0
+	for s: Array in specs:
+		var nm: String = String(s[1])
+		_spawn_pickup(String(s[0]), nm, String(s[2]), String(s[3]), s[4] as Vector3, float(s[5]), initial_setup)
+		if not _collected_pickup_ids.has(nm):
+			spawned += 1
+
+	var term: Node3D = Node3D.new()
+	term.name = "Workbench_DiagnosticTerminal"
+	term.position = Vector3(-9.17, 5.50, 8.05)
+	_props_container.add_child(term)
+	_interactables.append({"node": term, "id": "Workbench_DiagnosticTerminal", "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
+	spawned += 1
+	return spawned
 
 
 func _populate_pickups_and_wrist_rig() -> void:
@@ -720,32 +794,10 @@ func _populate_pickups_and_wrist_rig() -> void:
 	for k: String in _inventory_max.keys():
 		_inventory_max[k] = 0
 
-	var wire_path: String = _find_first_existing(PICKUP_WIRE_PATHS)
-	var batt_path: String = _find_first_existing(PICKUP_BATT_PATHS)
-	var bci_path: String = _find_first_existing(PICKUP_BCI_PATHS)
-	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
+	_spawn_interior_pickups(true)
 
-	# Apt 201 engineering workbench (benchtop Y = 5.12m), organized evenly across the ESD mat.
-	_spawn_pickup(wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-9.05, 5.12, 7.60), 1.10)
-	_spawn_pickup(bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-8.50, 5.12, 7.62), 1.15)
-	_spawn_pickup(jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-8.00, 5.12, 7.62), 1.10)
-	_spawn_pickup(batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.45, 5.12, 7.60), 1.10)
-	# Alcove 2C engineering supply shelf, Apt 202 desk, Room 1A folding counter, Room 1B substation service bench.
-	_spawn_pickup(wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.85, 5.02, -4.95), 1.15)
-	_spawn_pickup(batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-11.05, 5.02, -4.95), 1.15)
-	_spawn_pickup(batt_path, "Apt202_Desk_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(10.70, 5.10, 7.20), 1.10)
-	_spawn_pickup(wire_path, "Room1A_Laundry_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-6.15, 0.98, 7.25), 1.15)
-	_spawn_pickup(batt_path, "Room1B_Substation_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(7.20, 0.98, 7.10), 1.15)
-
-	# Workbench diagnostic terminal (query-only)
-	var term: Node3D = Node3D.new()
-	term.name = "Workbench_DiagnosticTerminal"
-	term.position = Vector3(-9.17, 5.50, 8.05)
-	_props_container.add_child(term)
-	_interactables.append({"node": term, "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
-
-	# [t38u] Normal functional RFID sliding doors across all 6 Residential Sector portals
-	_build_rfid_sliding_doors(_props_container)
+	# [t38u]/[t39u] Functional RFID doors across all 6 Residential Sector portals
+	_build_rfid_sliding_doors(_props_container, _active_door_design)
 
 	# #04 Bio-Luminescent Neural Tendon Smart-Sleeve (lower-left of 1st-person view)
 	if _camera != null:
@@ -1637,6 +1689,7 @@ func _physics_process(delta: float) -> void:
 
 	if not in_ring and b.global_position.y < -8.0:
 		_respawn()
+	_update_interior_streaming(b.global_position)
 	_update_first_person_arm(delta)
 
 	var hvel: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
@@ -1664,8 +1717,10 @@ func _find_nearest_interactable(max_dist: float) -> Dictionary:
 	for it: Dictionary in _interactables:
 		if bool(it["collected"]):
 			continue
+		if not is_instance_valid(it["node"]):
+			continue
 		var n: Node3D = it["node"] as Node3D
-		if n == null or not is_instance_valid(n):
+		if n == null or not n.is_inside_tree():
 			continue
 		var target: Vector3 = n.global_position
 		if String(it["kind"]) == "bot":
@@ -1691,6 +1746,7 @@ func _interact() -> void:
 	if bool(it["pickup"]):
 		it["collected"] = true
 		var picked: Node3D = it["node"] as Node3D
+		_collected_pickup_ids[String(it.get("id", picked.name))] = true
 		picked.visible = false
 		picked.queue_free()
 		_inventory[kind] = int(_inventory[kind]) + 1
@@ -1730,8 +1786,10 @@ func _trigger_rfid_pulse() -> void:
 	for it: Dictionary in _interactables:
 		if bool(it["collected"]):
 			continue
+		if not is_instance_valid(it["node"]):
+			continue
 		var n: Node3D = it["node"] as Node3D
-		if n == null or not is_instance_valid(n):
+		if n == null or not n.is_inside_tree():
 			continue
 		var d: float = pp.distance_to(n.global_position)
 		if d <= 12.0:
@@ -2138,6 +2196,7 @@ func _qa_place(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
 	_player_body.rotation_degrees = Vector3(0.0, yaw_deg, 0.0)
 	_pitch = deg_to_rad(pitch_deg)
 	_apply_pitch()
+	_update_interior_streaming(pos)
 
 
 func _qa_capture(fname: String) -> Image:
@@ -3149,44 +3208,264 @@ func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	_starfield_cylinder.add_child(barrel)
 
 
-func _build_rfid_sliding_doors(parent: Node3D) -> void:
-	# [t38u] Normal functional sliding doors across all 6 Residential Sector portals that open smoothly on [F] RFID scan.
+# ------------------------------------------------------------------------------
+# [t39u]-[t40u] Dynamic interior despawn / respawn streaming (no loading screens)
+# ------------------------------------------------------------------------------
+const INTERIOR_ARCH_NODE_NAMES := [
+	"Apartment_Furniture_And_Props", "Apartment_Workbench", "Apartment_Bunk_Pod", "Alcove_2C_Storage_Nook",
+	"Atrium_Planters_And_Benches", "Room_2B_Interior_Props", "Side_Room_East_Medbay"
+]
+const INTERIOR_TASK_LIGHT_PREFIXES := ["Apt201_", "Apt202_", "Room1A_", "Room1B_"]
+
+
+func _is_interior_task_light(l: Node) -> bool:
+	for pfx: String in INTERIOR_TASK_LIGHT_PREFIXES:
+		if String(l.name).begins_with(pfx):
+			return true
+	return false
+
+
+func _despawn_building_interiors() -> int:
+	if not _interiors_loaded:
+		return 0
+	var managed: int = 0
+	_interior_detached_records.clear()
+	# 1. Free every interior pickup & terminal node (doors stay — they are the building envelope).
+	var keep_items: Array[Dictionary] = []
+	for it: Dictionary in _interactables:
+		var k: String = String(it["kind"])
+		if bool(it["pickup"]) or k == "terminal":
+			var raw: Variant = it["node"]
+			if is_instance_valid(raw):
+				var n: Node3D = raw as Node3D
+				if n.get_parent() != null:
+					n.get_parent().remove_child(n)
+				n.queue_free()
+				managed += 1
+		else:
+			keep_items.append(it)
+	_interactables = keep_items
+	for ch: Node in _props_container.get_children():
+		if String(ch.name) == "SectorRFIDSlidingDoors":
+			continue
+		_props_container.remove_child(ch)
+		ch.queue_free()
+		managed += 1
+	# 2. Detach interior furniture / room-prop subtrees from the residential sector GLB.
+	var sector: Node3D = _arch_container.get_node_or_null("PrefaceResidentialSector_Doorless") as Node3D
+	if sector != null:
+		var stack: Array[Node] = [sector]
+		var found: Array[Node3D] = []
+		while not stack.is_empty():
+			var c: Node = stack.pop_back()
+			if c != sector and c is Node3D and INTERIOR_ARCH_NODE_NAMES.has(String(c.name)):
+				found.append(c as Node3D)
+				continue
+			for ch2: Node in c.get_children():
+				stack.append(ch2)
+		for n3: Node3D in found:
+			var par: Node = n3.get_parent()
+			_interior_detached_records.append({"node": n3, "parent": par, "index": n3.get_index()})
+			par.remove_child(n3)
+			managed += 1
+	# 3. Detach interior bots / residents (Sector-4 vestibule actors at Z <= -7.5 stay).
+	for a: Node in _actors_container.get_children():
+		if a is Node3D and (a as Node3D).position.z > -7.5:
+			_interior_detached_records.append({"node": a, "parent": _actors_container, "index": a.get_index()})
+	for rec: Dictionary in _interior_detached_records:
+		var an: Node = rec["node"] as Node
+		if an.get_parent() == _actors_container:
+			_actors_container.remove_child(an)
+			managed += 1
+	# 4. Disable interior room task lights.
+	for l: OmniLight3D in _task_lights:
+		if _is_interior_task_light(l):
+			l.visible = false
+			managed += 1
+	for sl: Node in _lights_container.get_children():
+		if sl is SpotLight3D and _is_interior_task_light(sl):
+			(sl as SpotLight3D).visible = false
+	_interior_managed_count = managed
+	_interiors_loaded = false
+	print("[InteriorStreaming] DESPAWNED %d interior nodes/lights (player on Sector-4 Promenade)" % managed)
+	return managed
+
+
+func _respawn_building_interiors() -> int:
+	if _interiors_loaded:
+		return 0
+	var restored: int = 0
+	# Re-attach in reverse detach order so original child indices are restored cleanly.
+	for i: int in range(_interior_detached_records.size() - 1, -1, -1):
+		var rec: Dictionary = _interior_detached_records[i]
+		var n: Node = rec["node"] as Node
+		var par: Node = rec["parent"] as Node
+		if n == null or not is_instance_valid(n) or par == null or not is_instance_valid(par):
+			continue
+		if n.get_parent() == null:
+			par.add_child(n)
+			par.move_child(n, mini(int(rec["index"]), par.get_child_count() - 1))
+			restored += 1
+	_interior_detached_records.clear()
+	restored += _spawn_interior_pickups(false)
+	for l: OmniLight3D in _task_lights:
+		l.visible = true
+	for sl: Node in _lights_container.get_children():
+		if sl is SpotLight3D:
+			(sl as SpotLight3D).visible = true
+	_interiors_loaded = true
+	print("[InteriorStreaming] RESPAWNED %d interior nodes (collected pickups preserved: %d)" % [restored, _collected_pickup_ids.size()])
+	return restored
+
+
+func _update_interior_streaming(player_pos: Vector3) -> void:
+	if _props_container == null or _arch_container == null:
+		return
+	if _interiors_loaded:
+		if player_pos.z < INTERIOR_DESPAWN_Z and not _in_gravity_ring(player_pos):
+			_despawn_building_interiors()
+	elif player_pos.z >= INTERIOR_RESPAWN_Z or _in_gravity_ring(player_pos):
+		_respawn_building_interiors()
+
+
+func get_interior_streaming_status() -> Dictionary:
+	var n_pick: int = 0
+	for it: Dictionary in _interactables:
+		if bool(it["pickup"]) and not bool(it["collected"]):
+			var raw: Variant = it["node"]
+			if is_instance_valid(raw) and (raw as Node3D).is_inside_tree():
+				n_pick += 1
+	return {
+		"interiors_loaded": _interiors_loaded,
+		"managed_count": _interior_managed_count,
+		"detached_nodes": _interior_detached_records.size(),
+		"live_pickups": n_pick,
+		"collected_ids": _collected_pickup_ids.keys(),
+		"active_door_design": _active_door_design
+	}
+
+
+# ------------------------------------------------------------------------------
+# [t39u]-[t40u] 5-candidate sci-fi RFID doors
+# ------------------------------------------------------------------------------
+func _door_mat(col: Color, metal: float, rough: float, tex_name: String = "", uv: Vector2 = Vector2.ONE) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = col
+	m.metallic = metal
+	m.roughness = rough
+	if tex_name != "":
+		var t: Texture2D = _load_tex(tex_name)
+		if t != null:
+			m.albedo_texture = t
+			m.uv1_scale = Vector3(uv.x, uv.y, 1.0)
+	return m
+
+
+func _dbox(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material, rot_deg: Vector3 = Vector3.ZERO, shadow: bool = true) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = nm
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = sz
+	mi.mesh = bm
+	mi.position = pos
+	mi.rotation_degrees = rot_deg
+	mi.material_override = mat
+	if not shadow:
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+	return mi
+
+
+func _dcyl(parent: Node3D, nm: String, r: float, h: float, pos: Vector3, mat: Material, rot_deg: Vector3 = Vector3(90.0, 0.0, 0.0), segs: int = 6) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = nm
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = r
+	cm.bottom_radius = r
+	cm.height = h
+	cm.radial_segments = segs
+	cm.rings = 1
+	mi.mesh = cm
+	mi.position = pos
+	mi.rotation_degrees = rot_deg
+	mi.material_override = mat
+	parent.add_child(mi)
+	return mi
+
+
+func _make_door_leaf(droot: Node3D, nm: String, size: Vector2, center: Vector3, depth: float) -> StaticBody3D:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = nm
+	body.position = center
+	droot.add_child(body)
+	if not _batch_render:
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = "DoorLeafCollider"
+		var bs: BoxShape3D = BoxShape3D.new()
+		bs.size = Vector3(size.x, size.y, maxf(depth, 0.12))
+		cs.shape = bs
+		body.add_child(cs)
+	return body
+
+
+func _clear_rfid_doors(parent: Node3D) -> void:
+	var old: Node = parent.get_node_or_null("SectorRFIDSlidingDoors")
+	if old != null:
+		parent.remove_child(old)
+		old.free()
 	_rfid_doors.clear()
+	var keep: Array[Dictionary] = []
+	for it: Dictionary in _interactables:
+		if String(it["kind"]) != "rfid_door":
+			keep.append(it)
+	_interactables = keep
+
+
+func _build_rfid_sliding_doors(parent: Node3D, design_id: int = 1) -> void:
+	# [t38u] Functional RFID doors across all 6 Residential Sector portals (open smoothly on [F] RFID scan).
+	# [t39u]-[t40u] design_id 1..5 selects one of the 5 tournament candidates.
+	_clear_rfid_doors(parent)
+	design_id = clampi(design_id, 1, 5)
+	_active_door_design = design_id
 	var doors_root: Node3D = Node3D.new()
 	doors_root.name = "SectorRFIDSlidingDoors"
+	doors_root.set_meta("door_design", design_id)
 	parent.add_child(doors_root)
 
-	var frame_mat: StandardMaterial3D = StandardMaterial3D.new()
-	frame_mat.albedo_color = Color(0.28, 0.32, 0.37, 1.0)
-	frame_mat.metallic = 0.78
-	frame_mat.roughness = 0.32
-	var hull_tex: Texture2D = _load_tex("facade_titanium_gunmetal_hull.png")
-	if hull_tex != null:
-		frame_mat.albedo_texture = hull_tex
-		frame_mat.uv1_scale = Vector3(2.0, 2.0, 1.0)
-
-	var leaf_mat: StandardMaterial3D = StandardMaterial3D.new()
-	leaf_mat.albedo_color = Color(0.62, 0.67, 0.73, 1.0)
-	leaf_mat.metallic = 0.68
-	leaf_mat.roughness = 0.30
-	var clad_tex: Texture2D = _load_tex("facade_brushed_steel_gantry.png")
-	if clad_tex != null:
-		leaf_mat.albedo_texture = clad_tex
-		leaf_mat.uv1_scale = Vector3(1.5, 2.0, 1.0)
-
-	var glass_mat: StandardMaterial3D = StandardMaterial3D.new()
-	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	glass_mat.albedo_color = Color(0.32, 0.46, 0.54, 0.28)
-	glass_mat.roughness = 0.08
-	glass_mat.metallic = 0.18
-	glass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# Shared candidate palettes
+	var m_frame: StandardMaterial3D = _door_mat(Color(0.26, 0.29, 0.33), 0.80, 0.34, "facade_titanium_gunmetal_hull.png", Vector2(2.0, 2.0))
+	var m_dark: StandardMaterial3D = _door_mat(Color(0.12, 0.14, 0.16), 0.75, 0.40)
+	var m_bolt: StandardMaterial3D = _door_mat(Color(0.72, 0.74, 0.76), 0.95, 0.22)
+	var m_glass: StandardMaterial3D = StandardMaterial3D.new()
+	m_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m_glass.albedo_color = Color(0.30, 0.44, 0.52, 0.30)
+	m_glass.roughness = 0.06
+	m_glass.metallic = 0.20
+	m_glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var m_smoke: StandardMaterial3D = m_glass.duplicate() as StandardMaterial3D
+	m_smoke.albedo_color = Color(0.08, 0.10, 0.12, 0.55)
+	var m_hazard: StandardMaterial3D = _door_mat(Color(0.78, 0.58, 0.14), 0.35, 0.48)
+	var m_leaf: StandardMaterial3D
+	match design_id:
+		1:
+			m_leaf = _door_mat(Color(0.66, 0.70, 0.75), 0.72, 0.30, "facade_brushed_steel_gantry.png", Vector2(1.5, 2.0))
+		2:
+			m_leaf = _door_mat(Color(0.62, 0.64, 0.66), 0.40, 0.50, "facade_brushed_steel_gantry.png", Vector2(2.0, 1.5))
+		3:
+			m_leaf = _door_mat(Color(0.52, 0.56, 0.60), 0.78, 0.36, "facade_brushed_steel_gantry.png", Vector2(2.0, 2.0))
+		4:
+			m_leaf = _door_mat(Color(0.50, 0.56, 0.62), 0.45, 0.42, "facade_brushed_steel_gantry.png", Vector2(1.5, 1.5))
+		_:
+			m_leaf = _door_mat(Color(0.58, 0.60, 0.61), 0.20, 0.72)
+	if design_id == 5:
+		m_frame = _door_mat(Color(0.17, 0.18, 0.20), 0.85, 0.30)
 
 	var door_specs: Array[Dictionary] = [
-		{"id": "DOOR_APT201", "label": "APT 201 // RFID SLIDING DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID SLIDING DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
-		{"id": "DOOR_APT202", "label": "APT 202 // RFID SLIDING DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID SLIDING DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
-		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID SLIDING DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
+		{"id": "DOOR_APT201", "label": "APT 201 // RFID DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
+		{"id": "DOOR_APT202", "label": "APT 202 // RFID DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
+		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
+		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
 		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID BULKHEAD DOOR", "pos": Vector3(0.0, 0.12, -8.90), "w": 2.60, "h": 2.80}
 	]
 
@@ -3195,9 +3474,9 @@ func _build_rfid_sliding_doors(parent: Node3D) -> void:
 		var dpos: Vector3 = spec["pos"] as Vector3
 		var dw: float = float(spec["w"])
 		var dh: float = float(spec["h"])
-		var leaf_w: float = dw * 0.50
-		var leaf_h: float = dh - 0.04
-		var slide_dist: float = maxf(dw * 0.48, (dw * 0.5) - 0.04)
+		var lh: float = dh - 0.04
+		# Front (player-facing) trim sits on the -Z face for room portals, +Z face for exterior/alcove portals.
+		var fz: float = -1.0 if (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C") else 1.0
 
 		var droot: Node3D = Node3D.new()
 		droot.name = did
@@ -3208,97 +3487,174 @@ func _build_rfid_sliding_doors(parent: Node3D) -> void:
 		led_mat.albedo_color = COLOR_AMBER
 		led_mat.emission_enabled = true
 		led_mat.emission = COLOR_AMBER
-		led_mat.emission_energy_multiplier = 0.95
+		led_mat.emission_energy_multiplier = 1.25
 
 		var leaves: Array[Node3D] = []
-		var closed_x: Array[float] = [-leaf_w * 0.5, leaf_w * 0.5]
-		var open_x: Array[float] = [-(leaf_w * 0.5 + slide_dist), leaf_w * 0.5 + slide_dist]
+		var closed_pos: Array[Vector3] = []
+		var open_pos: Array[Vector3] = []
 
-		for side_i: int in range(2):
-			var sgn: float = -1.0 if side_i == 0 else 1.0
-			var leaf_body: StaticBody3D = StaticBody3D.new()
-			leaf_body.name = "%s_Leaf_%s" % [did, "L" if side_i == 0 else "R"]
-			leaf_body.position = Vector3(closed_x[side_i], leaf_h * 0.5, 0.0)
-			droot.add_child(leaf_body)
+		# Static surround frame (both faces) — distinct profile per candidate, never inside the clear opening.
+		var frame_root: Node3D = Node3D.new()
+		frame_root.name = "DoorSurroundFrame"
+		droot.add_child(frame_root)
+		for face: float in [-1.0, 1.0]:
+			var zf: float = face * 0.150
+			match design_id:
+				1:
+					for sx: float in [-1.0, 1.0]:
+						_dbox(frame_root, "Jamb", Vector3(0.22, dh + 0.22, 0.05), Vector3(sx * (dw * 0.5 + 0.11), (dh + 0.22) * 0.5, zf), m_frame)
+					_dbox(frame_root, "Header", Vector3(dw + 0.44, 0.22, 0.05), Vector3(0.0, dh + 0.11, zf), m_frame)
+					# 12 hex frame bolts
+					for bi: int in range(4):
+						var by: float = 0.35 + float(bi) * (dh - 0.5) / 3.0
+						for sx2: float in [-1.0, 1.0]:
+							_dcyl(frame_root, "HexBolt", 0.028, 0.03, Vector3(sx2 * (dw * 0.5 + 0.11), by, zf + face * 0.035), m_bolt)
+					for bx: float in [-dw * 0.25, dw * 0.25]:
+						for sy: float in [0.0, 1.0]:
+							_dcyl(frame_root, "HexBolt", 0.028, 0.03, Vector3(bx, dh + 0.06 + sy * 0.10, zf + face * 0.035), m_bolt)
+					for sx3: float in [-1.0, 1.0]:
+						_dbox(frame_root, "TelemetryStrip", Vector3(0.035, dh * 0.80, 0.02), Vector3(sx3 * (dw * 0.5 + 0.03), dh * 0.5, zf + face * 0.03), led_mat, Vector3.ZERO, false)
+				2:
+					for sx: float in [-1.0, 1.0]:
+						_dbox(frame_root, "GuideColumn", Vector3(0.26, dh + 0.30, 0.10), Vector3(sx * (dw * 0.5 + 0.13), (dh + 0.30) * 0.5, zf), m_dark)
+						_dbox(frame_root, "RFIDStatusBar", Vector3(0.05, dh - 0.10, 0.03), Vector3(sx * (dw * 0.5 + 0.13), dh * 0.5, zf + face * 0.06), led_mat, Vector3.ZERO, false)
+						for hi: int in range(6):
+							_dbox(frame_root, "HazardChevron", Vector3(0.30, 0.06, 0.02), Vector3(sx * (dw * 0.5 + 0.13), 0.20 + float(hi) * 0.18, zf + face * 0.055), m_hazard, Vector3(0.0, 0.0, 35.0 * sx))
+					_dbox(frame_root, "ShutterHousing", Vector3(dw + 0.52, 0.34, 0.16), Vector3(0.0, dh + 0.17, zf), m_dark)
+					_dbox(frame_root, "ThresholdSill", Vector3(dw + 0.10, 0.025, 0.30), Vector3(0.0, 0.0125, 0.0), m_hazard)
+				3:
+					# Asymmetric heavy pocket housing on +X side, slim jamb on -X side
+					_dbox(frame_root, "PocketHousing", Vector3(0.42, dh + 0.26, 0.12), Vector3(dw * 0.5 + 0.21, (dh + 0.26) * 0.5, zf), m_dark)
+					_dbox(frame_root, "LatchJamb", Vector3(0.16, dh + 0.26, 0.08), Vector3(-dw * 0.5 - 0.08, (dh + 0.26) * 0.5, zf), m_frame)
+					_dbox(frame_root, "Header", Vector3(dw + 0.58, 0.26, 0.10), Vector3(0.05, dh + 0.13, zf), m_frame)
+					for ci: int in range(3):
+						_dbox(frame_root, "StatusChevron_%d" % ci, Vector3(0.16, 0.05, 0.02), Vector3(dw * 0.5 + 0.21 - 0.05, dh * 0.55 + float(ci) * 0.16, zf + face * 0.07), led_mat, Vector3(0.0, 0.0, 40.0), false)
+						_dbox(frame_root, "StatusChevronB_%d" % ci, Vector3(0.16, 0.05, 0.02), Vector3(dw * 0.5 + 0.21 + 0.05, dh * 0.55 + float(ci) * 0.16, zf + face * 0.07), led_mat, Vector3(0.0, 0.0, -40.0), false)
+				4:
+					for sx: float in [-1.0, 1.0]:
+						_dbox(frame_root, "Jamb", Vector3(0.20, dh + 0.20, 0.07), Vector3(sx * (dw * 0.5 + 0.10), (dh + 0.20) * 0.5, zf), m_frame)
+						# 45 deg corner armor gussets
+						_dbox(frame_root, "CornerGussetTop", Vector3(0.40, 0.14, 0.06), Vector3(sx * (dw * 0.5 - 0.06), dh - 0.08, zf + face * 0.03), m_dark, Vector3(0.0, 0.0, -45.0 * sx))
+						_dbox(frame_root, "CornerGussetBot", Vector3(0.40, 0.14, 0.06), Vector3(sx * (dw * 0.5 - 0.06), 0.10, zf + face * 0.03), m_dark, Vector3(0.0, 0.0, 45.0 * sx))
+					_dbox(frame_root, "Header", Vector3(dw + 0.40, 0.20, 0.07), Vector3(0.0, dh + 0.10, zf), m_frame)
+				_:
+					# Chamfered dark gunmetal frame + flush full-width horizontal light-pipe header
+					for sx: float in [-1.0, 1.0]:
+						_dbox(frame_root, "Jamb", Vector3(0.18, dh + 0.24, 0.06), Vector3(sx * (dw * 0.5 + 0.09), (dh + 0.24) * 0.5, zf), m_frame)
+						_dbox(frame_root, "JambChamfer", Vector3(0.06, dh + 0.10, 0.06), Vector3(sx * (dw * 0.5 + 0.005), (dh + 0.10) * 0.5, zf), m_frame, Vector3(0.0, 45.0 * sx, 0.0))
+					_dbox(frame_root, "Header", Vector3(dw + 0.36, 0.26, 0.06), Vector3(0.0, dh + 0.13, zf), m_frame)
+					_dbox(frame_root, "LightPipeHeader", Vector3(dw + 0.20, 0.045, 0.02), Vector3(0.0, dh + 0.13, zf + face * 0.035), led_mat, Vector3.ZERO, false)
+					_dbox(frame_root, "TrackRailTop", Vector3(dw * 2.0, 0.03, 0.03), Vector3(0.0, dh - 0.01, zf * 0.4), m_dark)
 
-			if not _batch_render:
-				var cs: CollisionShape3D = CollisionShape3D.new()
-				cs.name = "DoorLeafCollider"
-				var bshape: BoxShape3D = BoxShape3D.new()
-				bshape.size = Vector3(leaf_w, leaf_h, 0.12)
-				cs.shape = bshape
-				leaf_body.add_child(cs)
-
-			# Lower solid armored panel
-			var low_h: float = leaf_h * 0.46
-			var low_mi: MeshInstance3D = MeshInstance3D.new()
-			low_mi.name = "LowerPanel"
-			var low_bm: BoxMesh = BoxMesh.new()
-			low_bm.size = Vector3(leaf_w - 0.01, low_h, 0.085)
-			low_mi.mesh = low_bm
-			low_mi.position = Vector3(0.0, -leaf_h * 0.5 + low_h * 0.5, 0.0)
-			low_mi.material_override = leaf_mat
-			leaf_body.add_child(low_mi)
-
-			# Upper header panel
-			var top_h: float = leaf_h * 0.20
-			var top_mi: MeshInstance3D = MeshInstance3D.new()
-			top_mi.name = "UpperPanel"
-			var top_bm: BoxMesh = BoxMesh.new()
-			top_bm.size = Vector3(leaf_w - 0.01, top_h, 0.085)
-			top_mi.mesh = top_bm
-			top_mi.position = Vector3(0.0, leaf_h * 0.5 - top_h * 0.5, 0.0)
-			top_mi.material_override = leaf_mat
-			leaf_body.add_child(top_mi)
-
-			# Outer & inner vertical stiles framing the vision lite window
-			var mid_h: float = leaf_h - low_h - top_h
-			var mid_y: float = -leaf_h * 0.5 + low_h + mid_h * 0.5
-			var stile_w: float = 0.14
-			for st_sgn: float in [-1.0, 1.0]:
-				var st_mi: MeshInstance3D = MeshInstance3D.new()
-				var st_bm: BoxMesh = BoxMesh.new()
-				st_bm.size = Vector3(stile_w, mid_h, 0.085)
-				st_mi.mesh = st_bm
-				st_mi.position = Vector3(st_sgn * (leaf_w * 0.5 - stile_w * 0.5 - 0.005), mid_y, 0.0)
-				st_mi.material_override = frame_mat
-				leaf_body.add_child(st_mi)
-
-			# Tempered translucent vision panel so rooms and exterior promenade stay visually readable
-			var win_w: float = maxf(leaf_w - stile_w * 2.0 - 0.01, 0.18)
-			var win_mi: MeshInstance3D = MeshInstance3D.new()
-			win_mi.name = "VisionWindow"
-			var win_bm: BoxMesh = BoxMesh.new()
-			win_bm.size = Vector3(win_w, mid_h - 0.02, 0.028)
-			win_mi.mesh = win_bm
-			win_mi.position = Vector3(0.0, mid_y, 0.0)
-			win_mi.material_override = glass_mat
-			win_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			leaf_body.add_child(win_mi)
-
-			# Center parting seam RFID status indicator bar (shifts Amber -> Green on RFID pulse)
-			var led_mi: MeshInstance3D = MeshInstance3D.new()
-			led_mi.name = "RFIDStatusStrip"
-			var led_bm: BoxMesh = BoxMesh.new()
-			led_bm.size = Vector3(0.032, leaf_h * 0.72, 0.098)
-			led_mi.mesh = led_bm
-			led_mi.position = Vector3(-sgn * (leaf_w * 0.5 - 0.035), 0.0, 0.0)
-			led_mi.material_override = led_mat
-			led_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			leaf_body.add_child(led_mi)
-
-			leaves.append(leaf_body)
-
-		# Overhead RFID transceiver status bar on both sides of the doorway header
-		var hdr_led: MeshInstance3D = MeshInstance3D.new()
-		hdr_led.name = "HeaderRFIDStatusBar"
-		var hbm: BoxMesh = BoxMesh.new()
-		hbm.size = Vector3(dw * 0.65, 0.035, 0.30)
-		hdr_led.mesh = hbm
-		hdr_led.position = Vector3(0.0, dh - 0.02, 0.0)
-		hdr_led.material_override = led_mat
-		hdr_led.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		droot.add_child(hdr_led)
+		# Leaves
+		match design_id:
+			1:
+				# Heavy bi-parting industrial bulkhead: two beveled leaves, recessed weather seal, vision windows
+				var lw: float = dw * 0.5
+				var slide: float = maxf(dw * 0.48, lw - 0.04)
+				for si: int in range(2):
+					var sg: float = -1.0 if si == 0 else 1.0
+					var cpos: Vector3 = Vector3(sg * lw * 0.5, lh * 0.5, 0.0)
+					var lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si == 0 else "R"], Vector2(lw, lh), cpos, 0.12)
+					_dbox(lf, "LeafCore", Vector3(lw - 0.012, lh, 0.085), Vector3.ZERO, m_leaf)
+					_dbox(lf, "LowerArmorBevel", Vector3(lw - 0.10, lh * 0.40, 0.03), Vector3(0.0, -lh * 0.28, fz * 0.05), m_leaf)
+					_dbox(lf, "StiffenerRib", Vector3(lw - 0.06, 0.05, 0.03), Vector3(0.0, -lh * 0.05, fz * 0.055), m_frame)
+					_dbox(lf, "StiffenerRib2", Vector3(lw - 0.06, 0.05, 0.03), Vector3(0.0, -lh * 0.46, fz * 0.055), m_frame)
+					_dbox(lf, "VisionFrame", Vector3(lw * 0.52, lh * 0.26, 0.03), Vector3(-sg * lw * 0.08, lh * 0.22, fz * 0.05), m_dark)
+					_dbox(lf, "VisionWindow", Vector3(lw * 0.42, lh * 0.20, 0.035), Vector3(-sg * lw * 0.08, lh * 0.22, fz * 0.055), m_glass, Vector3.ZERO, false)
+					_dbox(lf, "WeatherSealSeam", Vector3(0.022, lh, 0.095), Vector3(-sg * (lw * 0.5 - 0.011), 0.0, 0.0), m_dark)
+					_dbox(lf, "RFIDStatusStrip", Vector3(0.028, lh * 0.60, 0.02), Vector3(-sg * (lw * 0.5 - 0.05), -lh * 0.05, fz * 0.055), led_mat, Vector3.ZERO, false)
+					leaves.append(lf)
+					closed_pos.append(cpos)
+					open_pos.append(cpos + Vector3(sg * slide, 0.0, 0.0))
+			2:
+				# Vertical counterbalanced blast shutter: upper 70% leaf retracts up, lower 30% drop plate sinks into sill
+				var up_h: float = lh * 0.70
+				var lo_h: float = lh * 0.30
+				var up_c: Vector3 = Vector3(0.0, lo_h + up_h * 0.5, 0.0)
+				var up_lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_UpperBlast" % did, Vector2(dw, up_h), up_c, 0.14)
+				_dbox(up_lf, "BlastCore", Vector3(dw - 0.01, up_h, 0.11), Vector3.ZERO, m_leaf)
+				for ri: int in range(5):
+					_dbox(up_lf, "HorizontalRib", Vector3(dw - 0.08, 0.07, 0.04), Vector3(0.0, -up_h * 0.5 + 0.14 + float(ri) * (up_h - 0.28) / 4.0, fz * 0.07), m_frame)
+				_dbox(up_lf, "ViewportSlitFrame", Vector3(dw * 0.46, 0.12, 0.05), Vector3(0.0, up_h * 0.5 - 0.30, fz * 0.075), m_dark)
+				_dbox(up_lf, "ViewportSlit", Vector3(dw * 0.40, 0.06, 0.055), Vector3(0.0, up_h * 0.5 - 0.30, fz * 0.08), m_glass, Vector3.ZERO, false)
+				_dbox(up_lf, "BottomSealLip", Vector3(dw - 0.02, 0.04, 0.12), Vector3(0.0, -up_h * 0.5 + 0.02, 0.0), m_dark)
+				leaves.append(up_lf)
+				closed_pos.append(up_c)
+				open_pos.append(up_c + Vector3(0.0, up_h + 0.06, 0.0))
+				var lo_c: Vector3 = Vector3(0.0, lo_h * 0.5, 0.0)
+				var lo_lf: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_LowerDropPlate" % did, Vector2(dw, lo_h), lo_c, 0.14)
+				_dbox(lo_lf, "DropPlateCore", Vector3(dw - 0.01, lo_h, 0.11), Vector3.ZERO, m_leaf)
+				_dbox(lo_lf, "DropPlateBevel", Vector3(dw - 0.12, lo_h - 0.10, 0.03), Vector3(0.0, 0.0, fz * 0.065), m_frame)
+				for hz: int in range(7):
+					_dbox(lo_lf, "HazardStripe", Vector3(0.09, lo_h - 0.16, 0.02), Vector3(-dw * 0.36 + float(hz) * dw * 0.12, 0.0, fz * 0.085), m_hazard, Vector3(0.0, 0.0, 30.0))
+				leaves.append(lo_lf)
+				closed_pos.append(lo_c)
+				open_pos.append(lo_c - Vector3(0.0, lo_h + 0.03, 0.0))
+			3:
+				# Asymmetric pocket-slide airlock: one wide armored leaf slides into +X wall pocket
+				var cpos3: Vector3 = Vector3(0.0, lh * 0.5, 0.0)
+				var lf3: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_Pocket" % did, Vector2(dw, lh), cpos3, 0.13)
+				_dbox(lf3, "ArmorCore", Vector3(dw - 0.01, lh, 0.10), Vector3.ZERO, m_leaf)
+				for ri3: int in range(4):
+					_dbox(lf3, "HeavyRib", Vector3(dw - 0.10, 0.08, 0.045), Vector3(0.0, -lh * 0.5 + 0.22 + float(ri3) * (lh - 0.44) / 3.0, fz * 0.07), m_dark)
+				var slit_x: float = -dw * 0.30
+				_dbox(lf3, "SlitOuterFrame", Vector3(0.20, lh * 0.52, 0.05), Vector3(slit_x, lh * 0.08, fz * 0.08), m_frame)
+				_dbox(lf3, "SlitInnerFrame", Vector3(0.13, lh * 0.46, 0.055), Vector3(slit_x, lh * 0.08, fz * 0.085), m_dark)
+				_dbox(lf3, "ViewportSlit", Vector3(0.07, lh * 0.42, 0.06), Vector3(slit_x, lh * 0.08, fz * 0.09), m_glass, Vector3.ZERO, false)
+				_dcyl(lf3, "PressureWheelHub", 0.20, 0.05, Vector3(dw * 0.12, 0.02, fz * 0.08), m_frame, Vector3(90.0, 0.0, 0.0), 24)
+				_dcyl(lf3, "PressureWheelCap", 0.07, 0.07, Vector3(dw * 0.12, 0.02, fz * 0.09), m_bolt, Vector3(90.0, 0.0, 0.0), 12)
+				for sp_i: int in range(4):
+					_dbox(lf3, "WheelSpoke", Vector3(0.40, 0.035, 0.03), Vector3(dw * 0.12, 0.02, fz * 0.10), m_bolt, Vector3(0.0, 0.0, 45.0 * float(sp_i)))
+				_dbox(lf3, "LeadingEdgeSeal", Vector3(0.05, lh, 0.11), Vector3(-dw * 0.5 + 0.025, 0.0, 0.0), m_dark)
+				_dbox(lf3, "RFIDStatusStrip", Vector3(0.025, lh * 0.55, 0.02), Vector3(-dw * 0.5 + 0.09, 0.0, fz * 0.065), led_mat, Vector3.ZERO, false)
+				leaves.append(lf3)
+				closed_pos.append(cpos3)
+				open_pos.append(cpos3 + Vector3(dw + 0.04, 0.0, 0.0))
+			4:
+				# Angled interlocking chevron bulkhead: sawtooth teeth alternate along the parting seam
+				var lw4: float = dw * 0.5
+				var tooth: float = 0.15
+				var n_teeth: int = 7
+				var slide4: float = lw4 + tooth + 0.04
+				for si4: int in range(2):
+					var sg4: float = -1.0 if si4 == 0 else 1.0
+					var cpos4: Vector3 = Vector3(sg4 * lw4 * 0.5, lh * 0.5, 0.0)
+					var lf4: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si4 == 0 else "R"], Vector2(lw4, lh), cpos4, 0.12)
+					_dbox(lf4, "LeafCore", Vector3(lw4 - tooth * 0.5, lh, 0.09), Vector3(sg4 * tooth * 0.25, 0.0, 0.0), m_leaf)
+					var pitch: float = lh / float(n_teeth)
+					for ti: int in range(n_teeth):
+						if (ti % 2 == 0) != (si4 == 0):
+							continue
+						var ty: float = -lh * 0.5 + pitch * (float(ti) + 0.5)
+						_dbox(lf4, "ChevronTooth_%d" % ti, Vector3(pitch * 0.70, pitch * 0.70, 0.09), Vector3(-sg4 * (lw4 * 0.5 - tooth * 0.35), ty, 0.0), m_leaf, Vector3(0.0, 0.0, 45.0))
+						_dbox(lf4, "ChevronSeamGlow_%d" % ti, Vector3(pitch * 0.40, 0.022, 0.02), Vector3(-sg4 * (lw4 * 0.5 - tooth * 0.20), ty + pitch * 0.22, fz * 0.055), led_mat, Vector3(0.0, 0.0, 45.0 * -sg4), false)
+					for oy: float in [lh * 0.24, -lh * 0.16]:
+						_dcyl(lf4, "OctPortholeRim", 0.13, 0.04, Vector3(sg4 * lw4 * 0.10, oy, fz * 0.055), m_dark, Vector3(90.0, 22.5, 0.0), 8)
+						_dcyl(lf4, "OctPortholeGlass", 0.09, 0.045, Vector3(sg4 * lw4 * 0.10, oy, fz * 0.06), m_glass, Vector3(90.0, 22.5, 0.0), 8)
+					_dbox(lf4, "DiagonalArmorRib", Vector3(lw4 * 0.9, 0.06, 0.03), Vector3(sg4 * lw4 * 0.05, -lh * 0.40, fz * 0.055), m_frame, Vector3(0.0, 0.0, 18.0 * sg4))
+					leaves.append(lf4)
+					closed_pos.append(cpos4)
+					open_pos.append(cpos4 + Vector3(sg4 * slide4, 0.0, 0.0))
+			_:
+				# Twin-track recessed security frame: matte ceramic-titanium leaves, smoked slits, micro-bevels
+				var lw5: float = dw * 0.5
+				var slide5: float = maxf(dw * 0.48, lw5 - 0.04)
+				for si5: int in range(2):
+					var sg5: float = -1.0 if si5 == 0 else 1.0
+					var track_z: float = 0.025 * sg5
+					var cpos5: Vector3 = Vector3(sg5 * lw5 * 0.5, lh * 0.5, track_z)
+					var lf5: StaticBody3D = _make_door_leaf(droot, "%s_Leaf_%s" % [did, "L" if si5 == 0 else "R"], Vector2(lw5, lh), cpos5, 0.12)
+					_dbox(lf5, "CeramicCore", Vector3(lw5 - 0.006, lh, 0.06), Vector3.ZERO, m_leaf)
+					for py: float in [-lh * 0.30, lh * 0.05, lh * 0.38]:
+						_dbox(lf5, "MicroBevelLine", Vector3(lw5 - 0.08, 0.008, 0.066), Vector3(0.0, py, 0.0), m_dark)
+					_dbox(lf5, "MicroBevelVertical", Vector3(0.008, lh - 0.12, 0.066), Vector3(sg5 * lw5 * 0.30, 0.0, 0.0), m_dark)
+					_dbox(lf5, "SmokedSlitFrame", Vector3(0.12, lh * 0.56, 0.068), Vector3(-sg5 * lw5 * 0.22, lh * 0.08, 0.0), m_frame)
+					_dbox(lf5, "SmokedGlassSlit", Vector3(0.07, lh * 0.50, 0.072), Vector3(-sg5 * lw5 * 0.22, lh * 0.08, 0.0), m_smoke, Vector3.ZERO, false)
+					_dbox(lf5, "EdgeLightPipe", Vector3(0.016, lh * 0.86, 0.07), Vector3(-sg5 * (lw5 * 0.5 - 0.012), 0.0, 0.0), led_mat, Vector3.ZERO, false)
+					leaves.append(lf5)
+					closed_pos.append(cpos5)
+					open_pos.append(cpos5 + Vector3(sg5 * slide5, 0.0, 0.0))
 
 		# Register an RFID transponder anchor at mid-height of the doorway so [F] telemetry lists the door
 		var tag_anchor: Node3D = Node3D.new()
@@ -3312,8 +3668,9 @@ func _build_rfid_sliding_doors(parent: Node3D) -> void:
 			"root": droot,
 			"center": dpos + Vector3(0.0, 1.25, 0.0),
 			"leaves": leaves,
-			"closed_x": closed_x,
-			"open_x": open_x,
+			"closed_pos": closed_pos,
+			"open_pos": open_pos,
+			"design": design_id,
 			"led_mat": led_mat,
 			"open": false,
 			"blend": 0.0
@@ -3327,6 +3684,18 @@ func _build_rfid_sliding_doors(parent: Node3D) -> void:
 			"collected": false,
 			"pickup": false
 		})
+
+
+func _set_door_blend_immediate(door: Dictionary, blend: float) -> void:
+	door["blend"] = blend
+	var s: float = smoothstep(0.0, 1.0, blend)
+	var leaves: Array = door["leaves"] as Array
+	var cp: Array = door["closed_pos"] as Array
+	var op: Array = door["open_pos"] as Array
+	for i: int in range(leaves.size()):
+		var lf: Node3D = leaves[i] as Node3D
+		if lf != null and is_instance_valid(lf):
+			lf.position = (cp[i] as Vector3).lerp(op[i] as Vector3, s)
 
 
 func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
@@ -3371,12 +3740,79 @@ func _update_rfid_doors(delta: float) -> void:
 		door["blend"] = cur
 		var s: float = smoothstep(0.0, 1.0, cur)
 		var leaves: Array = door["leaves"] as Array
-		var cx: Array = door["closed_x"] as Array
-		var ox: Array = door["open_x"] as Array
+		var cp: Array = door["closed_pos"] as Array
+		var op: Array = door["open_pos"] as Array
 		for i: int in range(leaves.size()):
 			var lf: Node3D = leaves[i] as Node3D
 			if lf != null and is_instance_valid(lf):
-				lf.position.x = lerpf(float(cx[i]), float(ox[i]), s)
+				lf.position = (cp[i] as Vector3).lerp(op[i] as Vector3, s)
+
+
+# ------------------------------------------------------------------------------
+# [t39u]-[t40u] Door tournament renders (`-- --qa-door-tournament`)
+# ------------------------------------------------------------------------------
+func _run_door_tournament_qa() -> void:
+	if _camera == null:
+		print("[DOOR-TOURNAMENT] FAIL camera missing")
+		get_tree().quit(1)
+		return
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if _hud != null:
+		_hud.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(10)
+	var show_id: String = "DOOR_RM1B"
+	var dpos: Vector3 = Vector3(4.50, 0.12, 2.85)
+	var fill: OmniLight3D = OmniLight3D.new()
+	fill.name = "DoorTournamentFillLight"
+	fill.position = dpos + Vector3(-0.6, 2.25, -1.9)
+	fill.light_color = Color("#F2ECE2")
+	fill.light_energy = 1.6
+	fill.omni_range = 7.0
+	fill.shadow_enabled = true
+	fill.shadow_bias = 0.03
+	add_child(fill)
+	var fill2: OmniLight3D = OmniLight3D.new()
+	fill2.name = "DoorTournamentRimFill"
+	fill2.position = dpos + Vector3(1.4, 1.2, -1.2)
+	fill2.light_color = Color("#DCE6F0")
+	fill2.light_energy = 0.55
+	fill2.omni_range = 4.5
+	add_child(fill2)
+	var angles: Array[Dictionary] = [
+		{"pos": Vector3(0.0, 1.42, -2.35), "look": Vector3(0.0, 1.42, 0.0), "fov": 62.0},
+		{"pos": Vector3(-1.45, 1.48, -2.05), "look": Vector3(0.0, 1.35, 0.0), "fov": 60.0},
+		{"pos": Vector3(-0.32, 1.38, -0.98), "look": Vector3(0.0, 1.35, 0.0), "fov": 48.0}
+	]
+	var saved: int = 0
+	for cid: int in range(1, 6):
+		_build_rfid_sliding_doors(_props_container, cid)
+		await _qa_frames(3)
+		var door: Dictionary = {}
+		for d: Dictionary in _rfid_doors:
+			if String(d["id"]) == show_id:
+				door = d
+		for state: String in ["closed", "open"]:
+			var is_open: bool = state == "open"
+			_set_door_open_state(door, is_open)
+			_set_door_blend_immediate(door, 1.0 if is_open else 0.0)
+			for ai: int in range(angles.size()):
+				var a: Dictionary = angles[ai]
+				_qa_free_cam(dpos + (a["pos"] as Vector3), dpos + (a["look"] as Vector3), Vector3.UP, float(a["fov"]))
+				await _qa_idle(4)
+				var fn: String = "_tmp_door_cand_%02d_ang%d_%s.png" % [cid, ai + 1, state]
+				var img: Image = await _qa_capture(fn)
+				if img != null:
+					saved += 1
+		print("[DOOR-TOURNAMENT] Rendered ", DOOR_DESIGN_NAMES[cid])
+	fill.queue_free()
+	fill2.queue_free()
+	_build_rfid_sliding_doors(_props_container, 1)
+	_qa_player_cam()
+	print("[DOOR-TOURNAMENT] DONE saved=%d/30 active_design=%d" % [saved, _active_door_design])
+	get_tree().quit(0 if saved == 30 else 1)
 
 
 func _qa_t38_check(nm: String, ok: bool, detail: String) -> void:
@@ -3475,10 +3911,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		# Ensure door starts closed
 		_set_door_open_state(door, false)
 		door["blend"] = 0.0
-		var leaves: Array = door["leaves"] as Array
-		var cx: Array = door["closed_x"] as Array
-		for li: int in range(leaves.size()):
-			(leaves[li] as Node3D).position.x = float(cx[li])
+		_set_door_blend_immediate(door, 0.0)
 		await _qa_frames(4)
 
 		# Approach from the atrium side: for Sector-4 Exit (Z=-8.90), approach from Z=-7.30 facing South (yaw 0);
@@ -3541,6 +3974,45 @@ func _run_reticle_stars_doors_qa() -> void:
 		combo.fill_rect(Rect2i(958, 0, 4, 1080), Color(0.90, 0.95, 1.0, 1.0))
 		combo.save_png(_resolve_path(QA_DIR) + "/qa_rfid_door_closed_vs_opened.png")
 		print("[T38-QA] Saved qa_rfid_door_closed_vs_opened.png")
+
+	# ---------------- 4. [t39u]-[t40u] DYNAMIC INTERIOR DESPAWN / RESPAWN ----------------
+	_qa_place(Vector3(-6.0, 0.25, -2.0), 0.0, 0.0)
+	await _qa_frames(6)
+	_qa_t38_check("interior_loaded_at_start", _interiors_loaded, "status=%s" % str(get_interior_streaming_status()))
+	# Collect the BCI headband on the APT 201 workbench first so we can verify it stays collected.
+	_qa_place(Vector3(-8.50, 4.30, 6.60), 180.0, -10.0)
+	await _qa_frames(8)
+	var inv_before: int = int(_inventory["bci"])
+	_interact()
+	await _qa_frames(4)
+	var collected_ok: bool = _collected_pickup_ids.has("Workbench_BCI_Headband") and int(_inventory["bci"]) == inv_before + 1
+	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_bci=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["bci"])])
+	var live_before: int = int(get_interior_streaming_status()["live_pickups"])
+	var wb: Node = _arch_container.find_child("Apartment_Workbench", true, false)
+	_qa_place(Vector3(0.0, 0.25, -12.0), 0.0, 0.0)
+	await _qa_frames(8)
+	var st_out: Dictionary = get_interior_streaming_status()
+	var props_left: int = 0
+	for pc: Node in _props_container.get_children():
+		if String(pc.name) != "SectorRFIDSlidingDoors" and not pc.is_queued_for_deletion():
+			props_left += 1
+	var actors_in: int = 0
+	for ac: Node in _actors_container.get_children():
+		if ac is Node3D and (ac as Node3D).position.z > -7.5:
+			actors_in += 1
+	_qa_t38_check("interior_despawn_on_promenade_exit", not _interiors_loaded and _interior_managed_count > 0 and props_left == 0 and actors_in == 0 and (wb == null or not wb.is_inside_tree()) and _rfid_doors.size() == 6,
+		"z=-12.0 loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_in_tree=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, (wb != null and wb.is_inside_tree()), _rfid_doors.size()])
+	await _qa_capture("qa_interior_despawned_promenade.png")
+	_qa_place(Vector3(0.0, 0.25, -6.0), 180.0, 0.0)
+	await _qa_frames(8)
+	var st_in: Dictionary = get_interior_streaming_status()
+	var bci_respawned: bool = _props_container.get_node_or_null("Workbench_BCI_Headband") != null
+	var actors_back: int = 0
+	for ac2: Node in _actors_container.get_children():
+		if ac2 is Node3D and (ac2 as Node3D).position.z > -7.5:
+			actors_back += 1
+	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and (wb == null or wb.is_inside_tree()) and int(_inventory["bci"]) == inv_before + 1,
+		"z=-6.0 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_in_tree=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, (wb != null and wb.is_inside_tree())])
 
 	var out: PackedStringArray = PackedStringArray()
 	out.append("# Reticle, Rotating Outer Starfield & RFID Sliding Doors QA ([t38u])")
