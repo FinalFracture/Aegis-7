@@ -1,6 +1,6 @@
 # Residential rev C — Stair Core v1 (assets #3, #4, #5)
 
-**Status: APPROVED arrangement; v1.1 lift + skylight pending Jared review.** This is design only. The v1 PNGs are kept for comparison (`residential_stair_core_v1_plan.png`, `_section.png`).
+**Status: APPROVED v1.1 by Jared 2026-10-29.** This is design only. The v1 PNGs are kept for comparison (`residential_stair_core_v1_plan.png`, `_section.png`).
 Generator: `design/residential_stair_core_v1.py`, which asserts the QC checks below.
 Scope, from `residential_asset_list_rev_c.md`:
 - **#3** switchback stair set (2 flights + landings), 4.0 × 8.2 m, 4.2 m rise
@@ -128,7 +128,7 @@ The shaft is 1.6 × 1.6 m gross: a 1.4 × 1.4 m clear well holds the 1.2 × 1.2 
 | 7 | Lift landings clear of the core opening and the 202, Laundry and Maintenance door zones | PASS |
 | 8 | Labels: unit labels backed, the service-door hub moved outside (it overlapped the coupler mounts), the lift inset sits beside the section | FIXED |
 
-## Open questions for Jared
-1. Approve **option 1** (SW corner, corridor doors, riser re-aligned) and the **Maintenance re-plan** for the egress lane?
-2. The 202 net area becomes 109.7 m². Is that acceptable, or should the controller slot go elsewhere (it could sit at the roof with a machine-on-top lift)?
-3. The rev C room-layout PNGs (`residential_roomlayout_rev_c_*.png`) still show the old pads, riser and wardrobe. Should I regenerate them after approval?
+## Open questions: resolved (Jared, 2026-10-29)
+1. **Option 1 and the Maintenance re-plan: APPROVED.** The lift goes in the SW corner with corridor doors, the riser is re-aligned, and the 2.0 m egress lane is kept.
+2. **202 at 109.7 m² net: APPROVED.** The lift controller stays in the 202 slot.
+3. **Rev C generators updated and regenerated.** `residential_floorplan_rev_c.py` and `residential_roomlayout_rev_c.py` now include the lift, the landings, the riser, the moved pads, the egress lane, the service door, the tool wall and shelf, the 202 wardrobe, the controller strip and the approved stair. The room-layout script asserts its own QC (no overlaps, 0.9 m paths, door zones, lift landing and egress lane clear).
