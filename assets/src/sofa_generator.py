@@ -152,5 +152,48 @@ def main():
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", y=-0.12, fontsize=11, color="#555")
     plt.tight_layout(); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
 
+# ---------- final: polished Low Lounge + Storage Plinth (iter_04) ----------
+def final_lounge():
+    p = Pod("Low Lounge + Storage Plinth (final)"); S, PT = .42, .22
+    p.add("Plinth_Kick", "gunmetal", bev(W - .1, D - .1, 0, .04, .03, .01, 2, 0, -.02))                  # recessed kick
+    p.add("Plinth", "gunmetal", bev(W, D, .04, PT, .035, .012, 3))
+    p.add("Plinth_Cap", "alloy", bev(W - .01, D - .01, PT - .008, PT, .03, .004, 2))
+    p.add("Accent_Band", "violet", box(-W / 2 + .06, W / 2 - .06, .045, .052, ZF - .002, ZF + .001))
+    for i, cx in enumerate((-.82, 0, .82)):
+        p.add(f"Drawer_{i + 1}", "white", bev(.76, .02, .07, .2, .012, .005, 2, cx, ZF + .004))
+        p.add(f"Drawer_{i + 1}_Pull", "alloy", bev(.3, .014, .165, .178, .006, .002, 1, cx, ZF + .02))
+        p.add(f"Drawer_{i + 1}_Latch", "amber", box(cx + .26, cx + .31, .166, .177, ZF + .014, ZF + .021))
+    p.add("Seat_Cushion", "warmgrey", soft(W - .05, D - .26, PT, S, .07, 0, .12, n=4, k=4))
+    p.add("Seat_Piping", "slatefab", box(-W / 2 + .06, W / 2 - .06, PT + .005, PT + .02, ZF - .02, ZF - .012))
+    for i, cx in enumerate((-.82, 0, .82)):
+        p.add(f"Back_Bolster_{i + 1}", "slatefab", tilt(soft(.8, .2, PT, .78, .09, cx, ZB + .15, n=4, k=4), -6, [cx, PT, ZB + .15]))
+        p.add(f"Strap_{i + 1}", "slatefab", tilt(box(cx - .03, cx + .03, .56, .74, ZB + .245, ZB + .255), -6, [cx, PT, ZB + .15]))
+        p.add(f"Strap_{i + 1}_Anchor", "gunmetal", box(cx - .04, cx + .04, PT - .03, PT, ZB - .004, ZB + .01))
+        p.add(f"Strap_{i + 1}_Buckle", "amber", tilt(box(cx - .02, cx + .02, .64, .67, ZB + .255, ZB + .262), -6, [cx, PT, ZB + .15]))
+    for s in (-1, 1):
+        nm = "L" if s < 0 else "R"
+        p.add(f"Arm_Bolster_{nm}", "slatefab", soft(.16, D - .26, S - .02, .6, .07, s * (W / 2 - .1), .04, n=4, k=4))
+        p.add(f"Arm_Clip_{nm}", "gunmetal", box(s * (W / 2 - .1) - .025, s * (W / 2 - .1) + .025, PT - .03, PT, ZF - .005, ZF + .008))
+    return p
+
+def final_main():
+    p = final_lounge(); gp = os.path.join(dc.ROOT, "godot/assets/models/sofa_lowlounge_plinth.glb")
+    tris, geo = export_final(p.P, [gp]); V = np.vstack([g[1] for g in geo.values()])
+    bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "bounds", V.min(0).round(3), V.max(0).round(3), "non-watertight:", bad)
+    sheet_only(geo, os.path.join(OUT, "final_lowlounge_plinth_sheet.png"), "Final  Low Lounge + Storage Plinth")
+
+def sheet_only(geo, path, title):
+    saved = tonemap(); top, front, side, iso = views()
+    def rv(R, s, sh):
+        im = render_view(geo, R, size=s, shadow=sh); ns = render_view(geo, R, size=s, shadow=False) if sh else im
+        fg = np.abs(ns - ns[0, 0]).sum(2) > .03; im[fg] = np.clip(im[fg] * 1.12 + .02, 0, 1); return crop(im)
+    ims = [rv(top, 700, False), rv(front, 700, True), rv(side, 500, True), rv(iso, 760, True)]; FMAT.update(saved)
+    bg = "#F4F2EC"; fig = plt.figure(figsize=(14, 9), facecolor=bg); gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, .5])
+    for ax, im, t in ((fig.add_subplot(gs[0, :2]), ims[0], "Top"), (fig.add_subplot(gs[0, 2]), ims[2], "Side"),
+                      (fig.add_subplot(gs[1, 0]), ims[1], "Front"), (fig.add_subplot(gs[1, 1:]), ims[3], "Iso")):
+        ax.imshow(im); ax.axis("off"); ax.set_title(t, y=-0.1, fontsize=11, color="#555")
+    fig.suptitle(title, fontsize=12, color="#444"); plt.tight_layout(); fig.savefig(path, dpi=100, facecolor=bg); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
