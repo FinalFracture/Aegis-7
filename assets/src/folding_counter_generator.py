@@ -67,4 +67,99 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------------- final: polished Fold-Down Leaf (iter 3), both runs, with a fold clip ----------------
+# Leaf hinges on a piano-hinge knuckle at the worktop front edge; three swing brackets under the worktop
+# rotate out under the raised leaf. Nodes: Counter_Static, Leaf (pivot = hinge axis), Swing_Bracket_1..3 (pivot = bracket pin).
+ZH = ZF - .2; ZFB = ZH + .02; YC, ZC = H - .015, ZFB + .015; LEAF = .415; FPS = 30
+def xcyl(x0, x1, y, z, r, s=12):
+    m = trimesh.creation.cylinder(radius=r, height=x1 - x0, sections=s); m.apply_transform(trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0]))
+    m.apply_translation([(x0 + x1) / 2, y, z]); m.metadata["uv"] = np.c_[m.vertices[:, 0], np.arctan2(m.vertices[:, 1] - y, m.vertices[:, 2] - z) * r]; return m
+def br_x(L): return [-L / 3 - .2, -.2, L / 3 - .2]
+def final_fold(L=L0):
+    S = Pod("Counter_Static")
+    S.add("Worktop", "white", blk(-L / 2, L / 2, H - TOP, H, ZB, ZH, .008, 1)); S.add("Hinge_Bar", "alloy", box(-L / 2, L / 2, H - .03, H, ZH, ZFB))
+    S.add("Wall_Rail", "gunmetal", blk(-L / 2, L / 2, 0, H - TOP, ZB, ZB + .03, .004, 1))
+    S.add("Rail_Bolts", "alloy", *[cyl(x, ZB + .03, .01, y, y + .012, 6) for x in np.linspace(-L / 2 + .15, L / 2 - .15, int(L / .7) + 1) for y in (.15, H - .12)])
+    S.add("Floor_Shoe", "gunmetal", box(-L / 2, L / 2, 0, .03, ZB, ZB + .06))
+    S.add("Cantilever_Brackets", "gunmetal", *[box(x - .015, x + .015, H - .22, H - TOP, ZB + .03, ZH - .05) for x in np.linspace(-L / 2 + .2, L / 2 - .2, 5)])
+    S.add("Bracket_Pins", "amber", *[cyl(x, ZH - .025, .012, H - .075, H - TOP, 8) for x in br_x(L)])
+    S.add("End_Caps", "slate", *[box(s * L / 2 - (.01 if s > 0 else 0), s * L / 2 + (0 if s > 0 else .01), H - TOP - .002, H, ZB, ZH) for s in (-1, 1)])
+    Lf = Pod("Leaf")   # local frame: origin on the hinge axis; stowed it hangs straight down
+    Lf.add("Fold_Leaf", "white", blk(-L / 2 + .01, L / 2 - .01, -LEAF, -.004, -.015, .015, .006, 1))
+    Lf.add("Hinge_Knuckle", "alloy", xcyl(-L / 2 + .01, L / 2 - .01, 0, 0, .015))
+    Lf.add("Leaf_Edge_Strip", "alloy", box(-L / 2 + .01, L / 2 - .01, -LEAF - .006, -LEAF + .004, -.012, .012))
+    Lf.add("Leaf_Pull_Latches", "amber", *[box(x - .04, x + .04, -LEAF - .022, -LEAF - .006, -.008, .008) for x in (-L / 4, L / 4)])
+    B = []
+    for i, x in enumerate(br_x(L)):   # local frame: origin on the pin; stowed the arm points +X under the worktop
+        b = Pod(f"Swing_Bracket_{i + 1}"); b.add("Arm", "gunmetal", box(-.012, .4, -.025, 0, -.01, .01)); b.add("Arm_Pad", "slate", box(.33, .39, -.002, .006, -.008, .008))
+        B.append((b, np.array([x, H - TOP - .002, ZH - .025])))
+    return S, Lf, B
+def qx(a): return np.array([np.sin(a / 2), 0, 0, np.cos(a / 2)])
+def qy(a): return np.array([0, np.sin(a / 2), 0, np.cos(a / 2)])
+def ease(t, t0, t1): u = np.clip((t - t0) / (t1 - t0), 0, 1); return u * u * (3 - 2 * u)
+def pose(t, up):   # up=True: fold-up clip (leaf 0-1.2 s, brackets 1.2-2.0 s); False: reverse
+    if up: a, b = ease(t, 0, 1.2), ease(t, 1.2, 2.0)
+    else: a, b = 1 - ease(t, .8, 2.0), 1 - ease(t, 0, .8)
+    return -np.pi / 2 * a, -np.pi / 2 * b
+CLIPS = [("Leaf_Fold_Up", True, 2.0), ("Leaf_Fold_Down", False, 2.0)]
+def world(S, Lf, B, a, b):
+    """World-space Pod for sheets and checks at leaf angle a, bracket angle b."""
+    W = Pod("World"); R = trimesh.transformations.rotation_matrix
+    for k, (mk, m) in S.P.items(): W.add(k, mk, m.copy())
+    T = trimesh.transformations.translation_matrix([0, YC, ZC]) @ R(a, [1, 0, 0])
+    for k, (mk, m) in Lf.P.items(): mm = m.copy(); mm.apply_transform(T); W.add(k, mk, mm)
+    for bp, piv in B:
+        T = trimesh.transformations.translation_matrix(piv) @ R(b, [0, 1, 0])
+        for k, (mk, m) in bp.P.items(): mm = m.copy(); mm.apply_transform(T); W.add("Swing_" + k, mk, mm)
+    return W
+def export_fold(S, Lf, B, path):
+    from dining_chair_generator import shade_split, _col, FMAT
+    from pygltflib import (GLTF2, Scene, Node, Mesh, Primitive, Attributes, Buffer, BufferView, Accessor, Material,
+                           PbrMetallicRoughness, Animation, AnimationSampler, AnimationChannel, AnimationChannelTarget)
+    g = GLTF2(); blob = bytearray(); mats = {}; tris = 0
+    def add(arr, target, ctype, typ, mm=False):
+        arr = np.ascontiguousarray(arr); off = len(blob); blob.extend(arr.tobytes())
+        while len(blob) % 4: blob.append(0)
+        g.bufferViews.append(BufferView(buffer=0, byteOffset=off, byteLength=arr.nbytes, target=target))
+        acc = Accessor(bufferView=len(g.bufferViews) - 1, componentType=ctype, count=len(arr), type=typ)
+        if mm: a2 = arr.reshape(len(arr), -1); acc.min = a2.min(0).tolist(); acc.max = a2.max(0).tolist()
+        g.accessors.append(acc); return len(g.accessors) - 1
+    def node(pod, T):
+        nonlocal tris; bym = {}
+        for k, (mk, m) in pod.P.items(): bym.setdefault(mk, []).append(shade_split(m))
+        prims = []
+        for mk, lst in bym.items():
+            if mk not in mats:
+                pm = FMAT[mk]; mats[mk] = len(g.materials)
+                g.materials.append(Material(name=pm.name, emissiveFactor=_col(pm.emissiveFactor if pm.emissiveFactor is not None else [0, 0, 0]),
+                    pbrMetallicRoughness=PbrMetallicRoughness(baseColorFactor=_col(pm.baseColorFactor), metallicFactor=float(pm.metallicFactor), roughnessFactor=float(pm.roughnessFactor))))
+            o = 0; V, N, U, F = [], [], [], []
+            for v, n, u, f in lst: V.append(v); N.append(n); U.append(u); F.append(f + o); o += len(v)
+            V, N, U, F = map(np.vstack, (V, N, U, F)); tris += len(F)
+            a = Attributes(POSITION=add(V.astype(np.float32), 34962, 5126, "VEC3", True), NORMAL=add(N.astype(np.float32), 34962, 5126, "VEC3"), TEXCOORD_0=add(U.astype(np.float32), 34962, 5126, "VEC2"))
+            prims.append(Primitive(attributes=a, indices=add(F.astype(np.uint32).ravel(), 34963, 5125, "SCALAR"), material=mats[mk]))
+        g.meshes.append(Mesh(name=pod.name, primitives=prims)); g.nodes.append(Node(name=pod.name, mesh=len(g.meshes) - 1, translation=[float(c) for c in T])); return len(g.nodes) - 1
+    root = node(S, [0, 0, 0]); leaf = node(Lf, [0, YC, ZC]); brs = [node(b, piv) for b, piv in B]
+    g.nodes[root].children = [leaf] + brs; g.scenes = [Scene(name="FoldingCounter", nodes=[root])]; g.scene = 0
+    for name, up, dur in CLIPS:
+        ts = np.round(np.arange(0, dur + 1e-6, 1 / FPS), 5).astype(np.float32); P = [pose(float(t), up) for t in ts]
+        an = Animation(name=name, samplers=[], channels=[]); tin = add(ts, None, 5126, "SCALAR", True)
+        for nid, q in [(leaf, np.array([qx(p[0]) for p in P]))] + [(n, np.array([qy(p[1]) for p in P])) for n in brs]:
+            an.samplers.append(AnimationSampler(input=tin, output=add(q.astype(np.float32), None, 5126, "VEC4"), interpolation="LINEAR"))
+            an.channels.append(AnimationChannel(sampler=len(an.samplers) - 1, target=AnimationChannelTarget(node=nid, path="rotation")))
+        g.animations.append(an)
+    g.buffers = [Buffer(byteLength=len(blob))]; g.set_binary_blob(bytes(blob)); g.save_binary(path); return tris
+def final_main():
+    import pygltflib
+    for L, tag in ((3.5, "3p5"), (3.0, "3p0")):
+        S, Lf, B = final_fold(L); gp = os.path.join(dc.ROOT, f"godot/assets/models/folding_counter_fold_leaf_{tag}.glb"); tris = export_fold(S, Lf, B, gp)
+        bad = [k for pod in [S, Lf] + [b for b, _ in B] for k, (mk, m) in pod.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+        for st, (a, b) in (("stowed", (0, 0)), ("deployed", (-np.pi / 2, -np.pi / 2))):
+            W = world(S, Lf, B, a, b); V = np.vstack([m.vertices for mk, m in W.P.values()])
+            print(tag, st, "size", (V.max(0) - V.min(0)).round(3), "min", V.min(0).round(3), "max", V.max(0).round(3))
+            if tag == "3p5" or st == "stowed":
+                sp = os.path.join(OUT, f"final_fold_leaf_{tag}_{st}_sheet.png"); wg.sheet(W, sp, f"Final  #38 folding counter, Fold-Down Leaf, {L} m run, {st}"); os.remove(sp.replace("_sheet.png", ".glb"))
+        # leaf vs bracket clearance during the swing: sample bracket arm tips vs raised-leaf underside
+        g = pygltflib.GLTF2().load(gp); print(tag, "tris", tris, "nodes", [n.name for n in g.nodes], "anims", [(an.name, len(an.channels)) for an in g.animations], "bad", bad)
+if __name__ == "__main__": final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
