@@ -9,3 +9,11 @@ Generator: assets/src/potted_plants_generator.py. Bottom-centre pivot, +Z front,
 5. Sprocket_Wick, 952 tris, 1.00 x 0.77 x 0.40 m: three pots on a wick reservoir plinth with a Sprocket port at 0.45 m.
 
 Spin gravity: pots stand normally and slate grow lids hold the soil. Spin-down: each pot has an amber latch onto its clamp ring, tray, cradle or plinth, and bases are floor-clamped or rail-hooked. Manufacture: moulded white composite pots and standard gunmetal/alloy clamps. Sprocket service: #5 is refilled through its port; the others by hand or by Sprocket.
+
+## Finals (Oct 29, 2026): Jared picked both #1 and #4
+
+- potted_plants_moulded_trio.glb: 1,040 tris, 0.98 x 0.65 x 0.36 m. Sheet final_moulded_trio_sheet.png.
+
+- potted_plants_pocket_column.glb: 1,504 tris, 0.90 x 0.78 x 0.41 m, recentred to a bottom-centre pivot; the three side pockets now have slate soil lids with amber latches. Sheet final_pocket_column_sheet.png.
+
+- Default placement: one set per room (102 and 203). Neither is placed in a scene.

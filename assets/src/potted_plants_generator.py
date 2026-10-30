@@ -67,4 +67,25 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------- finals (Jared picked both #1 Moulded_Trio and #4 Pocket_Column; default one set per room, 102 and 203) ----------
+def final_trio():
+    p = iter1(); p.name = "Potted_Moulded_Trio"; return p
+def final_column():
+    p = iter4(); p.name = "Potted_Pocket_Column"
+    for y, a in ((.14, .5), (.28, 2.6), (.42, 4.6)):
+        x, z = -.15 + .17 * np.cos(a), .17 * np.sin(a)
+        p.add("Pocket_Lids", "slate", box(x - .045, x + .045, y, y + .006, z - .045, z + .045))
+        p.add("Pocket_Latches", "amber", box(x - .012, x + .012, y - .03, y - .01, z + .05, z + .056))
+    for n, (mk, m) in p.P.items(): m.apply_translation((-.0825, 0, .0335))  # recentre to bottom-centre pivot
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    for fn, gname, sname, title in ((final_trio, "potted_plants_moulded_trio.glb", "final_moulded_trio_sheet.png", "Final  #34 potted plants, Moulded Trio"),
+                                    (final_column, "potted_plants_pocket_column.glb", "final_pocket_column_sheet.png", "Final  #34 potted plants, Pocket Column")):
+        p = fn(); tris, geo = export_final(p.P, [os.path.join(dc.ROOT, "godot/assets/models", gname)])
+        V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+        print(gname, "tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+        sp = os.path.join(OUT, sname); wg.sheet(p, sp, title); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
