@@ -1684,3 +1684,8 @@
 - **Sheet:** `design/ui/troubleshoot_r1/troubleshoot_r1_contact_sheet.png` (5 candidates, files in `design/ui/troubleshoot_r1/`).
 - **Deciding vote: Jared (2026-10-30 14:48 CDT), relayed via Atlas.**
 - **Round 1 WINNER:** `#01 holo_wrist` (`troubleshoot_r1_01_holo_wrist.png`) -> carried into round 2 `design/ui/troubleshoot_r2/` (5 wrist-hologram variations)
+
+## Category: `troubleshoot_r2` — general PCBA + Python troubleshooting UI, round 2 wrist-hologram variations (Sloane, box mockups, Oct 30)
+- **Sheet:** `design/ui/troubleshoot_r2/troubleshoot_r2_contact_sheet.png` (5 candidates, files in `design/ui/troubleshoot_r2/`).
+- **Deciding vote: Jared (2026-10-30 15:20 CDT), relayed via Atlas.**
+- **Round 2 WINNER:** `#04 stacked` (`troubleshoot_r2_04_stacked.png`) -> carried into round 3 `design/ui/troubleshoot_r3/` (board redrawn from a real netlist, validated routing)
