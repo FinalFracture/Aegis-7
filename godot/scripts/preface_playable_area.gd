@@ -766,6 +766,26 @@ func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
 	mon_root.add_child(scr_mi)
 
 
+func _retire_apartment_workbench(sector: Node3D) -> void:
+	# Rev C.2 moved #26 out of the building. The sector GLB still contains Apartment_Workbench, so it stays
+	# in INTERIOR_ARCH_NODE_NAMES (streaming still detaches it) but is hidden and non-colliding.
+	var wb: Node = sector.find_child("Apartment_Workbench", true, false)
+	if wb == null:
+		return
+	if wb is Node3D:
+		(wb as Node3D).visible = false
+	var stack: Array[Node] = [wb]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if c is CollisionShape3D:
+			(c as CollisionShape3D).disabled = true
+		elif c is CollisionObject3D:
+			(c as CollisionObject3D).collision_layer = 0
+			(c as CollisionObject3D).collision_mask = 0
+		for ch: Node in c.get_children():
+			stack.append(ch)
+
+
 func _assemble_open_doorless_sector() -> void:
 	for ch: Node in _arch_container.get_children():
 		ch.free()
@@ -776,6 +796,8 @@ func _assemble_open_doorless_sector() -> void:
 		sector_node.name = "PrefaceResidentialSector_Doorless"
 		_arch_container.add_child(sector_node)
 		_remove_all_doors_and_grates(sector_node)
+		# Hide before trimesh build so the retired bench never gets a collider.
+		_retire_apartment_workbench(sector_node)
 		if not _batch_render:
 			var n_col: int = _add_sector_trimesh_collisions(sector_node)
 			if _validate_only:
@@ -829,12 +851,13 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
 
 	var specs: Array[Array] = [
-		[wire_path, "Workbench_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-9.05, 5.12, 7.60), 1.10],
-		[bci_path, "Workbench_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-8.50, 5.12, 7.62), 1.15],
-		[jelly_path, "Workbench_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-8.00, 5.12, 7.62), 1.10],
-		[batt_path, "Workbench_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-7.45, 5.12, 7.60), 1.10],
-		[wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.85, 5.02, -4.95), 1.15],
-		[batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-11.05, 5.02, -4.95), 1.15],
+		[wire_path, "Apt201_ToolWall_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-13.30, 5.02, -4.95), 1.10],
+		[bci_path, "Apt201_ToolWall_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-12.85, 5.02, -4.95), 1.15],
+		[jelly_path, "Apt201_ToolWall_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-12.40, 5.02, -4.95), 1.10],
+		[batt_path, "Apt201_ToolWall_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-11.95, 5.02, -4.95), 1.10],
+		# +0.3 X: the old X -11.85 spool sat 0.10 m from the tool-wall cell at X -11.95.
+		[wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.55, 5.02, -4.95), 1.15],
+		[batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-10.75, 5.02, -4.95), 1.15],
 		[batt_path, "Apt202_Desk_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(10.70, 5.10, 7.20), 1.10],
 		[wire_path, "Room1A_Laundry_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-6.15, 0.98, 7.25), 1.15],
 		[batt_path, "Room1B_Substation_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(7.20, 0.98, 7.10), 1.15]
@@ -847,12 +870,123 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 			spawned += 1
 
 	var term: Node3D = Node3D.new()
-	term.name = "Workbench_DiagnosticTerminal"
-	term.position = Vector3(-9.17, 5.50, 8.05)
+	term.name = "Apt201_ToolWall_DiagnosticTerminal"
+	term.position = Vector3(-12.60, 5.50, -5.30)
 	_props_container.add_child(term)
-	_interactables.append({"node": term, "id": "Workbench_DiagnosticTerminal", "kind": "terminal", "label": "APT 201 WORKBENCH TERMINAL", "collected": false, "pickup": false})
+	_interactables.append({"node": term, "id": "Apt201_ToolWall_DiagnosticTerminal", "kind": "terminal", "label": "APT 201 TOOL WALL TERMINAL", "collected": false, "pickup": false})
 	spawned += 1
 	return spawned
+
+
+# Baked one-shot / loop clips. Pivot is bottom-centre, +Z is the front, the wall is at -Z.
+# Yaw 180 backs a prop onto a +Z (north) face. #42 yaw -90 backs it onto the east (+X) wall.
+# #39 uses the laundry bench footprint (X -3.5..-2.3, Z 6.6..7.0), clear of the Z +9 counter run.
+const ANIMATED_PROP_SPECS: Array[Dictionary] = [
+	{
+		"id": "Prop38_FoldingCounter",
+		"path": "res://assets/models/folding_counter_fold_leaf_3p0.glb",
+		"position": Vector3(-1.1, 0.0, 8.6),
+		"yaw": 180.0,
+		"label": "LAUNDRY FOLDING COUNTER",
+		"toggle": ["Leaf_Fold_Up", "Leaf_Fold_Down"],
+		"action": "",
+		"idle": ""
+	},
+	{
+		"id": "Prop39_FlipSeat",
+		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
+		"position": Vector3(-2.9, 0.0, 6.8),
+		"yaw": 180.0,
+		"label": "LAUNDRY FLIP SEAT",
+		"toggle": ["Seat_Flip_Down", "Seat_Flip_Up"],
+		"action": "",
+		"idle": ""
+	},
+	{
+		"id": "Prop42_Substation",
+		"path": "res://assets/models/substation_wall_ladder_busway.glb",
+		"position": Vector3(5.7, 0.0, 2.2),
+		"yaw": -90.0,
+		"label": "MAINTENANCE SUBSTATION",
+		"toggle": [],
+		"action": "Cell_Swap",
+		"idle": "Port_Ready_Blink"
+	},
+	{
+		"id": "Prop43_SparesDispenser",
+		"path": "res://assets/models/spares_gravity_dispenser.glb",
+		"position": Vector3(5.1, 0.0, 8.65),
+		"yaw": 180.0,
+		"label": "MAINTENANCE SPARES DISPENSER",
+		"toggle": [],
+		"action": "Capsule_Drop",
+		"idle": "Pick_Ready_Blink"
+	}
+]
+
+
+func _resolve_anim_clip(ap: AnimationPlayer, clip: String) -> String:
+	if clip == "":
+		return ""
+	if ap.has_animation(clip):
+		return clip
+	for listed: String in ap.get_animation_list():
+		if listed == clip or listed.ends_with("/" + clip):
+			return listed
+	return ""
+
+
+func _apply_anim_clip(ap: AnimationPlayer, clip: String, looped: bool) -> String:
+	var resolved: String = _resolve_anim_clip(ap, clip)
+	if resolved == "":
+		return ""
+	var anim: Animation = ap.get_animation(resolved)
+	if anim != null:
+		anim.loop_mode = Animation.LOOP_LINEAR if looped else Animation.LOOP_NONE
+	return resolved
+
+
+func _spawn_animated_props() -> void:
+	if _props_container == null:
+		return
+	for spec: Dictionary in ANIMATED_PROP_SPECS:
+		var id: String = String(spec["id"])
+		if _props_container.get_node_or_null(id) != null:
+			continue
+		var path: String = String(spec["path"])
+		if not FileAccess.file_exists(_resolve_path(path)):
+			push_warning("[PrefacePlayableArea] Animated prop GLB missing: " + path)
+			continue
+		var node: Node3D = _load_glb_scene(path, 0.85)
+		if node == null:
+			push_warning("[PrefacePlayableArea] Animated prop failed to load: " + path)
+			continue
+		node.name = id
+		node.position = spec["position"] as Vector3
+		node.rotation_degrees = Vector3(0.0, float(spec["yaw"]), 0.0)
+		_props_container.add_child(node)
+		_interactables.append({
+			"node": node,
+			"id": id,
+			"kind": "anim_prop",
+			"label": String(spec["label"]),
+			"collected": false,
+			"pickup": false,
+			"spec": spec,
+			"toggle_i": 0
+		})
+		var idle_clip: String = String(spec.get("idle", ""))
+		if idle_clip == "":
+			continue
+		var ap_idle: AnimationPlayer = _find_anim_player(node)
+		if ap_idle == null:
+			push_warning("[PrefacePlayableArea] No AnimationPlayer on " + id)
+			continue
+		var idle_name: String = _apply_anim_clip(ap_idle, idle_clip, true)
+		if idle_name == "":
+			push_warning("[PrefacePlayableArea] Missing idle clip %s on %s" % [idle_clip, id])
+		else:
+			ap_idle.play(idle_name)
 
 
 func _populate_pickups_and_wrist_rig() -> void:
@@ -863,6 +997,7 @@ func _populate_pickups_and_wrist_rig() -> void:
 		_inventory_max[k] = 0
 
 	_spawn_interior_pickups(true)
+	_spawn_animated_props()
 
 	# [t38u]/[t39u] Functional RFID doors across all 6 Residential Sector portals
 	_build_rfid_forcefield_doors(_props_container)
@@ -1262,7 +1397,7 @@ func _setup_sector_lighting() -> void:
 	# Physical ceiling luminaires + clean room lighting (OmniLight3D shadow_enabled = false so rooms never have 2 competing sets of shadows
 	# or cast L2 character shadows down through floor slabs onto L1).
 	for l_cfg: Dictionary in [
-		{"name": "Apt201_Workbench_TaskLight", "pos": Vector3(-8.45, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.88, "r": 9.8, "sh": false, "sz": Vector2(1.40, 0.36)},
+		{"name": "Apt201_TaskLamp27", "pos": Vector3(-13.2, 6.4, 5.6), "col": Color("#F5E2C4"), "e": 0.70, "r": 6.0, "sh": false, "sz": Vector2(0.4, 0.4)},
 		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(9.80, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.85, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
 		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 7.80, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 11.0, "sh": false, "sz": Vector2(1.20, 0.32)},
 		{"name": "Room1A_Lounge_Light", "pos": Vector3(-8.20, 3.62, 5.80), "col": Color("#F5E2C4"), "e": 0.84, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
@@ -1841,7 +1976,40 @@ func _interact() -> void:
 		for k: String in _inventory.keys():
 			total += int(_inventory_max[k])
 			have += int(_inventory[k])
-		_show_toast("WORKBENCH TERMINAL // Sector-4 bulkhead relay: JAMMED AT 40%%.\nUpgrade kit %d/%d gathered. Need: +5A cell + Super-Wire on [RESET]." % [have, total], 4.5)
+		_show_toast("TOOL WALL TERMINAL // Sector-4 bulkhead relay: JAMMED AT 40%%.\nUpgrade kit %d/%d gathered. Need: +5A cell + Super-Wire on [RESET]." % [have, total], 4.5)
+	elif kind == "anim_prop":
+		var prop_node: Node3D = it["node"] as Node3D
+		var prop_id: String = String(it.get("id", prop_node.name if prop_node != null else ""))
+		var spec: Dictionary = it.get("spec", {}) as Dictionary
+		var ap_prop: AnimationPlayer = _find_anim_player(prop_node) if prop_node != null else null
+		if ap_prop == null:
+			push_warning("[PrefacePlayableArea] No AnimationPlayer on " + prop_id)
+		else:
+			var toggles: Array = spec.get("toggle", []) as Array
+			if toggles.size() >= 2:
+				var ti: int = int(it.get("toggle_i", 0))
+				if ti < 0 or ti >= toggles.size():
+					ti = 0
+				var played: String = _apply_anim_clip(ap_prop, String(toggles[ti]), false)
+				if played == "":
+					push_warning("[PrefacePlayableArea] Missing toggle clip %s on %s" % [String(toggles[ti]), prop_id])
+				else:
+					ap_prop.play(played)
+					it["toggle_i"] = (ti + 1) % toggles.size()
+			else:
+				var action_clip: String = String(spec.get("action", ""))
+				var played_a: String = _apply_anim_clip(ap_prop, action_clip, false)
+				if played_a == "":
+					push_warning("[PrefacePlayableArea] Missing action clip %s on %s" % [action_clip, prop_id])
+				else:
+					ap_prop.play(played_a)
+					var idle_clip: String = String(spec.get("idle", ""))
+					var idle_name: String = _apply_anim_clip(ap_prop, idle_clip, true)
+					if idle_name != "":
+						ap_prop.queue(idle_name)
+					elif idle_clip != "":
+						push_warning("[PrefacePlayableArea] Missing idle clip %s on %s" % [idle_clip, prop_id])
+		_show_toast(String(it.get("label", prop_id)), 2.4)
 
 
 func _trigger_rfid_pulse() -> void:
@@ -2463,7 +2631,9 @@ func _run_hand_controls_qa() -> void:
 	_qa_key(KEY_F, false)
 	await _qa_frames(40)
 
-	# --- 8. [E] interact reach + pickup removal ---
+	# --- 8. [E] interact reach + pickup removal (APT 201 tool wall) ---
+	_qa_place(Vector3(-12.85, 4.30, -4.20), 180.0, -10.0)
+	await _qa_frames(8)
 	var n_before: int = 0
 	for it: Dictionary in _interactables:
 		if bool(it["pickup"]) and not bool(it["collected"]):
@@ -3316,11 +3486,11 @@ func _despawn_building_interiors() -> int:
 		return 0
 	var managed: int = 0
 	_interior_detached_records.clear()
-	# 1. Free every interior pickup & terminal node (doors stay — they are the building envelope).
+	# 1. Free every interior pickup, terminal, and baked anim-prop (doors stay — they are the building envelope).
 	var keep_items: Array[Dictionary] = []
 	for it: Dictionary in _interactables:
 		var k: String = String(it["kind"])
-		if bool(it["pickup"]) or k == "terminal":
+		if bool(it["pickup"]) or k == "terminal" or k == "anim_prop":
 			var raw: Variant = it["node"]
 			if is_instance_valid(raw):
 				var n: Node3D = raw as Node3D
@@ -3394,6 +3564,7 @@ func _respawn_building_interiors() -> int:
 			restored += 1
 	_interior_detached_records.clear()
 	restored += _spawn_interior_pickups(false)
+	_spawn_animated_props()
 	for l: OmniLight3D in _task_lights:
 		l.visible = true
 	for sl: Node in _lights_container.get_children():
@@ -4625,16 +4796,17 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_place(Vector3(-6.0, 0.25, -2.0), 0.0, 0.0)
 	await _qa_frames(6)
 	_qa_t38_check("interior_loaded_at_start", _interiors_loaded, "status=%s" % str(get_interior_streaming_status()))
-	# Collect the BCI headband on the APT 201 workbench first so we can verify it stays collected.
-	_qa_place(Vector3(-8.50, 4.30, 6.60), 180.0, -10.0)
+	# Collect the BCI headband on the APT 201 tool wall first so we can verify it stays collected.
+	_qa_place(Vector3(-12.85, 4.30, -4.20), 180.0, -10.0)
 	await _qa_frames(8)
 	var inv_before: int = int(_inventory["bci"])
 	_interact()
 	await _qa_frames(4)
-	var collected_ok: bool = _collected_pickup_ids.has("Workbench_BCI_Headband") and int(_inventory["bci"]) == inv_before + 1
+	var collected_ok: bool = _collected_pickup_ids.has("Apt201_ToolWall_BCI_Headband") and int(_inventory["bci"]) == inv_before + 1
 	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_bci=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["bci"])])
 	var live_before: int = int(get_interior_streaming_status()["live_pickups"])
 	var wb: Node = _arch_container.find_child("Apartment_Workbench", true, false)
+	var wb_retired: bool = wb == null or (wb is Node3D and not (wb as Node3D).visible)
 	_qa_t38_check("qa_ff_02_thresholds", is_equal_approx(INTERIOR_DESPAWN_Z, -14.0) and is_equal_approx(INTERIOR_RESPAWN_Z, -13.0) and INTERIOR_DESPAWN_Z < INTERIOR_RESPAWN_Z,
 		"despawn_z=%.2f respawn_z=%.2f" % [INTERIOR_DESPAWN_Z, INTERIOR_RESPAWN_Z])
 	# Exit door open -> interiors must stay loaded even beyond the despawn line
@@ -4655,8 +4827,8 @@ func _run_reticle_stars_doors_qa() -> void:
 	for ac: Node in _actors_container.get_children():
 		if ac is Node3D and (ac as Node3D).position.z > -7.5:
 			actors_in += 1
-	_qa_t38_check("interior_despawn_on_promenade_exit", not _interiors_loaded and _interior_managed_count > 0 and props_left == 0 and actors_in == 0 and (wb == null or not wb.is_inside_tree()) and _rfid_doors.size() == 6,
-		"z=-16.0 (exit closed) loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_in_tree=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, (wb != null and wb.is_inside_tree()), _rfid_doors.size()])
+	_qa_t38_check("interior_despawn_on_promenade_exit", not _interiors_loaded and _interior_managed_count > 0 and props_left == 0 and actors_in == 0 and wb_retired and _rfid_doors.size() == 6,
+		"z=-16.0 (exit closed) loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_hidden_or_absent=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, wb_retired, _rfid_doors.size()])
 	await _qa_capture("qa_interior_despawned_promenade.png")
 	_qa_place(Vector3(0.0, 0.25, -13.5), 180.0, 0.0)
 	await _qa_frames(6)
@@ -4664,13 +4836,13 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_place(Vector3(0.0, 0.25, -12.5), 180.0, 0.0)
 	await _qa_frames(8)
 	var st_in: Dictionary = get_interior_streaming_status()
-	var bci_respawned: bool = _props_container.get_node_or_null("Workbench_BCI_Headband") != null
+	var bci_respawned: bool = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") != null
 	var actors_back: int = 0
 	for ac2: Node in _actors_container.get_children():
 		if ac2 is Node3D and (ac2 as Node3D).position.z > -7.5:
 			actors_back += 1
-	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and (wb == null or wb.is_inside_tree()) and int(_inventory["bci"]) == inv_before + 1,
-		"z=-12.5 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_in_tree=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, (wb != null and wb.is_inside_tree())])
+	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and wb_retired and int(_inventory["bci"]) == inv_before + 1,
+		"z=-12.5 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_hidden_or_absent=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, wb_retired])
 
 	var out: PackedStringArray = PackedStringArray()
 	out.append("# Reticle, Rotating Outer Starfield & RFID Force-Field Doors QA ([t38u]/[t45u])")
