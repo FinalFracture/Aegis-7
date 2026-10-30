@@ -443,6 +443,8 @@ Screenshots: `godot/renders/qa/patch_realism_01_alcove2c_hub_no_wall.png`, `patc
 
 ## Visual check (c29df73): doorway backing panels
 
+_Attribution (Gage, 2026-10-30): Patch QA visual check of c29df73, swept into Rook commit 495e4ce by mistake. Reviewed and kept as legitimate QA. QA-BK-01 is still open, and the rev C rebuild re-seats the doors._
+
 Run in a temp worktree at `c29df73`. One 3/4 shot per door, about 2.5 m out, plus contact sheet `godot/renders/qa/patch_c29df73_contact.png`. Numbers are a rough raycast along the door normal from the `HubWallBacking` centre, with the backing's own collider excluded. Backing size is 0.695 × 1.44 × 0.25 m on all 5 doors that have one.
 
 - **DOOR_ALCOVE2C: LOOKS OFF (REAL-01 not resolved).** The backing exists, but the ray finds no static surface behind it within 0.6 m. It reads as a free-standing 25 cm black slab beside the frame, over a dark recess.
