@@ -92,4 +92,19 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+if __name__ == "__main__" and len(sys.argv) == 1: main()
+
+# ---------------- final: Frame_Crate (iter 3), picked by Jared Oct 30 ----------------
+# Polish: frame edges brought flush to the rev C width, lid glyph decals kept inside the 0.5 m height, depth restored to the full envelope.
+def final_main():
+    import pygltflib
+    sheet = Pod("Frame_Crate_Final"); res = {}
+    for (W, D, H), dx, aj, nm in zip(SIZES, (-GAP, GAP), (False, True), ("lab_crate_frame_104", "lab_crate_frame_204")):
+        q = Pod(nm); crate(q, 0, W - .02, D + .015, H - .012, aj, 3); crate(sheet, dx, W - .02, D + .015, H - .012, aj, 3)
+        nouv = [k for k, (mk, m) in q.P.items() if "uv" not in m.metadata]; bad = [k for k, (mk, m) in q.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+        gp = os.path.join(dc.ROOT, "godot/assets/models", nm + ".glb"); t, geo = export_final(q.P, [gp]); set_glass_blend(gp)
+        V = np.vstack([g[1] for g in geo.values()]); g = pygltflib.GLTF2().load(gp)
+        print(nm, "tris", t, "size", (V.max(0) - V.min(0)).round(3), "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad, "nouv", nouv, "alpha", [m.alphaMode for m in g.materials if m.alphaMode])
+    sheet.P = {k: v for k, v in sheet.P.items() if v[0] != "glass"}
+    sp = os.path.join(OUT, "final_frame_crate_sheet.png"); wg.sheet(sheet, sp, "Final  #53 lab crate, Frame Crate: 104 closed 1.0x0.6x0.5 | 204 lid ajar 0.9x0.7x0.5 (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "final": final_main()
