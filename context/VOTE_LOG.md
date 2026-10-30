@@ -1612,3 +1612,10 @@
   2. **`D-02 // CIVIC` (`"SWEEP #0812"`, Civic Cyan-Teal `#38B8C8`):** Commuters, life support, trash & sanitation, hospital & medical, government, recreation (`emblem_district_02_civic.png`).
   3. **`D-03 // SCIENCE` (`"QUASAR / KELVIN #0204"`, Science Violet-Indigo `#7B5CFF`):** Laboratories, experiments, new technology, space observations (`emblem_district_03_science.png`, mirrored across `utility_bot_r2_05_livery_03_science.png`, `03_kelvin.png`, `03_quasar.png`, `03_puddle.png`, and `johnny5_livery_03_*.png`).
   4. **`D-04 // AGRI` (`"CLOVER #0631"`, Biosphere Emerald `#3BA868`):** Food production (not preparation), biosphere, atmosphere, hydrosphere, animals/pest control, veterinary (`emblem_district_04_agri.png`).
+
+## Category: `residential_exterior_street_furniture` — #32 bench, #33 bin/recycler, #34 bollard (Rook, box pipeline, Oct 30)
+- **Sheets:** `design/assets/ext_bench/ext_bench_contact_sheet.png`, `design/assets/ext_bin_recycler/ext_bin_recycler_contact_sheet.png`, `design/assets/ext_bollard/ext_bollard_contact_sheet.png` (all 15 candidates clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 12:00 PM CT), relayed via Atlas.**
+- **#32 Bench WINNER:** `#05 Glass_Lightbox` (`ext_bench_05.glb`, 160 tris, 1.80 x 0.50 x 0.45 m, BLEND glass) -> `godot/assets/models/ext_bench.glb`
+- **#33 Bin/recycler WINNER:** `#05 Compactor` (`ext_bin_recycler_05.glb`, 128 tris, 0.48 x 0.49 x 1.00 m, BLEND glass status lens) -> `godot/assets/models/ext_bin_recycler.glb`
+- **#34 Bollard WINNER:** `#02 Square_Chamfer` (`ext_bollard_02.glb`, 120 tris, 0.20 x 0.20 x 0.90 m) -> `godot/assets/models/ext_bollard.glb`
