@@ -50,7 +50,7 @@ Sizes are rough W × D × H in meters.
 | 21 | ~~Wardrobe~~ `godot/assets/models/wardrobe_openbays_rails.glb` | 101, 103, 104, 201, 202, 203, 204 | 7 | 0.5 × 2.5–3.0 × 2.1 |
 | 22 | ~~Coat and storage closet~~ `godot/assets/models/coat_closet_mudroom.glb` | 103, 104, 203, 204 | 4 | 3.7 × 0.5 × 2.1 |
 | 23 | Suit hook + storage with pressure suit | 102 | 1 | 0.5 × 2.5 × 2.1 |
-| 24 | Resident lockers | Laundry | 1 run | 4.8 × 0.5 × 2.0 |
+| 24 | ~~Resident lockers~~ REMOVED FROM APARTMENT BUILDING (Jared, Oct 29): option 5 Bench Niche kept as a standalone locker run for another building (TBD), not tied to laundry; `godot/assets/models/locker_run_bench_niche.glb` | ~~Laundry~~ other building TBD | — | 4.8 × 0.5 × 2.0 |
 
 
 ## F. Workstations and story props

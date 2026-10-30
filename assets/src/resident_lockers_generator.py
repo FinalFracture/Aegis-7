@@ -51,4 +51,20 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_niche():
+    """Standalone locker run (Jared, Oct 29): not in the apartment building or tied to laundry; building TBD."""
+    p = iter5(); p.name = "Locker_Run_Bench_Niche"; xs = np.linspace(-W / 2, W / 2, 9); n0, n1 = xs[3] + .012, xs[5] - .012
+    p.add("End_Panels", "alloy", *[box(x0, x1, 0, H, ZB, ZF - .006) for x0, x1 in ((-W / 2, -W / 2 + .02), (W / 2 - .02, W / 2))])
+    p.add("Top_Trim", "alloy", box(-W / 2, W / 2, H - .045, H - .035, ZF - .02, ZF - .006))
+    p.add("Niche_Light", "amber", box(n0 + .05, n1 - .05, Y1 - .03, Y1 - .02, ZB + .03, ZB + .2))
+    p.add("Seat_Pad", "slate", bev(n1 - n0 - .08, .3, .46, .48, .03, .006, 1, (n0 + n1) / 2, ZB + .2))
+    p.add("Niche_Floor_Tray", "gunmetal", box(n0, n1, Y0 - .01, Y0, ZB + .015, ZF - .04))
+    p.add("Floor_Bolts", "alloy", *[cyl(x, ZF - .07, .01, Y0, Y0 + .008, 6) for x in (-2.1, -1.0, 1.0, 2.1)])
+    return p
+def final_main():
+    p = final_niche(); gp = os.path.join(dc.ROOT, "godot/assets/models/locker_run_bench_niche.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_bench_niche_sheet.png"); wg.sheet(p, sp, "Final  locker run, Bench Niche (standalone, building TBD; empty)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
