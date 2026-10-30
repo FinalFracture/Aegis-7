@@ -66,8 +66,17 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
+def cyl_z(x, y, r, z0, z1, n):
+    m = trimesh.creation.cylinder(radius=r, segment=[(x, y, z0), (x, y, z1)], sections=n); m.metadata["uv"] = m.vertices[:, [0, 1]]; return m
 def final_lightbox():
     p = iter3(); p.name = "Cycler_Route_Lightbox"; z1 = ZB + .09
+    for k in ("Cycler_Route", "Cycler_Marker", "Sun"): p.P.pop(k, None)
+    zs, sx, sy, th = ZB + .05, 0.0, .5, .6  # sun centre; route major axis points at th (radians) from the sun to perihelion
+    a, c = .18, .11; b = (a * a - c * c) ** .5; ux, uy = np.cos(th), np.sin(th); cx, cy = sx - c * ux, sy - c * uy
+    p.add("Sun_Disc", "amber", cyl_z(sx, sy, .04, zs - .004, zs + .008, 16)); p.add("Sun_Corona", "amber", *ellipse(sx, sy, .055, .055, zs, n=16, t=.004))
+    p.add("Cycler_Route", "violet", *ellipse(cx, cy, a, b, zs + .002, rot=th, n=40, t=.009))
+    ap = (cx - a * ux, cy - a * uy); p.add("Cycler_Marker", "white", box(ap[0] - .015, ap[0] + .015, ap[1] - .012, ap[1] + .012, zs - .006, zs + .014))
+    pp = (sx + (a - c) * ux, sy + (a - c) * uy); p.add("Perihelion_Tick", "white", seg((pp[0] + .012 * ux, pp[1] + .012 * uy, zs + .004), (pp[0] + .04 * ux, pp[1] + .04 * uy, zs + .004), .006, .006))
     p.add("Bezel_Trim", "alloy", *[box(x0, x1, y0, y1, z1, z1 + .006) for x0, x1, y0, y1 in ((-W / 2, W / 2, 0, .02), (-W / 2, W / 2, H - .02, H), (-W / 2, -W / 2 + .02, 0, H), (W / 2 - .02, W / 2, 0, H))])
     p.add("Glass_Retainer_Clips", "amber", *[box(x - .02, x + .02, y - .006, y + .006, z1, z1 + .01) for x in (-.25, .25) for y in (.025, H - .025)])
     p.add("Corner_Bolts", "gunmetal", *[box(x - .007, x + .007, y - .007, y + .007, z1 + .006, z1 + .01) for x in (-W / 2 + .01, W / 2 - .01) for y in (.01, H - .01)])
@@ -80,6 +89,6 @@ def final_main():
     p = final_lightbox(); gp = os.path.join(dc.ROOT, "godot/assets/models/cycler_route_lightbox.glb"); tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
     V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
     print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
-    p.P.pop("Front_Glass", None); sp = os.path.join(OUT, "final_lightbox_sheet.png"); wg.sheet(p, sp, "Final  #32 cycler route model, Lightbox (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+    p.P.pop("Front_Glass", None); sp = os.path.join(OUT, "final_lightbox_sheet.png"); wg.sheet(p, sp, "Final  #32 cycler route model, Lightbox rev B: close solar pass (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
 if __name__ == "__main__":
     final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
