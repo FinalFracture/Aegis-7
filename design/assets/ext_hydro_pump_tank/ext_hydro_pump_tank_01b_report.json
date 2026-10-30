@@ -1,0 +1,80 @@
+{
+ "cand": "ext_hydro_pump_tank_01b",
+ "tris": 400,
+ "nodes": [
+  "Skid",
+  "Tank",
+  "Cabinet",
+  "Status",
+  "Pipes",
+  "Gauge_Frame",
+  "Gauge_Glass",
+  "WaterLevel_Fill",
+  "Temp_Seg_01",
+  "Temp_Seg_02",
+  "Temp_Seg_03",
+  "Temp_Seg_04",
+  "Temp_Seg_05",
+  "Temp_Seg_06"
+ ],
+ "fill_pivot": [
+  0,
+  0.251,
+  0
+ ],
+ "fill_height": 0.698,
+ "clip": {
+  "0.05": {
+   "pass_": true,
+   "worst": 0.004,
+   "over": [],
+   "cop": [],
+   "open": [],
+   "size": [
+    1.2,
+    1.8,
+    0.82
+   ],
+   "pivot": {
+    "min_y": 0.0,
+    "cx": 0.0,
+    "cz": 0.0
+   }
+  },
+  "0.5": {
+   "pass_": true,
+   "worst": 0.004,
+   "over": [],
+   "cop": [],
+   "open": [],
+   "size": [
+    1.2,
+    1.8,
+    0.82
+   ],
+   "pivot": {
+    "min_y": 0.0,
+    "cx": 0.0,
+    "cz": 0.0
+   }
+  },
+  "1.0": {
+   "pass_": true,
+   "worst": 0.004,
+   "over": [],
+   "cop": [],
+   "open": [],
+   "size": [
+    1.2,
+    1.8,
+    0.82
+   ],
+   "pivot": {
+    "min_y": 0.0,
+    "cx": 0.0,
+    "cz": 0.0
+   }
+  }
+ },
+ "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_01b.glb"
+}
