@@ -66,4 +66,19 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_dob(ang=.98, L=.58):
+    p = Pod("Telescope_Pier_Dobsonian"); feet(p, [(-.22, -.22), (.22, -.22), (-.22, .22), (.22, .22)])
+    p.add("Pier_Base", "gunmetal", blk(-.25, .25, .025, .07, -.25, .25, .006, 1)); p.add("Pier_Column", "white", bev(.24, .24, .07, .8, .03, .006, 2, 0, 0))
+    p.add("Rocker_Box", "slate", *[box(s * .13 - .015, s * .13 + .015, .8, 1.05, -.12, .12) for s in (-1, 1)]); p.add("Rocker_Floor", "slate", box(-.145, .145, .8, .83, -.12, .12))
+    tube(p, (0, 1.0, 0), ang, L, .1, "slate")
+    p.add("Altitude_Bearings", "alloy", *[rod((s * .115, 1.0, 0), (s * .16, 1.0, 0), .045, 12) for s in (-1, 1)]); p.add("Altitude_Locks", "amber", *[rod((s * .16, 1.0, 0), (s * .175, 1.0, 0), .02, 8) for s in (-1, 1)])
+    p.add("Azimuth_Ring", "alloy", cyl(0, 0, .16, .8, .812, 14)); p.add("Pier_Door_Seam", "gunmetal", box(-.07, .07, .3, .6, .12, .123)); p.add("Pier_Status_Light", "green", box(-.02, .02, .65, .66, .12, .124))
+    p.add("Base_Bolts", "alloy", *[cyl(x, z, .01, .07, .08, 6) for x in (-.2, .2) for z in (-.2, .2)])
+    return p
+def final_main():
+    p = final_dob(); gp = os.path.join(dc.ROOT, "godot/assets/models/telescope_pier_dobsonian.glb"); tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    p.P.pop("Objective_Glass", None); sp = os.path.join(OUT, "final_pier_dobsonian_sheet.png"); wg.sheet(p, sp, "Final  #30 telescope, Pier Dobsonian (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
