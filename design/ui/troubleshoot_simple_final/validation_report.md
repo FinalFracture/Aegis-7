@@ -6,4 +6,4 @@ Validator: `tools/pcb_validate.py` on `simple_final_board_geom.json` (mockup and
 - Errors: 0
 - Expected opens: OUT3: expected open between ['M1.IN'] and ['U1.P3']
 - Intentional no-connects: U1.P1 (OUT1): intentional no-connect; U1.P2 (OUT2): intentional no-connect
-- Break moved to mid-trace (px 846-894); nearest silkscreen outline 96px away. Pads moved inside component edges: pad-edge to outline gap 7.5 px for every component pin (≥3 px required); details in README.
+- Break moved to mid-trace (px 814-886); nearest silkscreen outline 64px away. Pads moved inside component edges: pad-edge to outline gap 7.5 px for every component pin (≥3 px required); details in README.

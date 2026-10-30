@@ -11,4 +11,4 @@ Source: simple r3 #03 holo_panels, picked by Jared with changes.
 
 Files: `troubleshoot_simple_final_mockup.png`, `troubleshoot_simple_final_board_only.png`, `simple_final_netlist.json/.md`, `simple_final_board_geom.json`, `validation_report.md`.
 
-**Pad placement (rev 2):** every component pad sits inside its silkscreen outline, close to the edge. The gap from pad edge to outline is 7.5 px at 40 px/grid (pad r = 15 px, silkscreen line 3 px). The break is 96 px from the nearest outline.
+**Pad placement (rev 2):** every component pad sits inside its silkscreen outline, close to the edge. The gap from pad edge to outline is 7.5 px at 40 px/grid (pad r = 15 px, silkscreen line 3 px). The break (rev 3, torn: wider gap, lifted/curled copper ends, scorched exposed substrate, dark burn, copper flecks) spans x 814–886 px (1.8 grid), 64 px from the nearest outline.
