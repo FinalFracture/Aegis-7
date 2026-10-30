@@ -1689,3 +1689,8 @@
 - **Sheet:** `design/ui/troubleshoot_r2/troubleshoot_r2_contact_sheet.png` (5 candidates, files in `design/ui/troubleshoot_r2/`).
 - **Deciding vote: Jared (2026-10-30 15:20 CDT), relayed via Atlas.**
 - **Round 2 WINNER:** `#04 stacked` (`troubleshoot_r2_04_stacked.png`) -> carried into round 3 `design/ui/troubleshoot_r3/` (board redrawn from a real netlist, validated routing)
+
+## Category: `troubleshoot_r3` — general PCBA + Python troubleshooting UI, round 3 netlist-routed boards (Sloane, box mockups, Oct 30)
+- **Sheet:** `design/ui/troubleshoot_r3/troubleshoot_r3_contact_sheet.png` (5 candidates, all DRC PASS with 1 expected open; files in `design/ui/troubleshoot_r3/`).
+- **Deciding vote: Jared (2026-10-30 15:46 CDT), relayed via Atlas.**
+- **Round 3 WINNER:** `#02 balanced_twolayer` (`troubleshoot_r3_02_balanced_twolayer.png`) -> finalized in `design/ui/troubleshoot_final/` (R1/R2 divider removed, silkscreen + legend cleanup)
