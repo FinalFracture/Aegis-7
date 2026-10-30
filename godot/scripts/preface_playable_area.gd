@@ -878,45 +878,55 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	return spawned
 
 
-# Baked one-shot / loop clips. Pivot is bottom-centre, +Z is the front, the wall is at -Z.
-# Yaw 180 backs a prop onto a +Z (north) face. #42 yaw -90 backs it onto the east (+X) wall.
-# #39 uses the laundry bench footprint (X -3.5..-2.3, Z 6.6..7.0), clear of the Z +9 counter run.
+# Baked one-shot / loop clips. Pivot is bottom-centre, front is local +Z, back is local -Z.
+# Hall floor top is y=0.235. Yaw 180 maps local -Z onto world +Z (north wall face z=8.76).
+# Yaw 90 maps local -Z onto world -X (west wall).
 const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 	{
+		# Back against north wall z=8.76. Local AABB z -0.30..0.15 (back face -> world z=8.75).
 		"id": "Prop38_FoldingCounter",
 		"path": "res://assets/models/folding_counter_fold_leaf_3p0.glb",
-		"position": Vector3(-1.1, 0.0, 8.6),
+		"position": Vector3(-1.10, 0.235, 8.45),
 		"yaw": 180.0,
+		"mount": "wall",
 		"label": "LAUNDRY FOLDING COUNTER",
 		"toggle": ["Leaf_Fold_Up", "Leaf_Fold_Down"],
 		"action": "",
 		"idle": ""
 	},
 	{
+		# Local -Z faces world -X. Back against west wall face x=-5.525.
+		# Local AABB z -0.20..0.20, width 1.2 (back face -> world x=-5.51).
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
-		"position": Vector3(-2.9, 0.0, 6.8),
-		"yaw": 180.0,
+		"position": Vector3(-5.31, 0.235, 7.00),
+		"yaw": 90.0,
+		"mount": "wall",
 		"label": "LAUNDRY FLIP SEAT",
 		"toggle": ["Seat_Flip_Down", "Seat_Flip_Up"],
 		"action": "",
 		"idle": ""
 	},
 	{
+		# Back against north wall z=8.76. Local AABB x -1.25..1.25, z -0.40..0.40
+		# (back face -> world z=8.75). Clear of the West_Storage partition.
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(5.7, 0.0, 2.2),
-		"yaw": -90.0,
+		"position": Vector3(1.90, 0.235, 8.35),
+		"yaw": 180.0,
+		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
 		"toggle": [],
 		"action": "Cell_Swap",
 		"idle": "Port_Ready_Blink"
 	},
 	{
+		# Back to north wall. Local AABB z -0.25..0.25 (back face -> world z=8.75).
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(5.1, 0.0, 8.65),
+		"position": Vector3(5.10, 0.235, 8.50),
 		"yaw": 180.0,
+		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
 		"toggle": [],
 		"action": "Capsule_Drop",
