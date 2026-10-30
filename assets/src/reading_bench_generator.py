@@ -51,4 +51,19 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_cubbies():
+    p = iter3(); p.name = "Reading_Bench_Book_Cubbies"; xs = np.linspace(-W / 2, W / 2, 9)
+    p.add("Seat_Nosing", "alloy", box(-W / 2, W / 2, SEAT - .045, SEAT - .005, ZF - .008, ZF))
+    p.add("Retainer_Latches", "amber", *[box((xs[i] + xs[i + 1]) / 2 - .02, (xs[i] + xs[i + 1]) / 2 + .02, .172, .208, ZF - .004, ZF) for i in range(8)])
+    p.add("Retainer_Pivots", "gunmetal", *[box(x - .012, x + .012, .175, .205, ZF - .024, ZF - .002) for x in xs[1:-1]])
+    p.add("Floor_Bolts", "alloy", *[cyl(x, z, .009, .03, .036, 6) for x in (xs[:-1] + xs[1:]) / 2 for z in (ZF - .05,)])
+    p.add("Toe_Strip", "gunmetal", box(-W / 2 + .015, W / 2 - .015, 0, .03, ZF - .006, ZF))
+    p.add("Reading_Light_Strip", "amber", box(-W / 2 + .05, W / 2 - .05, SEAT - .05, SEAT - .045, ZB + .02, ZB + .04))
+    return p
+def final_main():
+    p = final_cubbies(); gp = os.path.join(dc.ROOT, "godot/assets/models/reading_bench_book_cubbies.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_book_cubbies_sheet.png"); wg.sheet(p, sp, "Final  #18 window reading nook bench, Book Cubbies"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
