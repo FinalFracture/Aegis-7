@@ -1,0 +1,127 @@
+{
+ "board": "Hatch Actuator D-204 \u2014 SIMPLE tier r2",
+ "components": {
+  "J1": {
+   "label": "GRID POWER",
+   "value": "hab grid feed, 2-pin",
+   "pins": [
+    "+",
+    "-"
+   ]
+  },
+  "U1": {
+   "label": "CONTROLLER",
+   "value": "door controller",
+   "pins": [
+    "VIN",
+    "GND",
+    "1",
+    "2",
+    "3"
+   ]
+  },
+  "M1": {
+   "label": "DOOR MOTOR",
+   "value": "hatch actuator motor",
+   "pins": [
+    "IN",
+    "GND"
+   ]
+  },
+  "TP1": {
+   "label": "1 (pad)",
+   "value": "output landing pad, no-connect",
+   "pins": [
+    "1"
+   ]
+  },
+  "TP2": {
+   "label": "2 (pad)",
+   "value": "output landing pad, no-connect",
+   "pins": [
+    "1"
+   ]
+  },
+  "TP3": {
+   "label": "3 (pad)",
+   "value": "output landing pad, no-connect",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND1": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND2": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND3": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  }
+ },
+ "nets": {
+  "GRID_V+": [
+   "J1.+",
+   "U1.VIN"
+  ],
+  "GND": [
+   "J1.-",
+   "GND1",
+   "U1.GND",
+   "GND2",
+   "M1.GND",
+   "GND3"
+  ],
+  "OUT1": [
+   "U1.1",
+   "TP1"
+  ],
+  "OUT2": [
+   "U1.2",
+   "TP2"
+  ],
+  "OUT3": [
+   "U1.3",
+   "TP3"
+  ],
+  "MOTOR_IN": [
+   "M1.IN"
+  ]
+ },
+ "intentional_fault": {
+  "open": {
+   "net": "GRID_V+",
+   "between": [
+    "J1.+",
+    "U1.VIN"
+   ],
+   "look": "trace chunk missing + small burn mark, no spark"
+  }
+ },
+ "intentional_unconnected": {
+  "TP1/TP2/TP3": "controller outputs end in bare landing pads (stubs) \u2014 player chooses one",
+  "M1.IN": "player draws OUTn -> M1.IN with Super Wire"
+ },
+ "win_condition": "GRID_V+ repaired AND player trace OUTn->M1.IN AND python MOTOR_PIN == n",
+ "code": {
+  "constant": "MOTOR_PIN",
+  "editable": [
+   "MOTOR_PIN",
+   "DUTY"
+  ],
+  "default": "MOTOR_PIN = 1, DUTY = 0.8"
+ },
+ "current_state": "series loop open at break: no current anywhere -> nothing glows"
+}

@@ -3,7 +3,8 @@
   "traces":[{"net","layer":"top|bot","w","pts":[[x,y],...]}],
   "pours":[{"net","layer","cell":1.0,"cells":[[cx,cy],...]}],   # cell centers
   "expected_open":[{"net","gap":[[x,y],[x,y]],"groups":[[padid..],[padid..]]}],
-  "clearance":0.25 }
+  "clearance":0.25,
+  "intentional_unconnected":[{"pad":id,"reason":str}] }   # optional: declared no-connect pads (gameplay)
 Checks: per-net connectivity (union-find over pads/vias/traces/pours), shorts,
 unconnected pads, dangling trace ends (stubs), same-layer clearance between
 different nets, bend angles (45-degree multiples, never acute)."""
@@ -98,9 +99,11 @@ def validate(g):
         for a,b in zip(t["pts"],t["pts"][1:]):
             ang=math.degrees(math.atan2(b[1]-a[1],b[0]-a[0]))
             if abs(round(ang/45)*45-ang)>0.5: errs.append(f"OFF-AXIS SEGMENT: {t['net']} {a}->{b}")
-    # unconnected pads
+    # unconnected pads (declared intentional no-connects are reported, not errors)
+    nc={e["pad"] for e in g.get("intentional_unconnected",[])}; ncs=[]
     for k,i,net,_,c,r in nodes:
-        if k=="P" and (k,i) not in touched: errs.append(f"UNCONNECTED PAD: {pads[i]['id']} ({net})")
+        if k=="P" and (k,i) not in touched and pads[i]["id"] in nc: ncs.append(f"{pads[i]['id']} ({net}): intentional no-connect")
+        elif k=="P" and (k,i) not in touched: errs.append(f"UNCONNECTED PAD: {pads[i]['id']} ({net})")
     # per-net connectivity
     nets={}
     for i,p in enumerate(pads): nets.setdefault(p["net"],[]).append(i)
@@ -120,7 +123,7 @@ def validate(g):
     for r,ns in roots.items():
         if len(ns)>1: errs.append(f"SHORT between {sorted(ns)}")
     errs=list(dict.fromkeys(errs))
-    return {"ok":not errs,"errors":errs,"expected_opens":opens,"stats":{"nets":len(nets),"pads":len(pads),"vias":len(vias),"traces":len(trs),"segments":len(segs),"bends":bends,"pour_cells":sum(len(p["cells"]) for p in pours)}}
+    return {"ok":not errs,"errors":errs,"expected_opens":opens,"intentional_nc":ncs,"stats":{"nets":len(nets),"pads":len(pads),"vias":len(vias),"traces":len(trs),"segments":len(segs),"bends":bends,"pour_cells":sum(len(p["cells"]) for p in pours)}}
 if __name__=="__main__":
     for fn in sys.argv[1:]:
-        r=validate(json.load(open(fn))); print(fn,"PASS" if r["ok"] else "FAIL",r["stats"]); [print("  ",e) for e in r["errors"][:40]+r["expected_opens"]]
+        r=validate(json.load(open(fn))); print(fn,"PASS" if r["ok"] else "FAIL",r["stats"]); [print("  ",e) for e in r["errors"][:40]+r["expected_opens"]+r.get("intentional_nc",[])]
