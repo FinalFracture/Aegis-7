@@ -60,7 +60,7 @@ Sizes are rough W × D × H in meters.
 | 26 | Apartment workbench (level blockout `Apartment_Workbench`) | 201 | 1 | 3.7 × 2.5 nook |
 | 27 | Task lamp (level blockout `Apt201_Workbench_TaskLight`) | 201, 104, 204 | 3 | 0.2 × 0.2 × 0.5 |
 | 28 | Window desk + data slates | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
-| 29 | Specimen shelf | 104 | 1 | 0.9 × 0.6 × 1.9 |
+| 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
 | 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |
 | 31 | Emitter repair bench (dismantled field emitter) | 204 | 1 | 0.9 × 1.9 × 0.9 |
 | 32 | Cycler route model (wall) | 203 | 1 | 0.9 × 0.2 × 1.0 |

@@ -80,4 +80,20 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------- final (Jared, Oct 29): #2 Open_Rack, moved OUT of residential 104 to a future science/lab building ----------
+def final_rack():
+    p = iter2(); p.name = "Specimen_Rack_Open_Lab"
+    xs = (-W / 2 + .02, W / 2 - .02)
+    p.add("Bar_Hinges", "gunmetal", *[cyl(x, ZF - .03, .014, y + .19, y + .23, 8) for x in (-W / 2 + .045,) for y in SH])
+    p.add("Post_Bolts", "alloy", *[cyl(x, z, .008, .02, .03, 6) for x in xs for z in (ZB + .02, ZF - .02)])
+    p.add("Shelf_Lips", "gunmetal", *[box(-W / 2 + .03, W / 2 - .03, y + .02, y + .04, ZB + .02, ZB + .03) for y in SH + (1.74,)])
+    p.add("Tray_Clips", "amber", *[box(x - .012, x + .012, y + .022, y + .052, .1, .106) for y in SH[:2] for x in (-.2, .2)])
+    return p
+def final_main():
+    p = final_rack(); gp = os.path.join(dc.ROOT, "godot/assets/models/specimen_rack_open_lab.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_open_rack_lab_sheet.png"); wg.sheet(p, sp, "Final  specimen rack, Open Rack (LAB BUILDING asset, not residential)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()

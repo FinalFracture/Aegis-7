@@ -9,3 +9,7 @@ Generator: assets/src/specimen_shelf_generator.py. Bottom-centre pivot, +Z front
 5. Sprocket_Sorter, 1,232 tris: glass cabinet over a sample intake drawer with a Sprocket port at about 0.45 m and a green status light.
 
 Spin gravity: ordinary shelving. Spin-down: jars are clipped (amber), rocks sit in foam-cut trays, and doors, drawers and bars latch; frames are floor-clamped and hooked to the 2.06 m wall rail. Manufacture: white composite carcass, slate shelves, alloy/gunmetal stock. Sprocket service: #5 receives field samples through its intake drawer.
+
+## Final (Oct 29, 2026): #2 Open Rack, LAB-BUILDING asset
+
+Jared picked the Open Rack but moved it out of residential room 104 into a future science/lab building. specimen_rack_open_lab.glb: 1,792 tris, 0.90 x 1.90 x 0.63 m, bottom-centre pivot, +Z front. Flip-down restraint bars on gunmetal hinges with amber latches, shelf back lips, clipped jars and rock trays, bolted floor clamps and rail hooks. Not placed. Sheet final_open_rack_lab_sheet.png.
