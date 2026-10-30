@@ -56,9 +56,9 @@ Sizes are rough W × D × H in meters.
 ## F. Workstations and story props
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
-| 25 | Tool wall panel (pegboard, cable variant) | 101, 201, Maintenance | 3 | 2.5–3.5 × 0.5 × 2.0 |
+| 25 | Tool wall panel (pegboard, cable variant). C.1: +1 in 204 as the 'emitter wall' (2.5 m on the E wall; one loose door emitter strip reused from `rfid_forcefield_door.glb` + the rail task lamp) | 101, 201, 204, Maintenance | 4 | 2.5–3.5 × 0.5 × 2.0 |
 | 26 | ~~Apartment workbench~~ (level blockout `Apartment_Workbench`) MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 201; not modeled now, waits for that building | ~~201~~ lab/workshop building | — | 3.7 × 2.5 nook |
-| 27 | Task lamp (level blockout `Apt201_Workbench_TaskLight`) | 201, 104, 204 | 3 (QTY UNDER REVIEW: the 201 workbench light and possibly 204 left with #26/#31; model unchanged) | 0.2 × 0.2 × 0.5 |
+| 27 | Task lamp (level blockout `Apt201_Workbench_TaskLight`) | 201, 104, 204 | 3 (C.1 resolved: 201 on the #52 fold-down desk, 104 on the window desk, 204 Rail_Slider on the emitter wall; `godot/assets/models/task_lamp_rail_slider.glb`) | 0.2 × 0.2 × 0.5 |
 | 28 | Window desk + data slates | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
 | 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
 | 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |
@@ -67,6 +67,9 @@ Sizes are rough W × D × H in meters.
 | 33 | ~~Hydro planter (window/balcony)~~ MOVED TO EXTERIOR (Jared, Oct 29): removed from 103/202; Tiered Steps planter now serves the hydro co-op / sidewalk planters, `godot/assets/models/hydro_planter_tiered_exterior.glb` | ~~103, 202~~ exterior | — | 4.0 × 0.4 × 0.7 |
 | 34 | Potted plants set (Jared's final pick, Oct 29): `godot/assets/models/potted_plants_rail_cradles.glb` (default 102) and `godot/assets/models/potted_plants_pocket_column.glb` (default 203). SUPERSEDED, kept unplaced: `potted_plants_moulded_trio.glb`, `potted_plants_shared_tray.glb` | 102, 203 | 2 | 1.20 × 0.55 × 0.25 (wall rail) / 0.90 × 0.78 × 0.41 |
 | 35 | Toy chest + rail bins + toy kit (Jared combined iter 1 + 3, Oct 29): `godot/assets/models/toy_chest_rail_bins.glb` | 103 | 1 | 1.2 × 0.6 × 0.5 chest; bins on a 0.90 m rail to 1.21 m |
+| 52 | Fold-down wall desk + pegboard strip (C.1 stand-in for #26; keeps the level node name `Apartment_Workbench`, the 4 pickups, the diagnostic terminal and the CUE-001 scorch/tally/pegboard decals so the Stage 1 objective still works) | 201 N wall X -13.6..-11.6 | 1 | 2.0 × 0.6 (deployed) × 0.75, folded 0.15 |
+| 53 | Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
+| 54 | Removal decal set (dust outline of the lab bench and workbench, shelf ghost + wall anchor holes, planter clamp-bolt marks + water ring) | 104, 201, 103, 202 | 1 set | decals |
 | 36 | Small clutter kit (meal tray, cups, cables, photo frames as decals) | 101, 102, 104, 202 | 1 kit | small |
 
 
@@ -98,13 +101,15 @@ Sizes are rough W × D × H in meters.
 | 49 | ~~Sprocket~~ `godot/assets/models/char_bot_r2_05_livery_01_sprocket.glb` | Maintenance | 1 | 0.78 × 0.77 × 1.03 |
 | 50 | ~~Sweep (stuck)~~ `godot/assets/models/char_bot_r2_05_livery_02_sweep.glb` | 204 | 1 | same |
 
-## Counts
-- **Total items: 51** (#51 bot lift added in stair core v1.1). Already modeled as glb: **9** (#1, 2, 44–50). Still to model: **42**, of which 4 exist only as level blockouts (#26, 27, 40, 42).
+## Counts (rev C.1, pending Jared approval)
+- **Item numbers 1–54.** Moved out (kept, not deleted): **5**. #17, #26, #31 go to the future lab/workshop building; #29 goes to the lab building (Open Rack glb exists); #33 goes to the exterior (Tiered Steps glb exists). New in C.1: **3** (#52 fold-down desk, #53 lab crate, #54 removal decals).
+- **Active in the residential building: 49.** Already modeled as glb in `godot/assets/models/` (re-checked Oct 29, 43 glb files): **31** (#1–5, 7–13, 15, 16, 19–22, 27, 28, 34, 35, 37, 44–51). Some of these rows are not struck through above yet.
+- **Still to model: 18** (#6, 14, 18, 23, 24, 25, 30, 32, 36, 38–43, 52–54). Of these, #40 and #42 exist as level blockouts.
 
-## Suggested modeling order (most reused first)
-1. Dining chair (20), window cards (8), bath pod (8), kitchen counter (8), double bed (8)
-2. Wardrobe (7), sofa (6), the three table variants (8 total), coat closet (4), washer/dryer stack (4)
-3. Repeated small items: tool wall (3), task lamp (3), floor pad (3), coupler arm (3)
-4. Building fixtures: stair set, rail, skylight, riser, bot lift (#51)
-5. Pairs: kids' bunk, armchair, window desk, plants, tea set
-6. Singles and story pieces: workbench, substation, lockers, laundry counter/bench, spares shelf, suit storage, lab bench, specimen shelf, telescope, emitter bench, Cycler model, toy bin, reading nook, clutter kit
+## Suggested modeling order (remaining items, most reused first)
+1. Window cards #6 (8), lit by the existing glbs
+2. Tool wall #25 (4), floor pad #40 (3), coupler arm #41 (3), Cycler route model #32 (iterations exist)
+3. Fold-down desk #52 (needed for the 201 objective before the old workbench blockout is swapped), lab crate #53 (2, shared with exterior #48), removal decals #54
+4. Pairs: tea set #14
+5. Singles: suit storage #23, lockers #24, telescope #30, clutter kit #36, laundry counter/bench #38–39, substation #42, spares shelf #43, reading nook #18
+6. Lab/workshop building (deferred, not residential): lab bench #17, workbench #26, specimen rack #29 (glb done), emitter repair bench #31

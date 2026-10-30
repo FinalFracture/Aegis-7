@@ -43,16 +43,16 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ## E. Plinth masking (approved: hidden)
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 23 | Long masking planter | ±Z walls | 19 | 2.0 × 0.9 × 0.6 | 500 |
+| 23 | Masking planter = **Tiered Steps** (Rook, `godot/assets/models/hydro_planter_tiered_exterior.glb`, 4.0 × 0.41 × 0.70, high tier against the wall). TS-4 modeled; TS-2 is a 2.0 m cut-down variant still to model | ±Z walls: S 2 × (TS-4, TS-4, TS-2) with 0.4 gaps, X -13.8..-3.0 / 3.0..13.8; N-W 3 × TS-4 with 0.2 gaps, X -13.8..-1.4; N-E TS-4 + TS-2 butted, X 8.0..14.0; Z ±9.1..±9.51 | 8 TS-4 + 3 TS-2 | 4.0 / 2.0 × 0.41 × 0.70 | 2,784 / ~1,500 |
 | 24 | Ramp 1:12, 0.22 m rise | Sector-4 exit, service door | 2 | 3.6–4.7 × 2.7 | 250 |
-| 25 | Sidewalk hydro planter (1 patched variant) | west sidewalk | 3 | 1.6 × 4.0 × 0.7 | 800 |
+| 25 | Sidewalk hydro planter = Tiered Steps TS-4, 4 m length along Z, back to the Spin St W kerb (X -16.8..-16.39), 1 patched liner | west sidewalk, z0 -7, -2, 3 | 3 TS-4 | 0.41 × 4.0 × 0.70 | 2,784 |
 
 ## F. Hydro co-op
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 26 | Hydro bed trough + liner (1 patched) | Plot N, X -20..-6 | 3 | 14 × 0.9 × 0.7 | 1,500 |
+| 26 | Hydro bed = back-to-back Tiered Steps pair (2 × 0.41 + 0.08 spine = 0.9) × (TS-4 + TS-4 + TS-2 = 10.0 m), 1 patched liner. v1 row said 14 m at X -20..-6, but the v1.2 plan has 10 m at X -13..-3; corrected | hydro co-op, X -13..-3, Z 19.5 / 21.5 / 23.5 | 3 beds = 12 TS-4 + 6 TS-2 | 10.0 × 0.9 × 0.70 | 2,784 / ~1,500 |
 | 27 | Pump + water tank cabinet | hydro co-op | 1 | 1.2 × 0.8 × 1.8 | 1,200 |
-| 28 | Grow-light rack | hydro co-op | 3 | 14 × 0.2 × 2.2 | 700 |
+| 28 | Grow-light rack (length now matches the 10 m beds) | hydro co-op | 3 | 10 × 0.2 × 2.2 | 700 |
 
 ## G. Memorial nook
 | # | Item | Where | Qty | Size | Tris (each) |
@@ -106,12 +106,13 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | 55 | ~~Clover (agri bot)~~ `godot/assets/models/char_bot_r2_05_livery_04_clover.glb` | hydro co-op | 1 | same as Sprocket | — |
 
 ## Counts
-- **Total items: 55.** Already modeled as glb: **5** (#1, 2, 53, 54, 55). Still to model: **50**.
+- **Total items: 55.** Already modeled as glb: **5** (#1, 2, 53, 54, 55), plus the Tiered Steps TS-4 module that #23, #25 and #26 now use. Still to model: **50**; for #23, #25 and #26 this is only the TS-2 cut-down variant and the patched liner.
+- **Tiered Steps tri impact (Oct 29):** planters + beds rise from about 16.4k to about 77k tris (23 TS-4 × 2,784 + 9 TS-2 × ~1,500), so the ring goes from **~209k to ~270k** LOD0. This needs a TS LOD1 (~900 tris, foliage merged) beyond 20 m to keep the ≤ 60k on-screen target. Fit QC: `residential_exterior_tiered_steps_fit.py`.
 - The ring totals about **209k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
 
 ## Suggested modeling order (most reused first)
-1. Curb segment (68), Residential facade panel (60), Canal edge module (47), Curved road segment (34), Street light pole (30), Exterior window unit (24), Flat road / lane segment (20), Long masking planter (19), Bollard (12), Tram rail module (10), Bench (8), Accessible kerb ramp (8)
+1. Curb segment (68), Residential facade panel (60), Canal edge module (47), Curved road segment (34), Street light pole (30), Exterior window unit (24), Flat road / lane segment (20), Tiered Steps TS-2 variant (9; TS-4 done), Bollard (12), Tram rail module (10), Bench (8), Accessible kerb ramp (8)
 2. Mid-reuse kit: catenary mast (5), bins (6), plaza bollard lights (6), tram platform kerb (6), wayfinding totems and street blades (4 each)
 3. Hero pieces: tram stop shelter, tram vehicle, the 5 neighbour facades, roof parapet, door canopies
-4. Hydro co-op and planters: sidewalk planters, beds, grow racks, pump cabinet
+4. Hydro co-op and planters: Tiered Steps TS-2 variant + LOD1 + patched liner (TS-4 done), grow racks, pump cabinet
 5. Story singles: memorial nook set, shelter sleeper set, notice board, hand cart, exterior Sprocket pad/apron, decal sets
