@@ -1,11 +1,31 @@
-# Residential rev C — Exterior + 20 m City Ring (plan v1)
+# Residential rev C — Exterior + 20 m City Ring (plan v1.3)
 
-**Status: APPROVED v1.2 by Jared 2026-10-29.** The v1 design decisions are approved, and Jared thumbs-upped v1.1. This is design only. The v1 and v1.1 plan PNGs are kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
+**Status: v1.3 (2026-10-30, Vance): memorial nook relocated for the monumental #29 (Jared's grander-memorial brief); everything else is APPROVED v1.2 by Jared 2026-10-29.** The plan PNG and the `.py` object table still show the v1.2 nook; Rook/Gage update them via the Grok Build CLI. The v1 design decisions are approved, and Jared thumbs-upped v1.1. This is design only. The v1 and v1.1 plan PNGs are kept for comparison. The build follows the asset list `residential_exterior_asset_list_v1.md`.
 Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interior_overhaul_spec.md` and `residential_apartment_layout_v2.md` (rev C)
 
 ![Plan v1.2](residential_exterior_plan_v1_2_plan.png)
 (For comparison: v1.1 `residential_exterior_plan_v1_1_plan.png`, v1 `residential_exterior_plan_v1_plan.png`)
 ![Section](residential_exterior_plan_v1_section.png)
+
+## QC v1.3: memorial nook relocation (2026-10-30, Vance)
+**Change:** the monument candidates (`design/assets/ext_memorial_monument/` report: 01 3.8 W × 1.01 D × 3.9 H, 4,512 tris; 02 3.6 × 1.6 × 4.3, 672; 03 3.64 × 1.2 × 3.97, 3,080; 04 3.9 × 1.2 × 4.1, 5,328; 05 3.6 × 1.22 × 3.8, 268; all pivot bottom-centre) do not fit the 1.6 × 1.6 m nook. In place (X 13.9..17.7) they would block the E sidewalk mouth (X 14..17 at Z -9) and sit 0.2 m from the building corner (14, -9).
+**New nook:** X 17.4..21.6, Z -12.7..-9.6 (4.2 × 3.1 m) at the promenade end of Spin St E. Monument centred X 19.5, back face at Z -9.7, **rotated 180°** (model +Z → world -Z) to face the promenade/canal. Its footprint is X 17.55..21.45 at most (cand 04), and the front is at Z -10.7 to -11.3 (depth 1.0–1.6). Nook bench X 18.6..20.4, Z -12.7..-12.2 (faces the monument). Nook bin X 20.7..21.2, Z -12.7..-12.2. The old bench (13.0..14.8, -12.3..-11.8) and bin (12.3..12.8) are removed from there. Counts are unchanged (8 benches, 6 bins).
+**Deviation from Rook's proposal:** Rook proposed Z -12.4 for the south edge. That leaves only 0.6 m between the bench and the front of the 1.6 m-deep candidate 02, so the edge moves to -12.7 to keep ≥ 0.9 m of standing room for every candidate.
+
+| # | Check | Result | Numbers |
+|---|---|---|---|
+| 1 | Spin St E end bollards (Z -9.5..-9.3, X 17.9..22.1) | PASS | 0.1 m to the nook, 0.2 m to the monument back. The nook is south of the bollards, so cart blocking is unchanged. |
+| 2 | E sidewalk mouth (X 14..17, Z -9) | PASS (improved) | The mouth is now fully clear. The nook starts 0.4 m east of it, beside the bollard row, which is not a walk line. |
+| 3 | E outer sidewalk mouth (X 23..26) | PASS | 1.4 m clear walk between the nook (X 21.6) and X 23 (≥ 0.9). |
+| 4 | Building footprint corner (14, -9) | PASS | 3.4 m to the nook (it was 0.2 m for the in-place monument). |
+| 5 | Promenade through-walk (Z -15.4..-12.5) | NARROWED, PASS | Locally Z -15.4..-12.7 = **2.7 m** for X 17.4..21.6 (≥ 0.9). Everywhere else 2.9 m. |
+| 6 | Tram shelter (X 12..18, Z -16.9..-15.6) and platform bench/bin (Z -16.05..-15.55) | PASS | 2.9 m from the shelter roof edge to the nook, and 2.65 m from the platform bench/bin. |
+| 7 | Poles | PASS | The nearest are (16.75, -8), 1.6 m north-west across the bollards, and (22, -18), 5.3 m. None is inside the nook. |
+| 8 | Planters / Tiered Steps (S wall to X 13.8, Z -10..-9.1) | PASS | 3.6 m west. |
+| 9 | Sprocket route (Spin St E → lane → service ramp, all +Z) | PASS | No interaction. The route never enters the promenade. |
+| 10 | Desire path (platform → exit ramp at X ±1.8) and plaza exit approach | PASS | Both are west of X 12. The nook is east of the platform's west half. |
+| 11 | On walk zone | PASS | Inside the promenade (X -47..47, Z -18.5..-9). |
+| 12 | Height | NOTE | At 3.8–4.3 m the monument is below the 5 m poles. It reads as the landmark at the Spin St E vista. |
 
 ## QC v1.2: street furniture (same object table and asserted checks; PNG checked with Read)
 **Furniture placed:**
@@ -13,7 +33,7 @@ Generator: `design/residential_exterior_plan_v1.py` · Inputs: `cylinder_interio
   - 2 at the tram platform ends, beside the shelter.
   - 4 along the track-side edge of the promenade, facing the canal.
   - 1 at the west edge of the plaza.
-  - 1 at the memorial nook.
+  - 1 at the memorial nook (v1.3: moved to the nook's south edge, X 18.6..20.4, Z -12.7..-12.2).
 - **6 bins**: 2 at the tram stop and one beside each of 4 benches (2 promenade, plaza, nook).
 - **12 bollards**:
   - 4 across the end of each Spin Street at Z -9.4, which protects the promenade and plaza.
@@ -90,7 +110,7 @@ What this means on the ground:
   - The hydro co-op beds and the workshop row are beyond the lane.
 - **East and west (±X): the Spin Streets.** These are 3 m sidewalks plus 6 m Spin Streets running along Z, the curving direction.
   - The west sidewalk carries hydro planters.
-  - The memorial nook sits in a promenade pocket at the SE corner (X 15.8, Z -11).
+  - The memorial nook sits in a promenade pocket at the end of Spin St E (v1.3: X 17.4..21.6, Z -12.7..-9.6; was X 15.0..16.6, Z -11.8..-10.2).
   - Facade-only neighbours sit beyond.
 
 ## Circulation

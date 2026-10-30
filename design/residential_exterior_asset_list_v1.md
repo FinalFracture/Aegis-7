@@ -60,9 +60,9 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ## G. Memorial nook
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 29 | Wire rack with hanging RFID tags | SE corner | 1 | 1.2 × 0.3 × 1.8 | 1,500 |
-| 30 | Violet field lamp (shrine) | SE corner | 1 | 0.3 × 0.3 × 1.2 | 600 |
-| 31 | Dried flower / offering set | SE corner | 1 | 0.6 × 0.3 × 0.3 | 800 |
+| 29 | **Memorial monument (v1.3, grander; replaces the wire rack)** with hanging RFID tags; candidates `design/assets/ext_memorial_monument/ext_memorial_monument_01..05.glb`, vote pending. Nook X 17.4..21.6, Z -12.7..-9.6; monument centred X 19.5, back at Z -9.7, **rotated 180°** (model +Z front → world -Z, facing the promenade). Max footprint 3.9 W × 1.6 D × 4.3 H. Bottom-centre pivot | Spin St E promenade end | 1 | ≤ 3.9 × 1.6 × 4.3 | **< 6,000** (cands 268–5,328) |
+| 30 | Violet field lamp (shrine) | on monument ledge (per Rook NOTES.md) | 1 | 0.3 × 0.3 × 1.2 | 600 |
+| 31 | Dried flower / offering set | on monument ledge / floor (per NOTES.md) | 1 | 0.6 × 0.3 × 0.3 | 800 |
 
 ## H. Street furniture
 | # | Item | Where | Qty | Size | Tris (each) |
@@ -121,6 +121,9 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 4. Hydro co-op and planters: Tiered Steps TS-2 variant (#23a) + lower-detail version (#23b) + patched liner (TS-4 done), grow racks, pump cabinet
 5. Story singles: memorial nook set, shelter sleeper set, notice board, hand cart, exterior Sprocket pad/apron, decal sets
 
+## Change v1.3 (2026-10-30)
+- #29 is now the monumental memorial. The nook moves to X 17.4..21.6, Z -12.7..-9.6, and the nook bench and bin move to its south edge (see plan QC v1.3). Benches stay at 8 and bins at 6.
+
 ## Final reconciliation vs plan v1.2 (2026-10-30)
 - Counts re-checked: benches 8, bins 6, bollards 12, poles 30, platform kerb 6, Tiered Steps 23 TS-4 + 9 TS-2 all match the plan. No missing structural assets.
 - **Fixed #15** tram shelter location X 10..16 → **X 12..18, Z -16.9..-15.6** (plan v1.1 QC #6); tris 6,000 → 5,800 (cap is <6,000).
@@ -162,6 +165,6 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 #23a `hydro_planter_tiered_ts2.glb`, #23b `hydro_planter_tiered_lod.glb` (TS-4 + TS-2 LOD ~900), #27 `ext_hydro_pump_tank.glb`, #28 `ext_grow_light_rack.glb`, #36 `ext_service_hand_cart.glb`.
 
 ### Batch 6 — story singles + decals (9 assets)
-#29 `ext_memorial_tag_rack.glb`, #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, #48 `ext_shelter_sleeper_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
+#29 `ext_memorial_monument.glb` (v1.3, see row 29), #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, #48 `ext_shelter_sleeper_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
 
 Totals: **51 to-model entries** across 6 batches: 9 / 9 / 8 / 11 / 5 / 9 (#23 and #26 are complete once TS-2 #23a lands; tram #19 split into 19a/b/c). Already done: #1, 2, 25, 53, 54, 55 and TS-4.
