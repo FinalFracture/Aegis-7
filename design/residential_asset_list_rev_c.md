@@ -65,8 +65,8 @@ Sizes are rough W × D × H in meters.
 | 31 | Emitter repair bench (dismantled field emitter) | 204 | 1 | 0.9 × 1.9 × 0.9 |
 | 32 | Cycler route model (wall) | 203 | 1 | 0.9 × 0.2 × 1.0 |
 | 33 | ~~Hydro planter (window/balcony)~~ MOVED TO EXTERIOR (Jared, Oct 29): removed from 103/202; Tiered Steps planter now serves the hydro co-op / sidewalk planters, `godot/assets/models/hydro_planter_tiered_exterior.glb` | ~~103, 202~~ exterior | — | 4.0 × 0.4 × 0.7 |
-| 34 | Potted plants set: TWO designs picked (Jared, Oct 29), `godot/assets/models/potted_plants_moulded_trio.glb` and `godot/assets/models/potted_plants_pocket_column.glb`; default one set per room (Trio 102, Column 203) unless Jared changes it | 102, 203 | 2 | 0.98 × 0.65 × 0.36 / 0.90 × 0.78 × 0.41 |
-| 35 | Toy bin + scattered toys | 103 | 1 | 1.2 × 0.6 × 0.5 |
+| 34 | Potted plants set (Jared's corrected pick, Oct 29): `godot/assets/models/potted_plants_rail_cradles.glb` (default 102) and `godot/assets/models/potted_plants_shared_tray.glb` (default 203). SUPERSEDED, kept unplaced: `potted_plants_moulded_trio.glb`, `potted_plants_pocket_column.glb` | 102, 203 | 2 | 1.20 × 0.55 × 0.25 (wall rail) / 1.10 × 0.73 × 0.41 |
+| 35 | Toy chest + rail bins + toy kit (Jared combined iter 1 + 3, Oct 29): `godot/assets/models/toy_chest_rail_bins.glb` | 103 | 1 | 1.2 × 0.6 × 0.5 chest; bins on a 0.90 m rail to 1.21 m |
 | 36 | Small clutter kit (meal tray, cups, cables, photo frames as decals) | 101, 102, 104, 202 | 1 kit | small |
 
 

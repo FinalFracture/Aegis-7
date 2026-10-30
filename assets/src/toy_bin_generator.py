@@ -64,4 +64,27 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------- final (Jared, Oct 29): combine #1 Moulded_Chest (floor) + #3 Rail_Bins (wall, above), same toy kit ----------
+# The bins hang on a local bolted alloy rail at 0.90 m (top of bins 1.20 m, within a child's reach) and are only 0.30 m deep,
+# so the chest lid can still swing up to about 75 degrees under them.
+def final_combo():
+    p = iter1(); p.name = "Toy_Chest_Rail_Bins"; RY = .9; BD = .3; zb0 = -D / 2; zb1 = zb0 + BD
+    p.add("Wall_Rail", "alloy", blk(-W / 2, W / 2, RY - .02, RY + .02, zb0 - .03, zb0, .006, 1))
+    p.add("Wall_Plates", "gunmetal", *[box(x - .05, x + .05, RY - .08, RY + .08, zb0 - .035, zb0 - .03) for x in (-.55, .55)])
+    p.add("Rail_Bolts", "alloy", *[cyl(x, zb0 - .03, .008, RY + dy - .005, RY + dy + .005, 6) for x in (-.55, .55) for dy in (-.06, .06)])
+    for x in (-.4, 0, .4):
+        p.add("Bins", "white", bev(.38, BD - .02, RY - .16, RY + .3, .03, .01, 2, x, zb0 + BD / 2 + .01))
+        p.add("Bin_Hooks", "gunmetal", box(x - .1, x + .1, RY - .02, RY + .05, zb0, zb0 + .02))
+        p.add("Bin_Lids", "slate", bev(.38, BD - .02, RY + .3, RY + .312, .03, .004, 1, x, zb0 + BD / 2 + .01))
+        p.add("Bin_Latches", "amber", box(x - .025, x + .025, RY + .26, RY + .29, zb1, zb1 + .008))
+    p.add("Chest_Bolts", "alloy", *[cyl(x, z, .008, .02, .03, 6) for x in (-.5, .5) for z in (-D / 2 + .06, D / 2 - .06)])
+    return p
+def final_main():
+    from dining_chair_generator import export_final
+    p = final_combo(); gp = os.path.join(dc.ROOT, "godot/assets/models/toy_chest_rail_bins.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_chest_rail_bins_sheet.png"); wg.sheet(p, sp, "Final  #35 toy chest + rail bins + toy kit (103)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()

@@ -17,3 +17,11 @@ Spin gravity: pots stand normally and slate grow lids hold the soil. Spin-down: 
 - potted_plants_pocket_column.glb: 1,504 tris, 0.90 x 0.78 x 0.41 m, recentred to a bottom-centre pivot; the three side pockets now have slate soil lids with amber latches. Sheet final_pocket_column_sheet.png.
 
 - Default placement: one set per room (102 and 203). Neither is placed in a scene.
+
+## Finals v2 (Oct 29, 2026): Jared corrected his pick to #2 and #3
+
+- potted_plants_rail_cradles.glb: 1,328 tris, 1.20 x 0.55 x 0.25 m, hangs on the 0.30 m wall rail (floor-referenced pivot, lowest part at 0.20 m). Default room 102. Sheet final_rail_cradles_sheet.png.
+
+- potted_plants_shared_tray.glb: 1,192 tris, 1.10 x 0.73 x 0.41 m, bottom-centre pivot. Default room 203. Sheet final_shared_tray_sheet.png.
+
+- The Moulded Trio and Pocket Column finals above are SUPERSEDED: kept unplaced, not deleted.

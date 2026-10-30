@@ -79,10 +79,35 @@ def final_column():
         p.add("Pocket_Latches", "amber", box(x - .012, x + .012, y - .03, y - .01, z + .05, z + .056))
     for n, (mk, m) in p.P.items(): m.apply_translation((-.0825, 0, .0335))  # recentre to bottom-centre pivot
     return p
-def final_main():
+def final_main_v1_superseded():
     from dining_chair_generator import export_final
     for fn, gname, sname, title in ((final_trio, "potted_plants_moulded_trio.glb", "final_moulded_trio_sheet.png", "Final  #34 potted plants, Moulded Trio"),
                                     (final_column, "potted_plants_pocket_column.glb", "final_pocket_column_sheet.png", "Final  #34 potted plants, Pocket Column")):
+        p = fn(); tris, geo = export_final(p.P, [os.path.join(dc.ROOT, "godot/assets/models", gname)])
+        V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+        print(gname, "tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+        sp = os.path.join(OUT, sname); wg.sheet(p, sp, title); os.remove(sp.replace("_sheet.png", ".glb"))
+
+# ---------- finals v2 (Jared's correction, Oct 29): #2 Rail_Cradles (102) and #3 Shared_Tray (203) ----------
+# Moulded_Trio / Pocket_Column finals above are SUPERSEDED (kept unplaced, not deleted).
+def recentre(p, keep_y=False):
+    V = np.vstack([m.vertices for mk, m in p.P.values()]); c = (V.min(0) + V.max(0)) / 2
+    for mk, m in p.P.values(): m.apply_translation((-c[0], 0 if keep_y else -V.min(0)[1], -c[2]))
+    return p
+def final_rail():
+    p = iter2(); p.name = "Potted_Rail_Cradles"
+    for x in (-.45, -.15, .15, .45): p.add("Cradle_Latches", "amber", box(x - .015, x + .015, .2, .225, .1, .106))
+    p.add("Rail_Bolts", "alloy", *[cyl(x, -.125, .008, .26 + dy, .27 + dy, 6) for x in (-.55, .55) for dy in (0, .07)])
+    return recentre(p, keep_y=True)  # floor-referenced pivot: rail stays at 0.30 m, nothing touches the floor
+def final_tray():
+    p = iter3(); p.name = "Potted_Shared_Tray"
+    p.add("Tray_Latches", "amber", *[box(x - .015, x + .015, .03, .055, .2, .206) for x in (-.38, -.12, .14)])
+    p.add("Clamp_Bolts", "alloy", *[cyl(x, z, .008, .02, .03, 6) for x in (-.5, .5) for z in (-.15, .15)])
+    return recentre(p)
+def final_main():
+    from dining_chair_generator import export_final
+    for fn, gname, sname, title in ((final_rail, "potted_plants_rail_cradles.glb", "final_rail_cradles_sheet.png", "Final  #34 potted plants, Rail Cradles (102)"),
+                                    (final_tray, "potted_plants_shared_tray.glb", "final_shared_tray_sheet.png", "Final  #34 potted plants, Shared Tray (203)")):
         p = fn(); tris, geo = export_final(p.P, [os.path.join(dc.ROOT, "godot/assets/models", gname)])
         V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
         print(gname, "tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
