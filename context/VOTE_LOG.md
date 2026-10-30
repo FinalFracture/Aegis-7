@@ -1666,3 +1666,11 @@
 - **Rounds:** tag rack (`ext_memorial_tag_rack`), monumental (`ext_memorial_monument`), Aegis-7 (`ext_memorial_aegis`); Jared picked Aegis 04 cutaway at 1:15 PM CT with tags inside -> 04b.
 - **Deciding vote: Jared (Oct 30, 1:32 PM CT), relayed via Atlas.**
 - **#29 Memorial WINNER:** `#04b Aegis cutaway + 200 interior tags` (`ext_memorial_aegis_04b.glb`, 4,472 tris, `Drum_Spin` / `Starport_Spin` nodes, axis y 1.70 m) -> `godot/assets/models/ext_memorial.glb`
+
+## Category: `residential_exterior_facades` — #5–#14 facade batch (Rook, box pipeline, Oct 30): single finals, **no vote, Jared waived** (1:59 PM CT, relayed via Atlas)
+- Built straight to Vance's spec (`design/residential_exterior_asset_list_v1.md`); generator `assets/src/ext_facades_generator.py`; clip-check + validate PASS each; overview `design/assets/ext_facade_batch_overview_sheet.png`.
+- **#6 Facade panel:** `ext_facade_panel_res.glb` (112 tris, ≤400, tileable ×60 MultiMesh) -> `godot/assets/models/ext_facade_panel_res.glb` — no vote, Jared waived
+- **#7 Window unit:** `ext_window_unit.glb` (128 tris, ≤500, BLEND glass) -> `godot/assets/models/ext_window_unit.glb` — no vote, Jared waived
+- **#8 L2 promenade window:** `ext_l2_promenade_window.glb` (320 tris, ≤600, BLEND glass) -> `godot/assets/models/ext_l2_promenade_window.glb` — no vote, Jared waived
+- **#9 Roof parapet + plant caps:** `ext_roof_parapet_plantcap.glb` (928 tris, ≤3,000) -> `godot/assets/models/ext_roof_parapet_plantcap.glb` — no vote, Jared waived
+- **#5 Door canopy:** `ext_door_canopy.glb` (96 tris, ≤600) -> `godot/assets/models/ext_door_canopy.glb` — no vote, Jared waived

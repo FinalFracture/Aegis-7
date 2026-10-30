@@ -1,0 +1,21 @@
+{
+ "name": "ext_facade_panel_res",
+ "title": "#6 facade panel 3.0x0.2x4.4 (x60 MultiMesh)",
+ "tris": 112,
+ "budget": 400,
+ "size": [
+  2.994,
+  4.397,
+  0.206
+ ],
+ "pivot": {
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0
+ },
+ "clip_pass": true,
+ "worst": 0.004,
+ "over": [],
+ "coplanar": [],
+ "open": []
+}

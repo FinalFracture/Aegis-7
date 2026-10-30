@@ -1,0 +1,21 @@
+{
+ "name": "ext_roof_parapet_plantcap",
+ "title": "#9 roof parapet + plant caps 28x18",
+ "tris": 928,
+ "budget": 3000,
+ "size": [
+  28.08,
+  0.966,
+  18.08
+ ],
+ "pivot": {
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0
+ },
+ "clip_pass": true,
+ "worst": 0.004,
+ "over": [],
+ "coplanar": [],
+ "open": []
+}
