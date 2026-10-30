@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_sector4_sign_01",
+  "style": "Slate_Panel",
+  "tris": 140,
+  "budget_ok": true,
+  "size": [
+   2.6,
+   0.5,
+   0.086
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_sector4_sign/ext_sector4_sign_01.glb"
+ },
+ {
+  "cand": "ext_sector4_sign_02",
+  "style": "Glass_Lightbox",
+  "tris": 140,
+  "budget_ok": true,
+  "size": [
+   2.6,
+   0.5,
+   0.086
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_sector4_sign/ext_sector4_sign_02.glb"
+ },
+ {
+  "cand": "ext_sector4_sign_03",
+  "style": "Edge_Lit_Frame",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   2.6,
+   0.5,
+   0.086
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_sector4_sign/ext_sector4_sign_03.glb"
+ },
+ {
+  "cand": "ext_sector4_sign_04",
+  "style": "Split_Stripe",
+  "tris": 124,
+  "budget_ok": true,
+  "size": [
+   2.6,
+   0.5,
+   0.088
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_sector4_sign/ext_sector4_sign_04.glb"
+ },
+ {
+  "cand": "ext_sector4_sign_05",
+  "style": "Standoff_Letters",
+  "tris": 188,
+  "budget_ok": true,
+  "size": [
+   2.6,
+   0.5,
+   0.076
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_sector4_sign/ext_sector4_sign_05.glb"
+ }
+]
