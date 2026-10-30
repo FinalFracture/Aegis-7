@@ -1637,3 +1637,8 @@
 - **#39 Street blade WINNER:** `#04 Banded_Tab` (`ext_street_blade_04.glb`, 64 tris) -> `godot/assets/models/ext_street_blade.glb`
 - **#20 Stop totem WINNER:** `#04 Titanium_Column` (`ext_stop_totem_04.glb`, 240 tris) -> `godot/assets/models/ext_stop_totem.glb`
 - **#52 Notice board WINNER:** `#05 Cantilever_Post` (`ext_notice_board_05.glb`, 224 tris) -> `godot/assets/models/ext_notice_board.glb`
+
+## Category: `residential_exterior_memorial` — #30 offering set (Rook, box pipeline, Oct 30)
+- **Sheet:** `design/assets/ext_offering_set/ext_offering_set_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 1:25 PM CT), relayed via Atlas.**
+- **#30 Offering set WINNER:** `#03 Bundled_Bouquet` (`ext_offering_set_03.glb`, 244 tris) -> `godot/assets/models/ext_offering_set.glb`
