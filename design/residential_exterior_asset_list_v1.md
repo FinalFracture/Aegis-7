@@ -161,7 +161,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ### Batch 5 — hydro co-op + Tiered Steps variants (5 assets)
 #23a `hydro_planter_tiered_ts2.glb`, #23b `hydro_planter_tiered_lod.glb` (TS-4 + TS-2 LOD ~900), #27 `ext_hydro_pump_tank.glb`, #28 `ext_grow_light_rack.glb`, #36 `ext_service_hand_cart.glb`.
 
-### Batch 6 — story singles + decals (10 assets)
+### Batch 6 — story singles + decals (9 assets)
 #29 `ext_memorial_tag_rack.glb`, #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, #48 `ext_shelter_sleeper_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
 
-Totals: 52 to-model entries (51 + tram split into 3, minus none) across 6 batches: 9 / 9 / 8 / 11 / 5 / 10. Already done: #1, 2, 25, 53, 54, 55 and TS-4.
+Totals: **51 to-model entries** across 6 batches: 9 / 9 / 8 / 11 / 5 / 9 (#23 and #26 are complete once TS-2 #23a lands; tram #19 split into 19a/b/c). Already done: #1, 2, 25, 53, 54, 55 and TS-4.
