@@ -895,11 +895,11 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# west wall x -5.525 spans z 6.55..7.90
+		# bare north-wall segment x -4.90..-3.70 (z 8.76), clear of #38 (x -3.48) and the corner chamfer; moved off the wood-topped counter block in Side_Room_East_Lounge
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
-		"position": Vector3(-5.315, 0.235, 7.22),
-		"yaw": 90.0,
+		"position": Vector3(-4.30, 0.235, 8.55),
+		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FLIP SEAT",
 		"toggle": ["Seat_Flip_Down", "Seat_Flip_Up"],
@@ -907,10 +907,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# north wall segment x 5.8..12.2; footprint x 7.95..10.45; clear of West_Storage blocks at x 2.2..3.05 and 4.2..5.05
+		# footprint x 9.43..11.93, clear of pillar x 12.2
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(9.20, 0.235, 8.35),
+		"position": Vector3(10.68, 0.235, 8.35),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
@@ -919,10 +919,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# footprint x 5.90..7.80, clear of pillar x 5.22..5.78
+		# footprint x 7.38..9.28, east of the 15 mm floor plate x<=7.25 z 7.55..8.15 that sat in its front zone
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(6.85, 0.235, 8.50),
+		"position": Vector3(8.33, 0.235, 8.50),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
