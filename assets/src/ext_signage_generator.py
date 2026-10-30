@@ -91,14 +91,14 @@ TOTEM = [(1, "Slate_Slab"), (2, "Glass_Panel"), (3, "Lit_Spine"), (4, "Pictogram
 def blade(v):
     p = Pod(f"ext_street_blade_0{v}")
     if v == 1:  # Slate + amber edge
-        p.add("Blade", S, box(-.4, .4, 0, .17, -.02, .02)); p.add("Edge", A, box(-.4, .4, .17 - E, .2, -.022, .022))
+        p.add("Blade", S, box(-.4, .4, 0, .17, -.02, .02)); p.add("Edge", A, box(-.397, .397, .17 - E, .2, -.022, .022))
         p.add("Glyph", T, *rects([(-.3, -.22, .05, .12), (-.18, -.1, .05, .12)], .02))
     elif v == 2:  # Titanium blade, slate arrow both faces
         p.add("Blade", T, box(-.4, .4, 0, .2, -.015, .015)); p.add("Arrow", S, *arrow(0, .1, .5, .12, .015), *[_flipz(m) for m in arrow(0, .1, .5, .12, .015)])
     elif v == 3:  # Lightbox blade: gunmetal frame with amber lit core
         p.add("Frame", G, box(-.4, .4, 0, .2, -.025, -.01), box(-.4, .4, 0, .2, .01, .025)); p.add("Core", A, box(-.39, .39, .01, .19, -.01 - E, .01 + E))
     elif v == 4:  # Banded: slate blade with amber end tab and titanium spin bars
-        p.add("Blade", S, box(-.4, .3, 0, .2, -.02, .02)); p.add("End_Tab", A, box(.3 - E, .4, 0, .2, -.025, .025))
+        p.add("Blade", S, box(-.4, .3, 0, .2, -.02, .02)); p.add("End_Tab", A, box(.3 - E, .4, .003, .197, -.025, .025))
         p.add("Spin_Bars", T, *rects([(-.3, -.05, .06, .08), (-.3, -.05, .12, .14)], .02))
     elif v == 5:  # Chevron cut blade: gunmetal blade with pointed spinward end, amber chevron
         p.add("Blade", G, tri([(-.4, 0), (.3, 0), (.4, .1), (.3, .2), (-.4, .2)], -.02, .02)); p.add("Chevron", A, *rects([(-.3, .1, .09, .11)], .02))

@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_street_blade_01",
+  "style": "Slate_Amber_Edge",
+  "tris": 64,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   0.2,
+   0.048
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_blade/ext_street_blade_01.glb"
+ },
+ {
+  "cand": "ext_street_blade_02",
+  "style": "Titanium_Arrow",
+  "tris": 72,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   0.2,
+   0.042
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_blade/ext_street_blade_02.glb"
+ },
+ {
+  "cand": "ext_street_blade_03",
+  "style": "Lightbox",
+  "tris": 48,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   0.2,
+   0.05
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_blade/ext_street_blade_03.glb"
+ },
+ {
+  "cand": "ext_street_blade_04",
+  "style": "Banded_Tab",
+  "tris": 64,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   0.2,
+   0.051
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_blade/ext_street_blade_04.glb"
+ },
+ {
+  "cand": "ext_street_blade_05",
+  "style": "Chevron_Point",
+  "tris": 36,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   0.2,
+   0.046
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_blade/ext_street_blade_05.glb"
+ }
+]
