@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_memorial_tag_rack_01",
+  "style": "Four_Wire_Frame",
+  "tris": 1008,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_tag_rack/ext_memorial_tag_rack_01.glb"
+ },
+ {
+  "cand": "ext_memorial_tag_rack_02",
+  "style": "Lit_Frame",
+  "tris": 896,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.815,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_tag_rack/ext_memorial_tag_rack_02.glb"
+ },
+ {
+  "cand": "ext_memorial_tag_rack_03",
+  "style": "A_Frame",
+  "tris": 1216,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.801,
+   0.32
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0047,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_tag_rack/ext_memorial_tag_rack_03.glb"
+ },
+ {
+  "cand": "ext_memorial_tag_rack_04",
+  "style": "Wall_Grid",
+  "tris": 1008,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.08
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_tag_rack/ext_memorial_tag_rack_04.glb"
+ },
+ {
+  "cand": "ext_memorial_tag_rack_05",
+  "style": "Staggered_Candle_Shelf",
+  "tris": 824,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_tag_rack/ext_memorial_tag_rack_05.glb"
+ }
+]
