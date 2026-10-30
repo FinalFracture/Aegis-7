@@ -58,7 +58,7 @@ Sizes are rough W × D × H in meters.
 |---|---|---|---|---|
 | 25 | ~~Tool wall panel, built as the Sprocket-first service wall redirect (`design/assets/service_wall/`)~~ `godot/assets/models/service_wall_rail_shuttle.glb` | 101, 201, Maintenance | 3 | 2.5–3.5 × 0.5 × 2.0 |
 | 26 | ~~Apartment workbench~~ (level blockout `Apartment_Workbench`) MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 201; not modeled now, waits for that building | ~~201~~ lab/workshop building | — | 3.7 × 2.5 nook |
-| 27 | ~~Task lamp (level blockout `Apt201_Workbench_TaskLight`)~~ `godot/assets/models/task_lamp_rail_slider.glb` | 104, 204 | 2 (C.2: on the 104 and 204 window desks; none in 201) | 0.2 × 0.2 × 0.5 |
+| 27 | ~~Task lamp (level blockout `Apt201_Workbench_TaskLight`)~~ `godot/assets/models/task_lamp_rail_slider.glb` | 104, 201, 204 | 3 (C.2: on the 104 and 204 window desks; 201 as a side-table/floor-stand lamp beside the reading chair) | 0.2 × 0.2 × 0.5 |
 | 28 | ~~Window desk + data slates~~ `godot/assets/models/window_desk_cantilever_slab.glb` | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
 | 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
 | 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |

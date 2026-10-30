@@ -46,7 +46,7 @@ L1=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-8,1.5
     +mx(SW("bed","~shelf\nghost","tele-\nscope","desk + data slates (window)","~dust outline\n(ex lab bench)","table"))+[F(7.4,-8.9,8.4,-8.3,"lab\ncrate","sto")]+[F(10.2,0.2,13.9,0.7,"coat & storage closet","sto")][0:0],
     [[(-6.5,0.8),(-6.5,7.5)],[(-6.5,4.4),(-11.5,4.4),(-11.5,7)],[(-1.8,0.8),(-1.8,8.0)],[(3.2,0.8),(3.2,8.6)],[(8,0.8),(8,8.4)],[(8,4.4),(11.5,4.4),(11.5,7)]]+SWP+mp(SWP))
 L2=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-7.6,1.5,"kitchen counter","kit"),F(-10,3,-8.8,3.8,"table","live"),
-     F(-13.9,6.4,-10.2,8.9,"ex-bench\noutline","ghost"),F(-13.4,4.2,-12.4,5.2,"reading\nchair","live"),F(-9.5,8.4,-6,8.9,"tool + cable wall","work"),
+     F(-13.9,6.4,-10.2,8.9,"ex-bench\noutline","ghost"),F(-13.4,4.2,-12.4,5.2,"reading\nchair","live"),F(-13.4,5.4,-13.0,5.8,"lamp","live"),F(-9.5,8.4,-6,8.9,"tool + cable wall","work"),
      F(-7,5,-4.5,5.9,"sofa","live"),F(-0.6,4,-0.1,6.5,"ward-\nrobe","sto"),F(-2.1,7.3,-0.1,8.9,"double bed","bed"),
      # 202 (K2 family)
      F(12.1,0.9,13.9,3.1,"bath pod\nshower WC sink","bath"),F(5,0.9,9,1.5,"kitchen counter","kit"),F(6,3,7.6,3.8,"table for 4","live"),

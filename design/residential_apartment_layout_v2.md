@@ -140,7 +140,8 @@ Plans: `residential_roomlayout_rev_c_v3_L1.png` / `_v3_L2.png`. The main `reside
 - **201 (bespoke player):** laid out as a lived-in apartment, not around the objective.
   - The 3.7 × 2.5 m ex-bench outline in the NW corner is left open floor.
   - A reading chair (#16) sits by the west window, with a 0.9 m path.
-  - Everything else is unchanged: tool + cable wall, sofa, table, kitchen, bath pod, wardrobe, double bed. There is no task lamp and no fold-down desk (#52 dropped).
+  - Everything else is unchanged: tool + cable wall, sofa, table, kitchen, bath pod, wardrobe, double bed. No fold-down desk (#52 dropped).
+  - **Task lamp #27 (3rd):** a 0.4 × 0.4 m side-table/floor-stand lamp just north of the reading chair, at X -13.4..-13.0, Z 5.4..5.8. It is 1.0 m clear of the 0.9 m path centerline. #27 qty is back to 3 (104, 201, 204).
 - **204 (K1 Shift Tech, mirrored):** a lived-in K1 layout.
   - An armchair (#16) is on the east wall, alongside the sofa, table, bed, wardrobe and coat closet.
   - The work desk by the window keeps the task lamp.
