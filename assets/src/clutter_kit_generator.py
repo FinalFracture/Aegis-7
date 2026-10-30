@@ -49,4 +49,18 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_magnet():
+    p = iter2(); p.name = "Clutter_Kit_Magnet_Dock"; p.P.pop("Dock_Dots", None)
+    p.add("Dock_Dots", "amber", *[box(X[0] + s * .13 - .008, X[0] + s * .13 + .008, .03, .034, .1, .112) for s in (-1, 1)] + [box(X[1] + s * .04 - .006, X[1] + s * .04 + .006, 0, .008, .034, .04) for s in (-1, 1)])
+    p.add("Magnet_Rings", "alloy", *[cyl(X[1] + s * .04, 0, .036, .002, .006, 10) for s in (-1, 1)] + [cyl(X[2], 0, .036, .002, .006, 10)])
+    p.add("Frame_Dock_Pads", "alloy", *[box(x - .04, x + .04, 0, .004, -.05, .07) for x in X[3:]])
+    p.add("Tray_Grip_Cutouts", "gunmetal", *[box(X[0] + s * .16 - .01, X[0] + s * .16 + .01, .03, .033, -.04, .04) for s in (-1, 1)])
+    p.add("Plug_Light", "green", box(X[2] + .135, X[2] + .14, .008, .014, .008, .01))
+    return p
+def final_main():
+    p = final_magnet(); gp = os.path.join(dc.ROOT, "godot/assets/models/clutter_kit_magnet_dock.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_magnet_dock_sheet.png"); wg.sheet(p, sp, "Final  #36 clutter kit, Magnet Dock (photo faces = decal panels)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
