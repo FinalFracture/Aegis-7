@@ -105,4 +105,88 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------------- final: polished Wall Ladder + Floor Busway (iter 5), with Cell_Swap and Port_Ready_Blink clips ----------------
+# Polish: risers now rise out of the trench into the lowest ladder tier (cable saddles clamp them), the guide rails sit on the trench cover,
+# a centre busbar trio on standoffs runs from the inverter block up the wall, and the empty right-hand slot holds the animated swap cell.
+# Nodes: Substation_Static, Swap_Cell (pivot = back-bottom-centre of the slot), Port_Ready_Lamp.
+FPS = 30; TZ0, TZ1 = ZB + .22, ZB + .52; SWAP = np.array([.15 + .17, 1.0, ZB + .06])
+def final_ladder():
+    p = Pod("Substation_Static"); ys = [1.0, 1.4, 1.8]
+    for s, tag in ((-1, "_L"), (1, "_R")):
+        xa, xb = (X0, -.15) if s < 0 else (.15, X1)
+        p.add("Ladder_Rails" + tag, "gunmetal", *[box(x - .03, x + .03, .8, H, ZB, ZB + .06) for x in (xa + .03, xb - .03)], *[box(xa, xb, y - .03, y, ZB, ZB + .35) for y in ys])
+        p.add("Cantilever_Arms" + tag, "gunmetal", *[box(x - .02, x + .02, .82, .97, ZB + .06, ZB + .3) for x in (xa + .08, xb - .08)])
+        p.add("Tier_Stops" + tag, "amber", *[box(xa + .01, xb - .01, y, y + .02, ZB + .335, ZB + .35) for y in ys])
+        cells(p, np.linspace(xa + .17, xb - .17, 4), ys, ZB + .06, ZB + .33, skip={(3, 2)} if s < 0 else {(0, 0)}, tag=tag)
+    p.add("Wall_Bolts", "amber", *[cyl_z(x, y, .015, ZB + .06, ZB + .07, 6) for x in (X0 + .03, -.18, .18, X1 - .03) for y in (.9, 2.1)])
+    p.add("Busway_Trench_Cover", "slate", box(X0, X1, 0, .03, TZ0, TZ1)); p.add("Trench_Grate_Bars", "gunmetal", *[box(x - .01, x + .01, .03, .04, TZ0 + .02, TZ1 - .02) for x in np.linspace(X0 + .1, X1 - .1, 16) if abs(x) > .35])
+    p.add("Riser_Cables", "alloy", *[cyl(x, ZB + .3, .025, 0, .97, 8) for x in (-.9, -.8, .8, .9)]); p.add("Cable_Saddles", "amber", *[box(x - .1, x + .1, y, y + .03, ZB + .27, ZB + .33) for x in (-.85, .85) for y in (.25, .6)])
+    p.add("Port_Stand", "gunmetal", box(-.2, .2, 0, PY - .14, ZB, ZB + .3), box(-.2, .2, PY - .14, PY + .2, ZB, ZB + .2)); port(p, 0, ZB + .2)
+    p.P.pop("Port_Ready_Lamp"); g = p.P.pop("Guide_Rails"); p.add("Guide_Rails", "amber", *[box(s * .3 - .02, s * .3 + .02, 0, .05, ZB + .2, ZF) for s in (-1, 1)])
+    p.add("Inverter_Block", "slate", box(-.18, .18, .66, .86, ZB, ZB + .3)); p.add("Inverter_Fins", "gunmetal", *[box(-.17, .17, y - .004, y + .004, ZB + .3, ZB + .34) for y in np.linspace(.69, .83, 5)])
+    fins(p, -.9, -.3, .1, .62, ZB, ZB + .12, 8); fins(p, .3, .9, .1, .62, ZB, ZB + .12, 8, tag="_R")
+    busbar_runs(p, -.06, 1.0, H, n=3, tag="_C"); p.P["Busbars_C"] = ("alloy", trimesh.util.concatenate([box(-.06 + k * .06 - .012, -.06 + k * .06 + .012, .86, H, ZB + .08, ZB + .1) for k in range(3)]))
+    for k, (mk, m) in list(p.P.items()):
+        if k == "Busbars_C": m.metadata["uv"] = m.vertices[:, [0, 1]]
+    human(p, 0, ZB + .2)
+    c = Pod("Swap_Cell"); x, y = 0, 0
+    c.add("Cell", "white", blk(-.1, .1, 0, .26, 0, .27, .01, 1)); c.add("Charge_Band", "green", box(-.08, .08, .2, .215, .27, .276)); c.add("Cell_Latch", "amber", box(-.03, .03, .03, .05, .27, .276))
+    c.add("Pull_Grip", "alloy", box(-.05, .05, .1, .12, .276, .29))
+    lp = Pod("Port_Ready_Lamp"); lp.add("Lamp", "green", box(-.05, .05, -.01, .01, -.02, 0))
+    return [(p, [0, 0, 0]), (c, SWAP.tolist()), (lp, [0, PY + .17, ZB + .2])]
+def sm(t, a, b): u = np.clip((t - a) / (b - a), 0, 1); return u * u * (3 - 2 * u)
+def clip_swap(t):  # 3.0 s: lift 25 mm over the amber tier stop, slide out 0.22 m, hold, slide back in and latch
+    dz = .22 * (sm(t, .2, 1.1) - sm(t, 1.9, 2.8)); return {"Swap_Cell": ("translation", SWAP + [0, .025 * sm(t, 0, .2) * (1 - sm(t, 2.8, 3.0)), dz])}
+def clip_blink(t):  # 1.0 s loop: ready lamp on 0-0.5 s, off 0.5-1.0 s
+    return {"Port_Ready_Lamp": ("scale", np.array([1, 1, 1.]) if (t % 1.0) < .5 else np.array([.001, .001, .001]))}
+RCLIPS = [("Cell_Swap", clip_swap, 3.0), ("Port_Ready_Blink", clip_blink, 1.0)]
+def export_nodes(nodes, clips, path):
+    from dining_chair_generator import shade_split, _col, FMAT
+    from pygltflib import (GLTF2, Scene, Node, Mesh, Primitive, Attributes, Buffer, BufferView, Accessor, Material,
+                           PbrMetallicRoughness, Animation, AnimationSampler, AnimationChannel, AnimationChannelTarget)
+    g = GLTF2(); blob = bytearray(); mats = {}; tris = [0]; idx = {}
+    def add(arr, target, ctype, typ, mm=False):
+        arr = np.ascontiguousarray(arr); off = len(blob); blob.extend(arr.tobytes())
+        while len(blob) % 4: blob.append(0)
+        g.bufferViews.append(BufferView(buffer=0, byteOffset=off, byteLength=arr.nbytes, target=target))
+        acc = Accessor(bufferView=len(g.bufferViews) - 1, componentType=ctype, count=len(arr), type=typ)
+        if mm: a2 = arr.reshape(len(arr), -1); acc.min = a2.min(0).tolist(); acc.max = a2.max(0).tolist()
+        g.accessors.append(acc); return len(g.accessors) - 1
+    for pod, T in nodes:
+        bym = {}; prims = []
+        for k, (mk, m) in pod.P.items(): bym.setdefault(mk, []).append(shade_split(m))
+        for mk, lst in bym.items():
+            if mk not in mats:
+                pm = FMAT[mk]; mats[mk] = len(g.materials)
+                g.materials.append(Material(name=pm.name, emissiveFactor=_col(pm.emissiveFactor if pm.emissiveFactor is not None else [0, 0, 0]),
+                    pbrMetallicRoughness=PbrMetallicRoughness(baseColorFactor=_col(pm.baseColorFactor), metallicFactor=float(pm.metallicFactor), roughnessFactor=float(pm.roughnessFactor))))
+            o = 0; V, N, U, F = [], [], [], []
+            for v, n, u, f in lst: V.append(v); N.append(n); U.append(u); F.append(f + o); o += len(v)
+            V, N, U, F = map(np.vstack, (V, N, U, F)); tris[0] += len(F)
+            at = Attributes(POSITION=add(V.astype(np.float32), 34962, 5126, "VEC3", True), NORMAL=add(N.astype(np.float32), 34962, 5126, "VEC3"), TEXCOORD_0=add(U.astype(np.float32), 34962, 5126, "VEC2"))
+            prims.append(Primitive(attributes=at, indices=add(F.astype(np.uint32).ravel(), 34963, 5125, "SCALAR"), material=mats[mk]))
+        g.meshes.append(Mesh(name=pod.name, primitives=prims)); g.nodes.append(Node(name=pod.name, mesh=len(g.meshes) - 1, translation=[float(c) for c in T])); idx[pod.name] = len(g.nodes) - 1
+    root = idx[nodes[0][0].name]; g.nodes[root].children = [idx[pod.name] for pod, _ in nodes[1:]]; g.scenes = [Scene(name=nodes[0][0].name, nodes=[root])]; g.scene = 0
+    for name, fn, dur in clips:
+        ts = np.round(np.arange(0, dur + 1e-6, 1 / FPS), 5).astype(np.float32); P = [fn(float(t)) for t in ts]
+        an = Animation(name=name, samplers=[], channels=[]); tin = add(ts, None, 5126, "SCALAR", True)
+        for nn, (path_, _) in P[0].items():
+            vals = np.array([pp[nn][1] for pp in P], np.float32)
+            an.samplers.append(AnimationSampler(input=tin, output=add(vals, None, 5126, "VEC3"), interpolation="STEP" if path_ == "scale" else "LINEAR"))
+            an.channels.append(AnimationChannel(sampler=len(an.samplers) - 1, target=AnimationChannelTarget(node=idx[nn], path=path_)))
+        g.animations.append(an)
+    g.buffers = [Buffer(byteLength=len(blob))]; g.set_binary_blob(bytes(blob)); g.save_binary(path); return tris[0]
+def final_main():
+    import pygltflib
+    nodes = final_ladder(); gp = os.path.join(dc.ROOT, "godot/assets/models/substation_wall_ladder_busway.glb"); tris = export_nodes(nodes, RCLIPS, gp)
+    bad = [f"{pod.name}/{k}" for pod, _ in nodes for k, (mk, m) in pod.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    for st, dz in (("rest", 0), ("cell_out", .22)):
+        Wp = Pod("World")
+        for pod, T in nodes:
+            for k, (mk, m) in pod.P.items():
+                mm = m.copy(); mm.apply_translation(np.array(T) + ([0, .025 if dz else 0, dz] if pod.name == "Swap_Cell" else 0)); Wp.add(pod.name + "/" + k, mk, mm)
+        V = np.vstack([m.vertices for mk, m in Wp.P.values()]); print(st, "size", (V.max(0) - V.min(0)).round(3), "min", V.min(0).round(3), "max", V.max(0).round(3))
+        sp = os.path.join(OUT, f"final_wall_ladder_busway_{st}_sheet.png"); wg.sheet(Wp, sp, f"Final  #42 substation, Wall Ladder + Floor Busway ({st.replace('_', ' ')})"); os.remove(sp.replace("_sheet.png", ".glb"))
+    g = pygltflib.GLTF2().load(gp); print("tris", tris, "nodes", [n.name for n in g.nodes], "anims", [(a.name, len(a.channels)) for a in g.animations], "bad", bad)
+if __name__ == "__main__": final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
