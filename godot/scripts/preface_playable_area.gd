@@ -240,6 +240,7 @@ var _walk_phase: float = 0.0
 var _walk_swing_amp: float = 0.0
 var _flashlight: SpotLight3D
 var _qa_hand: bool = false
+var _qa_placement: bool = false
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
 var _qa_ff_door: bool = false
@@ -313,6 +314,8 @@ func _ready() -> void:
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
+		elif arg == "--qa-placement":
+			_qa_placement = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -322,7 +325,11 @@ func _ready() -> void:
 		_validate_only = false
 	if _qa_hand:
 		_capture_hud = false
-	if DisplayServer.get_name() == "headless" and not _batch_render and not _qa_hand:
+	if _qa_placement:
+		_batch_render = false
+		_validate_only = false
+		_capture_hud = false
+	if DisplayServer.get_name() == "headless" and not _batch_render and not _qa_hand and not _qa_placement:
 		_validate_only = true
 		_capture_hud = false
 
@@ -349,6 +356,14 @@ func _ready() -> void:
 			_run_reticle_stars_doors_qa.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
+	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
+	if _qa_placement:
+		if not _interiors_loaded:
+			_respawn_building_interiors()
+		if _player_body != null:
+			_player_body.global_position = SPAWN_POS
+			_player_body.velocity = Vector3.ZERO
+			_player_body.rotation_degrees = Vector3(0.0, SPAWN_YAW_DEG, 0.0)
 
 
 func _ensure_child(nm: String) -> Node3D:
@@ -1772,8 +1787,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 	if event is InputEventMouseMotion and (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED or _qa_hand) and _preset_active < 0:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
-		_player_body.rotate_object_local(Vector3.UP, -mm.relative.x * MOUSE_SENS)
-		_pitch -= mm.relative.y * MOUSE_SENS
+		# screen_relative is unscaled by canvas_items stretch; relative was scaled by base_res/window_res (x1.44 in a 1331 px window), which made look speed window-size dependent (Patch Windows hand QA 18/20).
+		_player_body.rotate_object_local(Vector3.UP, -mm.screen_relative.x * MOUSE_SENS)
+		_pitch -= mm.screen_relative.y * MOUSE_SENS
 		_apply_pitch()
 		return
 	if event is InputEventKey:
@@ -3584,6 +3600,8 @@ func _respawn_building_interiors() -> int:
 
 
 func _update_interior_streaming(player_pos: Vector3) -> void:
+	if _qa_placement:
+		return
 	if _props_container == null or _arch_container == null:
 		return
 	# [QA-FF-02] interiors stay loaded while the Sector-4 exit field is open or opening (line of sight inside).

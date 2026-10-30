@@ -1,7 +1,8 @@
 extends SceneTree
 ## Wall-backed animated-prop placement checks for the preface playable area.
-##   xvfb-run -a godot --path godot --rendering-driver opengl3 -s res://tools/placement_assert.gd -- --qa-hand-controls
-## The trailing -- --qa-hand-controls is required; a plain headless run quits at frame 4.
+##   xvfb-run -a godot --path godot --rendering-driver opengl3 -s res://tools/placement_assert.gd -- --qa-placement
+## Windows (windowed): Godot_v4.7.2-stable_win64_console.exe --path godot -s res://tools/placement_assert.gd -- --qa-placement
+## --qa-placement loads the scene without the hand QA, keeps the player inside, and disables interior streaming. Do NOT use --qa-hand-controls (it walks the player out and the props despawn).
 ## Exit 0 all pass, 1 any failed check, 2 a prop node is missing, 3 still running after 600 frames.
 ## mesh_clearance and front_zone are checks in that same pass. The summary counts them.
 
@@ -55,6 +56,8 @@ func _initialize() -> void:
 	if inst == null:
 		print("FAIL scene load path=%s instantiate" % SCENE_PATH)
 		return
+	# Before add_child so _ready sees it even when --qa-placement is omitted.
+	inst.set("_qa_placement", true)
 	root.add_child(inst)
 	# Headless boot sets this and quits the tree at frame 4, before the checks run.
 	if "_validate_only" in inst:
@@ -80,6 +83,10 @@ func _process(_delta: float) -> bool:
 
 
 func _run_checks() -> void:
+	var interiors_loaded: bool = false
+	if _scene != null:
+		interiors_loaded = bool(_scene.get("_interiors_loaded"))
+	print("PLACEMENT_ASSERT: interiors_loaded=%s" % str(interiors_loaded))
 	var specs: Array[Dictionary] = _specs_from_scene(_scene)
 	if specs.is_empty():
 		specs = FALLBACK_SPECS
