@@ -125,9 +125,9 @@ def blight(v):
         p.add("Head", T, ring(.1, .82 - E, .86, 10, top=(.9, .5, .5)))
     elif v == 5:  # Tapered Glow Band: tapered titanium post, BLEND glass band over an amber core band
         sc = lambda y: 1 - .2 * y / .9
-        p.add("Post", T, ring(.1, 0, .62, 10, 1, sc(.62)), ring(.1, .78 - E, .9, 10, sc(.78), sc(.9)))
-        p.add("Glow_Glass", GL, ring(.1, .62 - E, .78, 10, sc(.62), sc(.78)))
-        p.add("Amber_Lines", A, ring(.1 * 1.03, .62 - E - .012, .62 + .004, 10, sc(.62) , sc(.62)))
+        p.add("Post", T, ring(.1, 0, .6, 10, 1, sc(.6)), ring(.1, .78 - E, .9, 10, sc(.78), sc(.9)))
+        p.add("Amber_Line", A, ring(.103, .6 - E, .624, 10, sc(.6), sc(.624)))
+        p.add("Glow_Glass", GL, ring(.097, .624 - E, .78, 10, sc(.624), sc(.78)))
     return p
 BL = [(1, "Glass_Head"), (2, "Square_Lantern"), (3, "Front_Slot"), (4, "Mushroom"), (5, "Tapered_Glow_Band")]
 

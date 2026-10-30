@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_bollard_light_01",
+  "style": "Glass_Head",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.19
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard_light/ext_bollard_light_01.glb"
+ },
+ {
+  "cand": "ext_bollard_light_02",
+  "style": "Square_Lantern",
+  "tris": 64,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard_light/ext_bollard_light_02.glb"
+ },
+ {
+  "cand": "ext_bollard_light_03",
+  "style": "Front_Slot",
+  "tris": 112,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.195
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard_light/ext_bollard_light_03.glb"
+ },
+ {
+  "cand": "ext_bollard_light_04",
+  "style": "Mushroom",
+  "tris": 140,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.19
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard_light/ext_bollard_light_04.glb"
+ },
+ {
+  "cand": "ext_bollard_light_05",
+  "style": "Tapered_Glow_Band",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.19
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard_light/ext_bollard_light_05.glb"
+ }
+]
