@@ -72,7 +72,7 @@ def lamp(v):
         lantern(p, .9, s=.08, h=.3)
     elif v == 4:  # Shepherd Hook: post + arm, lantern hanging on a chain rod
         p.add("Ground_Disc", G, ring(.12, 0, .02, 12)); p.add("Post", T, box(-.1 - .012, -.1 + .012, .02 - E, 1.2, -.012, .012))
-        p.add("Arm", T, box(-.1 + .012 - E, .06, 1.17, 1.2, -.012, .012)); p.add("Hanger", G, ring(.005, .9 - E, 1.17 + E, 6, x=.04))
+        p.add("Arm", T, box(-.1 + .012 - E, .06, 1.17, 1.196, -.01, .01)); p.add("Hanger", G, ring(.005, .9 - E, 1.17 + E, 6, x=.04))
         p.add("Lantern_Plates", G, box(-.015, .095, .66, .68, -.055, .055), box(-.015, .095, .88, .9, -.055, .055))
         p.add("Panes", GL, *[box(-.01, .09, .68 - E, .88 + E, z - .003, z + .003) for z in (-.05, .05)])
         p.add("Violet_Core", V, ring(.025, .68 - E, .84, 8, x=.04))
