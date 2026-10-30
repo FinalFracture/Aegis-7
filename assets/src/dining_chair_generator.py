@@ -349,7 +349,8 @@ def export_final(P, paths):
     return tot, geo
 
 # ---------- soft-shaded numpy rasterizer ----------
-def render_view(geo, R, size=520, ss=2, shadow=True):
+def render_view(geo, R, size=520, ss=2, shadow=True, glass_alpha=None):
+    """glass_alpha (e.g. 0.35): draw materials with baseColor alpha < 1 in a second, depth-tested but blended pass (translucent BLEND glass)."""
     from scipy.ndimage import gaussian_filter
     S = size*ss; bg = np.array([0.955, 0.948, 0.925])
     allV = np.vstack([v for _, v, _, _ in geo.values()]) @ R.T
@@ -376,7 +377,11 @@ def render_view(geo, R, size=520, ss=2, shadow=True):
     rim = np.array([0.1, 0.4, -0.9]); rim /= np.linalg.norm(rim)
     view = R.T @ np.array([0, 0, 1.0])   # direction to camera in world
     occ = np.zeros((S, S))
-    for name, (mk, V, N, F) in geo.items():
+    _items = list(geo.items())
+    if glass_alpha is not None:
+        _items = [it for it in _items if _col(FMAT[it[1][0]].baseColorFactor)[3] >= 1] + [it for it in _items if _col(FMAT[it[1][0]].baseColorFactor)[3] < 1]
+    for name, (mk, V, N, F) in _items:
+        _blend = glass_alpha is not None and _col(FMAT[mk].baseColorFactor)[3] < 1
         pm = FMAT[mk]; base = np.array(_col(pm.baseColorFactor)[:3]); met = pm.metallicFactor; rough = pm.roughnessFactor
         em = np.array(_col(pm.emissiveFactor if pm.emissiveFactor is not None else [0, 0, 0]))
         Pv = V @ R.T; p = to_px(Pv); z = Pv[:, 2]
@@ -409,7 +414,9 @@ def render_view(geo, R, size=520, ss=2, shadow=True):
             env = (0.35 + 0.45*hemi)[:, None]*(spec_col if met > .5 else 0)  # cheap env for metal
             col = dif_col*(0.25*hemi[:, None] + 0.8*dk[:, None] + 0.3*df[:, None]) \
                 + env + spec[:, None]*np.maximum(spec_col, 0.25) + 0.25*rimt[:, None] + fres[:, None]*0.08 + em*0.9
-            subi = img[y0:y1+1, x0:x1+1]; subi[upd] = col; sub[upd] = zz[upd]
+            subi = img[y0:y1+1, x0:x1+1]
+            if _blend: subi[upd] = subi[upd]*(1-glass_alpha) + col*glass_alpha; continue
+            subi[upd] = col; sub[upd] = zz[upd]
     # screen-space AO from depth
     fg = zb > -1e8
     zf = np.where(fg, zb, np.nan); zfill = np.where(fg, zb, zb[fg].min() if fg.any() else 0)

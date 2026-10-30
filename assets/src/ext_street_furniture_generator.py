@@ -157,14 +157,14 @@ def build(key):
         rep.append(r); print(json.dumps(r))
         saved = {k: FMAT[k] for k in (A,)}; em = FMAT[A]
         FMAT[A] = _PBR(name=em.name, baseColorFactor=(0, 0, 0, 1), metallicFactor=0, roughnessFactor=1, emissiveFactor=(1.0, .58, 0.0))
-        im = crop(render_view(geo, iso, size=600, shadow=True))
+        im = crop(render_view(geo, iso, size=600, shadow=True, glass_alpha=.35))
         if key in HEAD: heads.append(crop(render_view(headgeo(geo, HEAD[key]), iso, size=600, shadow=False)))
         FMAT.update(saved)
         tiles.append((f"{v}. {nm}\n{tris} tris | clip {'PASS' if chk['pass'] else 'FAIL'} | {chk['size'][0]:.2f}x{chk['size'][2]:.2f}x{chk['size'][1]:.2f} m", im))
     nr = 2 if heads else 1; fig, axs = plt.subplots(nr, 5, figsize=(22, 6 * nr), facecolor="#F4F2EC", squeeze=False)
     for ax, (t, im) in zip(axs[0], tiles): ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=11, color="#333")
     for k, (ax, im) in enumerate(zip(axs[-1], heads) if heads else [], 1): ax.imshow(im); ax.axis("off"); ax.set_title(f"{k}. head close-up (y >= {HEAD[key]} m)", fontsize=11, color="#333")
-    fig.suptitle(f"Rook  {title}  (budget {budget} tris)  candidates 01-05  |  Aegis-7 gunmetal/slate/titanium/amber, BLEND glass, +Z front, iso view", fontsize=13, color="#444")
+    fig.suptitle(f"Rook  {title}  (budget {budget} tris)  candidates 01-05  |  Aegis-7 palette, BLEND glass drawn translucent, +Z front, iso view", fontsize=13, color="#444")
     plt.tight_layout(rect=(0, 0, 1, .93 if nr == 1 else .96)); sp = os.path.join(out, f"{name}_contact_sheet.png"); fig.savefig(sp, dpi=90, facecolor="#F4F2EC"); plt.close(fig)
     json.dump(rep, open(os.path.join(out, f"{name}_report.json"), "w"), indent=1); print("sheet", sp); return rep
 
