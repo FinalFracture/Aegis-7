@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_bollard_01",
+  "style": "Round_Band",
+  "tris": 140,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.19
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard/ext_bollard_01.glb"
+ },
+ {
+  "cand": "ext_bollard_02",
+  "style": "Square_Chamfer",
+  "tris": 120,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard/ext_bollard_02.glb"
+ },
+ {
+  "cand": "ext_bollard_03",
+  "style": "Tapered_Titanium",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard/ext_bollard_03.glb"
+ },
+ {
+  "cand": "ext_bollard_04",
+  "style": "Flange_Base",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   0.2,
+   0.9,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard/ext_bollard_04.glb"
+ },
+ {
+  "cand": "ext_bollard_05",
+  "style": "Lens_Halo",
+  "tris": 128,
+  "budget_ok": true,
+  "size": [
+   0.208,
+   0.9,
+   0.208
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bollard/ext_bollard_05.glb"
+ }
+]
