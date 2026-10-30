@@ -68,7 +68,7 @@ Sizes are rough W × D × H in meters.
 | 34 | ~~Potted plants set~~ (Jared's final pick, Oct 29): `godot/assets/models/potted_plants_rail_cradles.glb` (default 102) and `godot/assets/models/potted_plants_pocket_column.glb` (default 203). SUPERSEDED, kept unplaced: `potted_plants_moulded_trio.glb`, `potted_plants_shared_tray.glb` | 102, 203 | 2 | 1.20 × 0.55 × 0.25 (wall rail) / 0.90 × 0.78 × 0.41 |
 | 35 | ~~Toy chest + rail bins + toy kit~~ (Jared combined iter 1 + 3, Oct 29): `godot/assets/models/toy_chest_rail_bins.glb` | 103 | 1 | 1.2 × 0.6 × 0.5 chest; bins on a 0.90 m rail to 1.21 m |
 | 52 | ~~Fold-down wall desk~~ DROPPED in C.2 (Jared: don't shape 201 around the objective; Gage re-points the objective at rebuild) | — | — | — |
-| 53 | Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
+| 53 | ~~Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate~~ `godot/assets/models/lab_crate_frame_104.glb` + `lab_crate_frame_204.glb` (Frame Crate) | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
 | 55 | ~~Lost-and-found rail bins + wordless notice board (C.2a kitbash: #35 rail bins + the exterior #52 board mesh)~~ `godot/assets/models/lost_and_found_rail_bins.glb` (new small board; #52 was dropped) | Laundry N wall X -4.3..-3.0 | 1 | 1.3 × 0.3 × 1.4 |
 | 54 | Removal decal set (dust outline of the lab bench and workbench, shelf ghost + wall anchor holes, planter clamp-bolt marks + water ring) | 104, 201, 204 (emitter bench outline), 103, 202 | 1 set | decals |
 | 36 | ~~Small clutter kit (meal tray, cups, cables, photo frames as decals)~~ `godot/assets/models/clutter_kit_magnet_dock.glb` | 101, 102, 104, 202 | 1 kit | small |
@@ -108,8 +108,8 @@ Sizes are rough W × D × H in meters.
   - Dropped: **1** (#52).
   - New: #53, #54, #55.
 - **Active in the residential building: 48.**
-- **Already modeled (struck through): 45.** #1–5, 7–16, 18–23, 25, 27, 28, 30, 32, 34–51, 55, each glb verified in `godot/assets/models/` (#40 and #41 are built into `service_wall_rail_shuttle.glb`).
-- **Still to model: 3** (#6, 53, 54). #6 window cards and #54 removal decals are Sloane's texture/decal jobs (no Rook mesh); #53 lab crate has 5 iterations in `design/assets/lab_crate/` awaiting Jared's pick (no exterior #48 crate mesh existed).
+- **Already modeled (struck through): 46.** #1–5, 7–16, 18–23, 25, 27, 28, 30, 32, 34–51, 53, 55, each glb verified in `godot/assets/models/` (#40 and #41 are built into `service_wall_rail_shuttle.glb`).
+- **Still to model: 2** (#6, 54). Both are Sloane's texture/decal jobs (#6 window cards, #54 removal decals); no Rook meshes remain.
 
 ## Suggested modeling order (remaining items, most reused first)
 1. Window cards #6 (8; iterations and combos exist in `design/assets/window_card/`, no glb in models yet)
