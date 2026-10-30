@@ -46,15 +46,15 @@ L1=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-8,1.5
     +mx(SW("bed","~shelf\nghost","tele-\nscope","desk + data slates (window)","~dust outline\n(ex lab bench)","table"))+[F(7.4,-8.9,8.4,-8.3,"lab\ncrate","sto")]+[F(10.2,0.2,13.9,0.7,"coat & storage closet","sto")][0:0],
     [[(-6.5,0.8),(-6.5,7.5)],[(-6.5,4.4),(-11.5,4.4),(-11.5,7)],[(-1.8,0.8),(-1.8,8.0)],[(3.2,0.8),(3.2,8.6)],[(8,0.8),(8,8.4)],[(8,4.4),(11.5,4.4),(11.5,7)]]+SWP+mp(SWP))
 L2=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-7.6,1.5,"kitchen counter","kit"),F(-10,3,-8.8,3.8,"table","live"),
-     F(-13.9,6.4,-10.2,8.2,"ex-bench\noutline","ghost"),F(-13.6,8.3,-11.6,8.9,"fold-down desk\n+ task lamp","work"),F(-9.5,8.4,-6,8.9,"tool + cable wall","work"),
+     F(-13.9,6.4,-10.2,8.9,"ex-bench\noutline","ghost"),F(-13.4,4.2,-12.4,5.2,"reading\nchair","live"),F(-9.5,8.4,-6,8.9,"tool + cable wall","work"),
      F(-7,5,-4.5,5.9,"sofa","live"),F(-0.6,4,-0.1,6.5,"ward-\nrobe","sto"),F(-2.1,7.3,-0.1,8.9,"double bed","bed"),
      # 202 (K2 family)
      F(12.1,0.9,13.9,3.1,"bath pod\nshower WC sink","bath"),F(5,0.9,9,1.5,"kitchen counter","kit"),F(6,3,7.6,3.8,"table for 4","live"),
      F(5,5.5,7.5,6.4,"sofa","live"),F(0.1,3.5,0.6,6.5,"ward-\nrobe","sto"),F(12,7.3,13.9,8.9,"double bed","bed"),
      F(10,7,10.9,8.9,"kids\nbunk","bed"),F(2.7,8.5,5,8.9,"planter clamp marks","ghost"),F(1.3,7.9,2.5,8.4,"2 chairs\n(window)","live")]
     +SW("bed","Cycler\nmodel","plants","reading nook (window)","armchair + sofa","tea table")
-    +mx(SW("bed",None,"stuck\nSweep","work desk (window)","sofa","table"))+[F(10.3,-8.9,11.2,-8.2,"lab\ncrate","sto"),F(13.4,-6.6,13.9,-4.1,"emitter wall","work")],
-    [[(-3,0.8),(-3,7)],[(-3,4.4),(-8,4.4),(-8,6.6),(-13.0,6.6),(-13.0,7.8)],[(3,0.8),(3,7.8)],[(3,4.4),(10.5,4.4),(10.5,6.6)]]+SWP+mp(SWP))
+    +mx(SW("bed",None,"stuck\nSweep","work desk (window)","sofa","table"))+[F(10.3,-8.9,11.2,-8.2,"lab\ncrate","sto"),F(10.3,-8.1,11.2,-7.0,"bench\noutline","ghost"),F(12.6,-6.4,13.6,-5.4,"arm-\nchair","live")],
+    [[(-3,0.8),(-3,7)],[(-3,4.4),(-8,4.4),(-8,7)],[(-8,4.4),(-11.4,4.4)],[(3,0.8),(3,7.8)],[(3,4.4),(10.5,4.4),(10.5,6.6)]]+SWP+mp(SWP))
 src=open("residential_floorplan_rev_c.py").read()
 src=src.replace("residential_floorplan_rev_c_L","residential_roomlayout_rev_c_L").replace("Residential rev C","Room layouts rev C (dashed green = ≥0.9 m walking path)")
 src=src.replace("def ex1(ax):\n","def ex1(ax):\n    furnish(ax,*L1)\n").replace("def ex2(ax):\n","def ex2(ax):\n    furnish(ax,*L2)\n")
@@ -95,5 +95,5 @@ for lvl,(items,paths),objs,doors in (("L1",L1,OBJ1,D1),("L2",L2,OBJ2,D2)):
     QC.append((f"{lvl} 0.9 m walk paths blocked",hits))
 for q in QC: print("QC:",q)
 bad=[k for k,v in QC if v]; assert not bad, ("QC failed",bad)
-import shutil  # rev C.1 approval copies (main PNGs are overwritten too)
-for l in ("L1","L2"): shutil.copy(f"residential_roomlayout_rev_c_{l}.png",f"residential_roomlayout_rev_c_v2_{l}.png")
+import shutil  # rev C.2 approval copies (main PNGs are overwritten too)
+for l in ("L1","L2"): shutil.copy(f"residential_roomlayout_rev_c_{l}.png",f"residential_roomlayout_rev_c_v3_{l}.png")
