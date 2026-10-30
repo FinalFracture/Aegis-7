@@ -1628,3 +1628,12 @@
 - **#21 Street light WINNER:** `#01 Column_Lantern` (`ext_street_light_pole_01.glb`, 288 tris, amber #FF9500, BLEND diffuser) -> `godot/assets/models/ext_street_light_pole.glb`
 - **#22 Bollard light WINNER:** `#02 Square_Lantern` (`ext_bollard_light_02.glb`, 64 tris, BLEND glass) -> `godot/assets/models/ext_bollard_light.glb`
 - **#37 file name `ext_sector4_sign` approved by Jared (12:06 PM CT).**
+
+## Category: `residential_exterior_signage` — #37 Sector-4 sign, #38 wayfinding totem, #39 street blade, #20 stop totem, #52 notice board (Rook, box pipeline, Oct 30)
+- **Sheets:** `design/assets/ext_sector4_sign/`, `ext_wayfinding_totem/`, `ext_street_blade/`, `ext_stop_totem/`, `ext_notice_board/` `*_contact_sheet.png` (all 25 candidates clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 12:08 PM CT), relayed via Atlas.**
+- **#37 Sector-4 sign WINNER:** `#04 Split_Stripe` (`ext_sector4_sign_04.glb`, 124 tris) -> `godot/assets/models/ext_sector4_sign.glb`
+- **#38 Wayfinding totem WINNER:** `#02 Glass_Panel` (`ext_wayfinding_totem_02.glb`, 208 tris, BLEND glass) -> `godot/assets/models/ext_wayfinding_totem.glb`
+- **#39 Street blade WINNER:** `#04 Banded_Tab` (`ext_street_blade_04.glb`, 64 tris) -> `godot/assets/models/ext_street_blade.glb`
+- **#20 Stop totem WINNER:** `#04 Titanium_Column` (`ext_stop_totem_04.glb`, 240 tris) -> `godot/assets/models/ext_stop_totem.glb`
+- **#52 Notice board WINNER:** `#05 Cantilever_Post` (`ext_notice_board_05.glb`, 224 tris) -> `godot/assets/models/ext_notice_board.glb`
