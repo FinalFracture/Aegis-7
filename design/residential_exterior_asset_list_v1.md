@@ -95,7 +95,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ## K. Lived-in story props
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 48 | Bedroll + hot plate + crate (shelter sleeper) | tram shelter | 1 | set | 1,500 |
+| ~~48~~ | ~~Bedroll + hot plate + crate (shelter sleeper)~~ — CUT by Jared 2026-10-30 1:31 PM CT | tram shelter | 0 | — | 0 |
 | 49 | Patch tape + mismatched liner decals + **dead-foliage material swap** for one west-sidewalk TS-4 (plan story beat) | hydro beds, planters | 1 | set | 100 |
 | 50 | Litter / spill drift decals (Coriolis, antispinward) | Spin Sts | 1 | set | 200 |
 | 51 | Sprocket wheel-track + coupler-scuff decals, + **kerb scuff decals at the stop** (plan wear beat) | apron, door jamb, platform kerb | 1 | set | 100 |
@@ -165,6 +165,6 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 #23a `hydro_planter_tiered_ts2.glb`, #23b `hydro_planter_tiered_lod.glb` (TS-4 + TS-2 LOD ~900), #27 `ext_hydro_pump_tank.glb`, #28 `ext_grow_light_rack.glb`, #36 `ext_service_hand_cart.glb`.
 
 ### Batch 6 — story singles + decals (9 assets)
-#29 `ext_memorial_monument.glb` (v1.3, see row 29), #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, #48 `ext_shelter_sleeper_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
+#29 `ext_memorial_monument.glb` (v1.3, see row 29), #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
 
 Totals: **51 to-model entries** across 6 batches: 9 / 9 / 8 / 11 / 5 / 9 (#23 and #26 are complete once TS-2 #23a lands; tram #19 split into 19a/b/c). Already done: #1, 2, 25, 53, 54, 55 and TS-4.
