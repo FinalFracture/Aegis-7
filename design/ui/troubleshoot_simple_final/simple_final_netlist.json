@@ -28,20 +28,6 @@
     "GND"
    ]
   },
-  "TP1": {
-   "label": "(pad at end of 1)",
-   "value": "output landing pad",
-   "pins": [
-    "1"
-   ]
-  },
-  "TP2": {
-   "label": "(pad at end of 2)",
-   "value": "output landing pad",
-   "pins": [
-    "1"
-   ]
-  },
   "GND1": {
    "label": "GND symbol",
    "value": "ground tie",
@@ -78,12 +64,10 @@
    "GND3"
   ],
   "OUT1": [
-   "U1.P1",
-   "TP1"
+   "U1.P1"
   ],
   "OUT2": [
-   "U1.P2",
-   "TP2"
+   "U1.P2"
   ],
   "OUT3": [
    "U1.P3",
@@ -100,9 +84,9 @@
    "look": "trace chunk missing + subtle burn, no spark"
   }
  },
- "intentional_stubs": {
-  "OUT1": "U1.P1 -> bare pad TP1, leads nowhere",
-  "OUT2": "U1.P2 -> bare pad TP2, leads nowhere"
+ "intentional_unconnected": {
+  "U1.P1": "no trace; player draws it",
+  "U1.P2": "no trace; player draws it"
  },
  "win_condition": "OUT3 break repaired (Super Wire across the gap) AND python MOTOR_PIN == 3",
  "code": {
