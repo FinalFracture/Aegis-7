@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_stop_totem_01",
+  "style": "Slate_Roundel",
+  "tris": 336,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.4,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_stop_totem/ext_stop_totem_01.glb"
+ },
+ {
+  "cand": "ext_stop_totem_02",
+  "style": "Gunmetal_Plate",
+  "tris": 288,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.4,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_stop_totem/ext_stop_totem_02.glb"
+ },
+ {
+  "cand": "ext_stop_totem_03",
+  "style": "Edge_Lit",
+  "tris": 368,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.4,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.008,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_stop_totem/ext_stop_totem_03.glb"
+ },
+ {
+  "cand": "ext_stop_totem_04",
+  "style": "Titanium_Column",
+  "tris": 240,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.4,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_stop_totem/ext_stop_totem_04.glb"
+ },
+ {
+  "cand": "ext_stop_totem_05",
+  "style": "Screen_Call",
+  "tris": 248,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.4,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_stop_totem/ext_stop_totem_05.glb"
+ }
+]

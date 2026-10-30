@@ -119,7 +119,9 @@ def stop(v):
     if v != 5:
         p.add("Timetable_Plate", S if body != S else G, box(-.17, .17, 1.0, 1.7, zf - E, zf + .008))
         p.add("Timetable_Bars", A, *rects([(-.13, -.13 + w, y, y + .02) for y, w in zip(np.linspace(1.08, 1.6, 5), (.2, .14, .24, .1, .18))], zf + .008, .003))
-        p.add("Timetable_Glass", GL, box(-.19, .19, .98, 1.72, zf + .008 - E + .003 + .0015, zf + .02)) if v in (1, 2, 3) else None
+        if v in (1, 2, 3):  # BLEND glass cover held off the plate by top/bottom bezel bars (glass back 1.5 mm clear of the bars)
+            p.add("Timetable_Glass", GL, box(-.19, .19, .98 - E, 1.72 + E, zf + .0125, zf + .02))
+            p.add("Bezel", G if body != G else T, box(-.2, .2, .96, .98, zf - E, zf + .024), box(-.2, .2, 1.72, 1.74, zf - E, zf + .024))
     else:  # 5: lit amber screen strip + call button
         p.add("Screen", GL, box(-.16, .16, 1.2, 1.6, zf - E, zf + .01)); p.add("Screen_Back", A, box(-.15, .15, 1.21, 1.59, zf - E - .006, zf - E + .002)) if False else None
         p.add("Call_Button", A, _zdisc(0, 1.05, .04, zf - E, zf + .015, 10))
