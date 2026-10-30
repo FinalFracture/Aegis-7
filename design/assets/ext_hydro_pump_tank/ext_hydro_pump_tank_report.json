@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_hydro_pump_tank_01",
+  "style": "Side_Tank",
+  "tris": 192,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.8
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_01.glb"
+ },
+ {
+  "cand": "ext_hydro_pump_tank_02",
+  "style": "Tank_On_Top",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.8
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0049,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_02.glb"
+ },
+ {
+  "cand": "ext_hydro_pump_tank_03",
+  "style": "Twin_Tanks",
+  "tris": 256,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.7,
+   0.8
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_03.glb"
+ },
+ {
+  "cand": "ext_hydro_pump_tank_04",
+  "style": "Enclosed_Cabinet",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.8,
+   0.81
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_04.glb"
+ },
+ {
+  "cand": "ext_hydro_pump_tank_05",
+  "style": "Horizontal_Tank",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   1.2,
+   1.616,
+   0.8
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_05.glb"
+ }
+]

@@ -135,10 +135,11 @@ def pump(v):
         for x in (-.38, .38): p.add("Tanks", T, ring(.2, .06 - E, 1.6, 12, x=x, z=-.12, top=(1.7, .5, .5)))
         p.add("Pump_Box", S, box(-.16, .16, .06 - E, .5, .05, .38)); p.add("Pipes", G, xcyl(-.38 + .19, -.16 + E, .3, .12 - .0, .03, 8), xcyl(.16 - E, .38 - .19, .3, .12, .03, 8))
         p.add("Status", "green", box(-.05, .05, .42, .45, .38 - E, .386))
-    elif v == 4:  # Enclosed Cabinet: full-height slate cabinet, glass sight tube, amber valve hatch
-        p.add("Cabinet", S, blk(-.58, .58, .06 - E, 1.74, -.38, .38, .02, 1)); p.add("Roof", T, blk(-.6, .6, 1.74 - E, 1.8, -.4, .4, .02, 1))
-        p.add("Sight_Tube", GL, ring(.02, .3, 1.5, 8, x=.45, z=.4 - .024)); p.add("Tube_Clips", G, *[box(.42, .48, y, y + .03, .375, .41) for y in (.27, 1.5 - E)])
-        p.add("Valve_Hatch", A, box(-.3, .1, .3, .6, .38 - E, .386)); p.add("Doors", G, box(-.5, -.35, .3, 1.6, .38 - E, .386))
+    elif v == 4:  # Enclosed Cabinet: full-height slate cabinet, glass sight tube held off the face in clips, amber valve hatch
+        F4 = .36; p.add("Cabinet", S, blk(-.58, .58, .06 - E, 1.74, -.38, F4, .02, 1)); p.add("Roof", T, blk(-.6, .6, 1.74 - E, 1.8, -.4, .4, .02, 1))
+        p.add("Sight_Tube", GL, ring(.02, .3 - E, 1.5 + E, 8, x=.45, z=F4 + .024))
+        p.add("Tube_Clips", G, *[box(.42, .48, y0, y1, F4 - E, F4 + .05) for y0, y1 in ((.27, .3), (1.5, 1.53))])
+        p.add("Valve_Hatch", A, box(-.3, .1, .3, .6, F4 - E, F4 + .006)); p.add("Doors", G, box(-.5, -.35, .3, 1.6, F4 - E, F4 + .006))
     elif v == 5:  # Horizontal Tank: horizontal tank on cradles above a pump box
         p.add("Pump_Box", S, box(-.4, .4, .06 - E, .6, -.3, .3))
         p.add("Cradles", G, *[box(x - .04, x + .04, .6 - E, .9, -.3, .3) for x in (-.4, .4)])
