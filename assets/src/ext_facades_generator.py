@@ -77,7 +77,7 @@ def grid(p, W, H, floors, bays, pier=.5, ground=None, glass_rows=None, spand=P_,
             ms = np.linspace(a, b, mull + 2)[1:-1]
             mu += [box(m - .03, m + .03, y0 + .9 - E, y1 - .25 + E, -E, .08) for m in ms]
             ed = [a] + list(ms) + [b]
-            for k in range(len(ed) - 1): gl.append(box(ed[k] + (.03 if k else 0) - E, ed[k + 1] - (.03 if k < len(ms) else 0) + E, y0 + .9 - E, y1 - .25 + E, .03, .036))
+            for k in range(len(ed) - 1): gl.append(box(ed[k] + (.03 if k else 0) - E, ed[k + 1] - (.03 if k < len(ms) else 0) + E, y0 + .9 - E + .002, y1 - .25 + E - .002, .03, .036))
             sp.append(box(a, b, y1 - .25, y1 - (0 if y1 < H - .3 else -E), -E, .1))
     p.add("Spandrels", spand, *sp); p.add("Mullions", T, *mu); p.add("Glass", GL, *gl)
     return xs
@@ -87,8 +87,8 @@ def r6():
     bal = []; rail = []
     for y in (3.9, 7.8):
         for i in (1, 3, 4, 6):
-            c = (xs[i] + xs[i + 1]) / 2; bal.append(box(c - 1.2, c + 1.2, y + .9 - .15, y + .9, .12 - E, 1.3))
-            rail.append(box(c - 1.15, c + 1.15, y + .9 - E, y + 1.9, 1.24, 1.26))
+            c = (xs[i] + xs[i + 1]) / 2; bal.append(box(c - 1.2, c + 1.2, y + .9 - .17, y + .88, .12 - E, 1.3))
+            rail.append(box(c - 1.15, c + 1.15, y + .88 - E, y + 1.9, 1.24, 1.26))
     p.add("Balcony_Slabs", "a7_pearl", *bal); p.add("Balcony_Glass", GL, *rail)
     p.add("Balcony_Rails", T, *[box(m.bounds[0][0] - .02, m.bounds[1][0] + .02, m.bounds[1][1] - E, m.bounds[1][1] + .04, 1.23, 1.27) for m in rail])
     return p
@@ -96,7 +96,7 @@ def clinic():
     p = Pod("ext_nbr_clinic_market"); W, H = 30, 10
     xs = grid(p, W, H, [(4.6, 9.7)], 6, spand=P_, piermat=P_)
     # market hall ground floor: tall glazed bays, canopy, cyan civic band
-    p.add("Hall_Frames", G, *[box(x - .25, x + .25, .002, 4.6 + E, -E, .3) for x in xs[1:-1]] if False else [box(-W / 2 + .01, W / 2 - .01, 4.0, 4.6 + E, -E, .3)])
+    p.add("Hall_Frames", G, *[box(xs[i] + .25 - E + .002, xs[i + 1] - .25 + E - .002, 4.0, 4.6 + E, -E, .3) for i in range(6)])
     gl = []; mu = []
     for i in range(6):
         a, b = xs[i] + .25 - E, xs[i + 1] - .25 + E; mid = (a + b) / 2
@@ -114,16 +114,16 @@ def workshop():
     for i in range(3):
         a, b = xs[i] + .3 - E, xs[i + 1] - .3 + E
         sh.append(box(a, b, .002, 4.4, -E, .06))
-        rib += [box(a + .02, b - .02, y, y + .04, .06 - E, .08) for y in np.arange(.3, 4.3, .25)]
+        rib += [box(a + .16, b - .16, y, y + .04, .06 - E, .08) for y in np.arange(.3, 4.3, .25)]
         haz += [box(a + .02, a + .14, .3, 1.5, .06 - E, .07), box(b - .14, b - .02, .3, 1.5, .06 - E, .07)]
-        hood.append(box(a, b, 4.4 - E, 5.0 + E, -E, .25))
+        hood.append(box(a + .002, b - .002, 4.4 - E, 5.0 + E, -E, .25))
     p.add("Roller_Shutters", T, *sh); p.add("Shutter_Ribs", G, *rib); p.add("Hazard_Jambs", A, *haz); p.add("Shutter_Boxes", S, *hood)
     return p
 def kiosk():
     p = Pod("ext_nbr_kiosk_row"); W, H = 17, 4
     p.add("Wall", S, box(-W / 2 + .01, W / 2 - .01, 0, H - .3 + E, -.6, 0)); p.add("Roof_Fascia", G, box(-W / 2, W / 2, H - .3, H, -.62, .3))
     xs = np.linspace(-W / 2 + .2, W / 2 - .2, 5)
-    p.add("Piers", P_, *[box(x - .2, x + .2, .002, H - .3 + E, -E, .25) for x in xs])
+    p.add("Piers", P_, *[box(x - .2, x + .2, .002, H - .3 + .002, -E, .25) for x in xs])
     cnt, top, gl, aw, st = [], [], [], [], []
     for i in range(4):
         a, b = xs[i] + .2 - E, xs[i + 1] - .2 + E
@@ -150,7 +150,7 @@ def depot():
         gl += [box(ed[k] + (.04 if k else 0) - E, ed[k + 1] - (.04 if k < 3 else 0) + E, 5.2 - E, H - .3 + E, .03, .036) for k in range(4)]
         cy.append(box(a + .2, b - .2, 4.8, 5.0, .25 - E, .27))
     p.add("Portals", G, *por); p.add("Lintels", P_, *lin); p.add("Clerestory_Mullions", T, *mu); p.add("Clerestory_Glass", GL, *gl); p.add("Civic_Livery", C_, *cy)
-    p.add("Bay_Spandrels", P_, box(-2.0 + E * 0 - E, 2.0 + E, .002, H - .3 + E, -E, .15) if False else box(-1.2 + .4 - E, 1.2 - .4 + E, .002, H - .3 + E, -E, .15), box(-10 + .01, -9.6 - .4 + E, .002, H - .3 + E, -E, .15) if False else box(-8.8 - E, -9.2 + E, 4.6 - E + .002, 5.2, -E, .12))
+    p.add("Bay_Spandrels", P_, box(-2.0 + E * 0 - E, 2.0 + E, .002, H - .3 + E, -E, .15) if False else box(-1.2 + .4 - E, 1.2 - .4 + E, .003, H - .3 + E, -E, .15), box(-10 + .01, -9.6 - .4 + E, .002, H - .3 + E, -E, .15) if False else box(-8.8 - E + .002, -9.2 + E, 4.6 - E + .002, 5.2, -E, .12))
     p.add("Rail_Inlays", T, *[box(c - .75 + d, c - .75 + d + .07, .0, .004, .02 - E, .4) for c in (-5.4, 5.4) for d in (0, 1.43)]) if False else None
     return p
 PIECES = {"panel": ("ext_facade_panel_res", panel, 400, "#6 facade panel 3.0x0.2x4.4 (x60 MultiMesh)"), "window": ("ext_window_unit", lambda: window("ext_window_unit", 2.4, 1.5, .15, 1), 500, "#7 window unit 2.4x0.15x1.5"),
@@ -158,8 +158,17 @@ PIECES = {"panel": ("ext_facade_panel_res", panel, 400, "#6 facade panel 3.0x0.2
           "parapet": ("ext_roof_parapet_plantcap", parapet, 3000, "#9 roof parapet + plant caps 28x18"), "canopy": ("ext_door_canopy", canopy, 600, "#5 door canopy 3.2x1.2x0.3"),
           "r6": ("ext_nbr_r6_residential", r6, 5000, "#10 nbr R-6 residential 30x12"), "clinic": ("ext_nbr_clinic_market", clinic, 5000, "#11 nbr clinic/market 30x10"),
           "workshop": ("ext_nbr_workshop_row", workshop, 4000, "#12 nbr workshop row 14x9"), "kiosk": ("ext_nbr_kiosk_row", kiosk, 3000, "#13 nbr kiosk row 17x4"), "depot": ("ext_nbr_tram_depot", depot, 3500, "#14 nbr tram depot edge 20x7")}
+def destack(p):
+    """Break shared embed planes: faces of each part lying on z = -E (backs buried in the wall) get a per-part offset chosen by greedy
+    colouring of bbox-touching parts from (0, +-1.1, +-2.2, -3.3 mm), so no two touching parts share a coplanar back; all stay embedded."""
+    offs = [0, .0011, -.0011, .0022, -.0022, -.0033]; col = {}; items = [(k, m) for k, (mk, m) in p.P.items() if k != "Wall"]
+    for k, m in items:
+        lo, hi = m.bounds; used = {col[q] for q, n in items if q in col and not (np.any(lo > n.bounds[1] + .01) or np.any(n.bounds[0] > hi + .01))}
+        col[k] = next(c for c in range(len(offs)) if c not in used)
+        v = m.vertices.copy(); sel = np.abs(v[:, 2] + E) < 1e-6; v[sel, 2] += offs[col[k]]; uv = m.metadata["uv"]; m.vertices = v; m.metadata["uv"] = uv
+    return p
 def build(key):
-    name, fn, budget, title = PIECES[key]; p = recenter(fn()); chk = cc.check(p.P, n_samp=600)
+    name, fn, budget, title = PIECES[key]; p = recenter(destack(fn())); chk = cc.check(p.P, n_samp=600)
     out = os.path.join(ROOT, "design/assets", name); os.makedirs(out, exist_ok=True); gp = os.path.join(out, f"{name}.glb")
     tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
     r = dict(name=name, title=title, tris=tris, budget=budget, size=chk["size"], pivot=chk["pivot"], clip_pass=chk["pass"], worst=chk["worst_overlap"],
@@ -169,7 +178,7 @@ def sheet():
     _, _, _, iso = views(); tiles = []
     FMAT[A] = _PBR(name="amber", baseColorFactor=(0, 0, 0, 1), metallicFactor=0, roughnessFactor=1, emissiveFactor=(1.0, .58, 0.0))
     for key, (name, fn, budget, title) in PIECES.items():
-        r = json.load(open(os.path.join(ROOT, "design/assets", name, f"{name}_report.json"))); p = recenter(fn()); _, geo = export_final(p.P, ["/tmp/_fac.glb"])
+        r = json.load(open(os.path.join(ROOT, "design/assets", name, f"{name}_report.json"))); p = recenter(destack(fn())); _, geo = export_final(p.P, ["/tmp/_fac.glb"])
         tiles.append((f"{title}\n{r['tris']} tris (<= {budget}) | clip {'PASS' if r['clip_pass'] else 'FAIL'} | godot/assets/models/{name}.glb", crop(render_view(geo, iso, size=560, shadow=True, glass_alpha=.35))))
     fig, axs = plt.subplots(2, 5, figsize=(28, 12), facecolor="#F4F2EC")
     for ax, (t, im) in zip(axs.flat, tiles): ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=10, color="#333")

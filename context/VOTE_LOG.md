@@ -1674,3 +1674,8 @@
 - **#8 L2 promenade window:** `ext_l2_promenade_window.glb` (320 tris, ≤600, BLEND glass) -> `godot/assets/models/ext_l2_promenade_window.glb` — no vote, Jared waived
 - **#9 Roof parapet + plant caps:** `ext_roof_parapet_plantcap.glb` (928 tris, ≤3,000) -> `godot/assets/models/ext_roof_parapet_plantcap.glb` — no vote, Jared waived
 - **#5 Door canopy:** `ext_door_canopy.glb` (96 tris, ≤600) -> `godot/assets/models/ext_door_canopy.glb` — no vote, Jared waived
+- **#10 Neighbour R-6 residential:** `ext_nbr_r6_residential.glb` (3,248 tris, ≤5,000, BLEND glass) -> `godot/assets/models/ext_nbr_r6_residential.glb` — no vote, Jared waived
+- **#11 Neighbour clinic / market hall:** `ext_nbr_clinic_market.glb` (1,280 tris, ≤5,000, BLEND glass) -> `godot/assets/models/ext_nbr_clinic_market.glb` — no vote, Jared waived
+- **#12 Neighbour workshop row:** `ext_nbr_workshop_row.glb` (1,488 tris, ≤4,000, BLEND glass) -> `godot/assets/models/ext_nbr_workshop_row.glb` — no vote, Jared waived
+- **#13 Neighbour kiosk row:** `ext_nbr_kiosk_row.glb` (560 tris, ≤3,000, BLEND glass) -> `godot/assets/models/ext_nbr_kiosk_row.glb` — no vote, Jared waived
+- **#14 Neighbour tram depot edge:** `ext_nbr_tram_depot.glb` (448 tris, ≤3,500, BLEND glass) -> `godot/assets/models/ext_nbr_tram_depot.glb` — no vote, Jared waived

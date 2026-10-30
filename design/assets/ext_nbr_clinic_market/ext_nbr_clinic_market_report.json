@@ -1,0 +1,21 @@
+{
+ "name": "ext_nbr_clinic_market",
+ "title": "#11 nbr clinic/market 30x10",
+ "tris": 1280,
+ "budget": 5000,
+ "size": [
+  30.0,
+  10.0,
+  2.62
+ ],
+ "pivot": {
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0
+ },
+ "clip_pass": true,
+ "worst": 0.008,
+ "over": [],
+ "coplanar": [],
+ "open": []
+}

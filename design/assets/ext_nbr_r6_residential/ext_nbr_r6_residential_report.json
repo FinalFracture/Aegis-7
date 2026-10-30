@@ -1,0 +1,21 @@
+{
+ "name": "ext_nbr_r6_residential",
+ "title": "#10 nbr R-6 residential 30x12",
+ "tris": 3248,
+ "budget": 5000,
+ "size": [
+  30.0,
+  12.0,
+  1.72
+ ],
+ "pivot": {
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0
+ },
+ "clip_pass": true,
+ "worst": 0.008,
+ "over": [],
+ "coplanar": [],
+ "open": []
+}
