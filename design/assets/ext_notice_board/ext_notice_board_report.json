@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_notice_board_01",
+  "style": "Slate_Legs",
+  "tris": 256,
+  "budget_ok": true,
+  "size": [
+   1.0,
+   1.4,
+   0.082
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_notice_board/ext_notice_board_01.glb"
+ },
+ {
+  "cand": "ext_notice_board_02",
+  "style": "Glazed_Case",
+  "tris": 304,
+  "budget_ok": true,
+  "size": [
+   1.0,
+   1.4,
+   0.096
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_notice_board/ext_notice_board_02.glb"
+ },
+ {
+  "cand": "ext_notice_board_03",
+  "style": "Amber_Header",
+  "tris": 256,
+  "budget_ok": true,
+  "size": [
+   1.0,
+   1.4,
+   0.082
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_notice_board/ext_notice_board_03.glb"
+ },
+ {
+  "cand": "ext_notice_board_04",
+  "style": "Wall_Slab",
+  "tris": 352,
+  "budget_ok": true,
+  "size": [
+   1.0,
+   1.4,
+   0.096
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_notice_board/ext_notice_board_04.glb"
+ },
+ {
+  "cand": "ext_notice_board_05",
+  "style": "Cantilever_Post",
+  "tris": 224,
+  "budget_ok": true,
+  "size": [
+   0.96,
+   1.4,
+   0.082
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_notice_board/ext_notice_board_05.glb"
+ }
+]

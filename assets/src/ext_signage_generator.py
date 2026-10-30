@@ -143,10 +143,13 @@ def board(v):
         p.add("Board", S, box(-.5, .5, 0, 1.4, -.05, zf))
         tiles = [(a, b, c - .1, d - .1) for a, b, c, d in tiles] + [(a, b, c - .66, d - .66) for a, b, c, d in tiles[:3]]
     else:  # 5: single titanium post, board cantilevered
-        p.add("Post", T, box(-.04, .04, 0, 1.4, -.05, -.01)); p.add("Board", G, box(-.48, .48, .5, 1.3, -.01 - E, zf))
+        p.add("Post", T, box(-.04, .04, 0, 1.4, -.05, -.01)); p.add("Board", G, box(-.48, .48, .47, 1.3, -.01 - E, zf))
     p.add("Tiles", A if v != 3 else T, *rects(tiles, zf))
     p.add("Tile_Glyphs", G, *rects([(x0 + .08, x1 - .08, y0 + .06, y1 - .06) for x0, x1, y0, y1 in tiles], zf + .006))
-    if v in (2, 4): p.add("Glass_Cover", GL, box(-.46, .46, (.46 if v == 2 else .02), (1.06 if v == 2 else 1.06), zf + .012 - E + .0015, zf + .022))
+    if v in (2, 4):  # BLEND glass cover 1.5 mm clear of the glyphs, held by top/bottom bezel bars
+        y0 = .46 if v == 2 else .02
+        p.add("Glass_Cover", GL, box(-.46, .46, y0 + .02 - E, 1.06 + E, zf + .0135, zf + .022))
+        p.add("Bezel", T, box(-.47, .47, y0, y0 + .02, zf - E, zf + .026), box(-.47, .47, 1.06, 1.08, zf - E, zf + .026))
     return p
 BOARD = [(1, "Slate_Legs"), (2, "Glazed_Case"), (3, "Amber_Header"), (4, "Wall_Slab"), (5, "Cantilever_Post")]
 
