@@ -1656,3 +1656,13 @@
 ## Category: `residential_exterior_story` — #48 shelter sleeper set (Rook, box pipeline, Oct 30)
 - **Sheet:** `design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_contact_sheet.png` (5 candidates, clip-check PASS).
 - **Decision: Jared (Oct 30, 1:31 PM CT), relayed via Atlas — ASSET CUT.** No winner promoted; candidate files kept in `design/assets/` for reference only.
+
+## Category: `residential_exterior_hydro` — #27 pump/tank cabinet (Rook, box pipeline, Oct 30)
+- **Sheets:** `design/assets/ext_hydro_pump_tank/ext_hydro_pump_tank_contact_sheet.png` and `ext_hydro_pump_tank_01b_contact_sheet.png` (clip-check PASS at fill 0.05/0.5/1.0).
+- **Deciding vote: Jared (Oct 30, 1:32 PM CT), relayed via Atlas.**
+- **#27 Pump/tank WINNER:** `#01b Side_Tank + reactive indicator` (`ext_hydro_pump_tank_01b.glb`, 400 tris, nodes `WaterLevel_Fill`, `Temp_Seg_01..06`) -> `godot/assets/models/ext_hydro_pump_tank.glb`
+
+## Category: `residential_exterior_memorial` — #29 memorial (Rook, box pipeline, Oct 30)
+- **Rounds:** tag rack (`ext_memorial_tag_rack`), monumental (`ext_memorial_monument`), Aegis-7 (`ext_memorial_aegis`); Jared picked Aegis 04 cutaway at 1:15 PM CT with tags inside -> 04b.
+- **Deciding vote: Jared (Oct 30, 1:32 PM CT), relayed via Atlas.**
+- **#29 Memorial WINNER:** `#04b Aegis cutaway + 200 interior tags` (`ext_memorial_aegis_04b.glb`, 4,472 tris, `Drum_Spin` / `Starport_Spin` nodes, axis y 1.70 m) -> `godot/assets/models/ext_memorial.glb`
