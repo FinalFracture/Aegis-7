@@ -440,3 +440,16 @@ Screenshots: `godot/renders/qa/patch_realism_01_alcove2c_hub_no_wall.png`, `patc
 - **REAL-02 DONE:** `MezzanineGlassBalustrade_North` (15.2 × 1.06 × 0.06 m @ z 1.25) and `_West` (0.06 × 1.06 × 7.6 m @ x -7.55) are StaticBody3D boxes matching the glb panes (y 4.405–5.465). Neither touches the east stair (x ≥ 9.16) or any doorway. QA `real_02_glass_balustrade_collider_hit`: 6/6 rays across the runs, masked to the glass layer, hit the right run. Note: on the north run at y 4.9, an unmasked ray hits `Upper_Mezzanine_Walkway_col` first, so part of that edge was already covered.
 - **REAL-01 DONE (backing panel):** `_fit_hub_backing()` casts 9 rays from each hub face straight back. Where any finds no solid within 5 cm, it adds a wall-toned gunmetal backing plinth with a collider (0.695 × 1.44 × 0.25 m, face 2 mm proud of the hub's wall plane). ALCOVE2C had 6/9 rays with no wall even within 0.20 m (the void Patch found). **All 5 other hubs also got a plinth:** the baked wall faces sit 5–20 cm behind the 0.30 m frame plane at every portal (3–6/9 rays missed at 5 cm; 9/9 hit within 20 cm). QA `<door>_hub_solid_wall_behind_5cm`: 6/6 doors, 0 misses. No render was taken, so the plinth look (and the door frame/infill standing proud of the real wall) needs a visual check.
 - `--qa-reticle-stars-doors` 88 PASS / 0 FAIL, 0 script errors; `--validate-only` OK.
+
+## Visual check (c29df73): doorway backing panels
+
+Run in a temp worktree at `c29df73`. One 3/4 shot per door, about 2.5 m out, plus contact sheet `godot/renders/qa/patch_c29df73_contact.png`. Numbers are a rough raycast along the door normal from the `HubWallBacking` centre, with the backing's own collider excluded. Backing size is 0.695 × 1.44 × 0.25 m on all 5 doors that have one.
+
+- **DOOR_ALCOVE2C: LOOKS OFF (REAL-01 not resolved).** The backing exists, but the ray finds no static surface behind it within 0.6 m. It reads as a free-standing 25 cm black slab beside the frame, over a dark recess.
+- **DOOR_APT201: LOOKS OFF.** No `HubWallBacking` node was created for this hub, so the fit pass skipped it. The 3/4 view is also partly blocked by a column at 2.5 m.
+- **DOOR_APT202: PASS (cosmetic).** The backing's back is 178 mm inside the wall collider, filling the deep reveal. No gap or z-fighting is visible. The slab edge stands visibly proud of the wall face.
+- **DOOR_RM1A: PASS (cosmetic).** Back 228 mm inside the wall, no gap or z-fighting. Same proud slab edge.
+- **DOOR_RM1B: PASS (cosmetic).** Back 220 mm inside the wall, no gap or z-fighting. Same proud slab edge.
+- **DOOR_SECTOR4_EXIT: PASS (cosmetic).** Back 248 mm inside the wall, no gap or z-fighting. Same proud slab edge.
+- Frames and filler panels look flush with no visible frame-to-wall gaps in all 6 shots. On every hub, the mesh centres sit about 80 mm behind the backing's front face; the display still reads, but the hub body is partly buried in the slab.
+- **QA-BK-01 (Minor):** In the backing fit near `scripts/preface_playable_area.gd:3813`, APT201 gets no backing, and the ALCOVE2C backing has no wall behind it. Seat both against the real jamb/wall, or add a collider to the ALCOVE2C pier.

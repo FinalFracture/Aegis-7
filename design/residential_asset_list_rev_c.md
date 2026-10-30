@@ -38,7 +38,7 @@ Sizes are rough W × D × H in meters.
 |---|---|---|---|---|
 | 15 | Sofa | 101, 103, 201, 202, 203, 204 | 6 | 2.5 × 0.9 × 0.85 |
 | 16 | Armchair / reading chair | 102, 203 | 2 | 1.0 × 1.0 × 1.0 |
-| 17 | Lab bench | 104 | 1 | 2.5 × 0.9 × 0.9 |
+| 17 | ~~Lab bench~~ MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 104; not modeled now, waits for that building | ~~104~~ lab/workshop building | — | 2.5 × 0.9 × 0.9 |
 | 18 | Window reading nook bench | 203 | 1 | 4.0 × 0.4 × 0.5 |
 
 
@@ -57,12 +57,12 @@ Sizes are rough W × D × H in meters.
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
 | 25 | Tool wall panel (pegboard, cable variant) | 101, 201, Maintenance | 3 | 2.5–3.5 × 0.5 × 2.0 |
-| 26 | Apartment workbench (level blockout `Apartment_Workbench`) | 201 | 1 | 3.7 × 2.5 nook |
-| 27 | Task lamp (level blockout `Apt201_Workbench_TaskLight`) | 201, 104, 204 | 3 | 0.2 × 0.2 × 0.5 |
+| 26 | ~~Apartment workbench~~ (level blockout `Apartment_Workbench`) MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 201; not modeled now, waits for that building | ~~201~~ lab/workshop building | — | 3.7 × 2.5 nook |
+| 27 | Task lamp (level blockout `Apt201_Workbench_TaskLight`) | 201, 104, 204 | 3 (QTY UNDER REVIEW: the 201 workbench light and possibly 204 left with #26/#31; model unchanged) | 0.2 × 0.2 × 0.5 |
 | 28 | Window desk + data slates | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
 | 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
 | 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |
-| 31 | Emitter repair bench (dismantled field emitter) | 204 | 1 | 0.9 × 1.9 × 0.9 |
+| 31 | ~~Emitter repair bench (dismantled field emitter)~~ MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 204; not modeled now, waits for that building | ~~204~~ lab/workshop building | — | 0.9 × 1.9 × 0.9 |
 | 32 | Cycler route model (wall) | 203 | 1 | 0.9 × 0.2 × 1.0 |
 | 33 | ~~Hydro planter (window/balcony)~~ MOVED TO EXTERIOR (Jared, Oct 29): removed from 103/202; Tiered Steps planter now serves the hydro co-op / sidewalk planters, `godot/assets/models/hydro_planter_tiered_exterior.glb` | ~~103, 202~~ exterior | — | 4.0 × 0.4 × 0.7 |
 | 34 | Potted plants set (Jared's final pick, Oct 29): `godot/assets/models/potted_plants_rail_cradles.glb` (default 102) and `godot/assets/models/potted_plants_pocket_column.glb` (default 203). SUPERSEDED, kept unplaced: `potted_plants_moulded_trio.glb`, `potted_plants_shared_tray.glb` | 102, 203 | 2 | 1.20 × 0.55 × 0.25 (wall rail) / 0.90 × 0.78 × 0.41 |
