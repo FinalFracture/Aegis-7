@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_memorial_monument_01",
+  "style": "Tag_Stele_Wall",
+  "tris": 4512,
+  "budget_ok": true,
+  "size": [
+   3.8,
+   3.9,
+   1.006
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.008,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_monument/ext_memorial_monument_01.glb"
+ },
+ {
+  "cand": "ext_memorial_monument_02",
+  "style": "Tiered_Obelisk",
+  "tris": 672,
+  "budget_ok": true,
+  "size": [
+   3.6,
+   4.3,
+   1.6
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.008,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_monument/ext_memorial_monument_02.glb"
+ },
+ {
+  "cand": "ext_memorial_monument_03",
+  "style": "Halo_Ring",
+  "tris": 3080,
+  "budget_ok": true,
+  "size": [
+   3.64,
+   3.97,
+   1.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0085,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_monument/ext_memorial_monument_03.glb"
+ },
+ {
+  "cand": "ext_memorial_monument_04",
+  "style": "Tag_Curtain",
+  "tris": 5328,
+  "budget_ok": true,
+  "size": [
+   3.9,
+   4.1,
+   1.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0036,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_monument/ext_memorial_monument_04.glb"
+ },
+ {
+  "cand": "ext_memorial_monument_05",
+  "style": "Eternal_Emitter",
+  "tris": 268,
+  "budget_ok": true,
+  "size": [
+   3.6,
+   3.8,
+   1.22
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_monument/ext_memorial_monument_05.glb"
+ }
+]
