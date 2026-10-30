@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_street_light_pole_01",
+  "style": "Column_Lantern",
+  "tris": 288,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   5.0,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_light_pole/ext_street_light_pole_01.glb"
+ },
+ {
+  "cand": "ext_street_light_pole_02",
+  "style": "Halo_Ring",
+  "tris": 240,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   5.0,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_light_pole/ext_street_light_pole_02.glb"
+ },
+ {
+  "cand": "ext_street_light_pole_03",
+  "style": "Light_Seam",
+  "tris": 208,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   5.0,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_light_pole/ext_street_light_pole_03.glb"
+ },
+ {
+  "cand": "ext_street_light_pole_04",
+  "style": "Square_Mast",
+  "tris": 128,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   5.0,
+   0.305
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_light_pole/ext_street_light_pole_04.glb"
+ },
+ {
+  "cand": "ext_street_light_pole_05",
+  "style": "Spin_Markers",
+  "tris": 480,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   5.0,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_street_light_pole/ext_street_light_pole_05.glb"
+ }
+]

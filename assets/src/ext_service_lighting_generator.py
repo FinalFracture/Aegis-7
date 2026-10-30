@@ -98,8 +98,8 @@ def light(v):
         p.add("Head_Glass", GL, ring(.1, 4.6 - E, 4.85, n)); p.add("Cap", G, ring(.11, 4.85 - E, 5.0, n, 1, .3))
     elif v == 4:  # Square Mast: square slate mast, gunmetal head box with glass underside and amber lamp
         p.add("Mast", S, box(-.06, .06, .3 - E, 4.7, -.06, .06))
-        p.add("Head", G, box(-.15, .15, 4.8, 5.0, -.15, .15)); p.add("Head_Neck", G, box(-.05, .05, 4.7 - E, 4.8 + E, -.05, .05))
-        p.add("Glass_Underside", GL, box(-.13, .13, 4.776, 4.8 + E, -.13, .13)); p.add("Lamp", A, box(-.08, .08, 4.79, 4.8 + E, .055, .07))
+        p.add("Head", G, box(-.15, .15, 4.8, 5.0, -.15, .15)); p.add("Head_Neck", G, box(-.05, .05, 4.7 - E, 4.776 + E, -.05, .05))  # neck stops in the glass diffuser
+        p.add("Glass_Underside", GL, box(-.13, .13, 4.776, 4.8 + E, -.13, .13)); p.add("Lamp_Strip", A, box(-.1, .1, 4.86, 4.88, .146, .155))
     elif v == 5:  # Spin Markers: gunmetal column with three amber marker rings and a glass lantern
         ys = (.3, 1.2, 2.4, 3.6, 4.5)
         p.add("Pole", G, *[ring(.07, ys[k] - E, ys[k + 1] - .03, n) for k in range(4)])
