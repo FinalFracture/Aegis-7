@@ -82,4 +82,46 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+
+# ---------------- final: polished Gravity Dispenser Tubes (iter 3), with Capsule_Drop and Pick_Ready_Blink clips ----------------
+# Polish: alloy hangers carry the pick tray from the feed chute, the chute gets a forward lip and amber side guards, the request panel
+# hangs on a bracket off the right front post, the tubes get top caps, and the centre tube's gate and one capsule are animated nodes.
+# Nodes: Spares_Static, Centre_Gate (slides +Z to open), Drop_Capsule, Pick_Ready_Lamp.
+from substation_r2_generator import export_nodes
+GATE0 = np.array([0, .58, ZB + .15]); CAP0 = np.array([0, .62, ZB + .15]); TRAY = (ZB + .3, ZB + .5)
+def final_tubes():
+    p = iter3(); p.name = "Spares_Static"; xs = np.linspace(X0 + .2, X1 - .2, 7)
+    g = p.P.pop("Gate_Valves"); p.add("Gate_Valves", "amber", *[box(x - .05, x + .05, .58, .6, ZB + .15, ZB + .26) for x in xs if abs(x) > 1e-6])
+    p.add("Gate_Guides", "gunmetal", *[box(x - .065, x - .055, .575, .605, ZB + .1, ZB + .3) for x in xs] + [box(x + .055, x + .065, .575, .605, ZB + .1, ZB + .3) for x in xs])
+    p.P.pop("Capsules"); p.add("Capsules", "white", *[cyl(x, ZB + .15, .055, y, y + .09, 10) for i, x in enumerate(xs) for y in np.arange(.62, 1.62 - .12 * (i % 3), .1) if not (abs(x) < 1e-6 and y < .63)])
+    p.add("Tube_Caps", "slate", *[cyl(x, ZB + .15, .075, 1.7, 1.72, 12) for x in xs]); p.add("Chute_Lip", "alloy", box(X0 + .1, X1 - .1, .56, .6, ZB + .31, ZB + .32))
+    p.add("Chute_Guards", "amber", *[box(x - .005, x + .005, .56, .6, ZB + .02, ZB + .32) for x in (X0 + .1, X1 - .1)])
+    p.add("Tray_Hangers", "alloy", *[box(x - .01, x + .01, .45, .5, z - .01, z + .01) for x in (-.19, .19) for z in (TRAY[0] + .01,)], *[box(x - .01, x + .01, .45, .5, ZB + .31, ZB + .33) for x in (-.19, .19)])
+    p.add("Panel_Bracket", "gunmetal", box(X1 - .25, X1 - .02, 1.25, 1.3, ZB + .26, ZB + .29))
+    p.P.pop("Pick_Lamp")
+    gate = Pod("Centre_Gate"); gate.add("Gate", "amber", box(-.05, .05, 0, .02, 0, .11))
+    cap = Pod("Drop_Capsule"); cap.add("Capsule", "white", cyl(0, 0, .055, 0, .09, 10)); cap.add("Capsule_Band", "green", cyl(0, 0, .057, .04, .05, 10))
+    lamp = Pod("Pick_Ready_Lamp"); lamp.add("Lamp", "green", box(-.05, .05, -.01, .01, -.01, 0))
+    return [(p, [0, 0, 0]), (gate, GATE0.tolist()), (cap, CAP0.tolist()), (lamp, [0, PY + .11, TRAY[0]])]
+def sm(t, a, b): u = np.clip((t - a) / (b - a), 0, 1); return u * u * (3 - 2 * u)
+def capsule_pos(t):  # 2.4 s: gate opens 0-0.3, capsule falls to the chute 0.3-0.6, gate closes 0.6-0.9, capsule rolls forward 0.6-1.6, drops into the tray 1.6-1.9
+    y = CAP0[1] + (.56 - CAP0[1] - .0) * sm(t, .3, .6) + (.45 - .56) * sm(t, 1.6, 1.9); z = CAP0[2] + (ZB + .36 - CAP0[2]) * sm(t, .6, 1.6) + (ZB + .4 - ZB - .36) * sm(t, 1.6, 1.9)
+    return np.array([0, y - (0 if t < .3 else 0), z])
+def clip_drop(t): return {"Centre_Gate": ("translation", GATE0 + [0, 0, .12 * (sm(t, 0, .3) - sm(t, .6, .9))]), "Drop_Capsule": ("translation", capsule_pos(t)) if t < 2.39 else ("translation", CAP0)}
+def clip_blink(t): return {"Pick_Ready_Lamp": ("scale", np.ones(3) if (t % 1.0) < .5 else np.full(3, .001))}
+SCLIPS = [("Capsule_Drop", clip_drop, 2.4), ("Pick_Ready_Blink", clip_blink, 1.0)]
+def final_main():
+    import pygltflib
+    nodes = final_tubes(); gp = os.path.join(dc.ROOT, "godot/assets/models/spares_gravity_dispenser.glb"); tris = export_nodes(nodes, SCLIPS, gp); set_glass_blend(gp)
+    bad = [f"{pod.name}/{k}" for pod, _ in nodes for k, (mk, m) in pod.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    for st, t in (("rest", 0.0), ("capsule_in_tray", 2.2)):
+        Wp = Pod("World"); P = clip_drop(t)
+        for pod, T in nodes:
+            off = P[pod.name][1] if pod.name in P else np.array(T)
+            for k, (mk, m) in pod.P.items():
+                if mk == "glass": continue
+                mm = m.copy(); mm.apply_translation(off); Wp.add(pod.name + "/" + k, mk, mm)
+        V = np.vstack([m.vertices for mk, m in Wp.P.values()]); print(st, "size", (V.max(0) - V.min(0)).round(3), "min", V.min(0).round(3), "max", V.max(0).round(3))
+        sp = os.path.join(OUT, f"final_gravity_dispenser_{st}_sheet.png"); wg.sheet(Wp, sp, f"Final  #43 spares shelf, Gravity Dispenser Tubes ({st.replace('_', ' ')}; glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+    g = pygltflib.GLTF2().load(gp); print("tris", tris, "nodes", [n.name for n in g.nodes], "anims", [(a.name, len(a.channels)) for a in g.animations], "alpha", [m.alphaMode for m in g.materials if m.alphaMode], "bad", bad)
+if __name__ == "__main__": final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
