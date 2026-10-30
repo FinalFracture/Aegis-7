@@ -1679,3 +1679,8 @@
 - **#12 Neighbour workshop row:** `ext_nbr_workshop_row.glb` (1,488 tris, ≤4,000, BLEND glass) -> `godot/assets/models/ext_nbr_workshop_row.glb` — no vote, Jared waived
 - **#13 Neighbour kiosk row:** `ext_nbr_kiosk_row.glb` (560 tris, ≤3,000, BLEND glass) -> `godot/assets/models/ext_nbr_kiosk_row.glb` — no vote, Jared waived
 - **#14 Neighbour tram depot edge:** `ext_nbr_tram_depot.glb` (448 tris, ≤3,500, BLEND glass) -> `godot/assets/models/ext_nbr_tram_depot.glb` — no vote, Jared waived
+
+## Category: `troubleshoot_r1` — general PCBA + Python troubleshooting UI, round 1 (Sloane, box mockups, Oct 30)
+- **Sheet:** `design/ui/troubleshoot_r1/troubleshoot_r1_contact_sheet.png` (5 candidates, files in `design/ui/troubleshoot_r1/`).
+- **Deciding vote: Jared (2026-10-30 14:48 CDT), relayed via Atlas.**
+- **Round 1 WINNER:** `#01 holo_wrist` (`troubleshoot_r1_01_holo_wrist.png`) -> carried into round 2 `design/ui/troubleshoot_r2/` (5 wrist-hologram variations)
