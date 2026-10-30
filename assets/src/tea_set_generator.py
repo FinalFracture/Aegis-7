@@ -50,4 +50,18 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_caddy():
+    p = iter2(); p.name = "Tea_Set_Rail_Caddy"; CP = ((.06, -.05), (.13, -.05), (.06, .05), (.13, .05))
+    p.add("Grip_Sleeve", "slate", box(-.06, .06, .177, .198, -.013, .013))
+    p.add("Caddy_Rim", "gunmetal", *[box(-.19, .19, .015, .025, s * .1 - .005, s * .1 + .005) for s in (-1, 1)])
+    p.add("Pot_Dock_Ring", "gunmetal", cyl(-.07, 0, .066, .015, .025, N)); p.add("Peg_Collars", "gunmetal", *[cyl(x, z, .032, .015, .02, 10) for x, z in CP])
+    p.add("Cup_Rim_Bands", "violet", *[cyl(x, z, .0285, .062, .066, 10) for x, z in CP]); p.add("Pot_Band", "violet", cyl(-.07, 0, .0605, .09, .095, N))
+    p.add("Grip_Feet", "slate", *[box(x - .015, x + .015, -.0, .004, z - .015, z + .015) for x in (-.17, .17) for z in (-.08, .08)])
+    return p
+def final_main():
+    p = final_caddy(); gp = os.path.join(dc.ROOT, "godot/assets/models/tea_set_rail_caddy.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "lo", V.min(0).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_rail_caddy_sheet.png"); wg.sheet(p, sp, "Final  #14 tea set, Rail Caddy"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
