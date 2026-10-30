@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_shelter_sleeper_set_01",
+  "style": "Roll_Plate_Crate",
+  "tris": 248,
+  "budget_ok": true,
+  "size": [
+   2.46,
+   0.33,
+   0.76
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_01.glb"
+ },
+ {
+  "cand": "ext_shelter_sleeper_set_02",
+  "style": "Pillow_And_Pot",
+  "tris": 296,
+  "budget_ok": true,
+  "size": [
+   2.36,
+   0.43,
+   1.04
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_02.glb"
+ },
+ {
+  "cand": "ext_shelter_sleeper_set_03",
+  "style": "Crate_Table",
+  "tris": 248,
+  "budget_ok": true,
+  "size": [
+   2.41,
+   0.426,
+   0.7
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_03.glb"
+ },
+ {
+  "cand": "ext_shelter_sleeper_set_04",
+  "style": "Folded_Blanket",
+  "tris": 296,
+  "budget_ok": true,
+  "size": [
+   2.335,
+   0.33,
+   0.78
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_04.glb"
+ },
+ {
+  "cand": "ext_shelter_sleeper_set_05",
+  "style": "Open_Crate",
+  "tris": 352,
+  "budget_ok": true,
+  "size": [
+   2.325,
+   0.3,
+   0.72
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_05.glb"
+ }
+]

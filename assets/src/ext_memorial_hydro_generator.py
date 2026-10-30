@@ -207,19 +207,22 @@ def sleeper(v):
     p = Pod(f"ext_shelter_sleeper_set_0{v}"); rng = np.random.default_rng(48 + v)
     def mat(x0, x1, z0, z1, rolled_end=True):
         p.add("Bedroll_Mat", FB, blk(x0, x1, 0, .05, z0, z1, .03, 2))
-        if rolled_end: p.add("Bedroll_Roll", FB, xf(cyl_z(0, 0, .09, z0 + .02, z1 - .02, 10), t=(x1 - .12, .05 - E + .09, 0)))
+        if rolled_end: p.add("Bedroll_Roll", FB, xf(cyl_z(0, 0, .09, z0 + .02, z1 - .02, 10), t=(x1 - .12, .05 - E + .09 * np.cos(np.pi / 10), 0)))
     def hotplate(x, z):
         p.add("Hot_Plate", G, box(x - .14, x + .14, 0, .06, z - .12, z + .12)); p.add("Hot_Coil", A, ring(.08, .06 - E, .066, 12, x=x, z=z))
         p.add("Pot", T, ring(.07, .066 - E, .17, 10, x=x, z=z)) if v in (2, 5) else None
     def crate(x, z, w=.5, d=.35, h=.35, lid=True):
-        p.add("Crate", S, blk(x - w / 2, x + w / 2, 0, h, z - d / 2, z + d / 2, .015, 1))
+        if lid: p.add("Crate", S, blk(x - w / 2, x + w / 2, 0, h, z - d / 2, z + d / 2, .015, 1))
+        else:  # open tub so contents stand on a real floor
+            t = .02; p.add("Crate", S, box(x - w / 2, x + w / 2, 0, .03, z - d / 2, z + d / 2), box(x - w / 2, x + w / 2, .03 - E, h, z + d / 2 - t, z + d / 2), box(x - w / 2, x + w / 2, .03 - E, h, z - d / 2, z - d / 2 + t),
+                           box(x - w / 2, x - w / 2 + t, .03 - E, h, z - d / 2 + t - E, z + d / 2 - t + E), box(x + w / 2 - t, x + w / 2, .03 - E, h, z - d / 2 + t - E, z + d / 2 - t + E))
         if lid: p.add("Crate_Lid", G, blk(x - w / 2 - .01, x + w / 2 + .01, h - E, h + .03, z - d / 2 - .01, z + d / 2 + .01, .015, 1))
         p.add("Crate_Latches", A, *[box(xx - .025, xx + .025, h - .06, h - .01, z + d / 2 - E, z + d / 2 + .008) for xx in (x - w / 4, x + w / 4)])
     if v == 1: mat(-1.0, .9, -.35, .35); hotplate(1.15, -.15); crate(1.25, .25, .4, .3, .3)
     elif v == 2: mat(-.9, .9, -.32, .32, False); p.add("Pillow", FB, blk(-.85, -.55, .05 - E, .12, -.2, .2, .04, 2)); crate(1.2, 0, .5, .4, .4); hotplate(1.2, -.0) if False else hotplate(.0, .6)
     elif v == 3: mat(-1.0, .8, -.35, .35); crate(1.15, 0, .5, .35, .35, lid=True); p.add("Hot_Plate", G, box(1.0, 1.3, .38 - E, .42, -.1, .1)); p.add("Hot_Coil", A, ring(.06, .42 - E, .426, 12, x=1.15))
     elif v == 4: mat(-.9, .9, -.35, .35); p.add("Blanket_Fold", FB, blk(-.3, .5, .05 - E, .1, -.33, .33, .03, 2)); hotplate(1.2, .3); crate(1.2, -.2, .45, .3, .3)
-    elif v == 5: mat(-.95, .85, -.3, .3); hotplate(1.15, .25); crate(1.15, -.2, .45, .3, .3, lid=False); p.add("Crate_Contents", T, box(1.0, 1.1, .02, .2, -.3, -.12))
+    elif v == 5: mat(-.95, .85, -.3, .3); hotplate(1.15, .25); crate(1.15, -.2, .45, .3, .3, lid=False); p.add("Crate_Contents", T, box(1.0, 1.1, .03 - E, .2, -.3, -.12), ring(.04, .03 - E, .16, 8, x=1.25, z=-.2))
     return p
 SLEEP = [(1, "Roll_Plate_Crate"), (2, "Pillow_And_Pot"), (3, "Crate_Table"), (4, "Folded_Blanket"), (5, "Open_Crate")]
 
