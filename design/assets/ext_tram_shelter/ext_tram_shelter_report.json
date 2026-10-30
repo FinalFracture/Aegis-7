@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_tram_shelter_01",
+  "style": "Civic_Canopy",
+  "tris": 528,
+  "budget_ok": true,
+  "size": [
+   6.02,
+   2.72,
+   1.315
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_shelter/ext_tram_shelter_01.glb"
+ },
+ {
+  "cand": "ext_tram_shelter_02",
+  "style": "Rear_Spine_Cantilever",
+  "tris": 552,
+  "budget_ok": true,
+  "size": [
+   6.02,
+   2.76,
+   1.296
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0076,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_shelter/ext_tram_shelter_02.glb"
+ },
+ {
+  "cand": "ext_tram_shelter_03",
+  "style": "Mono_Pitch_Skylight",
+  "tris": 480,
+  "budget_ok": true,
+  "size": [
+   6.02,
+   2.778,
+   1.335
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0091,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_shelter/ext_tram_shelter_03.glb"
+ },
+ {
+  "cand": "ext_tram_shelter_04",
+  "style": "Pearl_Kiosk_Wall",
+  "tris": 416,
+  "budget_ok": true,
+  "size": [
+   6.0,
+   2.7,
+   1.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_shelter/ext_tram_shelter_04.glb"
+ },
+ {
+  "cand": "ext_tram_shelter_05",
+  "style": "Glass_Pavilion",
+  "tris": 696,
+  "budget_ok": true,
+  "size": [
+   6.024,
+   2.8,
+   1.304
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_shelter/ext_tram_shelter_05.glb"
+ }
+]
