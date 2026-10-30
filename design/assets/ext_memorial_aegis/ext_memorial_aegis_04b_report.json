@@ -1,0 +1,24 @@
+{
+ "cand": "ext_memorial_aegis_04b",
+ "tris": 4472,
+ "tags": 200,
+ "wires": 8,
+ "size": [
+  3.4,
+  2.474,
+  1.501
+ ],
+ "pivot": {
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0
+ },
+ "clip_pass": true,
+ "worst_overlap": 0.008,
+ "overlaps_over": [],
+ "coplanar": [],
+ "open": [],
+ "spin_axis_y": 1.7,
+ "drum_children": 11,
+ "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_04b.glb"
+}
