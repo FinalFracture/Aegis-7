@@ -172,23 +172,33 @@ def growrack(v):
 GROW = [(1, "Single_Bar"), (2, "Twin_Bar"), (3, "Braced_Titanium"), (4, "Reflector_Hood"), (5, "Tagged_Bars")]
 
 # ---------------- #23a Tiered Steps TS-2 (2.0 x 0.41 x 0.70, ~1500): cut-down of approved TS-4 ----------------
+def _bush(x, ybot, z, r, rng):  # low-poly foliage clump whose lowest point sits 0.008 m into its net cup (steeper faces at the cup rim, no coplanar contact)
+    m = trimesh.creation.icosphere(1, r); m.vertices *= [1, .62, .7]; m.vertices += rng.normal(0, r * .06, m.vertices.shape)
+    m.apply_translation((x, ybot - .008 - m.vertices[:, 1].min(), z)); m.metadata["uv"] = m.vertices[:, [0, 2]]; return m
 def ts2(v):
-    p = Pod(f"hydro_planter_tiered_ts2_0{v}"); FT = .06; W = 2.0; hp.rng = np.random.default_rng(23 + v)
+    """TS-2: 2.0 m cut-down of the approved TS-4 (3 stepped troughs, levelling feet, latched lids). Re-cut clean for the clip check:
+    troughs 0.118 deep on 0.12 centres (2 mm reveals, no shared faces), lids embedded 4 mm, latches on trough fronts,
+    net cups sit on the lids, foliage sits in the cups."""
+    p = Pod(f"hydro_planter_tiered_ts2_0{v}"); FT = .06; W = 2.0; rng = np.random.default_rng(2300 + v); TD = .118
     p.add("Base_Frame", "gunmetal", blk(-W / 2 + .05, W / 2 - .05, FT - .03, FT, -.19, .19, .006, 1))
-    counts = {1: (4, 3, 2), 2: (4, 3, 2), 3: (4, 3, 2), 4: (3, 2, 2), 5: (0, 0, 0)}[v]
+    counts = {1: (3, 2, 2), 2: (3, 2, 2), 3: (3, 2, 2), 4: (3, 2, 2), 5: (0, 0, 0)}[v]; rr = .06 if v != 4 else .045
     for i, (y, z) in enumerate(((.2, .12), (.36, 0), (.52, -.12))):
-        p.add("Tiers", "white", bev(W, .16, FT, y + FT, .03, .01, 2, 0, z))
-        x0, x1 = -W / 2 + .04, W / 2 - .04; yy = y + FT
-        p.add("Tier_Lids", "slate", box(x0, x1, yy - .01, yy + .006, z - .07, z + .07))
-        p.add("Tier_Latches", "amber", *[box(x - .02, x + .02, yy - .012, yy - .004, z + .07, z + .076) for x in (-.7, .7)])
-        if counts[i]: hp.lean_plants(p, np.linspace(-.8, .8, counts[i]), yy, z, .075 if v != 4 else .055)
-    if v in (2, 3):  # end cap panel on the run end (left for 2, right for 3)
-        s = -1 if v == 2 else 1; p.add("End_Cap", "slate", box(s * W / 2 - (.012 if s > 0 else -0) + (0 if s > 0 else -.012) if False else (W / 2 if s > 0 else -W / 2 - .012), (W / 2 + .012) if s > 0 else -W / 2, FT - .03, .6, -.19, .19))
-    p.add("Reservoir", "slate", box(-.9, .9, FT + .02, FT + .14, .2, .206)); p.add("Reservoir_Seal", "alloy", box(-.9, .9, FT + .14, FT + .15, .2, .206))
+        yy = y + FT; p.add("Tiers", "white", bev(W, TD, FT - E, yy, .03, .01, 2, 0, z))
+        x0, x1 = -W / 2 + .04, W / 2 - .04
+        p.add("Tier_Lids", "slate", box(x0, x1, yy - E, yy + .012, z - .05, z + .05))
+        p.add("Tier_Latches", "amber", *[box(x - .02, x + .02, yy - .035, yy - .02, z + TD / 2 - E, z + TD / 2 + .006) for x in (-.7, .7)])
+        if counts[i]:
+            xs = np.linspace(-.75, .75, counts[i])
+            p.add("Net_Cup_Clips", "gunmetal", *[hp.cyl(x, z, .035, yy + .012 - E, yy + .03, 6) for x in xs])
+            for k, x in enumerate(xs): p.add("Foliage" if k % 2 == 0 else "Foliage_Light", "leaf" if k % 2 == 0 else "leaf2", _bush(x, yy + .03, z, rr * (.9 + .2 * rng.random()), rng))
+    if v in (2, 3):  # end cap panel on the run end (left for 2, right for 3), 2 mm clear of the trough ends
+        s_ = -1 if v == 2 else 1; xa = s_ * (W / 2 + .002); p.add("End_Cap", "slate", box(min(xa, xa + s_ * .012), max(xa, xa + s_ * .012), FT - .03, .6, -.19, .19))
+    p.add("Reservoir", "slate", box(-.9, .9, FT + .02, FT + .14, .12 + TD / 2 - E, .12 + TD / 2 + .006))
+    p.add("Reservoir_Seal", "alloy", box(-.895, .895, FT + .14 - E, FT + .15, .12 + TD / 2 - E + .0015, .12 + TD / 2 + .0045))
     feet = [(x, z) for x in (-.85, .85) for z in (-.14, .14)]
-    p.add("Levelling_Jacks", "alloy", *[hp.cyl(x, z, .018, .02 - E, FT - .03 + E, 8) for x, z in feet])
+    p.add("Levelling_Jacks", "alloy", *[hp.cyl(x, z, .018, .02 - E, FT - .03 + E, 6) for x, z in feet])
     p.add("Clamp_Shoes", "gunmetal", *[box(x - .06, x + .06, 0, .02, z - .045, z + .045) for x, z in feet])
-    p.add("Shoe_Bolts_Hardware", "alloy", *[hp.cyl(x + dx, z, .008, .02 - E, .03, 6) for x, z in feet for dx in (-.04, .04)])
+    p.add("Shoe_Bolts_Hardware", "alloy", *[hp.cyl(x + .04, z, .008, .02 - E, .03, 6) for x, z in feet])
     return p
 TS2 = [(1, "Straight_Cut", ), (2, "Left_End_Cap"), (3, "Right_End_Cap"), (4, "Young_Plants"), (5, "Lidded_Bed_End")]
 

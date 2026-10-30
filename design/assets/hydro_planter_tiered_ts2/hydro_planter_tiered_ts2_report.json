@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "hydro_planter_tiered_ts2_01",
+  "style": "Straight_Cut",
+  "tris": 1480,
+  "budget_ok": true,
+  "size": [
+   2.0,
+   0.679,
+   0.38
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0075,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_01.glb"
+ },
+ {
+  "cand": "hydro_planter_tiered_ts2_02",
+  "style": "Left_End_Cap",
+  "tris": 1496,
+  "budget_ok": true,
+  "size": [
+   2.014,
+   0.683,
+   0.38
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0075,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_02.glb"
+ },
+ {
+  "cand": "hydro_planter_tiered_ts2_03",
+  "style": "Right_End_Cap",
+  "tris": 1496,
+  "budget_ok": true,
+  "size": [
+   2.014,
+   0.686,
+   0.38
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0074,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_03.glb"
+ },
+ {
+  "cand": "hydro_planter_tiered_ts2_04",
+  "style": "Young_Plants",
+  "tris": 1480,
+  "budget_ok": true,
+  "size": [
+   2.0,
+   0.659,
+   0.38
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0078,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_04.glb"
+ },
+ {
+  "cand": "hydro_planter_tiered_ts2_05",
+  "style": "Lidded_Bed_End",
+  "tris": 752,
+  "budget_ok": true,
+  "size": [
+   2.0,
+   0.592,
+   0.38
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_05.glb"
+ }
+]
