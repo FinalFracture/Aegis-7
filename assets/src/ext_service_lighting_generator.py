@@ -135,5 +135,6 @@ sf.ASSETS.update({"cabinet": ("ext_junction_cabinet", cabinet, CAB, 400, "#35 ut
                   "cart": ("ext_service_hand_cart", cart, CART, 900, "#36 service hand cart 1.4x0.7x1.0"),
                   "light": ("ext_street_light_pole", light, LIGHT, 1200, "#21 amber street light 0.3x0.3x5.0"),
                   "blight": ("ext_bollard_light", blight, BL, 200, "#22 low bollard light 0.2x0.2x0.9")})
+sf.HEAD["light"] = 4.25
 if __name__ == "__main__":
     for k in (sys.argv[1:] or ["cabinet", "cart", "light", "blight"]): sf.build(k)

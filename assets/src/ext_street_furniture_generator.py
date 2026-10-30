@@ -137,9 +137,16 @@ def recenter(p):
     for k, (mk, m) in p.P.items(): uv = m.metadata["uv"]; m.apply_translation(d); m.metadata["uv"] = uv
     return p
 
+HEAD = {}  # key -> min y: adds a second contact-sheet row with a close-up of everything above that height (e.g. lamp heads)
+def headgeo(geo, y):
+    out = {}
+    for k, (mk, V, N, F) in geo.items():
+        keep = F[(V[F][:, :, 1] >= y).all(1)]
+        if len(keep): u, inv = np.unique(keep, return_inverse=True); out[k] = (mk, V[u], N[u], inv.reshape(-1, 3))
+    return out
 def build(key):
     name, fn, iters, budget, title = ASSETS[key]; out = os.path.join(ROOT, "design/assets", name); os.makedirs(out, exist_ok=True)
-    rep = []; tiles = []; _, _, _, iso = views()
+    rep = []; tiles = []; heads = []; _, _, _, iso = views()
     for v, nm in iters:
         p = recenter(fn(v)); chk = cc.check(p.P)
         gp = os.path.join(out, f"{name}_0{v}.glb"); tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
@@ -150,12 +157,15 @@ def build(key):
         rep.append(r); print(json.dumps(r))
         saved = {k: FMAT[k] for k in (A,)}; em = FMAT[A]
         FMAT[A] = _PBR(name=em.name, baseColorFactor=(0, 0, 0, 1), metallicFactor=0, roughnessFactor=1, emissiveFactor=(1.0, .58, 0.0))
-        im = crop(render_view(geo, iso, size=600, shadow=True)); FMAT.update(saved)
+        im = crop(render_view(geo, iso, size=600, shadow=True))
+        if key in HEAD: heads.append(crop(render_view(headgeo(geo, HEAD[key]), iso, size=600, shadow=False)))
+        FMAT.update(saved)
         tiles.append((f"{v}. {nm}\n{tris} tris | clip {'PASS' if chk['pass'] else 'FAIL'} | {chk['size'][0]:.2f}x{chk['size'][2]:.2f}x{chk['size'][1]:.2f} m", im))
-    fig, axs = plt.subplots(1, 5, figsize=(22, 6), facecolor="#F4F2EC")
-    for ax, (t, im) in zip(axs, tiles): ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=11, color="#333")
+    nr = 2 if heads else 1; fig, axs = plt.subplots(nr, 5, figsize=(22, 6 * nr), facecolor="#F4F2EC", squeeze=False)
+    for ax, (t, im) in zip(axs[0], tiles): ax.imshow(im); ax.axis("off"); ax.set_title(t, fontsize=11, color="#333")
+    for k, (ax, im) in enumerate(zip(axs[-1], heads) if heads else [], 1): ax.imshow(im); ax.axis("off"); ax.set_title(f"{k}. head close-up (y >= {HEAD[key]} m)", fontsize=11, color="#333")
     fig.suptitle(f"Rook  {title}  (budget {budget} tris)  candidates 01-05  |  Aegis-7 gunmetal/slate/titanium/amber, BLEND glass, +Z front, iso view", fontsize=13, color="#444")
-    plt.tight_layout(rect=(0, 0, 1, .93)); sp = os.path.join(out, f"{name}_contact_sheet.png"); fig.savefig(sp, dpi=90, facecolor="#F4F2EC"); plt.close(fig)
+    plt.tight_layout(rect=(0, 0, 1, .93 if nr == 1 else .96)); sp = os.path.join(out, f"{name}_contact_sheet.png"); fig.savefig(sp, dpi=90, facecolor="#F4F2EC"); plt.close(fig)
     json.dump(rep, open(os.path.join(out, f"{name}_report.json"), "w"), indent=1); print("sheet", sp); return rep
 
 if __name__ == "__main__":
