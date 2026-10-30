@@ -52,11 +52,12 @@ def wheels(p, xs=(-.45, .45), r=.09):
             p.add("Axle_Hardware", T, cyl_z(x, r, .012, min(z0, z1) - .02 if zs > 0 else z0 - .0, (z1 + .0) if zs < 0 else z1, 6) if False else cyl_z(x, r, .012, (.27 if zs > 0 else -.335), (.335 if zs > 0 else -.27), 6))
             p.add("Wheel_Brackets", G, box(x - .025, x + .025, r - .02, .18 + E, *((.255, .275) if zs > 0 else (-.275, -.255))))
 def handle(p, x=-.66, top=1.0):
-    p.add("Handle", T, *[box(x - .02, x + .02, .24 - E, top, z - .02, z + .02) for z in (-.28, .28)], box(x - .015, x + .015, top - .06, top - .02, -.26 - E, .26 + E))
+    p.add("Handle", T, *[box(x - .02, x + .02, .24 - E, top, z - .02, z + .02) for z in (-.28, .28)],
+          box(x - .015, x + .015, top - .06, top - .02, -.26 - E, -.12 + E), box(x - .015, x + .015, top - .06, top - .02, .12 - E, .26 + E))  # crossbar split at the grip
     p.add("Grip", A, box(x - .018, x + .018, top - .065, top - .015, -.12, .12))
 def cart(v):
     p = Pod(f"ext_service_hand_cart_0{v}"); wheels(p)
-    p.add("Deck", G if v != 4 else S, box(-.62, .62, .18, .24, -.3, .3)); handle(p)
+    p.add("Deck", G if v != 4 else S, box(-.64, .7, .18, .24, -.3, .3)); handle(p)
     if v == 1:  # Flatbed: amber deck edge rails
         p.add("Deck_Rails", A, box(-.6, .6, .24 - E, .27, .26, .28), box(-.6, .6, .24 - E, .27, -.28, -.26))
         p.add("Deck_Pad", S, box(-.58, .58, .24 - E, .25, -.24, .24))
