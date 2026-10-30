@@ -56,4 +56,23 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_combo():
+    """Jared's combo: option 4 service bay centre, option 3 lipped open shelves left, option 2 slate door right."""
+    p = Pod("Suit_Storage_Service_Combo"); carcass(p); hook(p, 1.65); bay_floor(p); helmet_shelf(p, 1.84)
+    p.add("Service_Panel", "gunmetal", blk(-.3, .3, .9, 1.4, ZB + .015, ZB + .05, .006, 1)); p.add("Umbilical_Port", "alloy", box(-.06, .06, 1.0, 1.12, ZB + .05, ZB + .08))
+    p.add("Status_Lights", "green", *[box(x - .02, x + .02, 1.28, 1.31, ZB + .05, ZB + .056) for x in (-.18, -.1, .1, .18)]); p.add("Port_Cap_Latch", "amber", box(-.03, .03, .97, .99, ZB + .05, ZB + .085))
+    SH = (.5, .95, 1.4, 1.85)
+    p.add("Open_Shelves", "white", *[box(SX[0], SX[1], y, y + .025, ZB + .015, ZF - .02) for y in SH]); p.add("Shelf_Lips", "gunmetal", *[box(SX[0], SX[1], y + .025, y + .06, ZF - .03, ZF - .02) for y in SH])
+    p.add("Shelf_Lip_Latches", "amber", *[box(SX[0] + .03, SX[0] + .06, y + .035, y + .05, ZF - .02, ZF - .012) for y in SH])
+    p.add("Shelf_Bin_Rails", "alloy", *[box(SX[0], SX[1], y + .2, y + .215, ZB + .015, ZB + .04) for y in SH[:3]])
+    doors(p, *SXR, "slate"); p.add("Door_Hinges", "gunmetal", *[box(SXR[1] - .02, SXR[1] - .005, y, y + .08, ZF - .036, ZF - .012) for y in (.3, 1.0, 1.75)])
+    p.add("Bay_Edge_Trim", "alloy", *[box(s * BW / 2 - .015, s * BW / 2 + .015, .06, H - .03, ZF - .006, ZF) for s in (-1, 1)])
+    p.add("Floor_Bolts", "alloy", *[cyl(x, ZF - .06, .01, .06, .068, 6) for x in (-1.1, -.5, .5, 1.1)])
+    return p
+def final_main():
+    p = final_combo(); gp = os.path.join(dc.ROOT, "godot/assets/models/suit_storage_service_combo.glb"); tris, geo = export_final(p.P, [gp])
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "size", (V.max(0) - V.min(0)).round(3), "bad", bad)
+    sp = os.path.join(OUT, "final_service_combo_sheet.png"); wg.sheet(p, sp, "Final  #23 suit storage, Service bay + open shelves + slate cabinet (empty)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
