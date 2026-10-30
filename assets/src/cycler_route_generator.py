@@ -6,6 +6,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 from hydro_planter_generator import cyl, box, bev, blk, Pod, dc, wg, plt
 from dining_chair_generator import export_final
 from bath_pod_generator import set_glass_blend
+from dining_chair_generator import FMAT, _PBR
+FMAT["sun_yellow"] = _PBR(name="SunYellow", baseColorFactor=(1.0, 0.86, 0.22, 1), metallicFactor=0.0, roughnessFactor=0.4, emissiveFactor=(1.0, 0.86, 0.22))
+FMAT["earth_blue"] = _PBR(name="EarthBlue", baseColorFactor=(0.2, 0.45, 0.95, 1), metallicFactor=0.0, roughnessFactor=0.5, emissiveFactor=(0.1, 0.25, 0.6))
+FMAT["mars_red"] = _PBR(name="MarsRedBrown", baseColorFactor=(0.66, 0.3, 0.18, 1), metallicFactor=0.0, roughnessFactor=0.6, emissiveFactor=(0.35, 0.14, 0.08))
 OUT = os.path.join(dc.ROOT, "design/assets/cycler_route")
 W, D, H = .9, .2, 1.0; ZB = -D / 2
 
@@ -69,26 +73,39 @@ def main():
 def cyl_z(x, y, r, z0, z1, n):
     m = trimesh.creation.cylinder(radius=r, segment=[(x, y, z0), (x, y, z1)], sections=n); m.metadata["uv"] = m.vertices[:, [0, 1]]; return m
 def final_lightbox():
+    """Rev C: one open prograde Earth-to-Mars transfer arc (opposition-class, close solar pass), to scale.
+    Orbits are circles at 1 AU and 1.524 AU around the sun. The arc is one conic with the sun at its focus: perihelion 0.6 AU, aphelion 1.524 AU.
+    It leaves Earth heading inward and prograde (CCW, true anomaly -109.1 deg), swings round perihelion and ends meeting Mars at aphelion (180 deg)."""
     p = iter3(); p.name = "Cycler_Route_Lightbox"; z1 = ZB + .09
-    for k in ("Cycler_Route", "Cycler_Marker", "Sun"): p.P.pop(k, None)
-    zs, sx, sy, th = ZB + .05, 0.0, .5, .6  # sun centre; route major axis points at th (radians) from the sun to perihelion
-    a, c = .18, .11; b = (a * a - c * c) ** .5; ux, uy = np.cos(th), np.sin(th); cx, cy = sx - c * ux, sy - c * uy
-    p.add("Sun_Disc", "amber", cyl_z(sx, sy, .04, zs - .004, zs + .008, 16)); p.add("Sun_Corona", "amber", *ellipse(sx, sy, .055, .055, zs, n=16, t=.004))
-    p.add("Cycler_Route", "violet", *ellipse(cx, cy, a, b, zs + .002, rot=th, n=40, t=.009))
-    ap = (cx - a * ux, cy - a * uy); p.add("Cycler_Marker", "white", box(ap[0] - .015, ap[0] + .015, ap[1] - .012, ap[1] + .012, zs - .006, zs + .014))
-    pp = (sx + (a - c) * ux, sy + (a - c) * uy); p.add("Perihelion_Tick", "white", seg((pp[0] + .012 * ux, pp[1] + .012 * uy, zs + .004), (pp[0] + .04 * ux, pp[1] + .04 * uy, zs + .004), .006, .006))
+    for k in ("Cycler_Route", "Cycler_Marker", "Sun", "Earth", "Mars", "Earth_Orbit", "Mars_Orbit"): p.P.pop(k, None)
+    zs, sx, sy, S = ZB + .05, 0.0, .5, .236          # sun centre; S = metres per AU (Mars orbit 0.36 m radius)
+    q, Q = .6, 1.524; a = (q + Q) / 2; e = (Q - q) / (Q + q); pl = a * (1 - e * e); om = np.radians(200)   # om: perihelion direction
+    def pt(nu, dz=0.0):
+        r = pl / (1 + e * np.cos(nu)) * S; return np.array((sx + r * np.cos(nu + om), sy + r * np.sin(nu + om), zs + dz))
+    nu0 = -np.arccos((pl / 1.0 - 1) / e); NU = np.linspace(nu0, np.pi, 40)
+    p.add("Sun_Disc", "sun_yellow", cyl_z(sx, sy, .03, zs - .004, zs + .008, 16)); p.add("Sun_Corona", "sun_yellow", *ellipse(sx, sy, .042, .042, zs, n=16, t=.004))
+    p.add("Earth_Orbit", "alloy", *ellipse(sx, sy, S, S, zs - .002, n=36, t=.004)); p.add("Mars_Orbit", "alloy", *ellipse(sx, sy, 1.524 * S, 1.524 * S, zs - .002, n=44, t=.004))
+    p.add("Transfer_Arc", "violet", *[seg(pt(NU[i], .002), pt(NU[i + 1], .002), .008, .008) for i in range(len(NU) - 1)])
+    E, M = pt(nu0, .006), pt(np.pi, .006); p.add("Earth", "earth_blue", bead(E[0], E[1], E[2], .022)); p.add("Mars", "mars_red", bead(M[0], M[1], M[2], .018))
+    chev = []
+    for nu in np.radians((-80, -30, 40, 95, 140)):
+        c, f = pt(nu, .004), pt(nu + .03, .004); tdir = (f - c)[:2] / np.linalg.norm((f - c)[:2]); nrm = np.array((-tdir[1], tdir[0]))
+        for s in (-1, 1): chev.append(seg(c, c + np.r_[-.022 * tdir + s * .014 * nrm, 0], .005, .005))
+    p.add("Direction_Chevrons", "gunmetal", *chev)
+    pp = pt(0, .004); rd = (pp[:2] - (sx, sy)) / np.linalg.norm(pp[:2] - (sx, sy)); p.add("Close_Pass_Tick", "gunmetal", seg(pp + np.r_[.012 * rd, 0], pp + np.r_[.04 * rd, 0], .006, .006))
+    sh = pt(np.radians(70), .006); p.add("Ship_Marker", "slate", box(sh[0] - .012, sh[0] + .012, sh[1] - .009, sh[1] + .009, sh[2] - .006, sh[2] + .008))
     p.add("Bezel_Trim", "alloy", *[box(x0, x1, y0, y1, z1, z1 + .006) for x0, x1, y0, y1 in ((-W / 2, W / 2, 0, .02), (-W / 2, W / 2, H - .02, H), (-W / 2, -W / 2 + .02, 0, H), (W / 2 - .02, W / 2, 0, H))])
     p.add("Glass_Retainer_Clips", "amber", *[box(x - .02, x + .02, y - .006, y + .006, z1, z1 + .01) for x in (-.25, .25) for y in (.025, H - .025)])
     p.add("Corner_Bolts", "gunmetal", *[box(x - .007, x + .007, y - .007, y + .007, z1 + .006, z1 + .01) for x in (-W / 2 + .01, W / 2 - .01) for y in (.01, H - .01)])
     p.add("Backlight_Diffuser", "white", box(-W / 2 + .05, W / 2 - .05, .08, H - .05, ZB + .03, ZB + .034))
-    p.add("Star_Field", "white", *[box(x - .004, x + .004, y - .004, y + .004, ZB + .034, ZB + .037) for x, y in ((-.33, .85), (-.2, .9), (.28, .88), (.34, .72), (-.36, .3), (.32, .2), (-.1, .14), (.15, .86))])
+    p.add("Star_Field", "white", *[box(x - .004, x + .004, y - .004, y + .004, ZB + .034, ZB + .037) for x, y in ((-.37, .9), (-.2, .93), (.3, .92), (.38, .8), (-.38, .2), (.36, .12), (-.3, .1), (.2, .9))])
     p.add("Route_Label", "slate", box(-.2, .2, .035, .065, ZB + .03, ZB + .04)); p.add("Label_Glyphs", "violet", *[box(-.17 + i * .07, -.13 + i * .07, .043, .057, ZB + .04, ZB + .043) for i in range(5)])
-    p.add("Power_Conduit", "gunmetal", box(W / 2 - .07, W / 2 - .04, -.0, .03, ZB - .0, ZB + .02))
+    p.add("Power_Conduit", "gunmetal", box(W / 2 - .07, W / 2 - .04, 0, .03, ZB, ZB + .02))
     return p
 def final_main():
     p = final_lightbox(); gp = os.path.join(dc.ROOT, "godot/assets/models/cycler_route_lightbox.glb"); tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
     V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
     print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
-    p.P.pop("Front_Glass", None); sp = os.path.join(OUT, "final_lightbox_sheet.png"); wg.sheet(p, sp, "Final  #32 cycler route model, Lightbox rev B: close solar pass (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+    p.P.pop("Front_Glass", None); sp = os.path.join(OUT, "final_lightbox_sheet.png"); wg.sheet(p, sp, "Final  #32 cycler route model, Lightbox rev C: Earth-to-Mars transfer, close solar pass, to scale (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
 if __name__ == "__main__":
     final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
