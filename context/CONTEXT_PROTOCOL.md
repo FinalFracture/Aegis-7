@@ -40,3 +40,8 @@ When any teammate (`Atlas`, `Vance`, `Sloane`, `Rook`, `Gage`, or `Scribe`) reac
   - At **`>= 10.0 UC`** (`+270,240` net new tokens / `1,432,276` lifetime project tokens / `~60.0%` account usage), Scribe and Atlas **pause all team work immediately** and wait for Jared's instruction before starting any further work.
 - **Config & Reset:** Tracked in `/workspace/game-project/context/usage_budget.json` and computed automatically on every `python3 /workspace/game-project/context/check_context.py --update-status` run. To start a fresh `10 UC` window after Jared approves more work, run `python3 /workspace/game-project/context/check_context.py --reset-budget --account-pct <current_pct> --budget-uc 10.0`.
 
+
+
+## Standing Rules (added 2026-10-30)
+- **Coding rule:** All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage.
+- **Usage cap:** Weekly hard cap 93% account usage; reported weekly usage ~59% (Atlas, Fri 2026-10-30).

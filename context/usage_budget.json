@@ -16,11 +16,11 @@
   "baseline_active_tokens": 240106,
   "target_pause_lifetime_tokens": 2511628,
   "baseline_by_bot": {
-    "Atlas": 42523,
-    "Vance": 26052,
-    "Sloane": 32644,
-    "Rook": 39348,
-    "Gage": 30145,
+    "Atlas": 0,
+    "Vance": 0,
+    "Sloane": 0,
+    "Rook": 0,
+    "Gage": 0,
     "Scribe": 0,
     "Quinn": 0,
     "Patch": 0
@@ -87,5 +87,11 @@
     "Sunday": 90.0
   },
   "daily_cap_rule": "Cumulative weekly account usage caps by day of week (Monday<=10%, Tuesday<=20%, Wednesday<=30%, Thursday<=40%, Friday<=50%, Saturday<=70%, Sunday<=90%). No work on Wednesday, Oct 28, 2026.",
-  "authorized_window": "15.0 UC authorized by Jared ([t12u]) until 2026-10-28 04:00 AM CT"
+  "authorized_window": "15.0 UC authorized by Jared ([t12u]) until 2026-10-28 04:00 AM CT",
+  "weekly_hard_cap_pct": 93,
+  "reported_usage_pct": 59,
+  "reported_at": "2026-10-30T04:00:00-05:00",
+  "reported_by": "Atlas",
+  "usage_note": "Weekly hard cap 93% account usage; reported weekly usage ~59% (Atlas, Fri 2026-10-30).",
+  "coding_rule": "All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\\Users\\upchu\\.grok\\bin\\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage."
 }

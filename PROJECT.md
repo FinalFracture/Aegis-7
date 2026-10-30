@@ -101,3 +101,8 @@ All in `/workspace/game-project/assets/glb/winners/`.
 - **District IV & Expanded 20-Building Metropolis Renders:**
   - **District IV (`district_04_shipyard_civic.tscn`):** `/workspace/game-project/godot/renders/buildings/district_04/district_04_sheet.png`
   - **Grand 20-Building + 5-Prop Metropolis (`cylinder_hab7_metropolis.tscn`):** `/workspace/game-project/godot/renders/buildings/metropolis/cylinder_hab7_metropolis_sheet.png`
+
+
+## Standing Rules (added 2026-10-30)
+- **Coding rule:** All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage.
+- **Usage cap:** Weekly hard cap 93% account usage; reported weekly usage ~59% (Atlas, Fri 2026-10-30).

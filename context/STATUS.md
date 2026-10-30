@@ -1,10 +1,12 @@
 # Team Context, Token Health & 10% Usage Budget Status (`STATUS.md`)
 
-- **Last Checked:** 2026-10-27 22:24:57 CDT
+- **Last Checked:** 2026-10-30 04:04:29 CDT
 - **Managed By:** Scribe (`3b011c08-32f8-434e-8285-6cd66198bf29`)
 - **Project:** *Cylinder Hab-7* (O'Neill Cylinder Habitat — Unified Aegis-7 Standard)
 - **Per-Bot Rotation Cap:** **`150,000` estimated tokens** (~`600 KB` raw JSON transcript) | Warning at **`120,000` tokens** (`80%`)
 - **Weekly Account Usage Reset Schedule:** **Mondays at 11:28 UTC / 5:28 AM CST (6:28 AM CDT; next reset: Monday, Nov 2, 2026 at 5:28 AM CST)**
+- **Weekly Hard Cap:** **93%** account usage | Reported usage **~59%** (Atlas, 2026-10-30)
+- **Coding Rule:** All coding runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`.
 - **Team Usage Currency (`UC`):** **`1 UC` = `1%` Account Usage = `29,447` team context tokens** (`~115.0 KB` transcript / `~45` messages, recalibrated at `25.0%` weekly usage (`25.5%` live = `28,869` tok/UC) from `+736,168` post-reset tokens (`+9.0%` vs old `27,024` tok/UC))
 - **Active Sprint (`Godot 4.7 Upgrade, 7GB->59MB De-Bloat, Clean Shadows & Architectural PBR Sprint (+15.0 UC Authorized until 4:00 AM CT -> 42.02 UC Cap)`):** **`42.0 UC` (`+1,237,363` new team context tokens)** (`0.0% -> 42.0%` post-reset account usage; hard pause at `2,511,628` lifetime project tokens)
 
@@ -13,7 +15,7 @@
 | Metric | Value | Notes |
 | :--- | :--- | :--- |
 | **Sprint Budget Status** | **WITHIN BUDGET — 27.02 / 42.0 UC Used (15.00 UC / 441,648 tok remaining before pause)** | Hard pause at `42.0 UC` (`+1,237,363` net new tokens) |
-| **Cumulative Project Lifetime Tokens (All 22 Bots)** | **`2,069,980` tok** (`8,085.9 KB` / `4,838` msgs) | Active 8 bots: `0` tok + Retired 14 bots: `2,069,980` tok |
+| **Cumulative Project Lifetime Tokens (All 30 Bots)** | **`2,069,980` tok** (`8,085.9 KB` / `4,838` msgs) | Active 8 bots: `0` tok + Retired 22 bots: `2,069,980` tok |
 | **Sprint Baseline (Post-Monday 06:27 CDT Weekly Reset)** | **`1,274,265` tok** | Active 6-bot baseline: `240,106` tok (`2026-10-26 11:17 CDT`) |
 | **Sprint Net New Tokens Burned** | **`+795,715` / `1,237,363` tok** (`64.3%`) | Remaining before pause: **`441,648` tok** |
 | **Sprint Usage Credits (`UC`) Burned** | **`27.02` / `42.02 UC`** | Remaining before pause: **`15.00 UC`** (Warn at `40.5 UC`) |
@@ -23,16 +25,16 @@
 
 | Bot Name | Agent ID | Role | Messages | Raw Transcript | Active Context Tokens | Load vs 150k Rotate Cap | Sprint Delta (`UC` Burned vs `7.00 UC` Share) | Rotation Status | Active Handoff File |
 | :--- | :--- | :--- | ---: | ---: | ---: | ---: | :--- | :--- | :--- |
-| **Atlas** | `3a664a65-34d6-47ae-a9f6-337906efe2a3` | Game PM | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/atlas-handoff-v4.md` |
-| **Vance** | `245e93a0-6301-45d6-b371-ad1e37a0dfd1` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/vance-handoff-v2.md` |
-| **Sloane** | `bf6c8763-6c8b-405e-bb10-e7201e756464` | Interior, Lighting & Texture Designer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/sloane-handoff-v3.md` |
-| **Rook** | `b2e64c87-0269-4f42-b5da-44d4b1a59db2` | 3D Modeling Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/rook-handoff-v3.md` |
-| **Gage** | `5a97ab49-19f0-4b33-889f-e9b5a5389451` | Godot 4 Developer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/gage-handoff-v3.md` |
-| **Quinn** | `2239f53a-2bae-4c89-926c-e4969c082273` | Market Research & Gameplay Mechanics Strategist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/quinn-handoff-v2.md` |
-| **Scribe** | `3b011c08-32f8-434e-8285-6cd66198bf29` | Context & Handoff Manager | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/scribe-handoff-v5.md` |
-| **Patch** | `0ae8822a-f155-4a07-a4d9-a0f01c05e10b` | QA & Automated Playtester Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/patch-handoff-v1.md` |
+| **Atlas** | `f7d262d1-8cde-4c78-8b07-3ab3fd11c960` | Game PM | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/atlas-handoff-v5.md` |
+| **Vance** | `242c8419-7b14-4f27-9cdc-e87328eff983` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/vance-handoff-v3.md` |
+| **Sloane** | `0fc258d4-0dea-4cf3-ab06-338f21756ae6` | Interior, Lighting & Texture Designer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/sloane-handoff-v4.md` |
+| **Rook** | `88cf8abe-1b1e-406c-9123-39e87610c732` | 3D Modeling Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/rook-handoff-v4.md` |
+| **Gage** | `2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38` | Godot 4 Developer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/gage-handoff-v4.md` |
+| **Quinn** | `0359c20f-c476-48f7-99c2-c49637950351` | Market Research & Gameplay Mechanics Strategist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/quinn-handoff-v3.md` |
+| **Scribe** | `61a860b0-0159-406a-af8c-a969dff4722b` | Context & Handoff Manager | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/scribe-handoff-v6.md` |
+| **Patch** | `ecd78f3d-be8f-43e4-b543-0c912d6d00ea` | QA & Automated Playtester Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/patch-handoff-v2.md` |
 
-## Retired Predecessor Instances Included in Lifetime Project Total (`14` Bots)
+## Retired Predecessor Instances Included in Lifetime Project Total (`22` Bots)
 
 | Retired Bot | Agent ID | Role | Messages | Raw Transcript | Final Context Tokens | Usage Credits (`UC`) |
 | :--- | :--- | :--- | ---: | ---: | ---: | ---: |
@@ -50,6 +52,14 @@
 | **delete-Scribe (v2)** | `4ea864bb-316a-47d3-8dc0-bd12475470c8` | Context & Handoff Manager | 318 | 508.2 KB | ~130,094 tok | `4.42 UC` |
 | **delete-Scribe (v3)** | `49521640-e6fc-4f8f-b873-726f3f599220` | Context & Handoff Manager | 336 | 539.4 KB | ~138,081 tok | `4.69 UC` |
 | **delete-Scribe (v4)** | `929b3cf3-1ba3-489f-945f-4734223c6605` | Context & Handoff Manager | 97 | 225.5 KB | ~57,728 tok | `1.96 UC` |
+| **delete-Atlas (2026-10-30) pending rename** | `3a664a65-34d6-47ae-a9f6-337906efe2a3` | Game PM | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Vance (2026-10-30)** | `245e93a0-6301-45d6-b371-ad1e37a0dfd1` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Sloane (2026-10-30)** | `bf6c8763-6c8b-405e-bb10-e7201e756464` | Interior, Lighting & Texture Designer | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Rook (2026-10-30)** | `b2e64c87-0269-4f42-b5da-44d4b1a59db2` | 3D Modeling Specialist | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Gage (2026-10-30)** | `5a97ab49-19f0-4b33-889f-e9b5a5389451` | Godot 4 Developer | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Scribe (2026-10-30) pending rename** | `3b011c08-32f8-434e-8285-6cd66198bf29` | Context & Handoff Manager | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Quinn (2026-10-30)** | `2239f53a-2bae-4c89-926c-e4969c082273` | Market Research & Gameplay Mechanics Strategist | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
+| **delete-Patch (2026-10-30)** | `0ae8822a-f155-4a07-a4d9-a0f01c05e10b` | QA & Automated Playtester Specialist | 0 | 0.0 KB | ~0 tok | `0.00 UC` |
 
 ## Sleeping Quarters Fixtures (ALL 5 LOCKED) & 10-Room Pipeline Status
 - **Fixture #1 — EVA Suit & Personal Gear Locker (`locker_round1`):** **LOCKED WINNER `#02`** (`/workspace/game-project/assets/glb/winners/locker_winner_01_dual_bay_bulkhead.glb`, selected by Jared).

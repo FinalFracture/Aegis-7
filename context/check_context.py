@@ -29,14 +29,14 @@ DEFAULT_SPRINT_BUDGET_UC = 10.0  # 10% Account Usage cap before pausing work (27
 DEFAULT_SPRINT_WARN_UC = 8.0     # 8% Account Usage warning threshold (216,192 tokens)
 
 DEFAULT_TEAM = [
-    {"name": "Atlas", "id": "3a664a65-34d6-47ae-a9f6-337906efe2a3", "role": "Game PM", "handoff_v1": "atlas-handoff-v4.md"},
-    {"name": "Vance", "id": "245e93a0-6301-45d6-b371-ad1e37a0dfd1", "role": "Sci-Fi Architect, Movie Prop & Set Design Specialist", "handoff_v1": "vance-handoff-v2.md"},
-    {"name": "Sloane", "id": "bf6c8763-6c8b-405e-bb10-e7201e756464", "role": "Interior, Lighting & Texture Designer", "handoff_v1": "sloane-handoff-v3.md"},
-    {"name": "Rook", "id": "b2e64c87-0269-4f42-b5da-44d4b1a59db2", "role": "3D Modeling Specialist", "handoff_v1": "rook-handoff-v3.md"},
-    {"name": "Gage", "id": "5a97ab49-19f0-4b33-889f-e9b5a5389451", "role": "Godot 4 Developer", "handoff_v1": "gage-handoff-v3.md"},
-    {"name": "Quinn", "id": "2239f53a-2bae-4c89-926c-e4969c082273", "role": "Market Research & Gameplay Mechanics Strategist", "handoff_v1": "quinn-handoff-v2.md"},
-    {"name": "Scribe", "id": "3b011c08-32f8-434e-8285-6cd66198bf29", "role": "Context & Handoff Manager", "handoff_v1": "scribe-handoff-v5.md"},
-    {"name": "Patch", "id": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b", "role": "QA & Automated Playtester Specialist", "handoff_v1": "patch-handoff-v1.md"},
+    {"name": "Atlas", "id": "f7d262d1-8cde-4c78-8b07-3ab3fd11c960", "role": "Game PM", "handoff_v1": "atlas-handoff-v5.md"},
+    {"name": "Vance", "id": "242c8419-7b14-4f27-9cdc-e87328eff983", "role": "Sci-Fi Architect, Movie Prop & Set Design Specialist", "handoff_v1": "vance-handoff-v3.md"},
+    {"name": "Sloane", "id": "0fc258d4-0dea-4cf3-ab06-338f21756ae6", "role": "Interior, Lighting & Texture Designer", "handoff_v1": "sloane-handoff-v4.md"},
+    {"name": "Rook", "id": "88cf8abe-1b1e-406c-9123-39e87610c732", "role": "3D Modeling Specialist", "handoff_v1": "rook-handoff-v4.md"},
+    {"name": "Gage", "id": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38", "role": "Godot 4 Developer", "handoff_v1": "gage-handoff-v4.md"},
+    {"name": "Quinn", "id": "0359c20f-c476-48f7-99c2-c49637950351", "role": "Market Research & Gameplay Mechanics Strategist", "handoff_v1": "quinn-handoff-v3.md"},
+    {"name": "Scribe", "id": "61a860b0-0159-406a-af8c-a969dff4722b", "role": "Context & Handoff Manager", "handoff_v1": "scribe-handoff-v6.md"},
+    {"name": "Patch", "id": "ecd78f3d-be8f-43e4-b543-0c912d6d00ea", "role": "QA & Automated Playtester Specialist", "handoff_v1": "patch-handoff-v2.md"},
 ]
 
 RETIRED_TEAM = [
@@ -54,6 +54,14 @@ RETIRED_TEAM = [
     {"name": "delete-Scribe (v2)", "id": "4ea864bb-316a-47d3-8dc0-bd12475470c8", "role": "Context & Handoff Manager"},
     {"name": "delete-Scribe (v3)", "id": "49521640-e6fc-4f8f-b873-726f3f599220", "role": "Context & Handoff Manager"},
     {"name": "delete-Scribe (v4)", "id": "929b3cf3-1ba3-489f-945f-4734223c6605", "role": "Context & Handoff Manager"},
+    {"name": "delete-Atlas (2026-10-30) pending rename", "id": "3a664a65-34d6-47ae-a9f6-337906efe2a3", "role": "Game PM"},
+    {"name": "delete-Vance (2026-10-30)", "id": "245e93a0-6301-45d6-b371-ad1e37a0dfd1", "role": "Sci-Fi Architect, Movie Prop & Set Design Specialist"},
+    {"name": "delete-Sloane (2026-10-30)", "id": "bf6c8763-6c8b-405e-bb10-e7201e756464", "role": "Interior, Lighting & Texture Designer"},
+    {"name": "delete-Rook (2026-10-30)", "id": "b2e64c87-0269-4f42-b5da-44d4b1a59db2", "role": "3D Modeling Specialist"},
+    {"name": "delete-Gage (2026-10-30)", "id": "5a97ab49-19f0-4b33-889f-e9b5a5389451", "role": "Godot 4 Developer"},
+    {"name": "delete-Scribe (2026-10-30) pending rename", "id": "3b011c08-32f8-434e-8285-6cd66198bf29", "role": "Context & Handoff Manager"},
+    {"name": "delete-Quinn (2026-10-30)", "id": "2239f53a-2bae-4c89-926c-e4969c082273", "role": "Market Research & Gameplay Mechanics Strategist"},
+    {"name": "delete-Patch (2026-10-30)", "id": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b", "role": "QA & Automated Playtester Specialist"},
 ]
 
 POS_RE = re.compile(r"positions\s+(\d+)[–-](\d+)\s+of\s+(\d+)")
@@ -250,6 +258,8 @@ def generate_status_md(metrics_by_name: dict, retired_metrics: list, budget: dic
         "- **Project:** *Cylinder Hab-7* (O'Neill Cylinder Habitat — Unified Aegis-7 Standard)",
         "- **Per-Bot Rotation Cap:** **`150,000` estimated tokens** (~`600 KB` raw JSON transcript) | Warning at **`120,000` tokens** (`80%`)",
         f"- **Weekly Account Usage Reset Schedule:** **{budget['weekly_reset_schedule']}**",
+        "- **Weekly Hard Cap:** **93%** account usage | Reported usage **~59%** (Atlas, 2026-10-30)",
+        "- **Coding Rule:** All coding runs through the Grok Build CLI (grok 1.0.70, `C:\\Users\\upchu\\.grok\\bin\\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`.",
         f"- **Team Usage Currency (`UC`):** **`1 UC` = `1%` Account Usage = `{budget['tok_per_uc']:,}` team context tokens** (`~115.0 KB` transcript / `~45` messages, recalibrated at `25.0%` weekly usage (`25.5%` live = `28,869` tok/UC) from `+736,168` post-reset tokens (`+9.0%` vs old `27,024` tok/UC))",
         f"- **Active Sprint (`{budget['sprint_name']}`):** **`{budget['sprint_budget_uc']:.1f} UC` (`+{budget['sprint_budget_tokens']:,}` new team context tokens)** (`{budget['baseline_account_pct']:.1f}% -> {budget['target_pause_account_pct']:.1f}%` post-reset account usage; hard pause at `{budget['target_pause_lifetime_tokens']:,}` lifetime project tokens)",
         "",
@@ -258,7 +268,7 @@ def generate_status_md(metrics_by_name: dict, retired_metrics: list, budget: dic
         "| Metric | Value | Notes |",
         "| :--- | :--- | :--- |",
         f"| **Sprint Budget Status** | **{budget['budget_status']}** | Hard pause at `{budget['sprint_budget_uc']:.1f} UC` (`+{budget['sprint_budget_tokens']:,}` net new tokens) |",
-        f"| **Cumulative Project Lifetime Tokens (All 22 Bots)** | **`{budget['lifetime_tokens']:,}` tok** (`{budget['lifetime_kb']:,.1f} KB` / `{budget['lifetime_msgs']:,}` msgs) | Active 8 bots: `{budget['active_tokens']:,}` tok + Retired 14 bots: `{budget['retired_tokens']:,}` tok |",
+        f"| **Cumulative Project Lifetime Tokens (All 30 Bots)** | **`{budget['lifetime_tokens']:,}` tok** (`{budget['lifetime_kb']:,.1f} KB` / `{budget['lifetime_msgs']:,}` msgs) | Active 8 bots: `{budget['active_tokens']:,}` tok + Retired 22 bots: `{budget['retired_tokens']:,}` tok |",
         f"| **Sprint Baseline (Post-Monday 06:27 CDT Weekly Reset)** | **`{budget['baseline_lifetime_tokens']:,}` tok** | Active 6-bot baseline: `{budget['baseline_active_tokens']:,}` tok (`2026-10-26 11:17 CDT`) |",
         f"| **Sprint Net New Tokens Burned** | **`+{budget['sprint_delta_tokens']:,}` / `{budget['sprint_budget_tokens']:,}` tok** (`{budget['sprint_pct_of_cap']}%`) | Remaining before pause: **`{budget['sprint_remaining_tokens']:,}` tok** |",
         f"| **Sprint Usage Credits (`UC`) Burned** | **`{budget['sprint_used_uc']:.2f}` / `{budget['sprint_budget_uc']:.2f} UC`** | Remaining before pause: **`{budget['sprint_remaining_uc']:.2f} UC`** (Warn at `{budget['sprint_warn_uc']:.1f} UC`) |",
@@ -281,7 +291,7 @@ def generate_status_md(metrics_by_name: dict, retired_metrics: list, budget: dic
     lines.extend(
         [
             "",
-            "## Retired Predecessor Instances Included in Lifetime Project Total (`14` Bots)",
+            "## Retired Predecessor Instances Included in Lifetime Project Total (`22` Bots)",
             "",
             "| Retired Bot | Agent ID | Role | Messages | Raw Transcript | Final Context Tokens | Usage Credits (`UC`) |",
             "| :--- | :--- | :--- | ---: | ---: | ---: | ---: |",
