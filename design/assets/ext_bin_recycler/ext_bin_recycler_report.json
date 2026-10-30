@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_bin_recycler_01",
+  "style": "Twin_Slot",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   1.0,
+   0.51
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bin_recycler/ext_bin_recycler_01.glb"
+ },
+ {
+  "cand": "ext_bin_recycler_02",
+  "style": "Round_Drum",
+  "tris": 380,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   1.0,
+   0.476
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bin_recycler/ext_bin_recycler_02.glb"
+ },
+ {
+  "cand": "ext_bin_recycler_03",
+  "style": "Glass_Window_Sorter",
+  "tris": 192,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   1.0,
+   0.51
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0079,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bin_recycler/ext_bin_recycler_03.glb"
+ },
+ {
+  "cand": "ext_bin_recycler_04",
+  "style": "Octagon_Tower",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   0.492,
+   1.0,
+   0.506
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bin_recycler/ext_bin_recycler_04.glb"
+ },
+ {
+  "cand": "ext_bin_recycler_05",
+  "style": "Compactor",
+  "tris": 128,
+  "budget_ok": true,
+  "size": [
+   0.48,
+   1.0,
+   0.49
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bin_recycler/ext_bin_recycler_05.glb"
+ }
+]
