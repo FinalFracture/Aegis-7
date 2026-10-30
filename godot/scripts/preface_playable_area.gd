@@ -883,10 +883,10 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 # Yaw 90 maps local -Z onto world -X (west wall).
 const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 	{
-		# Back against north wall z=8.76. Local AABB z -0.30..0.15 (back face -> world z=8.75).
+		# north wall z 8.76, laundry segment x -3.48..-0.48, clear of pillar at x -0.28..0.28
 		"id": "Prop38_FoldingCounter",
 		"path": "res://assets/models/folding_counter_fold_leaf_3p0.glb",
-		"position": Vector3(-1.10, 0.235, 8.45),
+		"position": Vector3(-1.98, 0.235, 8.45),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FOLDING COUNTER",
@@ -895,11 +895,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# Local -Z faces world -X. Back against west wall face x=-5.525.
-		# Local AABB z -0.20..0.20, width 1.2 (back face -> world x=-5.51).
+		# west wall x -5.525 spans z 6.55..7.90
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
-		"position": Vector3(-5.31, 0.235, 7.00),
+		"position": Vector3(-5.315, 0.235, 7.22),
 		"yaw": 90.0,
 		"mount": "wall",
 		"label": "LAUNDRY FLIP SEAT",
@@ -908,11 +907,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# Back against north wall z=8.76. Local AABB x -1.25..1.25, z -0.40..0.40
-		# (back face -> world z=8.75). Clear of the West_Storage partition.
+		# north wall segment x 5.8..12.2; footprint x 7.95..10.45; clear of West_Storage blocks at x 2.2..3.05 and 4.2..5.05
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(1.90, 0.235, 8.35),
+		"position": Vector3(9.20, 0.235, 8.35),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
@@ -921,10 +919,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# Back to north wall. Local AABB z -0.25..0.25 (back face -> world z=8.75).
+		# footprint x 5.90..7.80, clear of pillar x 5.22..5.78
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(5.10, 0.235, 8.50),
+		"position": Vector3(6.85, 0.235, 8.50),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
