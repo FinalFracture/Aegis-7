@@ -165,4 +165,5 @@ Plans: `residential_roomlayout_rev_c_v3_L1.png` / `_v3_L2.png`. The main `reside
     - `design/sloane_preface_and_wrist_textures_spec.md` 188
     - `design/preface_playable_residential_sector_spec.md` 22, 54
     - the 204 emitter beat, earlier in this file (table row 204) and `residential_apartment_layout_v2_revB.md` 107
+- **Rev C.2a:** the resident lockers (#24) move off-building to a future building (TBD; Rook keeps Bench Niche). The Laundry N wall gets a 3.0 m folding counter extension (#38, X -2.6..0.4) and lost-and-found bins + a notice board (#55, X -4.3..-3.0). The bench stays at X -3.5..-2.3.
 - **Notes for Gage (rebuild):** commit 495e4ce (Rook, "rev C #17/#26/#31 moved…") swept in someone else's uncommitted `context/playtest_bug_report.md` edits. Review that file's diff at the rebuild.

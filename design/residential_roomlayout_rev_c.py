@@ -35,7 +35,7 @@ L1=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-8,1.5
      F(-13.9,7.3,-11.9,8.9,"double bed","bed"),F(-8,8.3,-5.5,8.9,"tool wall + work mat","work"),
      # Laundry
      F(-4.4,2.6,-3.6,3.4,"W/D","mach"),F(-4.4,3.5,-3.6,4.3,"W/D","mach"),F(-4.4,4.4,-3.6,5.2,"W/D","mach"),F(-4.4,5.3,-3.6,6.1,"W/D","mach"),
-     F(-0.2,3,0.4,6.5,"folding\ncounter","work"),F(-4.4,8.4,0.4,8.9,"resident lockers","sto"),F(-3.5,6.6,-2.3,7.0,"bench","live"),
+     F(-0.2,3,0.4,6.5,"folding\ncounter","work"),F(-2.6,8.3,0.4,8.9,"folding counter ext.","work"),F(-4.3,8.6,-3.0,8.9,"lost+found","sto"),F(-3.5,6.6,-2.3,7.0,"bench","live"),
      # Maintenance
      F(5.3,1,5.9,3.5,"sub-\nstation","mach"),F(0.6,3.6,1.1,6.4,"tool\nwall","work"),F(4.3,8.4,5.9,8.9,"spares","sto"),
      F(0.6,8.4,1.9,8.9,"coupler arm\nmounts","mach"),

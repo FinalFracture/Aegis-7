@@ -30,7 +30,7 @@ Sizes are rough W × D × H in meters.
 | 11 | ~~Dining table for 4~~ `godot/assets/models/table_pedestal_dining4.glb` | 103, 202 | 2 | 1.6 × 0.9 × 0.75 |
 | 12 | ~~Tea table (low)~~ `godot/assets/models/table_pedestal_tea.glb` | 102, 203 | 2 | 1.2 × 0.8 × 0.45 |
 | 13 | ~~Dining chair/stool~~ `godot/assets/models/dining_chair_swivel.glb` | tables above | 20 | 0.45 × 0.45 × 0.9 |
-| 14 | Tea set (pot + cups) | 102, 203 | 2 | 0.4 × 0.3 × 0.2 |
+| 14 | ~~Tea set (pot + cups)~~ `godot/assets/models/tea_set_rail_caddy.glb` | 102, 203 | 2 | 0.4 × 0.3 × 0.2 |
 
 
 ## D. Living
@@ -61,14 +61,15 @@ Sizes are rough W × D × H in meters.
 | 27 | ~~Task lamp (level blockout `Apt201_Workbench_TaskLight`)~~ `godot/assets/models/task_lamp_rail_slider.glb` | 104, 201, 204 | 3 (C.2: on the 104 and 204 window desks; 201 as a side-table/floor-stand lamp beside the reading chair) | 0.2 × 0.2 × 0.5 |
 | 28 | ~~Window desk + data slates~~ `godot/assets/models/window_desk_cantilever_slab.glb` | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
 | 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
-| 30 | Telescope | 104 | 1 | 0.6 × 0.6 × 1.5 |
+| 30 | ~~Telescope~~ `godot/assets/models/telescope_pier_dobsonian.glb` | 104 | 1 | 0.6 × 0.6 × 1.5 |
 | 31 | ~~Emitter repair bench (dismantled field emitter)~~ MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 204; not modeled now, waits for that building | ~~204~~ lab/workshop building | — | 0.9 × 1.9 × 0.9 |
-| 32 | Cycler route model (wall) | 203 | 1 | 0.9 × 0.2 × 1.0 |
+| 32 | ~~Cycler route model (wall)~~ `godot/assets/models/cycler_route_lightbox.glb` | 203 | 1 | 0.9 × 0.2 × 1.0 |
 | 33 | ~~Hydro planter (window/balcony)~~ MOVED TO EXTERIOR (Jared, Oct 29): removed from 103/202; Tiered Steps planter now serves the hydro co-op / sidewalk planters, `godot/assets/models/hydro_planter_tiered_exterior.glb` | ~~103, 202~~ exterior | — | 4.0 × 0.4 × 0.7 |
 | 34 | ~~Potted plants set~~ (Jared's final pick, Oct 29): `godot/assets/models/potted_plants_rail_cradles.glb` (default 102) and `godot/assets/models/potted_plants_pocket_column.glb` (default 203). SUPERSEDED, kept unplaced: `potted_plants_moulded_trio.glb`, `potted_plants_shared_tray.glb` | 102, 203 | 2 | 1.20 × 0.55 × 0.25 (wall rail) / 0.90 × 0.78 × 0.41 |
 | 35 | ~~Toy chest + rail bins + toy kit~~ (Jared combined iter 1 + 3, Oct 29): `godot/assets/models/toy_chest_rail_bins.glb` | 103 | 1 | 1.2 × 0.6 × 0.5 chest; bins on a 0.90 m rail to 1.21 m |
 | 52 | ~~Fold-down wall desk~~ DROPPED in C.2 (Jared: don't shape 201 around the objective; Gage re-points the objective at rebuild) | — | — | — |
 | 53 | Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
+| 55 | Lost-and-found rail bins + wordless notice board (C.2a kitbash: #35 rail bins + the exterior #52 board mesh) | Laundry N wall X -4.3..-3.0 | 1 | 1.3 × 0.3 × 1.4 |
 | 54 | Removal decal set (dust outline of the lab bench and workbench, shelf ghost + wall anchor holes, planter clamp-bolt marks + water ring) | 104, 201, 204 (emitter bench outline), 103, 202 | 1 set | decals |
 | 36 | Small clutter kit (meal tray, cups, cables, photo frames as decals) | 101, 102, 104, 202 | 1 kit | small |
 
@@ -77,7 +78,7 @@ Sizes are rough W × D × H in meters.
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
 | 37 | ~~Washer/dryer stack~~ `godot/assets/models/washer_dryer_alloy_reclaim.glb` | Laundry | 4 | 0.8 × 0.8 × 1.9 |
-| 38 | Folding counter | Laundry | 1 | 0.6 × 3.5 × 0.9 |
+| 38 | Folding counter (C.2a: +1 run on the N wall, where the lockers were, X -2.6..0.4) | Laundry | 2 | 0.6 × 3.5 × 0.9 / 3.0 × 0.6 × 0.9 |
 | 39 | Bench | Laundry | 1 | 1.2 × 0.4 × 0.45 |
 
 
@@ -101,16 +102,18 @@ Sizes are rough W × D × H in meters.
 | 49 | ~~Sprocket~~ `godot/assets/models/char_bot_r2_05_livery_01_sprocket.glb` | Maintenance | 1 | 0.78 × 0.77 × 1.03 |
 | 50 | ~~Sweep (stuck)~~ `godot/assets/models/char_bot_r2_05_livery_02_sweep.glb` | 204 | 1 | same |
 
-## Counts (rev C.2, pending Jared approval)
-- **Item numbers 1–54.** Moved out (kept, not deleted): **5** (#17, #26, #31 → lab/workshop building; #29 → lab building; #33 → exterior). Dropped: **1** (#52 fold-down desk). New in C.1/C.2: #53 lab crate, #54 removal decals.
+## Counts (rev C.2a)
+- **Item numbers 1–55.**
+  - Moved out (kept, not deleted): **6**. #17, #26, #31 go to the lab/workshop building, #29 to the lab building, #33 to the exterior, and #24 to a future building (TBD; Rook's Bench Niche, `locker_run_bench_niche.glb`).
+  - Dropped: **1** (#52).
+  - New: #53, #54, #55.
 - **Active in the residential building: 48.**
-- **Already modeled (struck through): 32.** #1–5, 7–13, 15, 16, 19–22, 25, 27, 28, 34, 35, 37, 44–51. Each cited glb was verified in `godot/assets/models/` on Oct 29.
-- **Still to model: 16** (#6, 14, 18, 23, 24, 30, 32, 36, 38–43, 53, 54). Of these, #40 and #42 exist as level blockouts.
+- **Already modeled (struck through): 35.** #1–5, 7–16, 19–22, 25, 27, 28, 30, 32, 34, 35, 37, 44–51, each glb verified in `godot/assets/models/`.
+- **Still to model: 13** (#6, 18, 23, 36, 38–43, 53, 54, 55). Of these, #40 and #42 exist as level blockouts.
 
 ## Suggested modeling order (remaining items, most reused first)
 1. Window cards #6 (8; iterations and combos exist in `design/assets/window_card/`, no glb in models yet)
-2. Floor pad #40 (3), coupler arm #41 (3), Cycler route model #32 (iterations exist)
-3. Lab crate #53 (2, shared with exterior #48), removal decals #54
-4. Tea set #14
-5. Singles: suit storage #23, lockers #24, telescope #30, clutter kit #36, laundry counter/bench #38–39, substation #42, spares shelf #43, reading nook #18
-6. Lab/workshop building (deferred, not residential): lab bench #17, workbench #26, specimen rack #29 (glb done), emitter repair bench #31
+2. Floor pad #40 (3), coupler arm #41 (3)
+3. Folding counter #38 (2), lab crate #53 (2, shared with exterior #48), removal decals #54
+4. Singles: suit storage #23, laundry bench #39, lost-and-found + notice board #55 (kitbash), clutter kit #36, substation #42, spares shelf #43, reading nook #18
+5. Off-building (deferred): lab bench #17, workbench #26, specimen rack #29 (glb done), emitter repair bench #31, lockers #24 (Bench Niche glb done)
