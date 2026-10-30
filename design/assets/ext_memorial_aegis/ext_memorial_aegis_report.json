@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_memorial_aegis_01",
+  "style": "Stele_Aloft",
+  "tris": 888,
+  "budget_ok": true,
+  "size": [
+   3.2,
+   4.259,
+   1.258
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_01.glb"
+ },
+ {
+  "cand": "ext_memorial_aegis_02",
+  "style": "Ring_Cradle_Tags",
+  "tris": 2192,
+  "budget_ok": true,
+  "size": [
+   3.7,
+   3.996,
+   1.4
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.008,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_02.glb"
+ },
+ {
+  "cand": "ext_memorial_aegis_03",
+  "style": "Tiered_Plinth_Seams",
+  "tris": 904,
+  "budget_ok": true,
+  "size": [
+   3.6,
+   2.686,
+   1.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_03.glb"
+ },
+ {
+  "cand": "ext_memorial_aegis_04",
+  "style": "Spinning_Cutaway",
+  "tris": 1080,
+  "budget_ok": true,
+  "size": [
+   3.4,
+   2.474,
+   1.501
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.008,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_04.glb"
+ },
+ {
+  "cand": "ext_memorial_aegis_05",
+  "style": "Over_Tag_Curtain",
+  "tris": 5064,
+  "budget_ok": true,
+  "size": [
+   3.8,
+   4.279,
+   1.258
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_memorial_aegis/ext_memorial_aegis_05.glb"
+ }
+]

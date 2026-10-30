@@ -19,3 +19,14 @@ Monumental #29 candidates. The old ext_memorial_tag_rack_01..05 files are kept. 
   - The promenade through-walk (Z -15.4..-12.5) stays clear.
   - Move the nook bench and bin onto the apron's south edge (for example bench X 18.6..20.4, Z -12.4..-11.9).
 - Placement: rotate 180 deg (model +Z front -> world -Z) so the monument faces the promenade and canal.
+
+## ext_memorial_aegis_01..05 (Rook, Oct 30, 12:58 PM CT round): memorial with a scaled Aegis-7 habitat
+Reference: PROJECT.md line 4 (800 m long x 400 m dia, 2:1) and design/cylinder_interior_overhaul_spec.md S3/S4 (520 m spin drum R 200 with forward hemispherical endcap/docking bowl; 45-deg chamfered gunmetal aft baffle; counter-rotating 280 m aft starport + 5-coil fusion drive, collar R 45..75; three 120-deg valleys alternating with solarium strips). Generator: assets/src/ext_memorial_aegis_generator.py. Ship length 2.4–3.2 m (1:333 to 1:250).
+| # | Concept | Tris | W x D x H (m) | Clip | Lamp / offering ledge |
+|---|---|---|---|---|---|
+| 01 | Held aloft on a titanium stele | 888 | 3.20 x 1.26 x 4.26 | PASS | plinth top y 0.35: lamp x +1.2 z +0.3, offering x -1.0 z +0.3 |
+| 02 | Halo ring cradle, RFID tags under the ship | 2,192 | 3.70 x 1.40 x 4.00 | PASS | base y 0.30, front strip outside the ring: lamp x +1.3, offering x -1.25 |
+| 03 | Tiered plinth, violet light seams | 904 | 3.60 x 1.50 x 2.69 | PASS | tier-1 side ledges y 0.30: lamp x -1.62 z +0.3, offering x +1.62 (turned 90 deg) |
+| 04 | Cutaway (open front-upper quarter: valleys, axial sun spine) | 1,080 | 3.40 x 1.50 x 2.47 | PASS | plinth top y 0.70: lamp x +1.45, offering x -1.2 z +0.45 |
+| 05 | On a beam over a violet/titanium tag curtain | 5,064 | 3.80 x 1.26 x 4.28 | PASS | floor plate y 0.06: lamp x -1.45, offering x +1.2 z +0.3 |
+Nook fit (plan v1.3: X 17.4..21.6, Z -12.7..-9.6, centred X 19.5, back Z -9.7, rot 180): widest 05 spans X 17.6..21.4; deepest (03/04, 1.5 m) front at Z -11.2, so 1.0 m to the nook bench (Z -12.2), which is >= 0.9; all <= 4.3 m high. Cutaway 04 drum parts are separate nodes (Drum_*, Valley_*, Axial_Sun_Spine) so Godot can spin them about the X axis at y 1.30.
