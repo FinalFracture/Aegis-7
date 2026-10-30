@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_wayfinding_totem_01",
+  "style": "Slate_Slab",
+  "tris": 192,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.2,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_wayfinding_totem/ext_wayfinding_totem_01.glb"
+ },
+ {
+  "cand": "ext_wayfinding_totem_02",
+  "style": "Glass_Panel",
+  "tris": 208,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.2,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0079,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_wayfinding_totem/ext_wayfinding_totem_02.glb"
+ },
+ {
+  "cand": "ext_wayfinding_totem_03",
+  "style": "Lit_Spine",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.2,
+   0.252
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_wayfinding_totem/ext_wayfinding_totem_03.glb"
+ },
+ {
+  "cand": "ext_wayfinding_totem_04",
+  "style": "Pictogram_Column",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   0.277,
+   2.2,
+   0.313
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_wayfinding_totem/ext_wayfinding_totem_04.glb"
+ },
+ {
+  "cand": "ext_wayfinding_totem_05",
+  "style": "Titanium_Blade",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.5,
+   2.2,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_wayfinding_totem/ext_wayfinding_totem_05.glb"
+ }
+]

@@ -53,10 +53,9 @@ def sign(v):
 SIGN = [(1, "Slate_Panel"), (2, "Glass_Lightbox"), (3, "Edge_Lit_Frame"), (4, "Split_Stripe"), (5, "Standoff_Letters")]
 
 # ---------------- #38 wayfinding totem 0.5 W x 0.3 D x 2.2 H, <=800; spinward (+X) / antispinward (-X) arrows on both faces ----------------
-def faces(p, mat, zf, y0=1.2, y1=1.9, mk=GL):  # arrows on front (+Z) and back (-Z)
+def faces(p, mat, zf, y0=1.2, y1=1.9, L=.34):  # arrows on front (+Z) and back (-Z)
     for sgn in (1, -1):
-        L = [arrow(0, y1 - .15, .34, .16, zf)] if sgn > 0 else []
-        ms = arrow(0, y1 - .15, .34, .16, zf, 1) + arrow(0, y0 + .15, .34, .16, zf, -1)
+        ms = arrow(0, y1 - .15, L, .16, zf, 1) + arrow(0, y0 + .15, L, .16, zf, -1)
         if sgn < 0: ms = [_flipz(m) for m in ms]
         p.add("Arrows", mat, *ms)
 def _flipz(m):
@@ -67,18 +66,19 @@ def totem(v):
         p.add("Plinth", G, box(-.24, .24, 0, .1, -.14, .14)); p.add("Slab", S, blk(-.23, .23, .1 - E, 2.15, -.12, .12, .02, 1))
         p.add("Cap", T, blk(-.25, .25, 2.15 - E, 2.2, -.15, .15, .02, 1)); faces(p, A, .12)
     elif v == 2:  # Glass Panel: gunmetal frame posts holding a BLEND glass panel with amber arrows
-        p.add("Posts", G, *[box(x - .03, x + .03, 0, 2.2, -.05, .05) for x in (-.22, .22)])
-        p.add("Glass_Panel", GL, box(-.19 - E, .19 + E, .5, 2.05, -.015, .015)); p.add("Base_Bar", T, box(-.19 - E, .19 + E, 0, .5 + E, -.04, .04))
+        p.add("Feet", G, *[box(x - .03, x + .03, 0, .02, -.15, .15) for x in (-.22, .22)])
+        p.add("Posts", G, *[box(x - .028, x + .028, .02 - E, 2.2, -.05, .05) for x in (-.22, .22)])
+        p.add("Glass_Panel", GL, box(-.19 - E, .19 + E, .5 - E, 2.05, -.015, .015)); p.add("Base_Bar", T, box(-.192 - E, .192 + E, .03, .5 + E, -.04, .04))
         faces(p, A, .015)
     elif v == 3:  # Lit Spine: slate slab with a vertical amber light spine on each edge and titanium arrows
         p.add("Slab", S, box(-.22, .22, 0, 2.2, -.12, .12))
-        p.add("Spines", A, *[box(s * .22 - .015, s * .22 + .015, .1, 2.1, -.06, .06) for s in (-1, 1)])
+        p.add("Spines", A, *[box(min(s * (.22 - E), s * (.25)), max(s * (.22 - E), s * .25), .1, 2.1, -.06, .06) for s in (-1, 1)])
         faces(p, T, .12)
     elif v == 4:  # Pictogram Column: octagonal gunmetal column with a flat slate sign face carrying arrows
         p.add("Column", G, ring(.15, 0, 2.2, 8, flat=True)); ap = .15 * np.cos(np.pi / 8)
         p.add("Sign_Faces", S, box(-.25, .25, 1.1, 2.0, -.15, .15)) if False else None
         for sgn in (1, -1): p.add("Sign_Faces", S, box(-.13, .13, 1.1, 2.0, (ap - E) if sgn > 0 else -ap - .012, (ap + .012) if sgn > 0 else -ap + E))
-        faces(p, A, ap + .012)
+        faces(p, A, ap + .012, L=.22)
         p.add("Halo", A, ring(.16, 2.12, 2.15, 8, flat=True)) if False else None
     elif v == 5:  # Leaning Blade: titanium blade on a gunmetal foot with amber top light
         p.add("Foot", G, box(-.25, .25, 0, .06, -.15, .15)); p.add("Blade", T, box(-.2, .2, .06 - E, 2.12, -.04, .04))
