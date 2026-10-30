@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_bench_01",
+  "style": "Slab_Plinth",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   1.8,
+   0.45,
+   0.494
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bench/ext_bench_01.glb"
+ },
+ {
+  "cand": "ext_bench_02",
+  "style": "Titanium_Slats",
+  "tris": 288,
+  "budget_ok": true,
+  "size": [
+   1.8,
+   0.45,
+   0.47
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bench/ext_bench_02.glb"
+ },
+ {
+  "cand": "ext_bench_03",
+  "style": "Spine_Cantilever",
+  "tris": 616,
+  "budget_ok": true,
+  "size": [
+   1.8,
+   0.45,
+   0.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bench/ext_bench_03.glb"
+ },
+ {
+  "cand": "ext_bench_04",
+  "style": "Divided_Sled",
+  "tris": 224,
+  "budget_ok": true,
+  "size": [
+   1.8,
+   0.45,
+   0.49
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bench/ext_bench_04.glb"
+ },
+ {
+  "cand": "ext_bench_05",
+  "style": "Glass_Lightbox",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   1.8,
+   0.45,
+   0.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_bench/ext_bench_05.glb"
+ }
+]
