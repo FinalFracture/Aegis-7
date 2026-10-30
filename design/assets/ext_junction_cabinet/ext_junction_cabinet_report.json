@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_junction_cabinet_01",
+  "style": "Twin_Door",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   1.4,
+   0.405
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_junction_cabinet/ext_junction_cabinet_01.glb"
+ },
+ {
+  "cand": "ext_junction_cabinet_02",
+  "style": "Louvred",
+  "tris": 232,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   1.4,
+   0.403
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_junction_cabinet/ext_junction_cabinet_02.glb"
+ },
+ {
+  "cand": "ext_junction_cabinet_03",
+  "style": "Meter_Window",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   1.4,
+   0.407
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_junction_cabinet/ext_junction_cabinet_03.glb"
+ },
+ {
+  "cand": "ext_junction_cabinet_04",
+  "style": "Hazard_Band",
+  "tris": 208,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   1.4,
+   0.405
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_junction_cabinet/ext_junction_cabinet_04.glb"
+ },
+ {
+  "cand": "ext_junction_cabinet_05",
+  "style": "Conduit_Tower",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   0.8,
+   1.4,
+   0.403
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_junction_cabinet/ext_junction_cabinet_05.glb"
+ }
+]
