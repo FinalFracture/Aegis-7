@@ -99,23 +99,23 @@ def flowers(p, x, z, yb, n, top, rng, spread=.022):
 def offering(v):
     p = Pod(f"ext_offering_set_0{v}"); rng = np.random.default_rng(31 + v)
     if v == 1:  # Twin Vases: two vases with dried flowers, violet candle, slate note
-        for x, n in ((-.2, 5), (.05, 4)): yb = vase(p, x, 0, y0=0); flowers(p, x, 0, yb, n, .27, rng)
+        for x, n in ((-.2, 5), (.05, 4)): yb = vase(p, x, 0, y0=0); flowers(p, x, 0, yb, n, .25, rng)
         p.add("Candle", V, ring(.025, 0, .08, 8, x=.22)); p.add("Folded_Note", S, box(.12, .2, 0, .012, .04, .1))
     elif v == 2:  # Tray Offering: gunmetal tray carrying a vase, two candles and an RFID tag
-        p.add("Tray", G, box(-.3, .3, 0, .02, -.15, .15)); yb = vase(p, -.15, 0, y0=.02 - E); flowers(p, -.15, 0, yb, 6, .28, rng)
+        p.add("Tray", G, box(-.3, .3, 0, .02, -.15, .15)); yb = vase(p, -.15, 0, y0=.02 - E); flowers(p, -.15, 0, yb, 6, .25, rng)
         p.add("Candles", V, ring(.022, .02 - E, .09, 8, x=.08, z=.05), ring(.022, .02 - E, .12, 8, x=.15, z=-.05))
         p.add("RFID_Tag", T, box(.2, .26, .02 - E, .026, .02, .1))
     elif v == 3:  # Bundled Bouquet: tied bouquet lying on a slate plinth, violet ribbon band, candle
         p.add("Plinth", S, box(-.28, .28, 0, .04, -.12, .12))
         for k in range(5):
             zz = -.04 + .02 * k; p.add("Stems", T, seg((-.2, .052, zz * .3), (.12, .05 + .004 * k, zz), .004, 4)); p.add("Dried_Petals", VM, ball(.14, .056 + .004 * k, zz, .02, 0))
-        p.add("Ribbon", V, xcyl(-.1, -.06, .052, 0, .016, 8)); p.add("Candle", V, ring(.025, .04 - E, .13, 8, x=.22, z=.06))
+        p.add("Ribbon", V, box(-.1, -.06, .04 - E, .046, -.03, .05)); p.add("Candle", V, ring(.025, .04 - E, .13, 8, x=.22, z=.06))
     elif v == 4:  # Tall Cylinder Vase: single tall square vase, many stems, candles in a row
-        yb = vase(p, -.18, 0, w=.09, h=.22); flowers(p, -.18, 0, yb, 7, .29, rng, .028)
+        yb = vase(p, -.18, 0, w=.09, h=.22); flowers(p, -.18, 0, yb, 7, .25, rng, .028)
         p.add("Candles", V, *[ring(.02, 0, h, 8, x=x) for x, h in ((0, .06), (.1, .09), (.2, .12))])
     elif v == 5:  # Stone Row: three titanium tea-light cups with violet glow, vase, tag
         for x in (-.25, -.15, -.05): p.add("Cups", T, ring(.035, 0, .04, 10, x=x)); p.add("Glow", V, ring(.025, .04 - E, .052, 8, x=x))
-        yb = vase(p, .15, 0); flowers(p, .15, 0, yb, 5, .27, rng); p.add("RFID_Tag", T, box(.22, .28, 0, .006, -.12, -.06))
+        yb = vase(p, .15, 0); flowers(p, .15, 0, yb, 5, .25, rng); p.add("RFID_Tag", T, box(.22, .28, 0, .006, -.12, -.06))
     return p
 OFF = [(1, "Twin_Vases"), (2, "Tray_Offering"), (3, "Bundled_Bouquet"), (4, "Tall_Vase_Candles"), (5, "Tea_Light_Row")]
 

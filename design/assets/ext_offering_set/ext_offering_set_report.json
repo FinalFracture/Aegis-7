@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_offering_set_01",
+  "style": "Twin_Vases",
+  "tris": 532,
+  "budget_ok": true,
+  "size": [
+   0.482,
+   0.294,
+   0.143
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0017,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_offering_set/ext_offering_set_01.glb"
+ },
+ {
+  "cand": "ext_offering_set_02",
+  "style": "Tray_Offering",
+  "tris": 392,
+  "budget_ok": true,
+  "size": [
+   0.6,
+   0.291,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0036,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_offering_set/ext_offering_set_02.glb"
+ },
+ {
+  "cand": "ext_offering_set_03",
+  "style": "Bundled_Bouquet",
+  "tris": 244,
+  "budget_ok": true,
+  "size": [
+   0.56,
+   0.13,
+   0.24
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0025,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_offering_set/ext_offering_set_03.glb"
+ },
+ {
+  "cand": "ext_offering_set_04",
+  "style": "Tall_Vase_Candles",
+  "tris": 428,
+  "budget_ok": true,
+  "size": [
+   0.447,
+   0.293,
+   0.099
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0018,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_offering_set/ext_offering_set_04.glb"
+ },
+ {
+  "cand": "ext_offering_set_05",
+  "style": "Tea_Light_Row",
+  "tris": 492,
+  "budget_ok": true,
+  "size": [
+   0.565,
+   0.29,
+   0.161
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_offering_set/ext_offering_set_05.glb"
+ }
+]
