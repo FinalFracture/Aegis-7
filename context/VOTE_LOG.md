@@ -1642,3 +1642,8 @@
 - **Sheet:** `design/assets/ext_offering_set/ext_offering_set_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
 - **Deciding vote: Jared (Oct 30, 1:25 PM CT), relayed via Atlas.**
 - **#30 Offering set WINNER:** `#03 Bundled_Bouquet` (`ext_offering_set_03.glb`, 244 tris) -> `godot/assets/models/ext_offering_set.glb`
+
+## Category: `residential_exterior_hydro` — #28 grow-light rack (Rook, box pipeline, Oct 30)
+- **Sheet:** `design/assets/ext_grow_light_rack/ext_grow_light_rack_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 1:29 PM CT), relayed via Atlas.**
+- **#28 Grow-light rack WINNER:** `#01 Single_Bar` (`ext_grow_light_rack_01.glb`, 368 tris) -> `godot/assets/models/ext_grow_light_rack.glb`
