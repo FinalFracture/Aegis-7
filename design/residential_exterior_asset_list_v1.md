@@ -1,6 +1,6 @@
-# Residential Exterior + 20 m Ring: Asset List v1 (Vance, Oct 29 2026)
-**Status: DRAFT, ready to model after the rev C interior items.** Readiness pass Oct 29: rows were checked against `godot/assets/models/` (46 glb files), and counts were checked against the v1.2 plan and the Tiered Steps swap.
-Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** `residential_exterior_plan_v1_1_plan.png` (counts updated for v1.1: poles 23→30, platform kerb 7→6). Checked against `godot/assets/models/` (24 glb files).
+# Residential Exterior + 20 m Ring: Asset List v1 (Vance, Oct 29 2026; finalized 2026-10-30)
+**Status: FINAL (2026-10-30, Vance). Exterior sprint approved by Jared (relayed by Atlas); build order for Rook is in "Prioritized modeling order" at the end.** History: DRAFT v1 Oct 29. Readiness pass Oct 29: rows were checked against `godot/assets/models/` (46 glb files), and counts were checked against the v1.2 plan and the Tiered Steps swap.
+Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** `residential_exterior_plan_v1_1_plan.png` (counts updated for v1.1: poles 23→30, platform kerb 7→6). (Final reconciliation 2026-10-30 against the APPROVED v1.2 plan; see "Final reconciliation".)
 ~~Struck through~~ means already modeled as a glb (path cited). Sizes are rough W × D × H in meters. Tris are per instance (LOD0); already-modeled items are not counted. Instanced kits are batched with MultiMesh.
 
 ## A. Doors, building fixtures and service
@@ -28,11 +28,11 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 ## C. Tram (live)
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
-| 15 | Tram stop shelter (lived-in) | promenade, X 10..16 | 1 | 6.0 × 1.3 × 2.8 | 6,000 |
+| 15 | Tram stop shelter (lived-in) | platform, X 12..18, Z -16.9..-15.6 (v1.2 plan) | 1 | 6.0 × 1.3 × 2.8 | 5,800 |
 | 16 | Tram platform kerb module | stop platform, X 9..21 | 6 | 2.0 × 1.9 × 0.3 | 300 |
 | 17 | Tram rail module (twin track, axial) | Z -19..-22 | 10 | 10 × 3.5 | 400 |
 | 18 | Catenary mast + wire span | along tram line | 5 | 0.3 × 3.5 × 6.0 | 900 |
-| 19 | Tram vehicle (live, 2-car) | tram line | 1 | 24 × 2.6 × 3.4 | 18,000 |
+| 19 | Tram vehicle (live, 2-car), split for the <6,000 cap: **19a** car body w/ cab (one mesh, mirrored for car 2) 5,800; **19b** bogie + coupler 1,500 (×4); **19c** pantograph 800 (×1) | tram line | 1 set | 24 × 2.6 × 3.4 overall (car 12 × 2.6 × 3.4) | ~18,400 set |
 | 20 | Stop totem / timetable panel | stop | 1 | 0.5 × 0.3 × 2.4 | 500 |
 
 ## D. Lighting
@@ -96,9 +96,9 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
 | 48 | Bedroll + hot plate + crate (shelter sleeper) | tram shelter | 1 | set | 1,500 |
-| 49 | Patch tape + mismatched liner decals | hydro beds, planters | 1 | set | 100 |
+| 49 | Patch tape + mismatched liner decals + **dead-foliage material swap** for one west-sidewalk TS-4 (plan story beat) | hydro beds, planters | 1 | set | 100 |
 | 50 | Litter / spill drift decals (Coriolis, antispinward) | Spin Sts | 1 | set | 200 |
-| 51 | Sprocket wheel-track + coupler-scuff decals | apron, door jamb | 1 | set | 100 |
+| 51 | Sprocket wheel-track + coupler-scuff decals, + **kerb scuff decals at the stop** (plan wear beat) | apron, door jamb, platform kerb | 1 | set | 100 |
 | 52 | Pictogram notice board (wordless) | stop | 1 | 1.0 × 0.1 × 1.4 | 400 |
 
 ## L. Characters (placed, already modeled)
@@ -112,7 +112,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 - **Total items: 57** (55 + #23a TS-2 + #23b lower-detail version). Already modeled as glb: **6** (#1, 2, 25, 53, 54, 55). Still to model: **51**. #23 and #26 are partly done: TS-4 exists and they wait only on #23a TS-2; #25's patched liner is decal #49.
 - **Counts match the v1.2 plan:** benches 8, bins 6, bollards 12, poles 30, platform kerb 6. Tiered Steps: walls 8 TS-4 + 3 TS-2, sidewalk 3 TS-4, beds 12 TS-4 + 6 TS-2, so 23 TS-4 + 9 TS-2 in all.
 - **Tiered Steps tri impact (Oct 29):** planters + beds rise from about 16.4k to about 77k tris (23 TS-4 × 2,784 + 9 TS-2 × ~1,500), so the ring goes from **~209k to ~270k** LOD0. The approved lower-detail version (#23b, ~900 tris) beyond 20 m keeps the ≤ 60k on-screen target. Fit QC: `residential_exterior_tiered_steps_fit.py`.
-- The ring totals about **209k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
+- (Superseded by the Tiered Steps line above: ~270k LOD0.) Pre-swap the ring totalled about **209k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
 
 ## Suggested modeling order (most reused first)
 1. Curb segment (68), Residential facade panel (60), Canal edge module (47), Curved road segment (34), Street light pole (30), Exterior window unit (24), Flat road / lane segment (20), Tiered Steps TS-2 variant (9; TS-4 done), Bollard (12), Tram rail module (10), Bench (8), Accessible kerb ramp (8)
@@ -120,3 +120,48 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 3. Hero pieces: tram stop shelter, tram vehicle, the 5 neighbour facades, roof parapet, door canopies
 4. Hydro co-op and planters: Tiered Steps TS-2 variant (#23a) + lower-detail version (#23b) + patched liner (TS-4 done), grow racks, pump cabinet
 5. Story singles: memorial nook set, shelter sleeper set, notice board, hand cart, exterior Sprocket pad/apron, decal sets
+
+## Final reconciliation vs plan v1.2 (2026-10-30)
+- Counts re-checked: benches 8, bins 6, bollards 12, poles 30, platform kerb 6, Tiered Steps 23 TS-4 + 9 TS-2 all match the plan. No missing structural assets.
+- **Fixed #15** tram shelter location X 10..16 → **X 12..18, Z -16.9..-15.6** (plan v1.1 QC #6); tris 6,000 → 5,800 (cap is <6,000).
+- **Fixed #19** tram vehicle 18k single mesh broke the <6,000 cap → split into 19a car body (5,800, mirrored), 19b bogie+coupler (1,500), 19c pantograph (800).
+- **Added to #49** dead-planter material swap (plan: "one west planter is dead"); **added to #51** scuffed-kerb decals at the stop (plan wear beat).
+- Stale header counts (24 / 46 glb) and the 209k total marked superseded (~270k LOD0, ≤60k on-screen with #23b LOD).
+- Extras kept (not in plan text but compatible): #5 door canopies, #22 plaza bollard lights, #35 junction cabinets, #36 hand cart.
+
+## Aegis-7 build rules (all batches)
+- <6,000 tris per glb (LOD0); bottom-center pivot at (0,0,0), +Z facing (front/street face toward +Z in model space); metres, real scale.
+- Palette: Matte Titanium Alabaster `#D8DEE4` (~55%), Deep Structural Slate `#2A3038` (~20%), Brushed Machined Steel `#707A84` / rubber `#1E2228` (~15%); dept accents ≤10–15% (Engineering amber `#E89B2D`, Civic cyan `#38B8C8`, Science violet `#7B5CFF`, Agri emerald `#3BA868`). Street light amber `#FF9500`. Pearl cladding + graphite spandrel on facades; <1.2% micro-noise PBR.
+- Glass: alphaMode **BLEND**, light tint, no opaque glass.
+- **5-candidate workflow:** 5 iterations per asset (`<name>_01..05.glb`), render a comparison sheet, team votes post-render in `context/VOTE_LOG.md`, winner copied to `godot/assets/models/<name>.glb`. Kit modules (curbs, road, rails) may run 5 iterations on the first module and derive siblings from the winner.
+
+## Prioritized modeling order for Rook (FINAL)
+### Batch 1 — hero / blocking structural (defines the silhouette; 9 assets)
+| Order | # | File | Size (m) | Tris | Spec / materials |
+|---|---|---|---|---|---|
+| 1 | 6 | `ext_facade_panel_res.glb` | 3.0 × 0.2 × 4.4 | ≤400 | Pearl alabaster cladding, graphite slate spandrel band, steel reveal; ×60 MultiMesh |
+| 2 | 7 | `ext_window_unit.glb` | 2.4 × 0.15 × 1.5 | ≤500 | Slate frame, steel sill; glass pane separate surface alphaMode BLEND; ×24 |
+| 3 | 9 | `ext_roof_parapet_plantcap.glb` | 28 × 18 edge × ~1.0 | ≤3,000 | Alabaster coping, slate plant-cap housings, amber hazard edge ≤10% |
+| 4 | 15 | `ext_tram_shelter.glb` | 6.0 × 1.3 × 2.8 | ≤5,800 | Steel frame, BLEND glass walls, Civic cyan trim, timetable panel slot at rear (sleeper set #48 sits behind it) |
+| 5 | 19a | `ext_tram_car_body.glb` | 12 × 2.6 × 3.4 | ≤5,800 | Alabaster body, slate skirt, cyan Civic livery stripe, BLEND windows; mirrored for car 2 |
+| 6 | 19b | `ext_tram_bogie_coupler.glb` | 2.4 × 2.2 × 0.9 | ≤1,500 | Steel/rubber, slate; ×4 |
+| 7 | 19c | `ext_tram_pantograph.glb` | 1.8 × 1.2 × 1.2 | ≤800 | Steel, amber contact shoe |
+| 8 | 17 | `ext_tram_rail_module.glb` | 10 × 3.5 × 0.2 | ≤400 | Twin axial track, slate sleepers, steel rails; ×10 |
+| 9 | 18 | `ext_catenary_mast_span.glb` | 0.3 × 3.5 × 6.0 | ≤900 | Slate mast, steel arm, wire span; ×5 |
+
+### Batch 2 — ground kit (most reused; 9 assets)
+#41 `ext_curb_segment.glb` (+ corner), #42 `ext_road_curved_R185.glb`, #43 `ext_road_flat.glb`, #44 `ext_paving_tile_kit.glb`, #45 `ext_kerb_ramp.glb`, #46 `ext_canal_edge_module.glb`, #16 `ext_tram_platform_kerb.glb`, #24 `ext_ramp_1to12.glb`, #4 `ext_service_ramp_coping.glb`.
+
+### Batch 3 — neighbour facades + door fixtures (8 assets)
+#10 `ext_nbr_r6_residential.glb`, #11 `ext_nbr_clinic_market.glb`, #12 `ext_nbr_workshop_row.glb`, #13 `ext_nbr_kiosk_row.glb`, #14 `ext_nbr_tram_depot.glb`, #8 `ext_l2_promenade_window.glb` (BLEND glass), #5 `ext_door_canopy.glb`, #37 `ext_sector4_sign.glb`.
+
+### Batch 4 — lighting + street furniture + wayfinding (11 assets)
+#21 `ext_street_light_pole.glb` (amber `#FF9500`), #22 `ext_bollard_light.glb`, #32 `ext_bench.glb`, #33 `ext_bin_recycler.glb`, #34 `ext_bollard.glb`, #35 `ext_junction_cabinet.glb`, #20 `ext_stop_totem.glb`, #38 `ext_wayfinding_totem.glb`, #39 `ext_street_blade.glb`, #52 `ext_notice_board.glb`, #3 `ext_sprocket_pad.glb` (reuse rev C pad mesh).
+
+### Batch 5 — hydro co-op + Tiered Steps variants (5 assets)
+#23a `hydro_planter_tiered_ts2.glb`, #23b `hydro_planter_tiered_lod.glb` (TS-4 + TS-2 LOD ~900), #27 `ext_hydro_pump_tank.glb`, #28 `ext_grow_light_rack.glb`, #36 `ext_service_hand_cart.glb`.
+
+### Batch 6 — story singles + decals (10 assets)
+#29 `ext_memorial_tag_rack.glb`, #30 `ext_violet_field_lamp.glb` (Science violet `#7B5CFF`), #31 `ext_offering_set.glb`, #48 `ext_shelter_sleeper_set.glb`, decal sets #40, #47, #49, #50, #51 (Sloane textures; Rook only places quads).
+
+Totals: 52 to-model entries (51 + tram split into 3, minus none) across 6 batches: 9 / 9 / 8 / 11 / 5 / 10. Already done: #1, 2, 25, 53, 54, 55 and TS-4.
