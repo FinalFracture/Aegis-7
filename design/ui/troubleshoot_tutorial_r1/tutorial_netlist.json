@@ -1,0 +1,77 @@
+{
+ "board": "Hatch Actuator D-204 \u2014 TUTORIAL tier (simplified)",
+ "components": {
+  "B1": {
+   "label": "BATTERY",
+   "value": "7 V pack",
+   "pins": [
+    "+",
+    "-"
+   ]
+  },
+  "U1": {
+   "label": "CONTROL BOX",
+   "value": "door controller",
+   "pins": [
+    "PWR",
+    "GND",
+    "PIN3"
+   ]
+  },
+  "M1": {
+   "label": "DOOR MOTOR",
+   "value": "hatch actuator motor",
+   "pins": [
+    "1",
+    "2"
+   ]
+  },
+  "TP1": {
+   "label": "wire spot A",
+   "value": "test point",
+   "pins": [
+    "1"
+   ]
+  },
+  "TP2": {
+   "label": "wire spot B",
+   "value": "test point",
+   "pins": [
+    "1"
+   ]
+  }
+ },
+ "nets": {
+  "BAT_PLUS": [
+   "B1.+",
+   "U1.PWR"
+  ],
+  "DOOR_PWR": [
+   "U1.PIN3",
+   "TP1",
+   "TP2",
+   "M1.1"
+  ],
+  "GND": [
+   "B1.-",
+   "U1.GND",
+   "M1.2"
+  ]
+ },
+ "intentional_fault": {
+  "open": {
+   "net": "DOOR_PWR",
+   "between": [
+    "TP1",
+    "TP2"
+   ]
+  },
+  "fix": "drag Super Wire TP1 -> TP2"
+ },
+ "code": {
+  "constant": "door_motor_pin",
+  "wrong": 4,
+  "correct": 3,
+  "board_label": "PIN 3 (door icon) on U1"
+ }
+}
