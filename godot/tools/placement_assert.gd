@@ -1,6 +1,7 @@
 extends SceneTree
 ## Wall-backed animated-prop placement checks for the preface playable area.
-##   xvfb-run -a godot --path godot --rendering-driver opengl3 -s res://tools/placement_assert.gd
+##   xvfb-run -a godot --path godot --rendering-driver opengl3 -s res://tools/placement_assert.gd -- --qa-hand-controls
+## The trailing -- --qa-hand-controls is required; a plain headless run quits at frame 4.
 ## Exit 0 all pass, 1 any failed check, 2 a prop node is missing, 3 still running after 600 frames.
 ## mesh_clearance and front_zone are checks in that same pass. The summary counts them.
 

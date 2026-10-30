@@ -1397,7 +1397,7 @@ func _setup_sector_lighting() -> void:
 	rprobe.position = Vector3(0.0, 4.4, 0.0)
 	rprobe.size = Vector3(30.0, 10.0, 20.0)
 	rprobe.box_projection = true
-	rprobe.intensity = 0.65
+	rprobe.intensity = 0.3
 	rprobe.ambient_mode = ReflectionProbe.AMBIENT_ENVIRONMENT
 	rprobe.update_mode = ReflectionProbe.UPDATE_ONCE
 	_lights_container.add_child(rprobe)
