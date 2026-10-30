@@ -39,7 +39,7 @@ Sizes are rough W × D × H in meters.
 | 15 | ~~Sofa~~ `godot/assets/models/sofa_lowlounge_plinth.glb` | 101, 103, 201, 202, 203, 204 | 6 | 2.5 × 0.9 × 0.85 |
 | 16 | ~~Armchair / reading chair~~ `godot/assets/models/armchair_swivel_pedestal.glb` | 102, 203, 201 (C.2 reading chair by the W window), 204 (C.2) | 4 | 1.0 × 1.0 × 1.0 |
 | 17 | ~~Lab bench~~ MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 104; not modeled now, waits for that building | ~~104~~ lab/workshop building | — | 2.5 × 0.9 × 0.9 |
-| 18 | Window reading nook bench | 203 | 1 | 4.0 × 0.4 × 0.5 |
+| 18 | ~~Window reading nook bench~~ `godot/assets/models/reading_bench_book_cubbies.glb` (Book Cubbies, 24d308c) | 203 | 1 | 4.0 × 0.4 × 0.5 |
 
 
 ## E. Sleeping and storage
@@ -49,7 +49,7 @@ Sizes are rough W × D × H in meters.
 | 20 | ~~Kids' bunk~~ `godot/assets/models/kids_bunk_wall_clamped.glb` | 103, 202 | 2 | 0.9 × 1.9 × 1.7 |
 | 21 | ~~Wardrobe~~ `godot/assets/models/wardrobe_openbays_rails.glb` | 101, 103, 104, 201, 202, 203, 204 | 7 | 0.5 × 2.5–3.0 × 2.1 |
 | 22 | ~~Coat and storage closet~~ `godot/assets/models/coat_closet_mudroom.glb` | 103, 104, 203, 204 | 4 | 3.7 × 0.5 × 2.1 |
-| 23 | Suit hook + storage with pressure suit | 102 | 1 | 0.5 × 2.5 × 2.1 |
+| 23 | ~~Suit hook + storage with pressure suit~~ `godot/assets/models/suit_storage_service_combo.glb` | 102 | 1 | 0.5 × 2.5 × 2.1 |
 | 24 | ~~Resident lockers~~ REMOVED FROM APARTMENT BUILDING (Jared, Oct 29): option 5 Bench Niche kept as a standalone locker run for another building (TBD), not tied to laundry; `godot/assets/models/locker_run_bench_niche.glb` | ~~Laundry~~ other building TBD | — | 4.8 × 0.5 × 2.0 |
 
 
@@ -71,24 +71,24 @@ Sizes are rough W × D × H in meters.
 | 53 | Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
 | 55 | Lost-and-found rail bins + wordless notice board (C.2a kitbash: #35 rail bins + the exterior #52 board mesh) | Laundry N wall X -4.3..-3.0 | 1 | 1.3 × 0.3 × 1.4 |
 | 54 | Removal decal set (dust outline of the lab bench and workbench, shelf ghost + wall anchor holes, planter clamp-bolt marks + water ring) | 104, 201, 204 (emitter bench outline), 103, 202 | 1 set | decals |
-| 36 | Small clutter kit (meal tray, cups, cables, photo frames as decals) | 101, 102, 104, 202 | 1 kit | small |
+| 36 | ~~Small clutter kit (meal tray, cups, cables, photo frames as decals)~~ `godot/assets/models/clutter_kit_magnet_dock.glb` | 101, 102, 104, 202 | 1 kit | small |
 
 
 ## G. Laundry
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
 | 37 | ~~Washer/dryer stack~~ `godot/assets/models/washer_dryer_alloy_reclaim.glb` | Laundry | 4 | 0.8 × 0.8 × 1.9 |
-| 38 | Folding counter (C.2a: +1 run on the N wall, where the lockers were, X -2.6..0.4) | Laundry | 2 | 0.6 × 3.5 × 0.9 / 3.0 × 0.6 × 0.9 |
-| 39 | Bench | Laundry | 1 | 1.2 × 0.4 × 0.45 |
+| 38 | ~~Folding counter (C.2a: +1 run on the N wall, where the lockers were, X -2.6..0.4)~~ `godot/assets/models/folding_counter_fold_leaf_3p5.glb` + `folding_counter_fold_leaf_3p0.glb` (cb9131e) | Laundry | 2 | 0.6 × 3.5 × 0.9 / 3.0 × 0.6 × 0.9 |
+| 39 | ~~Bench~~ `godot/assets/models/laundry_bench_wall_flip_seat.glb` (405d5ad) | Laundry | 1 | 1.2 × 0.4 × 0.45 |
 
 
 ## H. Maintenance
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
-| 40 | Sprocket floor pad (level blockout `DockPad`/`DockPad_InductionRing`) | Maintenance | 3 | 1.2 × 1.2 × 0.05 |
-| 41 | Coupler arm (wall/ceiling mount) | Maintenance | 3 | 0.3 × 1.5 reach |
-| 42 | Substation cabinet (level blockout `Room1B_Substation_*`) | Maintenance | 1 | 0.6 × 2.5 × 2.2 |
-| 43 | Spares shelf | Maintenance | 1 | 1.9 × 0.5 × 1.8 |
+| 40 | ~~Sprocket floor pad (level blockout `DockPad`/`DockPad_InductionRing`)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 1.2 × 1.2 × 0.05 |
+| 41 | ~~Coupler arm (wall/ceiling mount)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 0.3 × 1.5 reach |
+| 42 | ~~Substation cabinet (level blockout `Room1B_Substation_*`)~~ `godot/assets/models/substation_wall_ladder_busway.glb` (4638b0e) | Maintenance | 1 | 0.6 × 2.5 × 2.2 |
+| 43 | ~~Spares shelf~~ `godot/assets/models/spares_gravity_dispenser.glb` (abd4bc9) | Maintenance | 1 | 1.9 × 0.5 × 1.8 |
 
 
 ## I. Characters and pickups (placed, already modeled)
@@ -108,8 +108,8 @@ Sizes are rough W × D × H in meters.
   - Dropped: **1** (#52).
   - New: #53, #54, #55.
 - **Active in the residential building: 48.**
-- **Already modeled (struck through): 35.** #1–5, 7–16, 19–22, 25, 27, 28, 30, 32, 34, 35, 37, 44–51, each glb verified in `godot/assets/models/`.
-- **Still to model: 13** (#6, 18, 23, 36, 38–43, 53, 54, 55). Of these, #40 and #42 exist as level blockouts.
+- **Already modeled (struck through): 44.** #1–5, 7–16, 18–23, 25, 27, 28, 30, 32, 34–51, each glb verified in `godot/assets/models/` (#40 and #41 are built into `service_wall_rail_shuttle.glb`).
+- **Still to model: 4** (#6, 53, 54, 55). #6 window cards and #54 removal decals are Sloane's texture/decal jobs (no Rook mesh); #53 lab crate needs new iterations (no exterior #48 crate mesh exists); #55 is a kitbash of the #35 rail bins plus a small new wordless board (#52 was dropped).
 
 ## Suggested modeling order (remaining items, most reused first)
 1. Window cards #6 (8; iterations and combos exist in `design/assets/window_card/`, no glb in models yet)
