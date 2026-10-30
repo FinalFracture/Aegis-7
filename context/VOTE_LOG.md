@@ -1652,3 +1652,7 @@
 - **Sheet:** `design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
 - **Deciding vote: Jared (Oct 30, 1:30 PM CT), relayed via Atlas.**
 - **#23a TS-2 WINNER:** `#01 Straight_Cut` (`hydro_planter_tiered_ts2_01.glb`, 1,480 tris) -> `godot/assets/models/hydro_planter_tiered_ts2.glb`
+
+## Category: `residential_exterior_story` — #48 shelter sleeper set (Rook, box pipeline, Oct 30)
+- **Sheet:** `design/assets/ext_shelter_sleeper_set/ext_shelter_sleeper_set_contact_sheet.png` (5 candidates, clip-check PASS).
+- **Decision: Jared (Oct 30, 1:31 PM CT), relayed via Atlas — ASSET CUT.** No winner promoted; candidate files kept in `design/assets/` for reference only.
