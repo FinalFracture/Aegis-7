@@ -1619,3 +1619,12 @@
 - **#32 Bench WINNER:** `#05 Glass_Lightbox` (`ext_bench_05.glb`, 160 tris, 1.80 x 0.50 x 0.45 m, BLEND glass) -> `godot/assets/models/ext_bench.glb`
 - **#33 Bin/recycler WINNER:** `#05 Compactor` (`ext_bin_recycler_05.glb`, 128 tris, 0.48 x 0.49 x 1.00 m, BLEND glass status lens) -> `godot/assets/models/ext_bin_recycler.glb`
 - **#34 Bollard WINNER:** `#02 Square_Chamfer` (`ext_bollard_02.glb`, 120 tris, 0.20 x 0.20 x 0.90 m) -> `godot/assets/models/ext_bollard.glb`
+
+## Category: `residential_exterior_service_and_lighting` — #35 utility cabinet, #36 hand cart, #21 street light, #22 bollard light (Rook, box pipeline, Oct 30)
+- **Sheets:** `design/assets/ext_junction_cabinet/`, `ext_service_hand_cart/`, `ext_street_light_pole/` (with head close-ups), `ext_bollard_light/` `*_contact_sheet.png` (all 20 candidates clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 12:06 PM CT), relayed via Atlas.**
+- **#35 Utility cabinet WINNER:** `#03 Meter_Window` (`ext_junction_cabinet_03.glb`, 160 tris, BLEND glass) -> `godot/assets/models/ext_junction_cabinet.glb`
+- **#36 Hand cart WINNER:** `#01 Flatbed` (`ext_service_hand_cart_01.glb`, 496 tris) -> `godot/assets/models/ext_service_hand_cart.glb`
+- **#21 Street light WINNER:** `#01 Column_Lantern` (`ext_street_light_pole_01.glb`, 288 tris, amber #FF9500, BLEND diffuser) -> `godot/assets/models/ext_street_light_pole.glb`
+- **#22 Bollard light WINNER:** `#02 Square_Lantern` (`ext_bollard_light_02.glb`, 64 tris, BLEND glass) -> `godot/assets/models/ext_bollard_light.glb`
+- **#37 file name `ext_sector4_sign` approved by Jared (12:06 PM CT).**
