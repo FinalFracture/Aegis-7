@@ -66,4 +66,20 @@ def main():
     for ax in axs.flat: ax.axis("off")
     for ax, (i, (n, im)) in zip(axs.flat, enumerate(isos, 1)): ax.imshow(im); ax.set_title(f"{i}. {n}", fontsize=11, color="#555")
     plt.tight_layout(rect=(0, 0, 1, .97)); fig.savefig(os.path.join(OUT, "overview.png"), dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-if __name__ == "__main__": main()
+def final_lightbox():
+    p = iter3(); p.name = "Cycler_Route_Lightbox"; z1 = ZB + .09
+    p.add("Bezel_Trim", "alloy", *[box(x0, x1, y0, y1, z1, z1 + .006) for x0, x1, y0, y1 in ((-W / 2, W / 2, 0, .02), (-W / 2, W / 2, H - .02, H), (-W / 2, -W / 2 + .02, 0, H), (W / 2 - .02, W / 2, 0, H))])
+    p.add("Glass_Retainer_Clips", "amber", *[box(x - .02, x + .02, y - .006, y + .006, z1, z1 + .01) for x in (-.25, .25) for y in (.025, H - .025)])
+    p.add("Corner_Bolts", "gunmetal", *[box(x - .007, x + .007, y - .007, y + .007, z1 + .006, z1 + .01) for x in (-W / 2 + .01, W / 2 - .01) for y in (.01, H - .01)])
+    p.add("Backlight_Diffuser", "white", box(-W / 2 + .05, W / 2 - .05, .08, H - .05, ZB + .03, ZB + .034))
+    p.add("Star_Field", "white", *[box(x - .004, x + .004, y - .004, y + .004, ZB + .034, ZB + .037) for x, y in ((-.33, .85), (-.2, .9), (.28, .88), (.34, .72), (-.36, .3), (.32, .2), (-.1, .14), (.15, .86))])
+    p.add("Route_Label", "slate", box(-.2, .2, .035, .065, ZB + .03, ZB + .04)); p.add("Label_Glyphs", "violet", *[box(-.17 + i * .07, -.13 + i * .07, .043, .057, ZB + .04, ZB + .043) for i in range(5)])
+    p.add("Power_Conduit", "gunmetal", box(W / 2 - .07, W / 2 - .04, -.0, .03, ZB - .0, ZB + .02))
+    return p
+def final_main():
+    p = final_lightbox(); gp = os.path.join(dc.ROOT, "godot/assets/models/cycler_route_lightbox.glb"); tris, geo = export_final(p.P, [gp]); set_glass_blend(gp)
+    V = np.vstack([g[1] for g in geo.values()]); bad = [n for n, (mk, m) in p.P.items() if not all(c.is_watertight for c in m.split(only_watertight=False))]
+    print("tris", tris, "lo", V.min(0).round(3), "hi", V.max(0).round(3), "bad", bad)
+    p.P.pop("Front_Glass", None); sp = os.path.join(OUT, "final_lightbox_sheet.png"); wg.sheet(p, sp, "Final  #32 cycler route model, Lightbox (glass hidden)"); os.remove(sp.replace("_sheet.png", ".glb"))
+if __name__ == "__main__":
+    final_main() if len(sys.argv) > 1 and sys.argv[1] == "final" else main()
