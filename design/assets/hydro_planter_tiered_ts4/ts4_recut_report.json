@@ -1,0 +1,245 @@
+{
+ "before": {
+  "tris": 2784,
+  "pass_": false,
+  "worst": 0.0496,
+  "over": 65,
+  "coplanar": 28,
+  "open": 0,
+  "size": [
+   4.0,
+   0.701,
+   0.406
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.003
+  },
+  "overlaps": [
+   [
+    "Tiers[1]",
+    "Foliage[0]",
+    0.0304
+   ],
+   [
+    "Tiers[1]",
+    "Foliage[2]",
+    0.0177
+   ],
+   [
+    "Tiers[1]",
+    "Foliage[3]",
+    0.0163
+   ],
+   [
+    "Tiers[1]",
+    "Foliage_Light[0]",
+    0.0134
+   ],
+   [
+    "Tiers[1]",
+    "Foliage_Light[1]",
+    0.0229
+   ],
+   [
+    "Tiers[1]",
+    "Foliage_Light[2]",
+    0.0224
+   ],
+   [
+    "Tiers[1]",
+    "Foliage_Light[4]",
+    0.0103
+   ],
+   [
+    "Tiers[1]",
+    "Net_Cup_Clips[11]",
+    0.0116
+   ],
+   [
+    "Tiers[2]",
+    "Foliage[4]",
+    0.0146
+   ],
+   [
+    "Tiers[2]",
+    "Foliage[6]",
+    0.0226
+   ],
+   [
+    "Tiers[2]",
+    "Foliage_Light[3]",
+    0.0306
+   ],
+   [
+    "Tiers[2]",
+    "Foliage_Light[4]",
+    0.0258
+   ],
+   [
+    "Tiers[2]",
+    "Net_Cup_Clips[14]",
+    0.0113
+   ],
+   [
+    "Tiers[2]",
+    "Net_Cup_Clips[15]",
+    0.0115
+   ],
+   [
+    "Tier_Lids[0]",
+    "Tiers[1]",
+    0.03
+   ],
+   [
+    "Tier_Lids[0]",
+    "Foliage[3]",
+    0.0141
+   ],
+   [
+    "Tier_Lids[0]",
+    "Foliage_Light[2]",
+    0.0132
+   ],
+   [
+    "Tier_Lids[1]",
+    "Tiers[2]",
+    0.03
+   ],
+   [
+    "Tier_Lids[1]",
+    "Foliage[5]",
+    0.0137
+   ],
+   [
+    "Tier_Lids[1]",
+    "Foliage_Light[4]",
+    0.0126
+   ]
+  ],
+  "coplanar_pairs": [
+   [
+    "Base_Frame[0]",
+    "Tiers[0]",
+    5388.53
+   ],
+   [
+    "Base_Frame[0]",
+    "Tiers[1]",
+    5152.37
+   ],
+   [
+    "Base_Frame[0]",
+    "Tiers[2]",
+    5732.02
+   ],
+   [
+    "Base_Frame[0]",
+    "Levelling_Jacks[0]",
+    21.47
+   ],
+   [
+    "Base_Frame[0]",
+    "Levelling_Jacks[2]",
+    21.47
+   ],
+   [
+    "Base_Frame[0]",
+    "Levelling_Jacks[3]",
+    21.47
+   ],
+   [
+    "Base_Frame[0]",
+    "Shoe_Bolts[10]",
+    21.47
+   ],
+   [
+    "Tiers[0]",
+    "Reservoir[0]",
+    4759.93
+   ],
+   [
+    "Tiers[0]",
+    "Reservoir_Seal[0]",
+    566.66
+   ],
+   [
+    "Tier_Lids[1]",
+    "Tier_Latches[3]",
+    8.18
+   ],
+   [
+    "Reservoir[0]",
+    "Reservoir_Seal[0]",
+    358.04
+   ],
+   [
+    "Levelling_Jacks[0]",
+    "Clamp_Shoes[0]",
+    9.29
+   ],
+   [
+    "Levelling_Jacks[1]",
+    "Clamp_Shoes[1]",
+    9.24
+   ],
+   [
+    "Levelling_Jacks[2]",
+    "Clamp_Shoes[2]",
+    9.06
+   ],
+   [
+    "Levelling_Jacks[3]",
+    "Clamp_Shoes[3]",
+    9.04
+   ],
+   [
+    "Levelling_Jacks[4]",
+    "Clamp_Shoes[4]",
+    8.8
+   ],
+   [
+    "Levelling_Jacks[5]",
+    "Clamp_Shoes[5]",
+    8.94
+   ],
+   [
+    "Clamp_Shoes[0]",
+    "Shoe_Bolts[0]",
+    1.4
+   ],
+   [
+    "Clamp_Shoes[0]",
+    "Shoe_Bolts[1]",
+    1.6
+   ],
+   [
+    "Clamp_Shoes[1]",
+    "Shoe_Bolts[2]",
+    2.6
+   ]
+  ]
+ },
+ "after": {
+  "tris": 2784,
+  "pass_": true,
+  "worst": 0.009,
+  "over": 0,
+  "coplanar": 0,
+  "open": 0,
+  "size": [
+   4.0,
+   0.686,
+   0.406
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.003
+  },
+  "overlaps": [],
+  "coplanar_pairs": [],
+  "open_parts": []
+ }
+}
