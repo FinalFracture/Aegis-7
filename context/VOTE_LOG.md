@@ -1694,3 +1694,10 @@
 - **Sheet:** `design/ui/troubleshoot_r3/troubleshoot_r3_contact_sheet.png` (5 candidates, all DRC PASS with 1 expected open; files in `design/ui/troubleshoot_r3/`).
 - **Deciding vote: Jared (2026-10-30 15:46 CDT), relayed via Atlas.**
 - **Round 3 WINNER:** `#02 balanced_twolayer` (`troubleshoot_r3_02_balanced_twolayer.png`) -> finalized in `design/ui/troubleshoot_final/` (R1/R2 divider removed, silkscreen + legend cleanup)
+
+## Troubleshoot simple tier r3 — 2026-10-30
+- **Pick:** Jared chose r3 #03 holo_panels, with these changes:
+  - uniform blue neon traces with no flow and no brightness differences
+  - the break moved to U1 pin 3 → M1.IN (GRID POWER → U1.VIN is now intact)
+  - the Python panel shows only `MOTOR_PIN`: DUTY and RUN removed, and the value applies on entry commit
+- **Final:** `design/ui/troubleshoot_simple_final/`

@@ -1,0 +1,118 @@
+{
+ "board": "Hatch Actuator D-204 \u2014 SIMPLE tier FINAL (r3 #03 holo_panels + changes)",
+ "components": {
+  "J1": {
+   "label": "GRID POWER",
+   "value": "hab grid feed, 2-pin",
+   "pins": [
+    "+",
+    "-"
+   ]
+  },
+  "U1": {
+   "label": "CONTROLLER",
+   "value": "door controller",
+   "pins": [
+    "VIN",
+    "GND",
+    "P1",
+    "P2",
+    "P3"
+   ]
+  },
+  "M1": {
+   "label": "DOOR MOTOR",
+   "value": "hatch actuator motor",
+   "pins": [
+    "IN",
+    "GND"
+   ]
+  },
+  "TP1": {
+   "label": "(pad at end of 1)",
+   "value": "output landing pad",
+   "pins": [
+    "1"
+   ]
+  },
+  "TP2": {
+   "label": "(pad at end of 2)",
+   "value": "output landing pad",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND1": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND2": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  },
+  "GND3": {
+   "label": "GND symbol",
+   "value": "ground tie",
+   "pins": [
+    "1"
+   ]
+  }
+ },
+ "nets": {
+  "GRID_V+": [
+   "J1.+",
+   "U1.VIN"
+  ],
+  "GND": [
+   "J1.-",
+   "GND1",
+   "U1.GND",
+   "GND2",
+   "M1.GND",
+   "GND3"
+  ],
+  "OUT1": [
+   "U1.P1",
+   "TP1"
+  ],
+  "OUT2": [
+   "U1.P2",
+   "TP2"
+  ],
+  "OUT3": [
+   "U1.P3",
+   "M1.IN"
+  ]
+ },
+ "intentional_fault": {
+  "open": {
+   "net": "OUT3",
+   "between": [
+    "U1.P3",
+    "M1.IN"
+   ],
+   "look": "trace chunk missing + subtle burn, no spark"
+  }
+ },
+ "intentional_stubs": {
+  "OUT1": "U1.P1 -> bare pad TP1, leads nowhere",
+  "OUT2": "U1.P2 -> bare pad TP2, leads nowhere"
+ },
+ "win_condition": "OUT3 break repaired (Super Wire across the gap) AND python MOTOR_PIN == 3",
+ "code": {
+  "constant": "MOTOR_PIN",
+  "editable": [
+   "MOTOR_PIN"
+  ],
+  "default": 1,
+  "correct": 3,
+  "apply": "on entry commit (Enter / focus-out); no RUN button"
+ },
+ "current_state": "series loop open at the OUT3 break: no current -> uniform unlit neon, no flow"
+}
