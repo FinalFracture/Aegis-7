@@ -160,11 +160,11 @@ def growrack(v):
         x0, x1 = xs[k] + .025 + .05, xs[k + 1] - .025 - .05
         if v == 2:  # twin bars
             for z in (-.06, .06): p.add("Light_Bars", V, box(x0, x1, yl, yl + .03, z - .025, z + .025))
-            p.add("Hangers", T, *[box(x - .006, x + .006, yl + .03 - E, 2.16 + E, -.006, .006) for x in (x0 + .2, x1 - .2)])
+            p.add("Hangers", T, *[box(x - .006, x + .006, yl + .045 - E, 2.16 + E, -.006, .006) for x in (x0 + .2, x1 - .2)])
             p.add("Bar_Yokes", T, *[box(x - .015, x + .015, yl + .03 - E, yl + .045, -.09, .09) for x in (x0 + .2, x1 - .2)])
         else:
             p.add("Light_Bars", V, box(x0, x1, yl, yl + .035, -.04, .04))
-            p.add("Hangers", T, *[box(x - .006, x + .006, yl + .035 - E, 2.16 + E, -.006, .006) for x in (x0 + .2, x1 - .2)])
+            p.add("Hangers", T, *[box(x - .006, x + .006, (yl + .05 if v == 4 else yl + .035) - E, 2.16 + E, -.006, .006) for x in (x0 + .2, x1 - .2)])
             if v == 4: p.add("Reflectors", T, box(x0 - .01, x1 + .01, yl + .035 - E, yl + .05, -.07, .07))
             if v == 5: p.add("Emerald_Tags", "green", box(x0 + .3, x0 + .36, yl + .005, yl + .03, .04 - E, .046))
     if v == 3: p.add("Cross_Braces", G, *[box(xs[k] + .025 - E, xs[k + 1] - .025 + E, .4, .44, -.02, .02) for k in range(4)])

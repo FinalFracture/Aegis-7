@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_grow_light_rack_01",
+  "style": "Single_Bar",
+  "tris": 368,
+  "budget_ok": true,
+  "size": [
+   10.0,
+   2.2,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_grow_light_rack/ext_grow_light_rack_01.glb"
+ },
+ {
+  "cand": "ext_grow_light_rack_02",
+  "style": "Twin_Bar",
+  "tris": 560,
+  "budget_ok": true,
+  "size": [
+   10.0,
+   2.2,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_grow_light_rack/ext_grow_light_rack_02.glb"
+ },
+ {
+  "cand": "ext_grow_light_rack_03",
+  "style": "Braced_Titanium",
+  "tris": 432,
+  "budget_ok": true,
+  "size": [
+   10.0,
+   2.2,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_grow_light_rack/ext_grow_light_rack_03.glb"
+ },
+ {
+  "cand": "ext_grow_light_rack_04",
+  "style": "Reflector_Hood",
+  "tris": 432,
+  "budget_ok": true,
+  "size": [
+   10.0,
+   2.2,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_grow_light_rack/ext_grow_light_rack_04.glb"
+ },
+ {
+  "cand": "ext_grow_light_rack_05",
+  "style": "Tagged_Bars",
+  "tris": 432,
+  "budget_ok": true,
+  "size": [
+   10.0,
+   2.2,
+   0.2
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_grow_light_rack/ext_grow_light_rack_05.glb"
+ }
+]
