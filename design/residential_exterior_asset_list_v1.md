@@ -1,4 +1,5 @@
 # Residential Exterior + 20 m Ring: Asset List v1 (Vance, Oct 29 2026)
+**Status: DRAFT, ready to model after the rev C interior items.** Readiness pass Oct 29: rows were checked against `godot/assets/models/` (46 glb files), and counts were checked against the v1.2 plan and the Tiered Steps swap.
 Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** `residential_exterior_plan_v1_1_plan.png` (counts updated for v1.1: poles 23→30, platform kerb 7→6). Checked against `godot/assets/models/` (24 glb files).
 ~~Struck through~~ means already modeled as a glb (path cited). Sizes are rough W × D × H in meters. Tris are per instance (LOD0); already-modeled items are not counted. Instanced kits are batched with MultiMesh.
 
@@ -47,7 +48,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | 23a | Tiered Steps **TS-2** variant (APPROVED): 2.0 m cut-down of TS-4 with the same 3 troughs, levelling feet and latched lids. Used on the south wall beside the exit ramp and as bed/run ends | S wall (2), N-E (1), hydro beds (6) | 9 | 2.0 × 0.41 × 0.70 | ~1,500 |
 | 23b | Tiered Steps **lower-detail version** (APPROVED): ~900 tris, foliage merged, lids and feet simplified. Used beyond 20 m for TS-4 and TS-2 | all TS instances beyond 20 m | LOD of 23/23a | same | ~900 |
 | 24 | Ramp 1:12, 0.22 m rise | Sector-4 exit, service door | 2 | 3.6–4.7 × 2.7 | 250 |
-| 25 | **APPROVED (Jared, Oct 29, for now):** sidewalk hydro planter = Tiered Steps TS-4, 4 m length along Z, back to the Spin St W kerb (X -16.8..-16.39), 1 patched liner | west sidewalk, z0 -7, -2, 3 | 3 TS-4 | 0.41 × 4.0 × 0.70 | 2,784 |
+| 25 | ~~**APPROVED (Jared, Oct 29, for now):** sidewalk hydro planter = Tiered Steps TS-4~~ (modeled: `godot/assets/models/hydro_planter_tiered_exterior.glb`), 4 m length along Z, back to the Spin St W kerb (X -16.8..-16.39), 1 patched liner | west sidewalk, z0 -7, -2, 3 | 3 TS-4 | 0.41 × 4.0 × 0.70 | 2,784 |
 
 ## F. Hydro co-op
 | # | Item | Where | Qty | Size | Tris (each) |
@@ -108,7 +109,8 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | 55 | ~~Clover (agri bot)~~ `godot/assets/models/char_bot_r2_05_livery_04_clover.glb` | hydro co-op | 1 | same as Sprocket | — |
 
 ## Counts
-- **Total items: 55.** Already modeled as glb: **5** (#1, 2, 53, 54, 55), plus the Tiered Steps TS-4 module that #23, #25 and #26 now use. Still to model: **50**; for #23, #25 and #26 this is only the TS-2 cut-down variant and the patched liner.
+- **Total items: 57** (55 + #23a TS-2 + #23b lower-detail version). Already modeled as glb: **6** (#1, 2, 25, 53, 54, 55). Still to model: **51**. #23 and #26 are partly done: TS-4 exists and they wait only on #23a TS-2; #25's patched liner is decal #49.
+- **Counts match the v1.2 plan:** benches 8, bins 6, bollards 12, poles 30, platform kerb 6. Tiered Steps: walls 8 TS-4 + 3 TS-2, sidewalk 3 TS-4, beds 12 TS-4 + 6 TS-2, so 23 TS-4 + 9 TS-2 in all.
 - **Tiered Steps tri impact (Oct 29):** planters + beds rise from about 16.4k to about 77k tris (23 TS-4 × 2,784 + 9 TS-2 × ~1,500), so the ring goes from **~209k to ~270k** LOD0. The approved lower-detail version (#23b, ~900 tris) beyond 20 m keeps the ≤ 60k on-screen target. Fit QC: `residential_exterior_tiered_steps_fit.py`.
 - The ring totals about **209k** tris (LOD0, all placed instances). The tram vehicle is 18k of that, and the 5 neighbour facades are 20.5k together. With instancing plus LOD1 beyond 20 m, the on-screen target is ≤ 60k.
 
