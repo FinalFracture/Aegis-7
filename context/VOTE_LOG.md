@@ -1647,3 +1647,8 @@
 - **Sheet:** `design/assets/ext_grow_light_rack/ext_grow_light_rack_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
 - **Deciding vote: Jared (Oct 30, 1:29 PM CT), relayed via Atlas.**
 - **#28 Grow-light rack WINNER:** `#01 Single_Bar` (`ext_grow_light_rack_01.glb`, 368 tris) -> `godot/assets/models/ext_grow_light_rack.glb`
+
+## Category: `residential_exterior_hydro` — #23a TS-2 planter variant (Rook, box pipeline, Oct 30)
+- **Sheet:** `design/assets/hydro_planter_tiered_ts2/hydro_planter_tiered_ts2_contact_sheet.png` (5 candidates, clip-check PASS, validate PASS).
+- **Deciding vote: Jared (Oct 30, 1:30 PM CT), relayed via Atlas.**
+- **#23a TS-2 WINNER:** `#01 Straight_Cut` (`hydro_planter_tiered_ts2_01.glb`, 1,480 tris) -> `godot/assets/models/hydro_planter_tiered_ts2.glb`
