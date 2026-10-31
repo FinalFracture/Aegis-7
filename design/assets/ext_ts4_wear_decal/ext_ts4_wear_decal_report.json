@@ -1,0 +1,52 @@
+{
+ "01": {
+  "tris": 6,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "host_gap_ok": true,
+  "coplanar_pairs": 0,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "02": {
+  "tris": 8,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "host_gap_ok": true,
+  "coplanar_pairs": 0,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "03": {
+  "tris": 6,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "host_gap_ok": true,
+  "coplanar_pairs": 0,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "04": {
+  "tris": 14,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "host_gap_ok": true,
+  "coplanar_pairs": 0,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "05": {
+  "tris": 4,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "host_gap_ok": true,
+  "coplanar_pairs": 0,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ }
+}
