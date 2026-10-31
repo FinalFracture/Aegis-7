@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://c8hab7pref_play"]
+[gd_scene load_steps=5 format=3 uid="uid://c8hab7pref_play"]
 
 [ext_resource type="Script" path="res://scripts/preface_playable_area.gd" id="1_preface_playable_area"]
-[ext_resource type="Script" path="res://scripts/pcba_python_puzzle_ui.gd" id="2_pcba_python_puzzle_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pref_play"]
 sky_top_color = Color(0.08, 0.12, 0.17, 1)
@@ -47,7 +46,3 @@ current = true
 fov = 54.0
 near = 0.02
 far = 500.0
-
-[node name="PcbaPythonPuzzleUI" type="CanvasLayer" parent="."]
-script = ExtResource("2_pcba_python_puzzle_ui")
-visible = false

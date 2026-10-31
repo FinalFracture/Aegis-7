@@ -1,3 +1,4 @@
+# DEPRECATED (5DB-01): replaced by scenes/ui/troubleshoot_simple.tscn; not referenced by any scene.
 class_name PcbaPythonPuzzleUI
 extends CanvasLayer
 ## Field diagnostic console. The board is PcbBoardView (netlist geom).

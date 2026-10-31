@@ -177,6 +177,11 @@ const GLASS_QA_LAYER_BIT := 1 << 19
 const HUB_BACKING_MAX_GAP := 0.05                    # [REAL-01] max allowed void behind the hub face
 const HUB_BACKING_SAMPLE_X := [-0.15, 0.13, 0.40]   # hub-local bezel sample columns (bezel x -0.20..0.455)
 const HUB_BACKING_SAMPLE_Y := [0.50, 1.10, 1.70]    # hub-local bezel sample rows (bezel y 0.40..1.80)
+const HUB_SEAT_RAY_DEPTH := 0.30                     # [D670-04] wall search depth for seating the hub
+const HUB_SEAT_MIN_HITS := 5                         # below this, a back-normal seat is not applied
+const HUB_SEAT_GAP := 0.003                          # back face stands 3 mm off the real wall
+const HUB_TANGENT_STEP := 0.01                       # [D670-04] wall-tangent step when a sample column overhangs the opening
+const HUB_TANGENT_MAX := 0.35                        # furthest slide along hub local X
 const SPROCKET_NODE := "Hammerhead05_Sprocket_0419_Engineering"
 # Python UI (tools/door_field_ui.py) writes this file; the game polls it every DOOR_FIELD_POLL_SEC.
 # [QA-FF-04/06] every run polls BOTH res://config/door_fields.json (godot/config/, gitignored) and
@@ -200,7 +205,6 @@ var _props_container: Node3D
 var _actors_container: Node3D
 var _lights_container: Node3D
 var _camera: Camera3D
-var _puzzle_ui: CanvasLayer
 var _world_env: WorldEnvironment
 
 var _fp_wrist_holder: Node3D
@@ -299,10 +303,12 @@ func _ready() -> void:
 	_props_container = _ensure_child("InteractivePropsAndPickups")
 	_actors_container = _ensure_child("Johnny5BotsAndCitizens")
 	_lights_container = _ensure_child("SectorLightingRig")
-	_puzzle_ui = get_node_or_null("PcbaPythonPuzzleUI") as CanvasLayer
 	_world_env = get_node_or_null("WorldEnvironment") as WorldEnvironment
-	if _puzzle_ui != null:
-		_puzzle_ui.visible = false
+	# SSR is valid only on Forward+. Scenes leave it off so load does not warn; enable the duplicate here.
+	if _world_env != null and _world_env.environment != null:
+		var env: Environment = _world_env.environment.duplicate() as Environment
+		env.ssr_enabled = RenderingServer.get_current_rendering_method() == "forward_plus"
+		_world_env.environment = env
 
 	var all_args: PackedStringArray = OS.get_cmdline_args() + OS.get_cmdline_user_args()
 	for arg: String in all_args:
@@ -548,6 +554,12 @@ func _add_architectural_shadow_occluders(parent: Node3D) -> void:
 	# Hidden SHADOWS_ONLY solid slabs inside the L2 floor and L2/L1 apartment ceilings so
 	# upper-deck characters/props NEVER project shadows onto the L1 atrium floor and
 	# exterior skylight sunlight NEVER leaks through enclosed room ceilings.
+	# D670-06: material instead of hiding (hidden meshes cast no shadows)
+	var occ_mat: StandardMaterial3D = StandardMaterial3D.new()
+	occ_mat.resource_name = "Mat_Occluder_Gunmetal"
+	occ_mat.albedo_color = Color("#2A2F36")
+	occ_mat.roughness = 0.9
+	occ_mat.metallic = 0.0
 	for cfg: Dictionary in [
 		{"name": "Occ_L2_NorthGallerySlab", "size": Vector3(27.8, 0.30, 7.8), "pos": Vector3(0.0, 4.02, 5.0)},
 		{"name": "Occ_L2_WestAlcoveSlab", "size": Vector3(6.5, 0.30, 7.9), "pos": Vector3(-10.65, 4.02, -2.65)},
@@ -566,6 +578,7 @@ func _add_architectural_shadow_occluders(parent: Node3D) -> void:
 		if cfg.has("rot_x"):
 			mi.rotation = Vector3(float(cfg["rot_x"]), 0.0, 0.0)
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+		mi.material_override = occ_mat
 		occ_root.add_child(mi)
 
 
@@ -951,6 +964,14 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	term.position = Vector3(-12.60, 5.50, -5.30)
 	_props_container.add_child(term)
 	_interactables.append({"node": term, "id": "Apt201_ToolWall_DiagnosticTerminal", "kind": "terminal", "label": "APT 201 TOOL WALL TERMINAL", "collected": false, "pickup": false})
+	spawned += 1
+	# [5DB-03] D-204 hatch emitter. No hatch door mesh in this sector yet; [E] opens the simple troubleshoot UI.
+	# Sits on the APT 201 tool wall, beside the terminal and clear of the pickup row at z=-4.95.
+	var hatch: Node3D = Node3D.new()
+	hatch.name = "Hatch_D204_EmitterPanel"
+	hatch.position = Vector3(-11.20, 5.45, -5.30)
+	_props_container.add_child(hatch)
+	_interactables.append({"node": hatch, "id": "Hatch_D204_EmitterPanel", "kind": "troubleshoot", "label": "HATCH FIELD EMITTER D-204", "collected": false, "pickup": false})
 	spawned += 1
 	return spawned
 
@@ -1842,6 +1863,9 @@ func _respawn() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _player_body == null or _capture_hud:
 		return
+	# Troubleshoot UI is modal: no look, no [E], no other gameplay keys. The holo still takes GUI input.
+	if _troubleshoot_ui_open():
+		return
 	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -1909,7 +1933,7 @@ func _physics_process(delta: float) -> void:
 	if not _player_transit.is_empty():
 		_update_first_person_arm(delta)
 		return
-	var controls: bool = _preset_active < 0 and not _capture_hud
+	var controls: bool = _preset_active < 0 and not _capture_hud and not _troubleshoot_ui_open()
 
 	var input_dir: Vector2 = Vector2.ZERO
 	var sprint: bool = false
@@ -2025,6 +2049,9 @@ func _find_nearest_interactable(max_dist: float) -> Dictionary:
 
 
 func _interact() -> void:
+	# [5DB-03] [E] does nothing while the troubleshoot holo is already up.
+	if _troubleshoot_ui_open():
+		return
 	if not _third_person:
 		_interact_reach_timer = INTERACT_REACH_DURATION
 	if _player_body != null and _start_core_transit(_player_body, true):
@@ -2070,6 +2097,9 @@ func _interact() -> void:
 			total += int(_inventory_max[k])
 			have += int(_inventory[k])
 		_show_toast("TOOL WALL TERMINAL // Sector-4 bulkhead relay: JAMMED AT 40%%.\nUpgrade kit %d/%d gathered. Need: +5A cell + Super-Wire on [RESET]." % [have, total], 4.5)
+	elif kind == "troubleshoot":
+		# [5DB-01] Replaces the retired PcbaPythonPuzzleUI. The simple board is the D-204 hatch service.
+		open_troubleshoot_simple("D-204")
 	elif kind == "anim_prop":
 		var prop_node: Node3D = it["node"] as Node3D
 		var prop_id: String = String(it.get("id", prop_node.name if prop_node != null else ""))
@@ -2309,6 +2339,8 @@ func _update_hud() -> void:
 			_hud_prompt.text = ""
 		else:
 			var verb: String = "PICK UP" if bool(_nearest["pickup"]) else "QUERY"
+			if knd == "troubleshoot":
+				verb = "OPEN"
 			_hud_prompt.text = "[E] %s %s" % [verb, String(_nearest["label"])]
 
 
@@ -2543,6 +2575,35 @@ func _qa_place(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
 	_update_interior_streaming(pos)
 
 
+## Yaw 0 faces world -Z. Pitch is the camera pivot X rotation (negative looks down).
+func _qa_aim_at(target: Vector3) -> void:
+	if _player_body == null:
+		return
+	var eye: Vector3 = _player_body.global_position + Vector3(0.0, 1.62, 0.0)
+	if _camera != null and _camera.is_inside_tree():
+		eye = _camera.global_position
+	var dir: Vector3 = target - eye
+	var horiz: float = Vector2(dir.x, dir.z).length()
+	if horiz < 0.00001 and absf(dir.y) < 0.00001:
+		return
+	# forward = (-sin(yaw), 0, -cos(yaw)); yaw 0 is -Z, yaw 180 is +Z.
+	var yaw: float = atan2(-dir.x, -dir.z)
+	var pitch: float = atan2(dir.y, maxf(horiz, 0.00001))
+	_player_body.rotation_degrees = Vector3(0.0, rad_to_deg(yaw), 0.0)
+	_player_body.velocity = Vector3.ZERO
+	_pitch = pitch
+	_apply_pitch()
+
+
+## Door-local point, shifted with the hub (local -Z seat and local +X tangent) so [E] range stays put.
+func _qa_follow_hub_seat(door: Dictionary, local_pt: Vector3) -> Vector3:
+	var pt: Vector3 = local_pt
+	pt.x += float(door.get("hub_tangent_shift", 0.0))
+	pt.z -= float(door.get("hub_seat", 0.0))
+	var root: Node3D = door["root"] as Node3D
+	return root.global_transform * pt
+
+
 func _qa_capture(fname: String) -> Image:
 	if DisplayServer.get_name() == "headless":
 		return null
@@ -2726,18 +2787,34 @@ func _run_hand_controls_qa() -> void:
 	await _qa_frames(40)
 
 	# --- 8. [E] interact reach + pickup removal (APT 201 tool wall) ---
-	_qa_place(Vector3(-12.85, 4.30, -4.20), 180.0, -10.0)
+	# Stand on the shelf's +Z side and aim at the BCI. Yaw 180 faces +Z, away from the wall at Z -4.95.
+	var wall_pick: Node3D = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") as Node3D
+	var wall_aim: Vector3 = wall_pick.global_position if wall_pick != null else Vector3(-12.85, 5.02, -4.95)
+	_qa_place(Vector3(wall_aim.x, 4.30, wall_aim.z + 0.75), 0.0, 0.0)
 	await _qa_frames(8)
+	if wall_pick != null and is_instance_valid(wall_pick):
+		wall_aim = wall_pick.global_position
+	_qa_place(Vector3(wall_aim.x, 4.30, wall_aim.z + 0.75), 0.0, 0.0)
+	_qa_aim_at(wall_aim)
+	# Place leaves a few frames of slide, and [E] is parsed on a later idle frame. Sample nearest only after that slide stops,
+	# or the node this check waits on is a different pickup than the one _interact queue_frees.
+	await _qa_frames(8)
+	_qa_aim_at(wall_aim)
+	_player_body.velocity = Vector3.ZERO
 	var n_before: int = 0
 	for it: Dictionary in _interactables:
 		if bool(it["pickup"]) and not bool(it["collected"]):
 			n_before += 1
 	var target: Dictionary = _find_nearest_interactable(INTERACT_RANGE)
 	var tgt_node: Node3D = target.get("node", null) as Node3D
+	var tgt_id: String = String(target.get("id", ""))
 	var tgt_label: String = String(target.get("label", "none"))
 	var inv_before: int = 0
 	for k: String in _inventory.keys():
 		inv_before += int(_inventory[k])
+	var collected_before: Dictionary = {}
+	for cid: String in _collected_pickup_ids.keys():
+		collected_before[cid] = true
 	_qa_key(KEY_E, true)
 	await _qa_idle(1)
 	await _qa_frames(12)
@@ -2751,7 +2828,20 @@ func _run_hand_controls_qa() -> void:
 	var inv_after: int = 0
 	for k2: String in _inventory.keys():
 		inv_after += int(_inventory[k2])
-	_qa_check("E_pickup_collected_removed", n_after == n_before - 1 and inv_after == inv_before + 1 and (tgt_node == null or not is_instance_valid(tgt_node)), "target=%s pickups %d->%d inventory %d->%d node_freed=%s" % [tgt_label, n_before, n_after, inv_before, inv_after, tgt_node == null or not is_instance_valid(tgt_node)])
+	var new_ids: PackedStringArray = PackedStringArray()
+	for cid2: String in _collected_pickup_ids.keys():
+		if not collected_before.has(cid2):
+			new_ids.append(cid2)
+	var collected_id: String = ",".join(new_ids)
+	# queue_free drops the pickup at the end of an idle frame. A physics-frame check can still see it.
+	# Removed-from-tree counts as freed. Gameplay (queue_free in _interact) is unchanged.
+	var node_freed: bool = tgt_node == null or not is_instance_valid(tgt_node) or not tgt_node.is_inside_tree()
+	var freed_wait: int = 0
+	while not node_freed and freed_wait < 10:
+		await get_tree().process_frame
+		freed_wait += 1
+		node_freed = tgt_node == null or not is_instance_valid(tgt_node) or not tgt_node.is_inside_tree()
+	_qa_check("E_pickup_collected_removed", n_after == n_before - 1 and inv_after == inv_before + 1 and node_freed and collected_id == tgt_id and tgt_id != "", "target=%s target_id=%s collected_id=%s pickups %d->%d inventory %d->%d node_freed=%s" % [tgt_label, tgt_id, collected_id, n_before, n_after, inv_before, inv_after, node_freed])
 	_qa_check("E_reach_raises_arm", reach_blend > 0.5, "blend 12 physics frames after [E]=%.2f" % reach_blend)
 	await _qa_frames(60)
 	_qa_check("E_reach_lowers_again", _arm_raise_blend == 0.0, "blend=%.2f" % _arm_raise_blend)
@@ -3580,11 +3670,11 @@ func _despawn_building_interiors() -> int:
 		return 0
 	var managed: int = 0
 	_interior_detached_records.clear()
-	# 1. Free every interior pickup, terminal, and baked anim-prop (doors stay — they are the building envelope).
+	# 1. Free every interior pickup, terminal, hatch panel, and baked anim-prop (doors stay — they are the building envelope).
 	var keep_items: Array[Dictionary] = []
 	for it: Dictionary in _interactables:
 		var k: String = String(it["kind"])
-		if bool(it["pickup"]) or k == "terminal" or k == "anim_prop":
+		if bool(it["pickup"]) or k == "terminal" or k == "troubleshoot" or k == "anim_prop":
 			var raw: Variant = it["node"]
 			if is_instance_valid(raw):
 				var n: Node3D = raw as Node3D
@@ -4057,38 +4147,151 @@ func _fit_dock_pad_to_floor(door: Dictionary) -> void:
 	door["pad_lift"] = lift
 
 
+## Nine hub-face samples. Each entry is the hit distance along local -Z, or -1 if nothing is hit within `depth`.
+func _hub_back_hit_distances(door: Dictionary, depth: float) -> Array[float]:
+	var out: Array[float] = []
+	var hub_root: Node3D = door["hub"] as Node3D
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if hub_root == null or space == null:
+		return out
+	var xf: Transform3D = hub_root.global_transform
+	for hx: float in HUB_BACKING_SAMPLE_X:
+		for hy: float in HUB_BACKING_SAMPLE_Y:
+			var origin: Vector3 = xf * Vector3(hx, hy, 0.0)
+			var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, xf * Vector3(hx, hy, -depth))
+			if _player_body != null:
+				rq.exclude = [_player_body.get_rid()]
+			var hit: Dictionary = space.intersect_ray(rq)
+			if hit.is_empty():
+				out.append(-1.0)
+			else:
+				out.append(origin.distance_to(hit["position"] as Vector3))
+	return out
+
+
+func _hub_median(vals: Array[float]) -> float:
+	var s: Array[float] = []
+	s.append_array(vals)
+	s.sort()
+	var n: int = s.size()
+	if n <= 0:
+		return 0.0
+	if n % 2 == 1:
+		return s[n >> 1]
+	return (s[(n >> 1) - 1] + s[n >> 1]) * 0.5
+
+
 func _hub_backing_misses(door: Dictionary, depth: float) -> int:
-	# Rays from 9 points on the hub face straight back into the wall; count points with no solid within `depth`.
+	# Same 9-point grid as seating (HUB_BACKING_SAMPLE_X/Y). Count points with no solid within `depth`.
 	var hub_root: Node3D = door["hub"] as Node3D
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	if hub_root == null or space == null:
 		return -1
-	var xf: Transform3D = hub_root.global_transform
-	var misses: int = 0
-	for hx: float in HUB_BACKING_SAMPLE_X:
-		for hy: float in HUB_BACKING_SAMPLE_Y:
-			var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(xf * Vector3(hx, hy, 0.0), xf * Vector3(hx, hy, -depth))
-			if _player_body != null:
-				rq.exclude = [_player_body.get_rid()]
-			if space.intersect_ray(rq).is_empty():
-				misses += 1
+	var dists: Array[float] = _hub_back_hit_distances(door, depth)
+	var expect: int = HUB_BACKING_SAMPLE_X.size() * HUB_BACKING_SAMPLE_Y.size()
+	var misses: int = maxi(0, expect - dists.size())
+	for d: float in dists:
+		if d < 0.0:
+			misses += 1
 	return misses
 
 
-func _fit_hub_backing(door: Dictionary) -> void:
-	# [REAL-01] If any part of a hub has no wall within HUB_BACKING_MAX_GAP behind it (ALCOVE 2C: the hub overhangs
-	# the alcove's outer wall at x -10.30; elsewhere the baked wall face sits 5-10 cm behind the 0.30 m door-frame
-	# plane), add a solid wall-toned backing plinth + collider filling the void behind the bezel,
-	# its face 2 mm proud of the wall plane (hub-local z -0.022) so it never z-fights the real wall.
-	var misses: int = _hub_backing_misses(door, HUB_BACKING_MAX_GAP)
-	if misses < 0:
-		return
-	door["backing_misses_20cm"] = _hub_backing_misses(door, 0.20)
-	door["backing_checked"] = true
-	door["backing_added"] = misses > 0
-	if misses == 0:
-		return
+func _nudge_hub_to_wall(door: Dictionary) -> Dictionary:
+	# Back-normal seat from the hub's current pose. Median of hits within 0.30 m, then move by d - 3 mm.
 	var hub_root: Node3D = door["hub"] as Node3D
+	var hits: Array[float] = []
+	for dist: float in _hub_back_hit_distances(door, HUB_SEAT_RAY_DEPTH):
+		if dist >= 0.0 and dist <= HUB_SEAT_RAY_DEPTH:
+			hits.append(dist)
+	if hub_root == null or hits.size() < HUB_SEAT_MIN_HITS:
+		return {"ok": false, "d": 0.0, "nudge": 0.0, "hits": hits.size()}
+	var d_med: float = _hub_median(hits)
+	var nudge: float = d_med - HUB_SEAT_GAP
+	var back: Vector3 = -hub_root.global_transform.basis.z
+	if back.length_squared() > 0.0000001:
+		hub_root.global_position += back.normalized() * nudge
+	return {"ok": true, "d": d_med, "nudge": nudge, "hits": hits.size()}
+
+
+func _remember_hub_center(door: Dictionary) -> void:
+	var hub_root: Node3D = door["hub"] as Node3D
+	if hub_root == null:
+		return
+	var scan_n: Node3D = hub_root.find_child("ScanZone", true, false) as Node3D
+	door["center"] = scan_n.global_position if scan_n != null else hub_root.global_position
+
+
+func _fit_hub_backing(door: Dictionary) -> void:
+	# [D670-04] Seat on the wall along local -Z. If any of the 9 face rays still miss within 5 cm
+	# (one column overhangs the portal), slide along local X, 1 cm steps, both ways, up to 0.35 m.
+	# Take the smallest shift that lands 9/9 within 5 cm (away from the doorway first) and re-seat.
+	# HubWallBacking only if no shift works (ALCOVE2C has no wall). Same path for every door.
+	var hub_root: Node3D = door["hub"] as Node3D
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if hub_root == null or space == null:
+		return
+	var did: String = String(door["id"])
+	door["backing_checked"] = true
+	door["hub_seat"] = 0.0
+	door["hub_tangent_shift"] = 0.0
+	door["backing_added"] = false
+	var seated: Dictionary = _nudge_hub_to_wall(door)
+	if bool(seated["ok"]):
+		door["hub_seat"] = float(seated["nudge"])
+	var base_pos: Vector3 = hub_root.global_position
+	var base_seat: float = float(door["hub_seat"])
+	if bool(seated["ok"]) and _hub_backing_misses(door, HUB_BACKING_MAX_GAP) == 0:
+		_remember_hub_center(door)
+		print("[HUB] %s: seated d=%.4f shift=%.4f hits=9/9" % [did, base_seat + HUB_SEAT_GAP, 0.0])
+		return
+	var tangent: Vector3 = hub_root.global_transform.basis.x
+	if tangent.length_squared() <= 0.0000001:
+		if absf(base_seat) > 0.0000001:
+			_remember_hub_center(door)
+		_hub_add_wall_backing(door, hub_root)
+		return
+	tangent = tangent.normalized()
+	var root_n: Node3D = door["root"] as Node3D
+	var along: float = 0.0
+	if root_n != null:
+		along = (base_pos - root_n.global_position).dot(tangent)
+	var away: float = -1.0 if along < 0.0 else 1.0
+	var step_signs: Array[float] = [away, -away]
+	var n_steps: int = int(round(HUB_TANGENT_MAX / HUB_TANGENT_STEP))
+	var found: bool = false
+	var best_lat: float = 0.0
+	var best_seat: float = base_seat
+	for step_i: int in range(1, n_steps + 1):
+		var mag: float = HUB_TANGENT_STEP * float(step_i)
+		for sgn: float in step_signs:
+			hub_root.global_position = base_pos + tangent * (sgn * mag)
+			var nudged: Dictionary = _nudge_hub_to_wall(door)
+			if not bool(nudged["ok"]):
+				continue
+			if _hub_backing_misses(door, HUB_BACKING_MAX_GAP) != 0:
+				continue
+			found = true
+			best_lat = sgn * mag
+			best_seat = base_seat + float(nudged["nudge"])
+			break
+		if found:
+			break
+	if found:
+		door["hub_seat"] = best_seat
+		door["hub_tangent_shift"] = best_lat
+		_remember_hub_center(door)
+		print("[HUB] %s: seated d=%.4f shift=%.4f hits=9/9" % [did, best_seat + HUB_SEAT_GAP, best_lat])
+		return
+	hub_root.global_position = base_pos
+	door["hub_seat"] = base_seat
+	door["hub_tangent_shift"] = 0.0
+	if absf(base_seat) > 0.0000001:
+		_remember_hub_center(door)
+	_hub_add_wall_backing(door, hub_root)
+
+
+func _hub_add_wall_backing(door: Dictionary, hub_root: Node3D) -> void:
+	var did: String = String(door["id"])
 	var sz: Vector3 = Vector3(0.695, 1.44, 0.25)
 	var ctr: Vector3 = Vector3(0.1275, 1.10, -0.020 - sz.z * 0.5)
 	var m: StandardMaterial3D = StandardMaterial3D.new()
@@ -4098,7 +4301,7 @@ func _fit_hub_backing(door: Dictionary) -> void:
 	var t: Texture2D = _load_tex("facade_titanium_gunmetal_hull.png")
 	if t != null:
 		m.albedo_texture = t
-	var mi: MeshInstance3D = _dbox(hub_root, "HubWallBacking", sz, ctr, m)
+	_dbox(hub_root, "HubWallBacking", sz, ctr, m)
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = "HubWallBacking_Collider"
 	body.position = ctr
@@ -4108,7 +4311,8 @@ func _fit_hub_backing(door: Dictionary) -> void:
 	bs.size = sz
 	cs.shape = bs
 	body.add_child(cs)
-	print("[HUB] %s: %d/9 hub-face rays found no wall within %.2f m (%d/9 within 0.20 m) -> added backing panel %s" % [String(door["id"]), misses, HUB_BACKING_MAX_GAP, 9 - int(door["backing_misses_20cm"]), mi.name])
+	door["backing_added"] = true
+	print("[HUB] %s: fallback backing" % did)
 
 
 func _update_hub_docks() -> void:
@@ -5291,17 +5495,26 @@ func _run_reticle_stars_doors_qa() -> void:
 		# [Bulkhead Hub] present at the door-local mount offset, [E] target is its ScanZone, 8 glow parts amber
 		var hub_n: Node3D = door.get("hub") as Node3D
 		var exp_xf: Transform3D = (door["root"] as Node3D).global_transform * Transform3D(Basis.IDENTITY, HUB_MOUNT_OFFSET + Vector3(0.0, 0.0, HUB_WALL_STANDOFF))
-		var hub_err: float = hub_n.global_position.distance_to(exp_xf.origin) if hub_n != null else 99.0
+		var seat_m: float = float(door.get("hub_seat", 0.0))
+		var shift_m: float = float(door.get("hub_tangent_shift", 0.0))
+		var back_dir: Vector3 = -exp_xf.basis.z
+		if back_dir.length_squared() > 0.0000001:
+			back_dir = back_dir.normalized()
+		var tangent_dir: Vector3 = exp_xf.basis.x
+		if tangent_dir.length_squared() > 0.0000001:
+			tangent_dir = tangent_dir.normalized()
+		var exp_pos: Vector3 = exp_xf.origin + back_dir * seat_m + tangent_dir * shift_m
+		var hub_err: float = hub_n.global_position.distance_to(exp_pos) if hub_n != null else 99.0
 		var hub_rot_err: float = hub_n.global_transform.basis.get_rotation_quaternion().angle_to(exp_xf.basis.get_rotation_quaternion()) if hub_n != null else 9.0
 		var scan_target: String = ""
 		for it_q: Dictionary in _interactables:
 			if String(it_q["kind"]) == "rfid_door" and String(it_q.get("door_id", "")) == did:
 				scan_target = String((it_q["node"] as Node).name)
 		_qa_t38_check("%s_bulkhead_hub_mounted" % did.to_lower(), hub_n != null and hub_err < 0.001 and hub_rot_err < 0.001 and scan_target == "ScanZone",
-			"hub=%s pos_err=%.4f m rot_err=%.4f offset=%s+standoff %.3f scan_target=%s" % [hub_n.name if hub_n != null else "MISSING", hub_err, hub_rot_err, str(HUB_MOUNT_OFFSET), HUB_WALL_STANDOFF, scan_target])
+			"hub=%s pos_err=%.4f m rot_err=%.4f offset=%s+standoff %.3f seat=%.4f shift=%.4f scan_target=%s" % [hub_n.name if hub_n != null else "MISSING", hub_err, hub_rot_err, str(HUB_MOUNT_OFFSET), HUB_WALL_STANDOFF, seat_m, shift_m, scan_target])
 		var back_miss: int = _hub_backing_misses(door, HUB_BACKING_MAX_GAP)
 		_qa_t38_check("%s_hub_solid_wall_behind_5cm" % did.to_lower(), back_miss == 0,
-			"9-point rays from hub face: misses=%d backing_panel_added=%s" % [back_miss, door.get("backing_added", false)])
+			"seating grid 9 rays from hub face: misses=%d backing_panel_added=%s" % [back_miss, door.get("backing_added", false)])
 		var glow_amber: bool = (door["glow_nodes"] as Array).size() == 8
 		for gn0: Variant in door["glow_nodes"]:
 			glow_amber = glow_amber and (gn0 as MeshInstance3D).material_override == lm
@@ -5326,7 +5539,7 @@ func _run_reticle_stars_doors_qa() -> void:
 			"door_z=%.2f player_stopped_at_z=%.2f open=%s" % [dpos.z, z_blocked, door["open"]])
 		# [E] hub scan -> dissolve tween 0->1 over 0.8 s, then collision off + light green
 		# [QA-HUB-01] scans now need to be within 1.4 m of (and facing) the hub ScanZone
-		var scan_spot: Vector3 = (door["root"] as Node3D).global_transform * Vector3(0.80, 0.05, 1.0)
+		var scan_spot: Vector3 = _qa_follow_hub_seat(door, Vector3(0.80, 0.05, 1.0))
 		_qa_place(scan_spot, yaw_deg, -4.0)
 		await _qa_frames(6)
 		Engine.time_scale = 0.05  # slow the 0.8 s tween so a mid-dissolve sample is reliable under xvfb
@@ -5404,7 +5617,8 @@ func _run_reticle_stars_doors_qa() -> void:
 	for dq: Dictionary in _rfid_doors:
 		_set_door_dissolve_immediate(dq, 0.0)
 	var h_xf: Transform3D = (h_rb["root"] as Node3D).global_transform
-	_qa_place(h_xf * Vector3(0.80, 0.05, 1.0), 180.0, -4.0)
+	var rb_front: Vector3 = _qa_follow_hub_seat(h_rb, Vector3(0.80, 0.05, 1.0))
+	_qa_place(rb_front, 180.0, -4.0)
 	await _qa_frames(6)
 	_update_hud()
 	var prompt_txt: String = _hud_prompt.text if _hud_prompt != null else ""
@@ -5429,7 +5643,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		_qa_t38_check("qa_hub_01_scan_close_held_while_occupied", held_scan and not bool(h_rb["open"]) and _door_dissolve(h_rb) <= 0.001,
 			"held=%s then open=%s dissolve=%.3f" % [held_scan, h_rb["open"], _door_dissolve(h_rb)])
 	_set_door_dissolve_immediate(h_rb, 0.0)
-	_qa_place(h_xf * Vector3(0.80, 0.05, 1.0), 0.0, -4.0)  # facing away from the hub
+	_qa_place(rb_front, 0.0, -4.0)  # facing away from the hub
 	await _qa_frames(6)
 	_update_hud()
 	var prompt_away: String = _hud_prompt.text if _hud_prompt != null else ""
@@ -5460,7 +5674,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		if bool(itp["pickup"]) and not bool(itp["collected"]) and is_instance_valid(itp["node"]):
 			pk = itp
 			break
-	var hub_spot: Vector3 = h_xf * Vector3(0.80, 0.05, 1.0)
+	var hub_spot: Vector3 = rb_front
 	if not pk.is_empty():
 		var pk_node: Node3D = pk["node"] as Node3D
 		var pk_home: Vector3 = pk_node.global_position
@@ -5608,8 +5822,20 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(6)
 	_qa_t38_check("interior_loaded_at_start", _interiors_loaded, "status=%s" % str(get_interior_streaming_status()))
 	# Collect the BCI headband on the APT 201 tool wall first so we can verify it stays collected.
-	_qa_place(Vector3(-12.85, 4.30, -4.20), 180.0, -10.0)
+	# Yaw 180 at (-12.85, 4.30, -4.20) faces +Z, away from the shelf at Z -4.95, so [E] used to take the spool.
+	var bci_pick: Node3D = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") as Node3D
+	var bci_aim: Vector3 = bci_pick.global_position if bci_pick != null else Vector3(-12.85, 5.02, -4.95)
+	_qa_place(Vector3(bci_aim.x, 4.30, bci_aim.z + 0.75), 0.0, 0.0)
 	await _qa_frames(8)
+	if bci_pick != null and is_instance_valid(bci_pick):
+		bci_aim = bci_pick.global_position
+	_qa_place(Vector3(bci_aim.x, 4.30, bci_aim.z + 0.75), 0.0, 0.0)
+	_qa_aim_at(bci_aim)
+	_update_hud()
+	var bci_label: String = String(_nearest.get("label", ""))
+	var bci_prompt: String = _hud_prompt.text if _hud_prompt != null else ""
+	_qa_t38_check("reticle_target_bci_headband", bci_label == "BCI HEADBAND" and bci_prompt.contains("BCI HEADBAND"),
+		"label=%s prompt='%s'" % [bci_label, bci_prompt])
 	var inv_before: int = int(_inventory["bci"])
 	_interact()
 	await _qa_frames(4)
@@ -5675,6 +5901,10 @@ func _run_reticle_stars_doors_qa() -> void:
 # ------------------------------------------------------------------------------
 # Simple troubleshoot UI (Hatch Field Emitter D-204)
 # ------------------------------------------------------------------------------
+func _troubleshoot_ui_open() -> bool:
+	return _ts_ui != null and is_instance_valid(_ts_ui) and not _ts_ui.is_queued_for_deletion()
+
+
 func open_troubleshoot_simple(device_id: String = "D-204") -> TroubleshootSimpleUI:
 	if _ts_ui != null and is_instance_valid(_ts_ui) and not _ts_ui.is_queued_for_deletion():
 		_ts_ui.device_id = device_id
@@ -5705,12 +5935,13 @@ func open_troubleshoot_simple(device_id: String = "D-204") -> TroubleshootSimple
 	return ui
 
 
-func _on_troubleshoot_field_released(device_id: String) -> void:
-	var door: Dictionary = _find_door(device_id)
-	if door.is_empty():
-		print("[Troubleshoot] no door \"%s\"" % device_id)
-		return
+func _on_troubleshoot_field_released(_device_id: String) -> void:
 	# Win releases the field (dissolve open). A wrong pin only stalls inside the UI.
+	# The hatch id is DOOR_D204; this sector has no hatch door mesh yet.
+	var door: Dictionary = _find_door("DOOR_D204")
+	if door.is_empty():
+		print("[TS] D-204 released (no hatch door in this sector yet)")
+		return
 	_set_door_open_state(door, true)
 
 
@@ -5791,5 +6022,32 @@ func _run_troubleshoot_simple_qa() -> void:
 		exit_btn.pressed.emit()
 		var closed: bool = (not is_instance_valid(ui)) or ui.is_queued_for_deletion() or not ui.visible
 		_ts_qa("exit_closes", closed, "queued=%s visible=%s" % [ui.is_queued_for_deletion() if is_instance_valid(ui) else true, ui.visible if is_instance_valid(ui) else false])
+	# [5DB-03] Stand on the panel's +Z side and aim with the D670-01 helper, then [E].
+	# z + 0.35 keeps the probe nearer the emitter than the pickup row on z=-4.95.
+	var panel: Node3D = _props_container.get_node_or_null("Hatch_D204_EmitterPanel") as Node3D
+	var aim: Vector3 = panel.global_position if panel != null else Vector3(-11.20, 5.45, -5.30)
+	_qa_place(Vector3(aim.x, 4.30, aim.z + 0.35), 0.0, 0.0)
+	if panel != null and is_instance_valid(panel):
+		aim = panel.global_position
+	_qa_aim_at(aim)
+	var nearest_id: String = String(_find_nearest_interactable(INTERACT_RANGE).get("id", ""))
+	var cam_fwd: Vector3 = (-_camera.global_transform.basis.z).normalized() if _camera != null else Vector3.FORWARD
+	var to_panel: Vector3 = aim - (_camera.global_position if _camera != null else _player_body.global_position)
+	var aimed_dot: float = cam_fwd.dot(to_panel.normalized()) if to_panel.length_squared() > 0.0001 else 0.0
+	_interact()
+	await get_tree().process_frame
+	var opened_ok: bool = nearest_id == "Hatch_D204_EmitterPanel" and aimed_dot > 0.99 and _troubleshoot_ui_open() and _ts_ui.device_id == "D-204" and _ts_ui.visible
+	_ts_qa("e_aim_hatch_opens_ui", opened_ok, "nearest=%s aimed_dot=%.4f open=%s device=%s" % [nearest_id, aimed_dot, _troubleshoot_ui_open(), _ts_ui.device_id if _troubleshoot_ui_open() else ""])
+	var held: TroubleshootSimpleUI = _ts_ui
+	_interact()
+	var ignored_ok: bool = held != null and is_instance_valid(held) and _ts_ui == held and _troubleshoot_ui_open() and not held.is_won()
+	_ts_qa("e_ignored_while_ui_open", ignored_ok, "same=%s won=%s" % [_ts_ui == held, held.is_won() if held != null and is_instance_valid(held) else true])
+	var yaw_locked: float = _player_body.rotation.y
+	var pitch_locked: float = _pitch
+	_qa_mouse(Vector2(240.0, -40.0))
+	await _qa_idle(2)
+	var look_locked: bool = absf(_player_body.rotation.y - yaw_locked) < 0.0001 and absf(_pitch - pitch_locked) < 0.0001
+	_ts_qa("look_locked_while_open", look_locked, "dyaw=%.5f dpitch=%.5f" % [_player_body.rotation.y - yaw_locked, _pitch - pitch_locked])
+	print("[TS-QA] SUMMARY failures=%d e_aim_hatch_opens_ui=%s e_ignored_while_ui_open=%s look_locked_while_open=%s" % [_qa_failures, "PASS" if opened_ok else "FAIL", "PASS" if ignored_ok else "FAIL", "PASS" if look_locked else "FAIL"])
 	print("[TS-QA] DONE failures=", _qa_failures)
 	get_tree().quit(0 if _qa_failures == 0 else 1)
