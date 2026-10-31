@@ -1701,3 +1701,8 @@
   - the break moved to U1 pin 3 → M1.IN (GRID POWER → U1.VIN is now intact)
   - the Python panel shows only `MOTOR_PIN`: DUTY and RUN removed, and the value applies on entry commit
 - **Final:** `design/ui/troubleshoot_simple_final/`
+
+## Category: `residential_exterior_tram` — #15 tram stop shelter (Rook, box pipeline, Oct 30)
+- **Candidates:** `design/assets/ext_tram_shelter/ext_tram_shelter_01..05.glb`, sheet `ext_tram_shelter_contact_sheet.png` (all clip-check + validate PASS).
+- **Deciding vote: Jared (Oct 30, 8:27 PM CT), relayed via Atlas.**
+- **#15 Tram shelter WINNER:** `#05 Glass_Pavilion` (`ext_tram_shelter_05.glb`, 696 tris, nodes `Timetable_Screen`, `Arrival_Beacon`, `Roof_Downlight`) -> `godot/assets/models/ext_tram_shelter.glb`
