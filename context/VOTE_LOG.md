@@ -1787,3 +1787,6 @@
 - **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
 - **#51 WINNER:** `#03 Boarding Wear` -> `godot/assets/models/ext_track_scuff_guideway.glb` + `godot/assets/models/ext_track_scuff_kerb.glb`. Transform = same as host guideway module / platform kerb. Sprocket wheel-track decals kept, untouched.
 - **Atlas PM call (not a Jared vote), Oct 31:** #50 litter = 3 patches per Spin Street (6 total), mixed variants, no repeat on the same street.
+
+### #41 curb fillers (Rook, Oct 31, branch wip/item4-exterior-scene)
+- **Atlas PM call (not a Jared vote), Oct 31 ~3:12 PM CT:** exact-fit Chamfer Slate filler curbs, no scaling, from `assets/src/ext_curb_generator.py` (`--len`): `godot/assets/models/ext_curb_segment_894mm.glb` (x14, 0.9 m bed ends), `_809mm.glb` (x4, planter S runs), `_397mm.glb` (x6, hydro planter W ends). Also `ext_curb_segment_1m.glb` (x8). Clip check PASS on all three seeds; verify_curb_overlaps.py 0 curb-curb / 0 curb-kerb.

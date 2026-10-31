@@ -123,12 +123,22 @@ def curb_run(start, fixed, length, along_x, rot, note):
     # equally at both run ends (small centred gap). Edges < 0.994 m get no segment (corners only).
     J = 0.003; n2 = int(math.floor((length + J) / CURB_PITCH + 1e-9)); rem = length + J - n2 * CURB_PITCH
     n1 = int(math.floor(rem / CURB1_PITCH + 1e-9)); pieces = [1] * (n1 // 2 + n1 % 2) + [2] * n2 + [1] * (n1 // 2)
-    used = n2 * CURB_PITCH + n1 * CURB1_PITCH - J; t = start + (length - used) / 2.0; out = []
-    for k in pieces:
-        ln = CURB_LEN if k == 2 else CURB1_LEN; c = t + ln / 2.0; t += ln + J
+    lens = [CURB_LEN if k == 2 else CURB1_LEN for k in pieces]
+    # Atlas PM call (Oct 31): exact-fit Chamfer Slate filler closes any leftover >= FILL_MIN, 3 mm joints at both ends + to
+    # neighbours. filler = edge - pieces - (k+2) joints, rounded to whole mm (model ext_curb_segment_<mm>mm.glb).
+    fl = length - sum(lens) - (len(lens) + 2) * J
+    if fl >= FILL_MIN:
+        mm = int(round(fl * 1000)); FILLERS.add(mm); lens.append(mm / 1000.0); pieces.append(mm); t = start + J
+    else:
+        t = start + (length - (sum(lens) + (len(lens) - 1) * J)) / 2.0
+    out = []
+    for k, ln in zip(pieces, lens):
+        c = t + ln / 2.0; t += ln + J
         x, z = (c, fixed) if along_x else (fixed, c)
-        out.append(P(41, "ext_curb_segment.glb" if k == 2 else "ext_curb_segment_1m.glb", x, 0, z, rot, note + ("" if k == 2 else " (1 m)")))
+        a = {2: "ext_curb_segment.glb", 1: "ext_curb_segment_1m.glb"}.get(k, "ext_curb_segment_%dmm.glb" % k)
+        out.append(P(41, a, x, 0, z, rot, note + {2: "", 1: " (1 m)"}.get(k, " (filler %d mm)" % k)))
     return out
+FILL_MIN, FILLERS = 0.30, set()
 def merge_beds(rects, gap):
     # One curb per edge: planters in a row closer than two curb widths share one outline (no curb in the 0.2 m gaps).
     rects = sorted(rects, key=lambda r: (r[0], r[3], r[1])); out = []
@@ -177,7 +187,10 @@ for seg in curb_segs:
 curb_segs = kept
 # Greedy de-dupe (Rook): corners first, then segments in run order; drop any piece overlapping one already kept.
 CURB_SIZE = {"ext_curb_segment.glb": (CURB_LEN, 0.304), "ext_curb_segment_1m.glb": (CURB1_LEN, 0.304), "ext_curb_corner.glb": (0.304, 0.304)}
-def _cbox(p): return aabb_xz(p["x"], p["z"], *CURB_SIZE[p["asset"]], p["rot_deg"])
+def csize(a):
+    if a in CURB_SIZE: return CURB_SIZE[a]
+    return (int(a.split("_")[-1][:-6]) / 1000.0, 0.304)  # ext_curb_segment_<mm>mm.glb
+def _cbox(p): return aabb_xz(p["x"], p["z"], *csize(p["asset"]), p["rot_deg"])
 _kept, n_dedupe, DEDUPED = [], 0, []
 for p in corners + curb_segs:
     b = _cbox(p)
@@ -238,7 +251,7 @@ QC.append(("kerbs contiguous with no gaps", bad))
 bad = []
 kerb_boxes = [aabb_xz(p["x"], p["z"], 1.994, 1.9, p["rot_deg"]) for p in kerbs]
 for p in curb_segs + corners:
-    sx, sz = CURB_SIZE[p["asset"]]
+    sx, sz = csize(p["asset"])
     if any(box_hit(aabb_xz(p["x"], p["z"], sx, sz, p["rot_deg"]), k) for k in kerb_boxes): bad.append((p["x"], p["z"]))
 QC.append(("no curb under a kerb", bad))
 bad = []
@@ -292,7 +305,7 @@ print("#49 dead foliage and wear decal (-16.6, 0, 0) rot 90; neighbour refs z", 
 print("#50 Spin St W centre X", round(xw, 4), "Spin St E centre X", round(xe, 4))
 print("#51 guideway scuff x", [p["x"] for p in scuff_g], "kerb scuffs", 0)
 resolved = {"15_rot_deg": 180, "16_kerb_x": [p["x"] for p in kerbs], "17_guideway_x": [p["x"] for p in guides], "17_end_overhang_m": round(gw_over, 4),
-            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_segments_2m": sum(p["asset"] == "ext_curb_segment.glb" for p in curb_segs), "41_segments_1m": sum(p["asset"] == "ext_curb_segment_1m.glb" for p in curb_segs), "41_corners": len(corners), "41_skipped": n_skip, "41_deduped": n_dedupe, "41_beds_merged": len(BEDS),
+            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_segments_2m": sum(p["asset"] == "ext_curb_segment.glb" for p in curb_segs), "41_segments_1m": sum(p["asset"] == "ext_curb_segment_1m.glb" for p in curb_segs), "41_fillers_mm": {str(m): sum(p["asset"] == "ext_curb_segment_%dmm.glb" % m for p in curb_segs) for m in sorted(FILLERS)}, "41_corners": len(corners), "41_skipped": n_skip, "41_deduped": n_dedupe, "41_beds_merged": len(BEDS),
             "44_grid_origin_corner": [9, -18.5], "44_pitch_m": 2.0, "44_plaza_count": len(plaza_tiles), "44_promenade_count": len(prom_tiles),
             "46_canal_x0_x1_n": [canal[0]["x"], canal[-1]["x"], len(canal)], "47_length_m": round(L, 4), "47_n": len(desire), "47_yaw_deg": desire[0]["rot_deg"],
             "47_centres": [[p["x"], p["z"]] for p in desire], "49_rot_deg": 90, "50_spin_st_w_x": round(xw, 4), "50_spin_st_e_x": round(xe, 4),
@@ -325,6 +338,8 @@ def draw_v13(ax):
         if p["asset"] in ("ext_paving_promenade.glb", "ext_paving_plaza.glb"): continue
         if p["asset"].startswith("ext_litter_drift"):
             fc, ec, lw, alpha, z, hatch = (ORG, WALL, 0.4, 0.9, 13, None); sx, sz = 1.07, 2.97
+        elif p["asset"].startswith("ext_curb_segment_") and p["asset"].endswith("mm.glb"):
+            fc, ec, lw, alpha, z, hatch = style["ext_curb_segment.glb"]; sx, sz = csize(p["asset"])
         else:
             fc, ec, lw, alpha, z, hatch = style[p["asset"]]; sx, sz = ASSET_SIZE[p["asset"]]
         rot = p["rot_deg"]; r = rot % 360.0; q = int(round(r / 90.0))

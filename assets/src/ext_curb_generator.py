@@ -23,10 +23,12 @@ def quad(r, y0, y1, n=6, sq=.3):  # corner plan: square sq x sq centred, outside
 CH = [(-.15, 0), (.15, 0), (.15, .11), (.11, .15), (-.15, .15)]                     # chamfered road-top edge
 BN = [(-.15, 0), (.15, 0), (.15, .09)] + [(.09 + .06 * np.cos(a), .09 + .06 * np.sin(a)) for a in np.linspace(0, np.pi / 2, 4)][1:] + [(-.15, .15)]  # bullnose
 
+def INS(h):  # amber strip end inset: 0.097 m on 1-2 m pieces, ~10% of length (min 20 mm) on short fillers
+    return min(.097, max(.02, .1 * 2 * h))
 def curb(v, L=L, name=None):
     p = Pod(name or f"ext_curb_segment_0{v}")
     if v == 1:  # Chamfer Slate: chamfered carbon-slate curb, amber reflector strip on the road face
-        p.add("Curb", S, prof(CH, -L, L)); p.add("Reflector_Strip", A, box(-(L - .097), L - .097, .05, .08, .15 - E, .154))
+        p.add("Curb", S, prof(CH, -L, L)); p.add("Reflector_Strip", A, box(-(L - INS(L)), L - INS(L), .05, .08, .15 - E, .154))
     elif v == 2:  # Titanium Nosing: slate body capped with a titanium angle nosing on the road-top edge
         p.add("Curb", S, box(-L, L, 0, .135, -.15, .15)); p.add("Nosing", T, box(-L + .002, L - .002, .135 - E, .15, .09, .154))
         p.add("Top_Cap", S, box(-L + .002, L - .002, .133, .148, -.148, .09 + E))
@@ -70,6 +72,20 @@ def build_1m():
     nouv = [k for k, (mk, m) in p.P.items() if "uv" not in m.metadata]
     return dict(glb=gp, tris=tris, size=chk[0]["size"], pivot=chk[0]["pivot"], clip_pass=all(c["pass"] for c in chk),
                 overlaps=[c["overlap"] for c in chk], coplanar=[c["coplanar"] for c in chk], open=chk[0]["open"], nouv=nouv)
+def build_len(mm):
+    """Exact-fit Chamfer Slate filler (Atlas PM call, Oct 31): length mm/1000 m, no scaling. -> godot/assets/models/ext_curb_segment_<mm>mm.glb"""
+    from ext_street_furniture_generator import recenter, export_final
+    import ext_clip_check as cc
+    nm = f"ext_curb_segment_{mm}mm"; p = recenter(curb(1, L=mm / 2000.0, name=nm)); chk = [cc.check(p.P, seed=s) for s in (0, 1, 2)]
+    gp = os.path.join(sf.ROOT, f"godot/assets/models/{nm}.glb"); tris, _ = export_final(p.P, [gp])
+    return dict(glb=gp, tris=tris, size=chk[0]["size"], pivot=chk[0]["pivot"], clip_pass=all(c["pass"] for c in chk),
+                worst=max(c["worst_overlap"] for c in chk), coplanar=[c["coplanar"] for c in chk], open=chk[0]["open"],
+                nouv=[k for k, (mk, m) in p.P.items() if "uv" not in m.metadata])
+if __name__ == "__main__" and "--len" in sys.argv:
+    import validate_models as vm
+    for mm in map(int, sys.argv[sys.argv.index("--len") + 1:]):
+        r = build_len(mm); print(r); print("validate", vm.validate_file(r["glb"], require_textures=False))
+    sys.exit()
 if __name__ == "__main__" and "--1m" in sys.argv:
     import validate_models as vm; r = build_1m(); print(r); print("validate", vm.validate_file(r["glb"], require_textures=False)); sys.exit()
 if __name__ == "__main__":
