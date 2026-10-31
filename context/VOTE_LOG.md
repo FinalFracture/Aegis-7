@@ -1765,3 +1765,8 @@
 - **Candidates:** `design/assets/ext_canal_edge/ext_canal_edge_01..05.glb` (all clip-check PASS, commit 2bc3554).
 - **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
 - **#46 Canal edge WINNER:** `#05 Lit Coping` -> `godot/assets/models/ext_canal_edge.glb`. Placement: rot 180°, origin Z -25.8, 2.0 x 0.4 x 1.1 m modules tiled at 2.0 m.
+
+### #47 desire-path wear decal (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_desire_path_decal/ext_desire_path_decal_01..05.glb` (all checks PASS, commit 1e17eee).
+- **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
+- **#47 WINNER:** `#05 Worn Tactile` (36 tris) -> `godot/assets/models/ext_desire_path_decal.glb`. Placement: y 0.053, alpha BLEND, 1.2 x 4.0 m segment tiling along Z.

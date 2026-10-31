@@ -11,3 +11,7 @@ Generator: `assets/src/ext_desire_path_decal_generator.py`. Segment 1.2 x 4.0 m 
 | 05 | Worn Tactile | 36 | Darkening + titanium core + amber flecks of abraded paving-04 tactile inlay; ties to the promoted paving. |
 
 Checks (`ext_desire_path_decal_report.json`): all PASS — pivot bottom-centre (0,0,0), <6000 tris, layer gap 1.5 mm (>1 mm, no coplanar z-fight), paving offset 3 mm (within 2-5 mm, floor contact ±5 mm), normals +Y, UV + BLEND on every layer. Sub-part overlap N/A (flat decal quads, intentionally open single-sided meshes).
+
+## WINNER: 05 Worn Tactile (Jared, Oct 31 2026, via Atlas)
+- Promoted -> `godot/assets/models/ext_desire_path_decal.glb` (36 tris, 3 alpha-BLEND layers).
+- Placement: y 0.053 (paving 0.05 + 3 mm); 1.2 x 4.0 m segment, tile along local Z at 4.0 m pitch; yaw to follow the platform -> exit-ramp diagonal.
