@@ -1760,3 +1760,8 @@
 - **Candidates:** `design/assets/ext_kerb_ramp/ext_kerb_ramp_01..05.glb` (all clip-check + validate PASS, alone + infill/kerb/paving fit).
 - **Deciding vote: Jared (Oct 31, 8:32 AM CT), relayed via Atlas.**
 - **#45 Ramp WINNER:** `#02 Railed` (144 tris, titanium handrails 0.9 m) -> `godot/assets/models/ext_kerb_ramp.glb`. Placement: rot 0, origin X 9.75, y 0, Z -13.996; 1.5 x 3.0 m, rise 0.25 (paving 0.05 -> platform 0.30), 1:12; high end butts infill back (Z -15.5) with 4 mm.
+
+### #46 canal edge (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_canal_edge/ext_canal_edge_01..05.glb` (all clip-check PASS, commit 2bc3554).
+- **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
+- **#46 Canal edge WINNER:** `#05 Lit Coping` -> `godot/assets/models/ext_canal_edge.glb`. Placement: rot 180°, origin Z -25.8, 2.0 x 0.4 x 1.1 m modules tiled at 2.0 m.
