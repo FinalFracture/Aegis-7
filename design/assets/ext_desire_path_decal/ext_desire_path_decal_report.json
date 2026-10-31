@@ -1,0 +1,67 @@
+{
+ "01": {
+  "tris": 12,
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0,
+  "min_layer_gap_m": 1.0,
+  "placed_min_y": 0.053000000000000005,
+  "paving_gap_m": 0.003,
+  "normals_up": true,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "02": {
+  "tris": 24,
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0,
+  "min_layer_gap_m": 0.0015,
+  "placed_min_y": 0.053000000000000005,
+  "paving_gap_m": 0.003,
+  "normals_up": true,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "03": {
+  "tris": 24,
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0,
+  "min_layer_gap_m": 0.0015,
+  "placed_min_y": 0.053000000000000005,
+  "paving_gap_m": 0.003,
+  "normals_up": true,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "04": {
+  "tris": 24,
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0,
+  "min_layer_gap_m": 0.0015,
+  "placed_min_y": 0.053000000000000005,
+  "paving_gap_m": 0.003,
+  "normals_up": true,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ },
+ "05": {
+  "tris": 36,
+  "min_y": 0.0,
+  "cx": 0.0,
+  "cz": 0.0,
+  "min_layer_gap_m": 0.0015,
+  "placed_min_y": 0.053000000000000005,
+  "paving_gap_m": 0.003,
+  "normals_up": true,
+  "uv": true,
+  "blend": true,
+  "pass": true
+ }
+}
