@@ -487,3 +487,29 @@ _Box only: fresh `git clone` to /tmp/qa_d670e81, Godot 4.7.2 + xvfb + opengl3 (l
 | D670-07 | Gage | Low | SSR enabled in WorldEnvironment but unsupported by gl_compatibility (warning every run). |
 
 Not checked: realism measurements, signage/tactile cues, light leaks, decal z-fighting, shadow artifacts, real-GPU fps/frame time, hand-controls QA, Windows runs.
+
+## QA pass: troubleshoot UI push 5db7c01 (Patch, 2026-10-31 CDT)
+_Box only: fresh clone of 5db7c01 in /tmp/qa_5db7c01 (cloned from the box repo; GitHub TLS failed), Godot 4.7.2 + xvfb + opengl3. No project files edited; throwaway scripts in /tmp. Logs + shots: `godot/renders/qa/pass_5db7c01/`._
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Realism | Not re-run (no 3D changes in 5db7c01). |
+| 2 | Pathfinding / wayfinding | Not re-run; D670-05 (no navmesh) still open. |
+| 3 | Clipping | PASS: placement_assert --qa-placement 26/26. D670-04 hub backing not re-checked. |
+| 4 | Shading / lighting | Not re-run beyond logs (SSR warning, D670-07, still present). |
+| 5a | Fresh clone / imports / script errors | PASS: import exit 0; 0 SCRIPT ERRORs across all runs. |
+| 5b | Force-field regression | PASS: --qa-forcefield-door 9/9, 4/4 shots. |
+| 5c | Reticle/doors | FAIL (expected): same 2 failures as D670-01. |
+| 5d | New simple troubleshoot UI (`troubleshoot_simple_ui.gd`) | PASS: --qa-troubleshoot-simple 9/9. No hint text in title, code, labels or status. Board drawn from `res://data/troubleshoot_simple_final_board_geom.json` (JSON-identical to design file); `tools/pcb_validate.py` PASS (5 nets, 12 pads, 0 errors, one declared open OUT3, P1/P2 intentional NC). Puzzle code (`FIELD_PIN`, OUT3/P3 break) matches the netlist. Stays open after win; closes only on EXIT (no ESC/auto-close). |
+| 5e | Old in-game UI (`pcba_python_puzzle_ui.gd`, the one in both playable scenes) | FAIL: D670-02 partly fixed (instruction text gone) but it opens pre-solved: `reset_pin_connected=true`, `supply_amperage=12` by default, so it shows `[PIN: RESET] SEATED`, `supply_amperage = 12`, `[FIELD RELEASED]`. D670-03 partly fixed: board art now the validated simple board, but the puzzle logic still uses J4 pins GND/LOCK_HOLD/RESET/AUX_BUZZ and amperage, none of which exist in that netlist (skill step 4 fails). |
+| — | Wiring | Neither UI is reachable in normal play: `PcbaPythonPuzzleUI` is hidden at start and `open_troubleshoot_simple()` is only called by the QA path. |
+
+### Bugs
+| ID | Owner | Sev | Repro / evidence |
+|---|---|---|---|
+| 5DB-01 | Gage | Med | Old `PcbaPythonPuzzleUI` opens in the solved state (pcba_python_puzzle_ui.gd:17-18 defaults). Repro: `set_Overlay_visible(true)` on fresh load. Shot `03_old_pcba_python_ui.png`. |
+| 5DB-02 | Gage | Med | Old UI's puzzle (J4 RESET pin, 7A/12A amperage) disagrees with the board it now draws (U1.P1-P3 to FE1, OUT3 break). Retire it or swap scenes to `troubleshoot_simple.tscn`. |
+| 5DB-03 | Gage | Med | Troubleshoot UI not wired to any in-game interaction (D-204 hatch); only reachable via `--qa-troubleshoot-simple`. |
+| D670-01 | Gage | High | Still failing (2 T38 checks), unchanged. |
+
+Not checked: realism, navmesh/wayfinding, lighting/shadows, performance, hub backing, keyboard/mouse input on the UI beyond the QA script, Windows runs.
