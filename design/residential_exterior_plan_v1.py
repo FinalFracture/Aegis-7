@@ -117,12 +117,24 @@ def in_rect(x, z, r):
 CURB_PITCH, CURB_LEN, CURB_OFF = 1.997, 1.994, 0.304 / 2.0  # 3 mm joints; centreline half a curb outside the edge
 CURB_HALF = CURB_LEN / 2.0
 def curb_run(start, fixed, length, along_x, rot, note):
-    n = int(math.ceil(length / CURB_PITCH - 1e-9)); out = []
+    # De-dupe fix (Rook, Oct 31): segments fit INSIDE the edge (no overhang past the run end into corners/neighbour runs).
+    # n = whole segments that fit; the run is centred on the edge, leftover (< 1 pitch) split at both ends. Edges shorter
+    # than one segment get a single centred segment; the greedy de-dupe below drops it if it would hit a corner.
+    n = max(1, int(math.floor((length + 0.003) / CURB_PITCH + 1e-9))); out = []
+    s0 = start + (length - (n * CURB_PITCH - 0.003)) / 2.0
     for k in range(n):
-        t = start + CURB_HALF + CURB_PITCH * k
+        t = s0 + CURB_HALF + CURB_PITCH * k
         x, z = (t, fixed) if along_x else (fixed, t)
-        extra = "; last segment overhangs the run and is to be trimmed" if k == n - 1 else ""
-        out.append(P(41, "ext_curb_segment.glb", x, 0, z, rot, note + extra))
+        out.append(P(41, "ext_curb_segment.glb", x, 0, z, rot, note))
+    return out
+def merge_beds(rects, gap):
+    # One curb per edge: planters in a row closer than two curb widths share one outline (no curb in the 0.2 m gaps).
+    rects = sorted(rects, key=lambda r: (r[0], r[3], r[1])); out = []
+    for r in rects:
+        for i, m in enumerate(out):
+            if m[0] == r[0] and abs(m[4] - r[4]) < 1e-9 and abs(m[5] - r[5]) < 1e-9 and r[2] - m[3] < gap:
+                out[i] = (m[0], None, m[2], max(m[3], r[3]), m[4], m[5]); break
+        else: out.append((r[0], None, r[2], r[3], r[4], r[5]))
     return out
 shelter = P(15, "ext_tram_shelter.glb", 15, 0.297, -16.25, 180, "rot 180: open side (local +Z) faces the guideway boarding edge at -Z")
 kerbs = [P(16, "ext_tram_platform_kerb.glb", x, 0, -17.55, 180, "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21") for x in range(10, 21, 2)]
@@ -140,9 +152,8 @@ bodies = [P(19, "ext_maglev_car_body.glb", Xc, 0.06, -19.90, 0, "car 1; Xc=%.4f 
 mags = [P(19, "ext_maglev_magnet_module.glb", Xc - 0.30 + 0.069, 0.06, -19.90, 0, "car 1 magnet; Xc=%.4f" % Xc),
         P(19, "ext_maglev_magnet_module.glb", Xc2 + 0.30 - 0.069, 0.06, -19.90, 180, "car 2 magnet; Xc2=%.4f" % Xc2)]
 curb_segs, corners = [], []
-for o in O:
-    if not o[0].startswith(("planter S", "planter N", "hydro planter W", "hydro bed")): continue
-    nm, x0, x1, z0, z1 = o[0], o[1], o[2], o[3], o[4]
+BEDS = merge_beds([(o[0], None, o[1], o[2], o[3], o[4]) for o in O if o[0].startswith(("planter S", "planter N", "hydro planter W", "hydro bed"))], 2 * 0.304 + 0.001)
+for nm, _, x0, x1, z0, z1 in BEDS:
     tag = "%s (%.1f..%.1f, %.1f..%.1f)" % (nm, x0, x1, z0, z1)
     curb_segs += curb_run(x0, z0 - CURB_OFF, x1 - x0, True, 0, tag + " south")
     curb_segs += curb_run(x0, z1 + CURB_OFF, x1 - x0, True, 0, tag + " north")
@@ -162,6 +173,14 @@ for seg in curb_segs:
     if any(box_hit(aabb_xz(seg["x"], seg["z"], CURB_LEN, 0.304, seg["rot_deg"]), b) for b in blockers): n_skip += 1
     else: kept.append(seg)
 curb_segs = kept
+# Greedy de-dupe (Rook): corners first, then segments in run order; drop any piece overlapping one already kept.
+def _cbox(p): return aabb_xz(p["x"], p["z"], *((CURB_LEN, 0.304) if p["asset"] == "ext_curb_segment.glb" else (0.304, 0.304)), p["rot_deg"])
+_kept, n_dedupe, DEDUPED = [], 0, []
+for p in corners + curb_segs:
+    b = _cbox(p)
+    if any(box_hit(b, k, 1e-3) for k in _kept): n_dedupe += 1; DEDUPED.append(p)
+    else: _kept.append(b)
+corners = [p for p in corners if p not in DEDUPED]; curb_segs = [p for p in curb_segs if p not in DEDUPED]
 # #44 grid: corner at the platform west end (9, -18.5). +Z centres -17.5+2j; -Z centres -19.5-2j.
 PLAZA_BOX = (9.0, 18.0, -25.6, -12.5)  # given slice: shelter + kerb ramp + canal-edge north face, not the full canal run
 GUIDE_BED = (-47.0, 47.0, -21.65, -18.504); PLATFORM_BOX = (9.0, 21.0, -18.5, -15.5)
@@ -270,7 +289,7 @@ print("#49 dead foliage and wear decal (-16.6, 0, 0) rot 90; neighbour refs z", 
 print("#50 Spin St W centre X", round(xw, 4), "Spin St E centre X", round(xe, 4))
 print("#51 guideway scuff x", [p["x"] for p in scuff_g], "kerb scuffs", 0)
 resolved = {"15_rot_deg": 180, "16_kerb_x": [p["x"] for p in kerbs], "17_guideway_x": [p["x"] for p in guides], "17_end_overhang_m": round(gw_over, 4),
-            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_corners": len(corners), "41_skipped": n_skip,
+            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_corners": len(corners), "41_skipped": n_skip, "41_deduped": n_dedupe, "41_beds_merged": len(BEDS),
             "44_grid_origin_corner": [9, -18.5], "44_pitch_m": 2.0, "44_plaza_count": len(plaza_tiles), "44_promenade_count": len(prom_tiles),
             "46_canal_x0_x1_n": [canal[0]["x"], canal[-1]["x"], len(canal)], "47_length_m": round(L, 4), "47_n": len(desire), "47_yaw_deg": desire[0]["rot_deg"],
             "47_centres": [[p["x"], p["z"]] for p in desire], "49_rot_deg": 90, "50_spin_st_w_x": round(xw, 4), "50_spin_st_e_x": round(xe, 4),
