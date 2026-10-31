@@ -1740,4 +1740,8 @@
 - **Candidates:** `design/assets/ext_curb_segment/ext_curb_segment_01..05.glb` + `design/assets/ext_curb_corner/ext_curb_corner_01..05.glb` (all clip-check + validate PASS).
 - **Deciding vote: Jared (Oct 30, 9:28 PM CT), relayed via Atlas.**
 - **#41 Curb WINNER:** `#01 Chamfer_Slate` -> `godot/assets/models/ext_curb_segment.glb` (36 tris) + `godot/assets/models/ext_curb_corner.glb` (corner 01 rebuilt: amber reflector wraps the curved road face in 3 chord segments + 2 flat ends, 4 mm proud, curb arc matched to 3 facets, 108 tris; clip PASS alone and assembled with straights either side, 3 mm joints).
-- **Atlas PM call (not a Jared vote), 9:28 PM CT:** #51 reworded for maglev (guideway dust + stator wear streaks, platform-edge foot scuffs, kerb scuffs at stop; coupler/tram wheel-track scuffs removed). Sprocket robot wheel-track decals on apron/door jamb kept pending Atlas/Jared confirmation.
+- **Atlas PM call (not a Jared vote), 9:28 PM CT:** #51 reworded for maglev (guideway dust + stator wear streaks, platform-edge foot scuffs, kerb scuffs at stop; coupler/tram wheel-track scuffs removed). Sprocket robot wheel-track decals on apron/door jamb kept — confirmed by Atlas (Oct 31, 5:04 AM CT).
+
+### #42 curved road + #43 flat road — CUT (Jared, Oct 31 5:04 AM CT, via Atlas)
+- **Jared:** no traditional roads; maglev is the only transport for now. Both CUT, revivable. #42 candidates 01-05 shelved in `design/assets/ext_road_curved_R185/shelved/` (no pick).
+- #41 curb (promoted) now edges walkways/planters instead of roads — flagged to Atlas in case it no longer has a use.

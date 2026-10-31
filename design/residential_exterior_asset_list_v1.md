@@ -85,9 +85,9 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | # | Item | Where | Qty | Size | Tris (each) |
 |---|---|---|---|---|---|
 | 41 | Curb segment (straight 2 m + corner) | all street edges | 68 | 2.0 × 0.3 × 0.15 | 120 |
-| 42 | Curved road segment (bent to R 185.5 along Z) | Spin Sts W/E | 34 | 5.0 × 6.0 | 200 |
-| 43 | Flat road / lane segment (axial) | service lane, tram bed | 20 | 5.0 × 4.0 | 100 |
-| 44 | Paving tile kit (pearl promenade, warm plaza) | promenade, plaza, sidewalks | 2 | tiling | 200 |
+| ~~42~~ | ~~Curved road segment (bent to R 185.5 along Z)~~ — CUT by Jared 2026-10-31 5:04 AM CT (no traditional roads; maglev only), revivable; candidates shelved in `design/assets/ext_road_curved_R185/shelved/` | Spin Sts W/E | 0 | — | 0 |
+| ~~43~~ | ~~Flat road / lane segment (axial)~~ — CUT by Jared 2026-10-31 5:04 AM CT (no traditional roads), revivable | service lane, tram bed | 0 | — | 0 |
+| 44 | Paving tile kit (pearl promenade, warm plaza) — now also replaces the cut roads as pedestrian walkways | promenade, plaza, sidewalks, former Spin St / lane beds | 2 | tiling | 200 |
 | 45 | Accessible kerb ramp | corners, crossings | 8 | 1.5 × 1.2 | 150 |
 | 46 | Canal edge module (railing + coping) | esplanade edge | 47 | 2.0 × 0.4 × 1.1 | 300 |
 | 47 | Desire-path wear decal | plaza, promenade | 2 | decals | 50 |
