@@ -12,7 +12,7 @@ Source of truth for the troubleshoot UI board art (final). Machine-readable: `ha
 - **U2** AEGIS-MCU-32 on `V3V3`; **C3**/**C4** 100 nF decoupling placed directly at VDD1/GND1 and VDD2/GND2.
 - `DRV_IN1`/`DRV_IN2`: U2.PB0/PB1 → U3.IN1/IN2.
 - **J4** service header: pin 1 GND, pin 2 `LOCK_HOLD` (U2.PA4), **pin 3 `RESET_N`** (U2.RESET_N, **R3** 10 k pull-up, test points **TP1**/**TP2**), pin 4 `AUX_BUZZ` (U2.PA5).
-- **S1** limit switch to GND on `LIMIT_SW` (U2.PA3) with **R4** 10 k pull-up; low = hatch closed.
+- **S1** field-strength sense (open-drain to GND) on `FIELD_OK` (U2.PA3) with **R4** 10 k pull-up; low = field at full strength.
 - **D2** green STATUS LED via **R5** 330 Ω (U2.PB6); **D3** amber FAULT LED via **R6** 330 Ω (U2.PB7).
 
 ## Intentional fault (gameplay)
@@ -30,7 +30,7 @@ Source of truth for the troubleshoot UI board art (final). Machine-readable: `ha
 | D1 | SS54 | Schottky catch diode 5 A 40 V | 1, 2 |
 | L1 | 33uH 3A | Buck inductor | 1, 2 |
 | C2 | 220uF 10V | Buck output cap | 1, 2 |
-| U2 | AEGIS-MCU-32 | Door controller MCU | VDD1, GND1, PA5_AUX, RESET_N, PA4_LOCK, PB6_LSTAT, VDD2, GND2, PB0_IN1, PB1_IN2, PA3_LIM, PB7_LFLT |
+| U2 | AEGIS-MCU-32 | Door controller MCU | VDD1, GND1, PA5_AUX, RESET_N, PA4_LOCK, PB6_LSTAT, VDD2, GND2, PB0_IN1, PB1_IN2, PA3_FOK, PB7_LFLT |
 | C3 | 100nF | VDD1 decoupling | 1, 2 |
 | C4 | 100nF | VDD2 decoupling | 1, 2 |
 | U3 | DRV8871 | H-bridge field-emitter driver 3.6 A | IN1, IN2, GND, VM, OUT1, OUT2 |
@@ -39,8 +39,8 @@ Source of truth for the troubleshoot UI board art (final). Machine-readable: `ha
 | TP1 | TP | RESET_N test point (header side) | 1 |
 | TP2 | TP | RESET_N test point (MCU side) | 1 |
 | R3 | 10k | RESET_N pull-up | 1, 2 |
-| S1 | LIMIT | Hatch-closed limit switch | 1, 2 |
-| R4 | 10k | LIMIT_SW pull-up | 1, 2 |
+| S1 | FSENSE | Field-strength sense, open-drain, low = FIELD_OK | 1, 2 |
+| R4 | 10k | FIELD_OK pull-up | 1, 2 |
 | R5 | 330R | STATUS LED resistor | 1, 2 |
 | D2 | GRN | STATUS LED | 1, 2 |
 | R6 | 330R | FAULT LED resistor | 1, 2 |
@@ -61,7 +61,7 @@ Source of truth for the troubleshoot UI board art (final). Machine-readable: `ha
 | RESET_N | signal | J4.3, TP1, TP2, R3.2, U2.RESET_N |
 | LOCK_HOLD | signal | J4.2, U2.PA4_LOCK |
 | AUX_BUZZ | signal | J4.4, U2.PA5_AUX |
-| LIMIT_SW | signal | S1.1, R4.2, U2.PA3_LIM |
+| FIELD_OK | signal | S1.1, R4.2, U2.PA3_FOK |
 | LED_STAT | signal | U2.PB6_LSTAT, R5.1 |
 | LED_STAT_A | signal | R5.2, D2.1 |
 | LED_FLT | signal | U2.PB7_LFLT, R6.1 |

@@ -1,5 +1,7 @@
 # Reticle, Rotating Outer Starfield & RFID Sliding Doors QA ([t38u])
 
+> **Note (2026-10-30, Sloane):** Jared confirmed that the D-204 hatch and **all sector doors are force fields**, not sliding or rolling doors. `SectorRFIDSlidingDoors` is to become force fields everywhere. In code this is already done for the 6 portals since [t45u] (`SectorRFIDForceFieldDoors` in `godot/scripts/preface_playable_area.gd`). The "sliding doors" wording in the entries below is historical and kept as-is. Remaining work: `design/force_field_door_godot_changes.md`.
+
 display=X11  failures=0
 
 PASS | reticle_project_stretch_settings | mode=canvas_items aspect=expand

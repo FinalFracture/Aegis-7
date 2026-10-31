@@ -11,5 +11,7 @@ Netlist: `hatch_actuator_d204_netlist.json` (R1/R2 divider removed; LM2596-3.3 F
 
 ## Rev: force-field door (2026-10-30)
 - J2 is now EMITTER (the force-field emitter connector), U3 is described as the field-emitter driver, and the title reads Hatch Field Emitter D-204.
-- Nets were renamed VMOT_IN/VMOT → VFLD_IN/VFLD and MOT_IN1/2 → DRV_IN1/2. The routed geometry is byte-identical apart from the names.
-- Re-validated: PASS, 17 nets / 62 pads / 0 errors, with the same single expected open (RESET_N).
+- Nets were renamed: VMOT_IN/VMOT → VFLD_IN/VFLD, MOT_IN1/2 → DRV_IN1/2, and LIMIT_SW → FIELD_OK. U2.PA3_LIM became PA3_FOK.
+- S1 changed from a LIMIT switch to FSENSE, a field-strength sense (low = field OK).
+- In the code, `release_hatch` → `enable_field`, and the line reading `FIELD_OK` returns 0 when the field is at full strength. The RESET_N fault is kept.
+- The routed geometry is identical apart from the names. Re-validated: PASS, 17 nets / 62 pads / 0 errors, with a single expected open (RESET_N).

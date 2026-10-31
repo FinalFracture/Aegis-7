@@ -320,6 +320,9 @@ _Patch, independent probe, 2026-10-28 (CDT). Godot 4.7.2, xvfb + opengl3, real `
 **Verdict:** Cylinder spin-gravity ring at `dfdb323` **PASSES** 360° walk, radial floor lock, jump physics, smooth Coriolis core transit (player & box), post-flip camera/mouse-look, and Apt 201 exit regression. Fix GRAV-01 if player-shoving boxes is required, and GRAV-02 so the 180° lift pad isn't obstructed by the auto-transited test box.
 
 ## [t38u] Reticle Centering Fix, Rotating Distant Starfield Cylinder & Normal RFID Sliding Doors
+
+> **Note (2026-10-30, Sloane):** Jared confirmed that the D-204 hatch and **all sector doors are force fields**, not sliding or rolling doors. `SectorRFIDSlidingDoors` is to become force fields everywhere. In code this is already done for the 6 portals since [t45u] (`SectorRFIDForceFieldDoors` in `godot/scripts/preface_playable_area.gd`). The "sliding doors" wording in the entries below is historical and kept as-is. Remaining work: `design/force_field_door_godot_changes.md`.
+
 _Run `godot --path godot -- --qa-reticle-stars-doors` (windowed via xvfb 1920×1080 opengl3): **27/27 PASS** (`failures=0`), plus headless **26/26 PASS** (`failures=0`). Full log in `context/reticle_stars_doors_qa_log.md`._
 
 1. **Reticle / Crosshair Centering Fix (`project.godot` + `preface_playable_area.gd`)**:

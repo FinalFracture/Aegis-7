@@ -95,7 +95,7 @@
     "GND2",
     "PB0_IN1",
     "PB1_IN2",
-    "PA3_LIM",
+    "PA3_FOK",
     "PB7_LFLT"
    ]
   },
@@ -176,8 +176,8 @@
    ]
   },
   "S1": {
-   "value": "LIMIT",
-   "description": "Hatch-closed limit switch",
+   "value": "FSENSE",
+   "description": "Field-strength sense, open-drain to GND, low = FIELD_OK",
    "footprint": "two4",
    "pins": [
     "1",
@@ -186,7 +186,7 @@
   },
   "R4": {
    "value": "10k",
-   "description": "LIMIT_SW pull-up",
+   "description": "FIELD_OK pull-up",
    "footprint": "two3",
    "pins": [
     "1",
@@ -354,11 +354,11 @@
    "class": "signal",
    "width_grid": 0.28
   },
-  "LIMIT_SW": {
+  "FIELD_OK": {
    "nodes": [
     "S1.1",
     "R4.2",
-    "U2.PA3_LIM"
+    "U2.PA3_FOK"
    ],
    "class": "signal",
    "width_grid": 0.28
