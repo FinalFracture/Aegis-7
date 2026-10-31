@@ -43,7 +43,7 @@ def curb(v):
     return p
 def corner(v):
     p = Pod(f"ext_curb_corner_0{v}"); mat = {1: S, 2: S, 3: PL, 4: G, 5: S}[v]
-    p.add("Curb", mat, quad(.15 if v != 2 else .06, 0, .15 - (.015 if v in (2, 4) else 0)))
+    p.add("Curb", mat, quad(.15 if v != 2 else .06, 0, .15 - (.015 if v in (2, 4) else 0), n=4 if v == 1 else 6))
     if v == 2: p.add("Top_Cap", T, quad(.06, .135 - E, .15, sq=.296))
     if v == 4: p.add("Top_Slab", S, quad(.15, .135 - E, .15, sq=.296))
     if v == 1:  # amber reflector wraps the curved road face: one thin box per arc chord, 4 mm proud (embedded E)

@@ -2,7 +2,7 @@
  {
   "cand": "ext_curb_corner_01",
   "style": "Chamfer_Slate",
-  "tris": 116,
+  "tris": 108,
   "budget_ok": true,
   "size": [
    0.304,
@@ -14,16 +14,10 @@
    "cx": 0.0,
    "cz": 0.0
   },
-  "clip_pass": false,
-  "worst_overlap": 0.0088,
+  "clip_pass": true,
+  "worst_overlap": 0.004,
   "overlaps_over": [],
-  "coplanar": [
-   [
-    "Curb[0]",
-    "Reflector_Strip[1]",
-    11.33
-   ]
-  ],
+  "coplanar": [],
   "open": [],
   "nouv": [],
   "glb": "design/assets/ext_curb_corner/ext_curb_corner_01.glb"
