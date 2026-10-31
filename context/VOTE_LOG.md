@@ -1721,3 +1721,9 @@
 ### #18 catenary mast + wire span — CUT
 - **Atlas PM call (not a Jared vote), Oct 30 8:37 PM CT:** cut because power is ground-fed (#17 05). Revivable by Jared.
 - **Atlas PM call (not a Jared vote), Oct 30 8:48 PM CT — option (a) trimmed rail:** `ext_tram_rail_module_05_trim.glb` (05 with the platform-side bed edge cut 0.35 m; rails/power rail unchanged relative to track centre; 224 tris; clip-check + validate PASS alone and assembled with 6x kerb 02, 4 mm seam) re-promoted over `godot/assets/models/ext_tram_rail_module.glb`. Prior promoted file backed up as `design/assets/ext_tram_rail_module/ext_tram_rail_module_promoted_backup_pre_trim.glb`.
+
+### Transit switched to MAGLEV — Jared (Oct 30, 8:55 PM CT, via Atlas): "Do over. Mag Lev."
+- **#17 ground-power rail SUPERSEDED (Jared):** the promoted trimmed 05 was removed from `godot/assets/models/` (no scene references) and moved to `design/assets/ext_tram_rail_module/superseded/ext_tram_rail_module_05_trim_promoted_SUPERSEDED_maglev.glb` (pre-trim backup also in `superseded/`). Candidates 01-05 + trim remain in `design/assets/ext_tram_rail_module/` for reference.
+- **#19 wheeled tram candidates 01-05 SUPERSEDED, not picked** (`design/assets/ext_tram_vehicle/`). Vehicle to be redone as maglev later.
+- **#15 shelter (05) and #16 kerb (02) stay promoted.**
+- **#17 maglev guideway:** candidates `design/assets/ext_maglev_guideway/ext_maglev_guideway_01..05.glb` + contact sheet + kerb fit sheet, awaiting Jared's pick.

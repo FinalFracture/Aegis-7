@@ -1,0 +1,157 @@
+[
+ {
+  "cand": "ext_maglev_guideway_01",
+  "style": "T_Beam",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.163,
+   3.146
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_maglev_guideway/ext_maglev_guideway_01.glb",
+  "validate": true,
+  "kerb_fit": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "gap": 0.004
+  },
+  "envelope": "guideway top y 0.163. Underframe >= y 0.19 over |z|<=0.60; magnet arms in |z| 0.575..0.70 down to y 0.06, hooking under the flange to |z| 0.31 at y 0.060..0.076 (12 mm under Stator_Lev 0.088, 13 mm outside Stator_Guide 0.562); outside |z|>0.72 skirts down to y 0.06."
+ },
+ {
+  "cand": "ext_maglev_guideway_02",
+  "style": "U_Trough",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.203,
+   3.146
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_maglev_guideway/ext_maglev_guideway_02.glb",
+  "validate": true,
+  "kerb_fit": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "gap": 0.004
+  },
+  "envelope": "guideway top y 0.203 (walls). Keel/magnet module inside |z|<=0.675 down to y 0.065 (15 mm over Stator_Lev 0.05, 13 mm to Stator_Guide 0.688); underframe >= y 0.225 over walls |z| 0.675..0.875; outside |z|>0.875 skirts to y 0.06."
+ },
+ {
+  "cand": "ext_maglev_guideway_03",
+  "style": "Inverted_T_Fin",
+  "tris": 208,
+  "budget_ok": true,
+  "size": [
+   9.988,
+   0.224,
+   3.146
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_maglev_guideway/ext_maglev_guideway_03.glb",
+  "validate": true,
+  "kerb_fit": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "gap": 0.004
+  },
+  "envelope": "guideway top y 0.224 (fin). Underframe slot |z|<=0.08 must clear up to y >= 0.25 (26 mm over fin glow, 18 mm to Stator_Guide 0.062); lev pads |z| 0.28..0.72 bottom >= y 0.065; rest of underside/skirts >= y 0.06."
+ },
+ {
+  "cand": "ext_maglev_guideway_04",
+  "style": "Embedded_Slot",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.154,
+   3.146
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_maglev_guideway/ext_maglev_guideway_04.glb",
+  "validate": true,
+  "kerb_fit": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "gap": 0.004
+  },
+  "envelope": "guideway top y 0.154 (flush deck). Flat underside >= y 0.168 (15 mm over Stator_Lev 0.153); keel fin |z|<=0.09 down into the slot to y 0.06 (18 mm to Stator_Guide 0.108); skirts over the deck >= y 0.17."
+ },
+ {
+  "cand": "ext_maglev_guideway_05",
+  "style": "Twin_Box_Beams",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.188,
+   3.146
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_maglev_guideway/ext_maglev_guideway_05.glb",
+  "validate": true,
+  "kerb_fit": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "gap": 0.004
+  },
+  "envelope": "guideway top y 0.188 (beam stators). Underframe >= y 0.205 over beams |z| 0.63..0.97; centre keel between beams |z|<=0.62 down to y 0.06 (18 mm to Stator_Guide 0.638); outer skirts |z|>=0.97 to y 0.06."
+ }
+]
