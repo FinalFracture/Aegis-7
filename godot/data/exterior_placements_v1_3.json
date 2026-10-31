@@ -82,7 +82,7 @@
       "asset": "ext_tram_shelter.glb",
       "x": 15.0,
       "y": 0.297,
-      "z": -16.25,
+      "z": -15.92,
       "rot_deg": 180.0,
       "note": "rot 180: open side (local +Z) faces the guideway boarding edge at -Z"
     },

@@ -148,7 +148,7 @@ def merge_beds(rects, gap):
                 out[i] = (m[0], None, m[2], max(m[3], r[3]), m[4], m[5]); break
         else: out.append((r[0], None, r[2], r[3], r[4], r[5]))
     return out
-shelter = P(15, "ext_tram_shelter.glb", 15, 0.297, -16.25, 180, "rot 180: open side (local +Z) faces the guideway boarding edge at -Z")
+shelter = P(15, "ext_tram_shelter.glb", 15, 0.297, -15.92, 180, "rot 180: open side (local +Z) faces the guideway boarding edge at -Z")
 kerbs = [P(16, "ext_tram_platform_kerb.glb", x, 0, -17.55, 180, "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21") for x in range(10, 21, 2)]
 gw_over = 9.994 / 2.0 - (47 - 45)
 guides = []
@@ -293,7 +293,7 @@ for key in order:
     p = groups[key][0]
     print("%-8s %-42s %5d  (%s, %s, %s, %s)" % (p["id"], p["asset"], len(groups[key]), p["x"], p["y"], p["z"], p["rot_deg"]))
 print("--- resolved TBD ---")
-print("#15 shelter rot 180 at (15, 0.297, -16.25); open side local +Z faces guideway boarding edge -Z")
+print("#15 shelter rot 180 at (15, 0.297, -15.92); open side local +Z faces guideway boarding edge -Z")
 print("#16 kerb x", [p["x"] for p in kerbs], "rot 180 z -17.55")
 print("#17 guideway x", [p["x"] for p in guides], "n", len(guides), "end overhang m", round(gw_over, 4))
 print("#19 Xc", Xc, "Xc2", Xc2, "bodies", [(p["x"], p["rot_deg"]) for p in bodies], "magnets", [(p["x"], p["rot_deg"]) for p in mags])

@@ -10,7 +10,7 @@ const TIMEOUT_FRAMES := 600
 const FLOOR_BAND := 0.02
 const DECAL_ABOVE := 0.03
 const PEN_MAX := 0.02
-const SNAP_FROM := 3.0
+const SNAP_ABOVE := 0.3
 const SNAP_DEPTH := 12.0
 const CORNER_INSET := 0.05
 const KIND_GROUND := 0
@@ -83,13 +83,7 @@ func _process(_delta: float) -> bool:
 
 func _run_checks() -> void:
 	var nodes: Array[Node] = get_nodes_in_group("exterior_placement")
-	var hidden_ts4 := 0
-	if _scene != null and _scene.has_meta("hidden_ts4"):
-		hidden_ts4 = int(_scene.get_meta("hidden_ts4"))
-	elif _scene != null and _scene.get("hidden_ts4") != null:
-		hidden_ts4 = int(_scene.get("hidden_ts4"))
-	if hidden_ts4 == 0:
-		_bad("49", "ts4", "hidden_ts4=0")
+	_check_ts4_row()
 	if nodes.is_empty():
 		_bad("-", "-", "no exterior_placement nodes")
 		print("EXT_ASSERT: %d pass, %d fail" % [_pass_n, _fail_n])
@@ -129,6 +123,55 @@ func _run_checks() -> void:
 	quit(1 if _fail_n > 0 else 0)
 
 
+## #49 is the middle slot of the west id-25 row, not a hidden scene TS-4.
+func _check_ts4_row() -> void:
+	var neighbours: Array[Node3D] = []
+	var dead: Node3D = null
+	var wear: Node3D = null
+	for node: Node in get_nodes_in_group("exterior_placement"):
+		if not (node is Node3D):
+			continue
+		var prop := node as Node3D
+		var id := _id_of(prop)
+		var base := _base(_asset_of(prop))
+		if id == "25" and base == "hydro_planter_tiered_exterior":
+			neighbours.append(prop)
+		elif id == "49" and base == "ext_ts4_dead_foliage":
+			dead = prop
+		elif id == "49" and base == "ext_ts4_wear_decal":
+			wear = prop
+	if neighbours.size() != 2 or dead == null or wear == null:
+		_bad("49", "ts4", "row neighbours=%d dead=%s wear=%s" % [neighbours.size(), str(dead != null), str(wear != null)])
+		return
+	var z_mid := (neighbours[0].global_position.z + neighbours[1].global_position.z) * 0.5
+	var pieces: Array[Node3D] = [dead, wear]
+	var aligned := true
+	for piece: Node3D in pieces:
+		var x_ok := true
+		var rot_ok := true
+		for nb: Node3D in neighbours:
+			if absf(piece.global_position.x - nb.global_position.x) > 0.01:
+				x_ok = false
+			if _yaw_delta(piece.rotation_degrees.y, nb.rotation_degrees.y) > 0.1:
+				rot_ok = false
+		var z_ok := absf(piece.global_position.z - z_mid) <= 0.01
+		if x_ok and rot_ok and z_ok:
+			continue
+		aligned = false
+		_bad("49", _asset_of(piece), "ts4 slot x=%s z=%s rot=%s mid_z=%s nb_x=%s,%s nb_z=%s,%s nb_rot=%s,%s" % [
+			_fmt(piece.global_position.x), _fmt(piece.global_position.z), _fmt(piece.rotation_degrees.y), _fmt(z_mid),
+			_fmt(neighbours[0].global_position.x), _fmt(neighbours[1].global_position.x),
+			_fmt(neighbours[0].global_position.z), _fmt(neighbours[1].global_position.z),
+			_fmt(neighbours[0].rotation_degrees.y), _fmt(neighbours[1].rotation_degrees.y),
+		])
+	if aligned:
+		_pass_n += 1
+
+
+func _yaw_delta(a: float, b: float) -> float:
+	return absf(fposmod(a - b + 180.0, 360.0) - 180.0)
+
+
 func _check_floor(prop: Node3D, id: String, asset: String, aabb: AABB, space: PhysicsDirectSpaceState3D) -> void:
 	var bottom_y: float = aabb.position.y
 	# Same samples and exclusions as the spawn snap: centre plus four inset bottom corners, max hit y.
@@ -143,7 +186,7 @@ func _check_floor(prop: Node3D, id: String, asset: String, aabb: AABB, space: Ph
 			have_hit = true
 	if not have_hit:
 		var centre: Vector3 = aabb.get_center()
-		_bad(id, asset, "floor no_ground node=%s from=%s" % [String(prop.name), _v(Vector3(centre.x, prop.global_position.y + SNAP_FROM, centre.z))])
+		_bad(id, asset, "floor no_ground node=%s from=%s" % [String(prop.name), _v(Vector3(centre.x, aabb.position.y + aabb.size.y + SNAP_ABOVE, centre.z))])
 		return
 	var gap: float = bottom_y - hit_y
 	# Decals and litter sit on the surface: 0..0.03 m above, never buried.
@@ -197,7 +240,7 @@ func _floor_exclude(prop: Node, asset: String) -> Array[RID]:
 
 
 func _max_surface_y(prop: Node3D, aabb: AABB, exclude: Array[RID], space: PhysicsDirectSpaceState3D) -> Dictionary:
-	var start_y: float = prop.global_position.y + SNAP_FROM
+	var start_y: float = aabb.position.y + aabb.size.y + SNAP_ABOVE
 	var end_y: float = prop.global_position.y - SNAP_DEPTH
 	var pts: Array[Vector2] = []
 	var centre: Vector3 = aabb.get_center()
