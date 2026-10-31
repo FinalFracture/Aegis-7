@@ -47,7 +47,7 @@ def corner(v):
     if v == 2: p.add("Top_Cap", T, quad(.06, .135 - E, .15, sq=.296))
     if v == 4: p.add("Top_Slab", S, quad(.15, .135 - E, .15, sq=.296))
     if v == 1:  # amber reflector wraps the curved road face: one thin box per arc chord, 4 mm proud (embedded E)
-        P = [(np.cos(t) * .15, np.sin(t) * .15) for t in np.linspace(0, np.pi / 2, 6)]; segs = []
+        P = [(np.cos(t) * .15, np.sin(t) * .15) for t in np.linspace(0, np.pi / 2, 4)]; segs = []
         for (x0, z0), (x1, z1) in zip(P[:-1], P[1:]):
             mx, mz = (x0 + x1) / 2, (z0 + z1) / 2; L2 = np.hypot(x1 - x0, z1 - z0) / 2 - .001; nx, nz = mx / np.hypot(mx, mz), mz / np.hypot(mx, mz)
             d = np.hypot(mx, mz); m = box(-L2, L2, .05, .08, -E, .004); ang = np.arctan2(nx, nz)

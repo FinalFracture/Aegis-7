@@ -1739,5 +1739,5 @@
 ### #41 curb segment + corner (Rook, box pipeline, Oct 30)
 - **Candidates:** `design/assets/ext_curb_segment/ext_curb_segment_01..05.glb` + `design/assets/ext_curb_corner/ext_curb_corner_01..05.glb` (all clip-check + validate PASS).
 - **Deciding vote: Jared (Oct 30, 9:28 PM CT), relayed via Atlas.**
-- **#41 Curb WINNER:** `#01 Chamfer_Slate` -> `godot/assets/models/ext_curb_segment.glb` (36 tris) + `godot/assets/models/ext_curb_corner.glb` (corner 01 rebuilt: amber reflector wraps the curved road face in 5 chord segments + 2 flat ends, 4 mm proud; clip PASS alone and assembled with straights either side, 3 mm joints).
+- **#41 Curb WINNER:** `#01 Chamfer_Slate` -> `godot/assets/models/ext_curb_segment.glb` (36 tris) + `godot/assets/models/ext_curb_corner.glb` (corner 01 rebuilt: amber reflector wraps the curved road face in 3 chord segments + 2 flat ends, 4 mm proud, 116 tris; clip PASS alone and assembled with straights either side, 3 mm joints).
 - **Atlas PM call (not a Jared vote), 9:28 PM CT:** #51 reworded for maglev (guideway dust + stator wear streaks, platform-edge foot scuffs, kerb scuffs at stop; coupler/tram wheel-track scuffs removed). Sprocket robot wheel-track decals on apron/door jamb kept pending Atlas/Jared confirmation.
