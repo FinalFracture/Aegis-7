@@ -2,12 +2,12 @@ class_name PcbaPythonPuzzleUI
 extends CanvasLayer
 ## Interactive Full-Screen "I Spy" PCBA (`RESET` Pin) + Readable Python Firmware Terminal UI
 ## Attached to `preface_playable_area.tscn` / `preface_playable_residential_sector.tscn`.
-## - Left Panel ("I Spy" PCBA View): FR4 Circuit Board (`AEGIS-7 DOOR RELAY PCBA [REV 4.2]`),
+## - Left Panel ("I Spy" PCBA View): FR4 Circuit Board (`AEGIS-7 FIELD EMITTER PCBA [REV 4.2]`),
 ##   central `IC1: AEGIS-DRV-04`, 4-pin header (`GND`, `LOCK_HOLD`, `RESET`, `AUX_BUZZ`),
 ##   loose glowing Super Wire jumper lead from `#04` Neural Smart-Sleeve plugged onto `RESET`,
 ##   and `+5A Battery Charge` Aux Slot.
-## - Right Panel (Readable Python Firmware Editor `door_control.py`):
-##   `supply_amperage = 7` -> `12` (or `>` -> `<`) in `def open_door(amperage): if amperage > 10: return True else: return False`.
+## - Right Panel (Readable Python Firmware Editor `field_control.py`):
+##   `supply_amperage = 7` -> `12` (or `>` -> `<`) in `def enable_field(amperage): if amperage > 10: return True else: return False`.
 
 signal door_unlocked(final_amperage: int)
 
@@ -74,7 +74,7 @@ func _build_ui() -> void:
 	_root_control.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_root_control)
 
-	# Translucent peripheral vignette so the 3D residential vestibule, open door & Hammerhead bot remain visible around the console!
+	# Translucent peripheral vignette so the 3D residential vestibule, force field & Hammerhead bot remain visible around the console!
 	var backdrop_dim: ColorRect = ColorRect.new()
 	backdrop_dim.color = Color(0.03, 0.06, 0.10, 0.42)
 	backdrop_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -107,14 +107,14 @@ func _build_ui() -> void:
 
 	var title_lbl: Label = Label.new()
 	title_lbl.position = Vector2(22, 10)
-	title_lbl.text = "AEGIS-7 FIELD DIAGNOSTIC CONSOLE // SECTOR-04 BULKHEAD RELAY [WRIST RIG #04 NEURAL SLEEVE COUPLED]"
+	title_lbl.text = "AEGIS-7 FIELD DIAGNOSTIC CONSOLE // SECTOR-04 FIELD EMITTER [WRIST RIG #04 NEURAL SLEEVE COUPLED]"
 	title_lbl.add_theme_font_size_override("font_size", 21)
 	title_lbl.add_theme_color_override("font_color", Color("#F0F6FF"))
 	header_bg.add_child(title_lbl)
 
 	var sub_lbl: Label = Label.new()
 	sub_lbl.position = Vector2(22, 38)
-	sub_lbl.text = "STAGE 1 (LEFT): 'I SPY' PCBA — PLUG SUPER WIRE INTO [RESET] PIN & SLIDE +5A BATTERY   |   STAGE 2 (RIGHT): PYTHON FIRMWARE — def open_door(amperage)"
+	sub_lbl.text = "STAGE 1 (LEFT): 'I SPY' PCBA — PLUG SUPER WIRE INTO [RESET] PIN & SEAT +5A BATTERY   |   STAGE 2 (RIGHT): PYTHON FIRMWARE — def enable_field(amperage)"
 	sub_lbl.add_theme_font_size_override("font_size", 14)
 	sub_lbl.add_theme_color_override("font_color", Color("#FFD166"))
 	header_bg.add_child(sub_lbl)
@@ -197,7 +197,7 @@ func _build_ui() -> void:
 
 	var py_ctrl_lbl: Label = Label.new()
 	py_ctrl_lbl.position = Vector2(18, 616)
-	py_ctrl_lbl.text = "INTERACTIVE PYTHON OVERRIDE — def open_door(amperage): if amperage > 10: return True"
+	py_ctrl_lbl.text = "INTERACTIVE PYTHON OVERRIDE — def enable_field(amperage): if amperage > 10: return True"
 	py_ctrl_lbl.add_theme_font_size_override("font_size", 15)
 	py_ctrl_lbl.add_theme_color_override("font_color", Color("#88E8FF"))
 	right_panel.add_child(py_ctrl_lbl)
@@ -213,7 +213,7 @@ func _build_ui() -> void:
 	_run_button.position = Vector2(404, 646)
 	_run_button.size = Vector2(354, 72)
 	_run_button.add_theme_font_size_override("font_size", 16)
-	_run_button.pressed.connect(_on_execute_door_script)
+	_run_button.pressed.connect(_on_execute_field_script)
 	right_panel.add_child(_run_button)
 
 	# ==========================================================================
@@ -247,14 +247,14 @@ func _on_toggle_amperage() -> void:
 	_refresh_ui_state()
 
 
-func _on_execute_door_script() -> void:
-	var result: bool = evaluate_open_door(supply_amperage) and reset_pin_connected
+func _on_execute_field_script() -> void:
+	var result: bool = evaluate_enable_field(supply_amperage) and reset_pin_connected
 	if result:
 		emit_signal("door_unlocked", supply_amperage)
 	_refresh_ui_state()
 
 
-func evaluate_open_door(amperage: int) -> bool:
+func evaluate_enable_field(amperage: int) -> bool:
 	if comparator_gt:
 		if amperage > 10:
 			return true
@@ -281,19 +281,19 @@ func _refresh_ui_state() -> void:
 		]
 		_amp_button.add_theme_color_override("font_color", Color("#FFD166"))
 
-	var is_open: bool = evaluate_open_door(supply_amperage) and reset_pin_connected
+	var is_open: bool = evaluate_enable_field(supply_amperage) and reset_pin_connected
 	if _run_button != null:
-		_run_button.text = "EXECUTE: open_door(%d) ==> %s\n%s" % [
+		_run_button.text = "EXECUTE: enable_field(%d) ==> %s\n%s" % [
 			supply_amperage,
 			"True" if is_open else "False",
-			"[BULKHEAD 100% UNLOCKED!]" if is_open else "[DOOR JAMMED AT 40%]"
+			"[FIELD RELEASED]" if is_open else "[FIELD STALLED AT 40%]"
 		]
 		_run_button.add_theme_color_override("font_color", Color("#00E676") if is_open else Color("#FF5544"))
 
 	if _status_banner != null:
 		if is_open:
-			_status_banner.text = "LIVE TELEMETRY: J4 [RESET] PIN COUPLED VIA SUPER WIRE  •  supply_amperage = 12  •  open_door(12) -> return True  [SECTOR-04 BULKHEAD UNLOCKED!]"
+			_status_banner.text = "LIVE TELEMETRY: J4 [RESET] PIN COUPLED VIA SUPER WIRE  •  supply_amperage = 12  •  enable_field(12) -> return True  [FIELD RELEASED]"
 			_status_banner.add_theme_color_override("font_color", Color("#00E676"))
 		else:
-			_status_banner.text = "LIVE TELEMETRY: J4 [RESET] PIN / AMPERAGE FAULT  •  supply_amperage = %d  •  open_door(%d) -> return False  [BULKHEAD LOCKED]" % [supply_amperage, supply_amperage]
+			_status_banner.text = "LIVE TELEMETRY: J4 [RESET] PIN / AMPERAGE FAULT  •  supply_amperage = %d  •  enable_field(%d) -> return False  [FIELD LOCKED]" % [supply_amperage, supply_amperage]
 			_status_banner.add_theme_color_override("font_color", Color("#FF9500"))

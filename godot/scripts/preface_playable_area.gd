@@ -186,6 +186,14 @@ const DOOR_FIELD_JSON_USER := "user://door_fields.json"
 const DOOR_FIELD_POLL_SEC := 0.5
 const FF_OCCUPANCY_DEPTH := 0.35       # [QA-HUB-01] thin box exactly in the opening, centred on the field plane
 const FF_CLOSE_RETRY_SEC := 0.5
+const FF_TEX_DIR := "res://assets/textures/force_field/"
+const FF_STALL_STRENGTH := 0.40
+const FF_STALL_TIME := 2.0
+const FF_DENY_TIME := 0.3
+const FF_BASE_STATIC := 0.35
+const FF_BASE_JITTER := 0.004
+const FF_BASE_ARC := 0.8
+const FF_READY_CYAN := Color("#00E5FF")
 
 var _arch_container: Node3D
 var _props_container: Node3D
@@ -246,6 +254,7 @@ var _qa_t38: bool = false
 var _qa_ff_door: bool = false
 var _qa_hub_shot: bool = false
 var _ff_shader: Shader = null
+var _ff_tex_cache: Dictionary = {}
 var _glb_cache: Dictionary = {}
 var _door_json_mtime: int = -1
 var _door_json_src: String = ""
@@ -429,16 +438,59 @@ func _load_glb_scene(path: String, emission_mult: float = 0.65) -> Node3D:
 # ------------------------------------------------------------------------------
 # Sector architecture + collisions (BUG-03)
 # ------------------------------------------------------------------------------
-func _remove_all_doors_and_grates(root: Node3D) -> void:
+func _is_baked_leaf_door_name(nm: String) -> bool:
+	var n: String = nm.to_lower()
+	return n.contains("door_slide") or n.contains("door_leaf") or n.contains("door_apt")
+
+
+## Baked slide/leaf/apt meshes are removed in `_remove_baked_leaf_doors_and_grates`. Lookups of those names return null.
+func _lookup_sector_node(root: Node, name_exact: String) -> Node:
+	if root == null or not is_instance_valid(root):
+		return null
+	if _is_baked_leaf_door_name(name_exact):
+		return null
 	var stack: Array[Node] = [root]
 	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if not is_instance_valid(c):
+			continue
+		if _is_baked_leaf_door_name(String(c.name)):
+			continue
+		if String(c.name) == name_exact:
+			return c
+		for ch: Node in c.get_children():
+			stack.append(ch)
+	return null
+
+
+func _remove_baked_leaf_doors_and_grates(root: Node3D) -> void:
+	# Free baked *door_slide* / *door_leaf* / *door_apt* meshes (remove_child + queue_free) so a later
+	# trimesh pass cannot see them. Grates and baked pickups stay hidden, matching the previous pass.
+	var stack: Array[Node] = [root]
+	var free_nodes: Array[Node] = []
+	while not stack.is_empty():
 		var curr: Node = stack.pop_back()
-		if curr is Node3D:
-			var nm: String = curr.name.to_lower()
-			if nm.contains("door_slide") or nm.contains("door_apt") or nm.contains("door_leaf") or nm.contains("maint_grate") or nm.begins_with("pickup_"):
+		if not is_instance_valid(curr):
+			continue
+		var drop: bool = false
+		if curr != root and curr is Node3D:
+			var nm: String = String(curr.name).to_lower()
+			if _is_baked_leaf_door_name(nm):
+				drop = true
+			elif nm.contains("maint_grate") or nm.begins_with("pickup_"):
 				(curr as Node3D).visible = false
+		if drop:
+			free_nodes.append(curr)
+			continue
 		for ch: Node in curr.get_children():
 			stack.append(ch)
+	for n: Node in free_nodes:
+		if not is_instance_valid(n):
+			continue
+		var p: Node = n.get_parent()
+		if p != null:
+			p.remove_child(n)
+		n.queue_free()
 
 
 func _is_visible_in_tree_static(n: Node3D) -> bool:
@@ -468,6 +520,8 @@ func _add_sector_trimesh_collisions(sector_node: Node3D) -> int:
 		if nm.contains("stair") or (mi.get_parent() != null and String(mi.get_parent().name).to_lower().contains("stair")):
 			continue
 		if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
+			continue
+		if not is_instance_valid(mi) or _is_baked_leaf_door_name(nm):
 			continue
 		if not _is_visible_in_tree_static(mi):
 			continue
@@ -784,7 +838,7 @@ func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
 func _retire_apartment_workbench(sector: Node3D) -> void:
 	# Rev C.2 moved #26 out of the building. The sector GLB still contains Apartment_Workbench, so it stays
 	# in INTERIOR_ARCH_NODE_NAMES (streaming still detaches it) but is hidden and non-colliding.
-	var wb: Node = sector.find_child("Apartment_Workbench", true, false)
+	var wb: Node = _lookup_sector_node(sector, "Apartment_Workbench")
 	if wb == null:
 		return
 	if wb is Node3D:
@@ -810,7 +864,7 @@ func _assemble_open_doorless_sector() -> void:
 	if sector_node != null:
 		sector_node.name = "PrefaceResidentialSector_Doorless"
 		_arch_container.add_child(sector_node)
-		_remove_all_doors_and_grates(sector_node)
+		_remove_baked_leaf_doors_and_grates(sector_node)
 		# Hide before trimesh build so the retired bench never gets a collider.
 		_retire_apartment_workbench(sector_node)
 		if not _batch_render:
@@ -1836,6 +1890,9 @@ func _apply_pitch() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Stall flicker has to tick on physics frames: --qa-forcefield-door awaits physics_frame,
+	# and a physics catch-up burst can run those frames before the next idle _process.
+	_ff_tick_active_stalls(delta)
 	_apply_ring_box_gravity(delta)
 	_process_core_transits(delta)
 	if _player_body == null:
@@ -1993,6 +2050,10 @@ func _interact() -> void:
 		var bot_node: Node3D = it["node"] as Node3D
 		_play_actor_anim(bot_node, ["Celebrate", "Idle"], 0.0)
 	elif kind == "rfid_door":
+		# Hub scan missed (range, facing, or the wrong side of the wall): refused RFID, collider stays on.
+		var refused_id: String = String(it.get("door_id", ""))
+		if refused_id != "":
+			deny_flicker(refused_id)
 		_trigger_rfid_pulse()
 	elif kind == "terminal":
 		var total: int = 0
@@ -2259,6 +2320,7 @@ func _process(delta: float) -> void:
 	_time += delta
 	if _starfield_cylinder != null and is_instance_valid(_starfield_cylinder):
 		_starfield_cylinder.rotate_z(STARFIELD_ROT_SPEED * delta)
+	_ff_tick_active_stalls(delta)
 	_update_rfid_doors(delta)
 	_sync_reticle_to_viewport_center()
 	if _batch_render:
@@ -3538,6 +3600,8 @@ func _despawn_building_interiors() -> int:
 		var found: Array[Node3D] = []
 		while not stack.is_empty():
 			var c: Node = stack.pop_back()
+			if not is_instance_valid(c) or _is_baked_leaf_door_name(String(c.name)):
+				continue
 			if c != sector and c is Node3D and INTERIOR_ARCH_NODE_NAMES.has(String(c.name)):
 				found.append(c as Node3D)
 				continue
@@ -3787,27 +3851,26 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			if rn != null:
 				rn.visible = false
 
-		var fmat: ShaderMaterial = ShaderMaterial.new()
-		fmat.shader = shader
-		fmat.set_shader_parameter("field_color", FF_DEFAULT_COLOR)
-		fmat.set_shader_parameter("opacity", FF_DEFAULT_OPACITY)
-		fmat.set_shader_parameter("dissolve", 0.0)
-		if n_field != null:
+		var fmat: ShaderMaterial = _ff_new_field_material(shader)
+		if n_field != null and is_instance_valid(n_field):
 			n_field.material_override = fmat
 			n_field.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		# One emissive material per emitter part per door, tinted to the field colour by set_door_field().
 		var emit_mats: Dictionary = {}
 		for en: String in FF_EMITTER_ENERGY.keys():
 			var n_e: MeshInstance3D = model.find_child(en, true, false) as MeshInstance3D
-			if n_e == null:
+			if n_e == null or not is_instance_valid(n_e):
 				continue
 			var em_m: StandardMaterial3D = StandardMaterial3D.new()
 			em_m.albedo_color = FF_DEFAULT_COLOR
 			em_m.emission_enabled = true
 			em_m.emission = FF_DEFAULT_COLOR
 			em_m.emission_energy_multiplier = float(FF_EMITTER_ENERGY[en])
+			if en == "EmitterStrip":
+				_ff_apply_coil_textures(em_m, true)
 			n_e.material_override = em_m
 			emit_mats[en] = em_m
+		var threshold_mat: StandardMaterial3D = _ff_bind_threshold(model, false)
 		var hub: Dictionary = _build_door_hub(droot, did)
 		var lmat: StandardMaterial3D = hub.get("glow_mat") as StandardMaterial3D
 
@@ -3858,15 +3921,35 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			"emit_mats": emit_mats,
 			"led_mat": lmat,
 			"field_collider": field_cs,
+			"threshold_mat": threshold_mat,
 			"tween": null,
+			"surge_tween": null,
 			"close_pending": false,
 			"close_retry_t": 0.0,
 			"close_blocker": "",
 			"open": false,
 			"dissolve": 0.0,
 			"opacity": FF_DEFAULT_OPACITY,
-			"field_color": FF_DEFAULT_COLOR
+			"field_color": FF_DEFAULT_COLOR,
+			"ff_state": "locked",
+			"strength": 1.0,
+			"stall_t": 0.0,
+			"stall_clock": 0.0,
+			"deny_t": 0.0,
+			"split": false,
+			"half_a_on": true,
+			"half_b_on": true,
+			"split_synced": false,
+			"split_cycled": false,
+			"mat_a": null,
+			"mat_b": null,
+			"col_a": null,
+			"col_b": null,
+			"field_a": null,
+			"field_b": null,
+			"coil_in_phase": true
 		}
+		_ff_apply_state_textures(d_entry, "locked")
 		_rfid_doors.append(d_entry)
 		_interactables.append({
 			"node": tag_anchor,
@@ -4085,11 +4168,591 @@ func _tween_door_light(door: Dictionary, open_state: bool, dur: float) -> void:
 	door["glow_tween"] = tw
 
 
+func _ff_tex(fname: String) -> Texture2D:
+	if _ff_tex_cache.has(fname):
+		return _ff_tex_cache[fname] as Texture2D
+	var res_p: String = FF_TEX_DIR + fname
+	var tex: Texture2D = null
+	if ResourceLoader.exists(res_p):
+		var loaded: Resource = ResourceLoader.load(res_p)
+		if loaded is Texture2D:
+			tex = loaded as Texture2D
+	if tex == null:
+		var abs_p: String = _resolve_path(res_p)
+		if FileAccess.file_exists(abs_p):
+			var img: Image = Image.new()
+			if img.load(abs_p) == OK and not img.is_empty():
+				tex = ImageTexture.create_from_image(img)
+	_ff_tex_cache[fname] = tex
+	return tex
+
+
+func _ff_new_field_material(shader: Shader) -> ShaderMaterial:
+	var fmat: ShaderMaterial = ShaderMaterial.new()
+	fmat.shader = shader
+	fmat.set_shader_parameter("field_color", FF_DEFAULT_COLOR)
+	fmat.set_shader_parameter("opacity", FF_DEFAULT_OPACITY)
+	fmat.set_shader_parameter("dissolve", 0.0)
+	fmat.set_shader_parameter("static_strength", FF_BASE_STATIC)
+	fmat.set_shader_parameter("jitter_strength", FF_BASE_JITTER)
+	fmat.set_shader_parameter("arc_strength", FF_BASE_ARC)
+	fmat.set_shader_parameter("stall_amount", 0.0)
+	fmat.set_shader_parameter("split_seam", 0.0)
+	var stall_mask: Texture2D = _ff_tex("ff_field_stall_noise_mask.png")
+	var seam_a: Texture2D = _ff_tex("ff_split_seam_albedo.png")
+	var seam_e: Texture2D = _ff_tex("ff_split_seam_emission.png")
+	if stall_mask != null:
+		fmat.set_shader_parameter("stall_noise_mask", stall_mask)
+	if seam_a != null:
+		fmat.set_shader_parameter("split_seam_albedo", seam_a)
+	if seam_e != null:
+		fmat.set_shader_parameter("split_seam_emission", seam_e)
+	return fmat
+
+
+func _ff_apply_coil_textures(mat: StandardMaterial3D, in_phase: bool) -> void:
+	if mat == null:
+		return
+	var alb: Texture2D = _ff_tex("ff_emitter_coil_albedo.png")
+	var orm: Texture2D = _ff_tex("ff_emitter_coil_orm.png")
+	var emi_name: String = "ff_emitter_coil_emission_inphase.png" if in_phase else "ff_emitter_coil_emission_outphase.png"
+	var emi: Texture2D = _ff_tex(emi_name)
+	if alb != null:
+		mat.albedo_texture = alb
+	if orm != null:
+		mat.ao_enabled = true
+		mat.ao_texture = orm
+		mat.ao_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+		mat.roughness_texture = orm
+		mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+		mat.metallic_texture = orm
+		mat.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
+	if emi != null:
+		mat.emission_enabled = true
+		mat.emission_texture = emi
+
+
+func _ff_set_threshold_state(mat: StandardMaterial3D, ready_state: bool) -> void:
+	if mat == null:
+		return
+	var alb: Texture2D = _ff_tex("ff_threshold_strip_albedo.png")
+	var emi: Texture2D = _ff_tex("ff_threshold_strip_cyan_emission.png" if ready_state else "ff_threshold_strip_amber_emission.png")
+	if alb != null:
+		mat.albedo_texture = alb
+	mat.emission_enabled = true
+	mat.emission = FF_READY_CYAN if ready_state else HUB_AMBER
+	mat.emission_energy_multiplier = 1.8
+	mat.roughness = 0.6
+	mat.metallic = 0.0
+	if emi != null:
+		mat.emission_texture = emi
+
+
+func _ff_bind_threshold(model: Node, ready_state: bool) -> StandardMaterial3D:
+	if model == null or not is_instance_valid(model):
+		return null
+	var mi: MeshInstance3D = null
+	var stack: Array[Node] = [model]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if not is_instance_valid(c):
+			continue
+		if c is MeshInstance3D and String(c.name).to_lower().contains("threshold"):
+			mi = c as MeshInstance3D
+			break
+		for ch: Node in c.get_children():
+			stack.append(ch)
+	if mi == null:
+		return null
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	_ff_set_threshold_state(m, ready_state)
+	mi.material_override = m
+	return m
+
+
+func _ff_mats(door: Dictionary) -> Array[ShaderMaterial]:
+	var out: Array[ShaderMaterial] = []
+	var primary: ShaderMaterial = door.get("field_mat") as ShaderMaterial
+	if primary != null:
+		out.append(primary)
+	if bool(door.get("split", false)):
+		var ma: ShaderMaterial = door.get("mat_a") as ShaderMaterial
+		var mb: ShaderMaterial = door.get("mat_b") as ShaderMaterial
+		if ma != null and ma != primary:
+			out.append(ma)
+		if mb != null and mb != primary:
+			out.append(mb)
+	return out
+
+
+func _ff_apply_calib_on_door(door: Dictionary, state: String) -> void:
+	var root: Node = door.get("root") as Node
+	if root == null or not is_instance_valid(root):
+		return
+	var cell: int = 1
+	if state == "ready" or state == "open":
+		cell = 2
+	elif state == "off":
+		cell = 0
+	var alb: Texture2D = _ff_tex("ff_calib_node_albedo.png")
+	var emi: Texture2D = _ff_tex("ff_calib_node_emission_states.png")
+	for i: int in range(1, 4):
+		var n: MeshInstance3D = root.find_child("Node_Calib_%02d" % i, true, false) as MeshInstance3D
+		if n == null or not is_instance_valid(n):
+			continue
+		var m: StandardMaterial3D = n.material_override as StandardMaterial3D
+		if m == null:
+			m = StandardMaterial3D.new()
+			m.emission_enabled = true
+			n.material_override = m
+		if alb != null:
+			m.albedo_texture = alb
+		if emi != null:
+			m.emission_texture = emi
+		m.uv1_scale = Vector3(1.0 / 3.0, 1.0, 1.0)
+		m.uv1_offset = Vector3(float(cell) / 3.0, 0.0, 0.0)
+		var energy: float = 2.5 if cell > 0 else 0.0
+		if state == "stall" and cell > 0:
+			energy = 2.5 * (0.85 + 0.15 * sin(_time * TAU))
+		m.emission_energy_multiplier = energy
+
+
+func _ff_apply_state_textures(door: Dictionary, state: String) -> void:
+	var amber: bool = state == "locked" or state == "stall" or state == "deny"
+	var alb: Texture2D = _ff_tex("ff_field_lockout_amber_albedo.png" if amber else "ff_field_ready_cyan_albedo.png")
+	var emi: Texture2D = _ff_tex("ff_field_lockout_amber_emission.png" if amber else "ff_field_ready_cyan_emission.png")
+	var stall: float = 1.0 if (state == "stall" or state == "deny") else 0.0
+	for mat: ShaderMaterial in _ff_mats(door):
+		if alb != null:
+			mat.set_shader_parameter("state_albedo", alb)
+		if emi != null:
+			mat.set_shader_parameter("state_emission", emi)
+		mat.set_shader_parameter("stall_amount", stall)
+	var tmat: StandardMaterial3D = door.get("threshold_mat") as StandardMaterial3D
+	if tmat != null:
+		_ff_set_threshold_state(tmat, not amber)
+	_ff_apply_calib_on_door(door, state)
+
+
+func _ff_set_cs(cs: CollisionShape3D, enabled: bool) -> void:
+	if cs != null and is_instance_valid(cs):
+		cs.set_deferred("disabled", not enabled)
+
+
+func _ff_apply_colliders(door: Dictionary, force_on: bool = false) -> void:
+	var split: bool = bool(door.get("split", false))
+	if not split:
+		var blocking: bool = force_on or not bool(door.get("open", false))
+		_ff_set_cs(door.get("field_collider") as CollisionShape3D, blocking)
+		return
+	_ff_set_cs(door.get("field_collider") as CollisionShape3D, false)
+	var a_on: bool = true
+	var b_on: bool = true
+	if force_on:
+		a_on = true
+		b_on = true
+	elif bool(door.get("open", false)):
+		a_on = false
+		b_on = false
+	else:
+		a_on = bool(door.get("half_a_on", true))
+		b_on = bool(door.get("half_b_on", true))
+	_ff_set_cs(door.get("col_a") as CollisionShape3D, a_on)
+	_ff_set_cs(door.get("col_b") as CollisionShape3D, b_on)
+
+
+func _ff_write_noise_params(door: Dictionary, opacity: float, static_s: float, jitter: float, arc: float, stall_amount: float) -> void:
+	for mat: ShaderMaterial in _ff_mats(door):
+		mat.set_shader_parameter("opacity", opacity)
+		mat.set_shader_parameter("static_strength", static_s)
+		mat.set_shader_parameter("jitter_strength", jitter)
+		mat.set_shader_parameter("arc_strength", arc)
+		mat.set_shader_parameter("stall_amount", stall_amount)
+
+
+func _ff_set_dissolve_all(door: Dictionary, v: float) -> void:
+	for mat: ShaderMaterial in _ff_mats(door):
+		mat.set_shader_parameter("dissolve", v)
+
+
+func _ff_set_seam_amount(door: Dictionary, amount: float) -> void:
+	for mat: ShaderMaterial in _ff_mats(door):
+		mat.set_shader_parameter("split_seam", amount)
+
+
+func _ff_noise(salt: float, t: float) -> float:
+	# Hash the per-door stall clock. Global _time / _frame_counter only move in _process,
+	# which does not run between the physics frames the stall QA samples.
+	var s: float = sin(t * 17.13 + salt * 1.37) * 43758.5453
+	return s - floor(s)
+
+
+func _ff_kill_tweens(door: Dictionary) -> void:
+	for key: String in ["tween", "surge_tween", "glow_tween"]:
+		var old: Variant = door.get(key)
+		if old is Tween and (old as Tween).is_valid():
+			(old as Tween).kill()
+
+
+func _ff_set_coil_phase(door: Dictionary, in_phase: bool) -> void:
+	door["coil_in_phase"] = in_phase
+	var ems: Dictionary = door.get("emit_mats", {}) as Dictionary
+	if ems.is_empty():
+		return
+	var strip: StandardMaterial3D = ems.get("EmitterStrip") as StandardMaterial3D
+	if strip != null:
+		_ff_apply_coil_textures(strip, in_phase)
+	var root: Node = door.get("root") as Node
+	if root == null or not is_instance_valid(root):
+		return
+	for nm: String in ["Emitter_Coil_A", "Emitter_Coil_B", "EmitterCoil_A", "EmitterCoil_B"]:
+		var mi: MeshInstance3D = root.find_child(nm, true, false) as MeshInstance3D
+		if mi == null or not is_instance_valid(mi):
+			continue
+		var m: StandardMaterial3D = mi.material_override as StandardMaterial3D
+		if m == null:
+			m = StandardMaterial3D.new()
+			m.emission_enabled = true
+			mi.material_override = m
+		_ff_apply_coil_textures(m, in_phase)
+
+
+func _ff_apply_half_visuals(door: Dictionary) -> void:
+	var level: float = _door_dissolve(door)
+	var op: float = float(door.get("opacity", FF_DEFAULT_OPACITY))
+	var ma: ShaderMaterial = door.get("mat_a") as ShaderMaterial
+	var mb: ShaderMaterial = door.get("mat_b") as ShaderMaterial
+	if ma != null:
+		if bool(door.get("half_a_on", true)):
+			ma.set_shader_parameter("dissolve", level)
+			ma.set_shader_parameter("opacity", op)
+		else:
+			ma.set_shader_parameter("dissolve", 1.0)
+			ma.set_shader_parameter("opacity", 0.0)
+	if mb != null:
+		if bool(door.get("half_b_on", true)):
+			mb.set_shader_parameter("dissolve", level)
+			mb.set_shader_parameter("opacity", op)
+		else:
+			mb.set_shader_parameter("dissolve", 1.0)
+			mb.set_shader_parameter("opacity", 0.0)
+
+
+func _ff_half_mesh(negative_x: bool) -> ArrayMesh:
+	var hw: float = FF_OPEN_W * 0.5
+	var h: float = FF_OPEN_H
+	var x0: float = -hw if negative_x else 0.0
+	var x1: float = 0.0 if negative_x else hw
+	var u0: float = 0.0 if negative_x else 0.5
+	var u1: float = 0.5 if negative_x else 1.0
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var nrm: Vector3 = Vector3(0.0, 0.0, 1.0)
+	var verts: Array[Vector3] = [Vector3(x0, 0.0, 0.0), Vector3(x1, 0.0, 0.0), Vector3(x1, h, 0.0), Vector3(x0, 0.0, 0.0), Vector3(x1, h, 0.0), Vector3(x0, h, 0.0)]
+	var uvs: Array[Vector2] = [Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0), Vector2(u0, 0.0), Vector2(u1, 1.0), Vector2(u0, 1.0)]
+	for i: int in range(verts.size()):
+		st.set_normal(nrm)
+		st.set_uv(uvs[i])
+		st.add_vertex(verts[i])
+	return st.commit()
+
+
+func _ff_find_field_plane(root: Node) -> MeshInstance3D:
+	if root == null or not is_instance_valid(root):
+		return null
+	var n: MeshInstance3D = root.find_child("FieldPlane", true, false) as MeshInstance3D
+	if n == null or not is_instance_valid(n):
+		return null
+	if bool(n.get_meta("replaced_by_split", false)):
+		return null
+	return n
+
+
+func _ff_tick_stall(door: Dictionary, delta: float) -> void:
+	# _process and _physics_process both call in. Apply delta once per physics frame
+	# so the ~2 s stall does not run at double speed when idle and physics are paired.
+	if delta > 0.0:
+		var phys: int = Engine.get_physics_frames()
+		if int(door.get("stall_tick_frame", -1)) == phys:
+			return
+		door["stall_tick_frame"] = phys
+		door["stall_clock"] = float(door.get("stall_clock", 0.0)) + delta
+		door["stall_t"] = float(door.get("stall_t", 0.0)) - delta
+		if float(door["stall_t"]) <= 0.0:
+			_ff_surge_from_stall(door)
+			return
+	var clock: float = float(door.get("stall_clock", 0.0))
+	var n0: float = _ff_noise(1.7, clock)
+	var n1: float = _ff_noise(4.2, clock)
+	var n2: float = _ff_noise(8.9, clock)
+	var n3: float = _ff_noise(12.4, clock)
+	var base_op: float = float(door.get("opacity", FF_DEFAULT_OPACITY)) * FF_STALL_STRENGTH
+	var op: float = clampf(base_op * lerpf(0.72, 1.28, n0), 0.08, base_op * 1.35)
+	_ff_write_noise_params(door, op, lerpf(0.62, 0.98, n1), lerpf(0.008, 0.016, n2), lerpf(0.45, 1.35, n3), lerpf(0.85, 1.0, n0))
+	door["strength"] = FF_STALL_STRENGTH
+	_ff_apply_colliders(door, true)
+	_ff_apply_calib_on_door(door, "stall")
+
+
+func _ff_surge_from_stall(door: Dictionary) -> void:
+	door["ff_state"] = "locked"
+	door["stall_t"] = 0.0
+	door["stall_clock"] = 0.0
+	door["strength"] = 1.0
+	door["open"] = false
+	door["dissolve"] = 0.0
+	_ff_set_dissolve_all(door, 0.0)
+	_ff_write_noise_params(door, float(door.get("opacity", FF_DEFAULT_OPACITY)), FF_BASE_STATIC, FF_BASE_JITTER, FF_BASE_ARC, 0.0)
+	_ff_apply_state_textures(door, "locked")
+	_ff_apply_colliders(door, true)
+	_set_door_light(door, false)
+	var lmat: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
+	if lmat != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(lmat, "emission_energy_multiplier", 4.2, 0.08)
+		tw.tween_property(lmat, "emission_energy_multiplier", 2.0, 0.22)
+		door["surge_tween"] = tw
+
+
+func _ff_tick_deny(door: Dictionary, delta: float) -> void:
+	door["deny_t"] = float(door.get("deny_t", 0.0)) - delta
+	var elapsed: float = FF_DENY_TIME - float(door["deny_t"])
+	var pulse: float = 1.0 if elapsed < 0.08 else clampf(float(door["deny_t"]) / FF_DENY_TIME, 0.0, 1.0)
+	var base_op: float = float(door.get("deny_opacity", door.get("opacity", FF_DEFAULT_OPACITY)))
+	var op: float = clampf(base_op * lerpf(1.0, 1.6, pulse), 0.0, 1.0)
+	_ff_write_noise_params(door, op, lerpf(FF_BASE_STATIC, 0.9, pulse), lerpf(FF_BASE_JITTER, 0.012, pulse), lerpf(FF_BASE_ARC, 1.6, pulse), lerpf(0.4, 1.0, pulse))
+	var lmat: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
+	if lmat != null:
+		lmat.emission = HUB_AMBER
+		lmat.albedo_color = HUB_AMBER
+		lmat.emission_energy_multiplier = lerpf(2.0, 4.5, pulse)
+	_ff_apply_colliders(door, true)
+	if float(door["deny_t"]) <= 0.0:
+		_ff_end_deny(door)
+
+
+func _ff_end_deny(door: Dictionary) -> void:
+	var op: float = float(door.get("deny_opacity", door.get("opacity", FF_DEFAULT_OPACITY)))
+	_ff_write_noise_params(door, op, float(door.get("deny_static", FF_BASE_STATIC)), float(door.get("deny_jitter", FF_BASE_JITTER)), float(door.get("deny_arc", FF_BASE_ARC)), 0.0)
+	var ready: bool = bool(door.get("open", false))
+	door["ff_state"] = "open" if ready else "locked"
+	door["deny_t"] = 0.0
+	_ff_apply_state_textures(door, "ready" if ready else "locked")
+	var lmat: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
+	if lmat != null:
+		var col: Color = door.get("deny_light", HUB_AMBER) as Color
+		lmat.emission = col
+		lmat.albedo_color = col
+		lmat.emission_energy_multiplier = float(door.get("deny_energy", 2.0))
+	_ff_apply_colliders(door, false)
+
+
+## Partial-power stall. Field stays near 40% strength with noise on opacity, static, jitter and arcs.
+## FieldCollider stays on. Hub light stays amber. After `duration` seconds the field surges back to 100%.
+func stall_door(door_id: String, duration: float = 2.0) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty():
+		return false
+	_ff_kill_tweens(door)
+	var dur: float = duration if duration > 0.0 else FF_STALL_TIME
+	door["ff_state"] = "stall"
+	door["stall_t"] = dur
+	door["stall_dur"] = dur
+	door["stall_clock"] = 0.0
+	door["stall_tick_frame"] = -1
+	door["strength"] = FF_STALL_STRENGTH
+	door["open"] = false
+	door["close_pending"] = false
+	door["dissolve"] = 0.0
+	_ff_set_dissolve_all(door, 0.0)
+	_ff_apply_state_textures(door, "stall")
+	_set_door_light(door, false)
+	_ff_apply_colliders(door, true)
+	_ff_tick_stall(door, 0.0)
+	return true
+
+
+## 0.3 s amber deny pulse. The field collider stays on for the whole pulse.
+func deny_flicker(door_id: String) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty():
+		return false
+	if String(door.get("ff_state", "")) == "stall":
+		return true
+	var running: Variant = door.get("tween")
+	if running is Tween and (running as Tween).is_valid() and (running as Tween).is_running():
+		return false
+	if String(door.get("ff_state", "")) == "deny":
+		door["deny_t"] = FF_DENY_TIME
+		return true
+	var mat: ShaderMaterial = door.get("field_mat") as ShaderMaterial
+	door["deny_opacity"] = float(door.get("opacity", FF_DEFAULT_OPACITY)) if mat == null else _ff_shader_float(mat, "opacity", float(door.get("opacity", FF_DEFAULT_OPACITY)))
+	door["deny_static"] = _ff_shader_float(mat, "static_strength", FF_BASE_STATIC)
+	door["deny_jitter"] = _ff_shader_float(mat, "jitter_strength", FF_BASE_JITTER)
+	door["deny_arc"] = _ff_shader_float(mat, "arc_strength", FF_BASE_ARC)
+	var lmat: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
+	if lmat != null:
+		door["deny_light"] = lmat.emission
+		door["deny_energy"] = lmat.emission_energy_multiplier
+	door["ff_state"] = "deny"
+	door["deny_t"] = FF_DENY_TIME
+	_ff_apply_state_textures(door, "deny")
+	_set_door_light(door, false)
+	_ff_apply_colliders(door, true)
+	return true
+
+
+func _ff_shader_float(mat: ShaderMaterial, key: String, fallback: float) -> float:
+	if mat == null:
+		return fallback
+	var v: Variant = mat.get_shader_parameter(key)
+	if v == null:
+		return fallback
+	return float(v)
+
+
+## Replace FieldPlane with FieldPlane_A / FieldPlane_B. Each half has its own ShaderMaterial and FieldCollider.
+## The 6 residential doors stay single-plane until this is called.
+func enable_split_field(door_id: String) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty():
+		return false
+	if bool(door.get("split", false)):
+		return true
+	var root: Node3D = door.get("root") as Node3D
+	var base: ShaderMaterial = door.get("field_mat") as ShaderMaterial
+	if root == null or not is_instance_valid(root) or base == null:
+		return false
+	var plane: MeshInstance3D = _ff_find_field_plane(root)
+	if plane == null:
+		return false
+	var mat_a: ShaderMaterial = base.duplicate() as ShaderMaterial
+	var mat_b: ShaderMaterial = base.duplicate() as ShaderMaterial
+	var parent: Node = plane.get_parent()
+	var a: MeshInstance3D = MeshInstance3D.new()
+	a.name = "FieldPlane_A"
+	a.mesh = _ff_half_mesh(true)
+	a.transform = plane.transform
+	a.material_override = mat_a
+	a.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var b: MeshInstance3D = MeshInstance3D.new()
+	b.name = "FieldPlane_B"
+	b.mesh = _ff_half_mesh(false)
+	b.transform = plane.transform
+	b.material_override = mat_b
+	b.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(a)
+	parent.add_child(b)
+	plane.visible = false
+	plane.set_meta("replaced_by_split", true)
+	door["split"] = true
+	door["mat_a"] = mat_a
+	door["mat_b"] = mat_b
+	door["field_a"] = a
+	door["field_b"] = b
+	door["half_a_on"] = true
+	door["half_b_on"] = true
+	door["split_synced"] = false
+	door["split_cycled"] = false
+	if not _batch_render:
+		door["col_a"] = _ff_static_box(root, "FieldCollider_A", Vector3(FF_OPEN_W * 0.5, FF_OPEN_H, 0.20), Vector3(-FF_OPEN_W * 0.25, FF_OPEN_H * 0.5, 0.0))
+		door["col_b"] = _ff_static_box(root, "FieldCollider_B", Vector3(FF_OPEN_W * 0.5, FF_OPEN_H, 0.20), Vector3(FF_OPEN_W * 0.25, FF_OPEN_H * 0.5, 0.0))
+	_ff_set_cs(door.get("field_collider") as CollisionShape3D, false)
+	_ff_set_seam_amount(door, 1.0)
+	_ff_set_coil_phase(door, false)
+	_ff_apply_state_textures(door, "ready" if bool(door.get("open", false)) else "locked")
+	_ff_apply_half_visuals(door)
+	_ff_apply_colliders(door, false)
+	return true
+
+
+## `half` is "A" or "B". `on` powers that half. Both on after a half has been dropped counts as in sync.
+func set_split_half(door_id: String, half: String, on: bool) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty() or not bool(door.get("split", false)):
+		return false
+	var h: String = half.strip_edges().to_upper()
+	var which: String = ""
+	if h == "A" or h.ends_with("_A"):
+		which = "A"
+	elif h == "B" or h.ends_with("_B"):
+		which = "B"
+	else:
+		return false
+	if which == "A":
+		door["half_a_on"] = on
+	else:
+		door["half_b_on"] = on
+	if not on:
+		door["split_cycled"] = true
+		door["split_synced"] = false
+	else:
+		door["split_synced"] = bool(door.get("half_a_on", false)) and bool(door.get("half_b_on", false)) and bool(door.get("split_cycled", false))
+	_ff_apply_half_visuals(door)
+	var show_seam: bool = not bool(door.get("split_synced", false)) and not bool(door.get("open", false))
+	_ff_set_seam_amount(door, 1.0 if show_seam else 0.0)
+	_ff_set_coil_phase(door, bool(door.get("split_synced", false)))
+	var hold: bool = String(door.get("ff_state", "")) == "stall" or String(door.get("ff_state", "")) == "deny"
+	_ff_apply_colliders(door, hold)
+	return true
+
+
+## Release dissolve only when both halves are powered and in sync. Otherwise the field stays up.
+func sync_collapse(door_id: String) -> bool:
+	var door: Dictionary = _find_door(door_id)
+	if door.is_empty() or not bool(door.get("split", false)):
+		return false
+	var in_sync: bool = bool(door.get("half_a_on", false)) and bool(door.get("half_b_on", false)) and bool(door.get("split_synced", false))
+	if not in_sync:
+		return false
+	_ff_set_seam_amount(door, 0.0)
+	_ff_set_coil_phase(door, true)
+	_set_door_open_state(door, true)
+	return true
+
+
+func _ff_opening_blocked(door: Dictionary, local_x: float) -> bool:
+	var droot: Node3D = door.get("root") as Node3D
+	if droot == null or not is_instance_valid(droot):
+		return false
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return false
+	var xf: Transform3D = droot.global_transform
+	var origin: Vector3 = Vector3(local_x, FF_OPEN_H * 0.5, 0.0)
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(xf * (origin + Vector3(0.0, 0.0, 0.16)), xf * (origin + Vector3(0.0, 0.0, -0.16)))
+	if _player_body != null:
+		rq.exclude = [_player_body.get_rid()]
+	var hit: Dictionary = space.intersect_ray(rq)
+	var ray_hit: bool = false
+	if not hit.is_empty():
+		var cn: Node = hit.get("collider") as Node
+		ray_hit = cn != null and String(cn.name).contains("FieldCollider")
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = Vector3(0.18, 0.18, 0.12)
+	q.shape = bs
+	q.transform = xf * Transform3D(Basis.IDENTITY, origin)
+	q.collide_with_bodies = true
+	q.collide_with_areas = false
+	if _player_body != null:
+		q.exclude = [_player_body.get_rid()]
+	var shape_hit: bool = false
+	for h: Dictionary in space.intersect_shape(q, 8):
+		var sn: Node = h.get("collider") as Node
+		if sn != null and String(sn.name).contains("FieldCollider"):
+			shape_hit = true
+	return ray_hit and shape_hit
+
+
 func _finish_door_field(door: Dictionary, open_state: bool) -> void:
 	door["dissolve"] = 1.0 if open_state else 0.0
-	var cs: CollisionShape3D = door["field_collider"] as CollisionShape3D
-	if cs != null and is_instance_valid(cs):
-		cs.set_deferred("disabled", open_state)
+	var st: String = String(door.get("ff_state", ""))
+	if st != "stall" and st != "deny":
+		door["ff_state"] = "open" if open_state else "locked"
+		door["strength"] = 1.0
+		_ff_apply_state_textures(door, "ready" if open_state else "locked")
+	_ff_apply_colliders(door, false)
 	_set_door_light(door, open_state)
 
 
@@ -4143,33 +4806,41 @@ func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
 			return
 		door["close_pending"] = false
 	door["open"] = open_target
-	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
-	if m == null:
+	if String(door.get("ff_state", "")) == "stall" or String(door.get("ff_state", "")) == "deny":
+		door["stall_t"] = 0.0
+		door["deny_t"] = 0.0
+		_ff_write_noise_params(door, float(door.get("opacity", FF_DEFAULT_OPACITY)), FF_BASE_STATIC, FF_BASE_JITTER, FF_BASE_ARC, 0.0)
+	door["ff_state"] = "open" if open_target else "locked"
+	door["strength"] = 1.0
+	_ff_apply_state_textures(door, "ready" if open_target else "locked")
+	var mats: Array[ShaderMaterial] = _ff_mats(door)
+	if mats.is_empty():
 		return
-	var old_tw: Variant = door["tween"]
-	if old_tw is Tween and (old_tw as Tween).is_valid():
-		(old_tw as Tween).kill()
+	_ff_kill_tweens(door)
 	var target: float = 1.0 if open_target else 0.0
 	var dur: float = DOOR_DISSOLVE_TIME * absf(target - _door_dissolve(door))
-	var tw: Tween = create_tween()
-	tw.tween_property(m, "shader_parameter/dissolve", target, maxf(dur, 0.001))
-	tw.tween_callback(_finish_door_field.bind(door, open_target))
+	var tw: Tween = create_tween().set_parallel(true)
+	for mat: ShaderMaterial in mats:
+		tw.tween_property(mat, "shader_parameter/dissolve", target, maxf(dur, 0.001))
+	tw.chain().tween_callback(_finish_door_field.bind(door, open_target))
 	door["tween"] = tw
 	_tween_door_light(door, open_target, maxf(dur, 0.001))
 
 
 func _set_door_dissolve_immediate(door: Dictionary, v: float) -> void:
 	# QA/screenshot helper: jump to a dissolve value without tweening.
-	var old_tw: Variant = door["tween"]
-	if old_tw is Tween and (old_tw as Tween).is_valid():
-		(old_tw as Tween).kill()
-	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
-	if m != null:
-		m.set_shader_parameter("dissolve", clampf(v, 0.0, 1.0))
+	_ff_kill_tweens(door)
+	door["stall_t"] = 0.0
+	door["deny_t"] = 0.0
+	door["strength"] = 1.0
+	var clamped: float = clampf(v, 0.0, 1.0)
+	_ff_write_noise_params(door, float(door.get("opacity", FF_DEFAULT_OPACITY)), FF_BASE_STATIC, FF_BASE_JITTER, FF_BASE_ARC, 0.0)
+	_ff_set_dissolve_all(door, clamped)
 	door["close_pending"] = false
-	door["open"] = v >= 0.999
-	_finish_door_field(door, v >= 0.999)
-	door["dissolve"] = v
+	door["open"] = clamped >= 0.999
+	door["ff_state"] = "open" if bool(door["open"]) else "locked"
+	_finish_door_field(door, clamped >= 0.999)
+	door["dissolve"] = clamped
 
 
 ## Public Python-UI hook: per-door field opacity (0..1) + RGBA colour; tints EmitterStrip, EmitterNodes, Conduits to match.
@@ -4178,17 +4849,19 @@ func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
 	if door.is_empty():
 		return false
 	var op: float = clampf(opacity, 0.0, 1.0)
-	var m: ShaderMaterial = door["field_mat"] as ShaderMaterial
-	if m != null:
-		m.set_shader_parameter("opacity", op)
-		m.set_shader_parameter("field_color", color)
+	door["opacity"] = op
+	door["field_color"] = color
+	for mat_sf: ShaderMaterial in _ff_mats(door):
+		mat_sf.set_shader_parameter("field_color", color)
+		if String(door.get("ff_state", "")) != "stall":
+			mat_sf.set_shader_parameter("opacity", op)
+	if bool(door.get("split", false)) and String(door.get("ff_state", "")) != "stall":
+		_ff_apply_half_visuals(door)
 	var emc: Color = Color(color.r, color.g, color.b, 1.0)
 	for em_v: Variant in (door["emit_mats"] as Dictionary).values():
 		var em: StandardMaterial3D = em_v as StandardMaterial3D
 		em.albedo_color = emc
 		em.emission = emc
-	door["opacity"] = op
-	door["field_color"] = color
 	return true
 
 
@@ -4228,6 +4901,10 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 	var door: Dictionary = _scan_target_door(origin)
 	if door.is_empty():
 		return opened_labels
+	if String(door.get("ff_state", "")) == "stall":
+		deny_flicker(String(door["id"]))
+		opened_labels.append("%s (DENIED)" % String(door["id"]))
+		return opened_labels
 	if not bool(door["open"]):
 		_set_door_open_state(door, true)
 		opened_labels.append("%s (OPENED)" % String(door["id"]))
@@ -4241,10 +4918,20 @@ func _scan_rfid_doors(origin: Vector3) -> Array[String]:
 	return opened_labels
 
 
+func _ff_tick_active_stalls(delta: float) -> void:
+	for door: Dictionary in _rfid_doors:
+		if String(door.get("ff_state", "")) == "stall":
+			_ff_tick_stall(door, delta)
+
+
 func _update_rfid_doors(delta: float) -> void:
 	_update_hub_docks()
 	for door: Dictionary in _rfid_doors:
-		door["dissolve"] = _door_dissolve(door)
+		var st: String = String(door.get("ff_state", ""))
+		if st == "deny":
+			_ff_tick_deny(door, delta)
+		elif st != "stall":
+			door["dissolve"] = _door_dissolve(door)
 		if bool(door["close_pending"]):
 			door["close_retry_t"] = float(door["close_retry_t"]) - delta
 			if float(door["close_retry_t"]) <= 0.0:
@@ -4400,8 +5087,98 @@ func _run_forcefield_door_qa() -> void:
 	fill.queue_free()
 	fill2.queue_free()
 	_qa_player_cam()
+	print("[FF-DOOR-QA] Force-Field Doors")
+	var checks_ok: bool = await _qa_forcefield_door_checks(door)
 	print("[FF-DOOR-QA] DONE saved=%d/4" % saved)
-	get_tree().quit(0 if saved == 4 else 1)
+	get_tree().quit(0 if saved == 4 and checks_ok else 1)
+
+
+## Stall keeps the collider on at partial strength, a ray and a shape through the opening stay blocked,
+## and a split field releases only after both halves have cycled back into sync.
+func _qa_forcefield_door_checks(door: Dictionary) -> bool:
+	var ok_all: bool = true
+	var residential_single: bool = true
+	for d: Dictionary in _rfid_doors:
+		if bool(d.get("split", false)):
+			residential_single = false
+	if not _ff_qa_line("residential_not_split", residential_single, "doors=%d" % _rfid_doors.size()):
+		ok_all = false
+
+	var stalled: bool = stall_door("DOOR_RM1B", FF_STALL_TIME)
+	var mat: ShaderMaterial = door.get("field_mat") as ShaderMaterial
+	var op_lo: float = 1000.0
+	var op_hi: float = -1.0
+	var st_lo: float = 1000.0
+	var st_hi: float = -1.0
+	var sample_n: int = 0
+	while sample_n < 4:
+		# Several physics frames apart, so _physics_process runs _ff_tick_stall between reads.
+		for _gap: int in range(4):
+			await get_tree().physics_frame
+		var op_s: float = _ff_shader_float(mat, "opacity", -1.0)
+		var st_s: float = _ff_shader_float(mat, "static_strength", -1.0)
+		op_lo = minf(op_lo, op_s)
+		op_hi = maxf(op_hi, op_s)
+		st_lo = minf(st_lo, st_s)
+		st_hi = maxf(st_hi, st_s)
+		sample_n += 1
+	var strength: float = float(door.get("strength", -1.0))
+	var partial: bool = op_lo > 0.05 and op_hi < FF_DEFAULT_OPACITY * 0.70 and st_lo > 0.50 and absf(strength - FF_STALL_STRENGTH) < 0.021
+	var flickered: bool = (op_hi - op_lo) > 0.0008 or (st_hi - st_lo) > 0.0008
+	var cs: CollisionShape3D = door.get("field_collider") as CollisionShape3D
+	var collider_on: bool = cs != null and is_instance_valid(cs) and not cs.disabled
+	var led: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
+	var amber: bool = led != null and led.emission.is_equal_approx(HUB_AMBER)
+	var stall_ok: bool = stalled and partial and flickered and collider_on and amber and String(door.get("ff_state", "")) == "stall"
+	if not _ff_qa_line("stall_partial_collider_on", stall_ok, "samples=%d strength=%.2f opacity=%.3f..%.3f static=%.3f..%.3f collider_on=%s amber=%s" % [sample_n, strength, op_lo, op_hi, st_lo, st_hi, collider_on, amber]):
+		ok_all = false
+	var blocked: bool = _ff_opening_blocked(door, 0.0)
+	if not _ff_qa_line("stall_ray_shape_blocked", blocked, "ray+shape through opening hit FieldCollider"):
+		ok_all = false
+
+	_ff_surge_from_stall(door)
+	await _qa_frames(2)
+
+	var pre_split: bool = not sync_collapse("DOOR_RM1B")
+	if not _ff_qa_line("sync_before_split_refused", pre_split, "sync_collapse"):
+		ok_all = false
+	var split_on: bool = enable_split_field("DOOR_RM1B")
+	await _qa_frames(3)
+	var pre_cycle: bool = split_on and not sync_collapse("DOOR_RM1B")
+	if not _ff_qa_line("sync_before_cycle_refused", pre_cycle, "split=%s synced=%s" % [split_on, bool(door.get("split_synced", false))]):
+		ok_all = false
+	var dropped: bool = set_split_half("DOOR_RM1B", "A", false)
+	await _qa_frames(2)
+	var mid_sync: bool = dropped and not sync_collapse("DOOR_RM1B")
+	var b_blocks: bool = _ff_opening_blocked(door, 0.25)
+	var a_clear: bool = not _ff_opening_blocked(door, -0.25)
+	if not _ff_qa_line("split_half_holds_until_sync", mid_sync and b_blocks and a_clear, "B_blocked=%s A_clear=%s" % [b_blocks, a_clear]):
+		ok_all = false
+	var raised: bool = set_split_half("DOOR_RM1B", "A", true)
+	var released: bool = raised and sync_collapse("DOOR_RM1B")
+	if not _ff_qa_line("sync_collapse_when_synced", released, "both halves on after a drop"):
+		ok_all = false
+	await get_tree().create_timer(DOOR_DISSOLVE_TIME + 0.25).timeout
+	await _qa_frames(3)
+	var col_a: CollisionShape3D = door.get("col_a") as CollisionShape3D
+	var col_b: CollisionShape3D = door.get("col_b") as CollisionShape3D
+	var halves_off: bool = col_a != null and col_b != null and col_a.disabled and col_b.disabled
+	var dissolved: bool = _door_dissolve(door) >= 0.999 and bool(door.get("open", false))
+	var clear: bool = not _ff_opening_blocked(door, -0.25) and not _ff_opening_blocked(door, 0.25)
+	if not _ff_qa_line("release_after_full_sync", dissolved and halves_off and clear, "dissolve=%.3f open=%s colliders_off=%s" % [_door_dissolve(door), bool(door.get("open", false)), halves_off]):
+		ok_all = false
+	var others: bool = true
+	for d2: Dictionary in _rfid_doors:
+		if String(d2.get("id", "")) != "DOOR_RM1B" and bool(d2.get("split", false)):
+			others = false
+	if not _ff_qa_line("other_doors_not_split", others, "split enabled on DOOR_RM1B only"):
+		ok_all = false
+	return ok_all
+
+
+func _ff_qa_line(nm: String, ok: bool, detail: String) -> bool:
+	print("[FF-DOOR-QA] %s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail])
+	return ok
 
 
 func _qa_t38_check(nm: String, ok: bool, detail: String) -> void:
@@ -4831,7 +5608,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	var collected_ok: bool = _collected_pickup_ids.has("Apt201_ToolWall_BCI_Headband") and int(_inventory["bci"]) == inv_before + 1
 	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_bci=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["bci"])])
 	var live_before: int = int(get_interior_streaming_status()["live_pickups"])
-	var wb: Node = _arch_container.find_child("Apartment_Workbench", true, false)
+	var wb: Node = _lookup_sector_node(_arch_container, "Apartment_Workbench")
 	var wb_retired: bool = wb == null or (wb is Node3D and not (wb as Node3D).visible)
 	_qa_t38_check("qa_ff_02_thresholds", is_equal_approx(INTERIOR_DESPAWN_Z, -14.0) and is_equal_approx(INTERIOR_RESPAWN_Z, -13.0) and INTERIOR_DESPAWN_Z < INTERIOR_RESPAWN_Z,
 		"despawn_z=%.2f respawn_z=%.2f" % [INTERIOR_DESPAWN_Z, INTERIOR_RESPAWN_Z])

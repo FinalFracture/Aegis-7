@@ -319,7 +319,7 @@ _Patch, independent probe, 2026-10-28 (CDT). Godot 4.7.2, xvfb + opengl3, real `
 
 **Verdict:** Cylinder spin-gravity ring at `dfdb323` **PASSES** 360° walk, radial floor lock, jump physics, smooth Coriolis core transit (player & box), post-flip camera/mouse-look, and Apt 201 exit regression. Fix GRAV-01 if player-shoving boxes is required, and GRAV-02 so the 180° lift pad isn't obstructed by the auto-transited test box.
 
-## [t38u] Reticle Centering Fix, Rotating Distant Starfield Cylinder & Normal RFID Sliding Doors
+## [t38u] Reticle Centering Fix, Rotating Distant Starfield Cylinder & Normal RFID Force-Field Doors
 
 > **Note (2026-10-30, Sloane):** Jared confirmed that the D-204 hatch and **all sector doors are force fields**, not sliding or rolling doors. `SectorRFIDSlidingDoors` is to become force fields everywhere. In code this is already done for the 6 portals since [t45u] (`SectorRFIDForceFieldDoors` in `godot/scripts/preface_playable_area.gd`). The "sliding doors" wording in the entries below is historical and kept as-is. Remaining work: `design/force_field_door_godot_changes.md`.
 
@@ -336,7 +336,7 @@ _Run `godot --path godot -- --qa-reticle-stars-doors` (windowed via xvfb 1920×1
    - Rotates smoothly in `_process(delta)` at `STARFIELD_ROT_SPEED = 0.045 rad/s` (~2.58°/s) around the cylinder axis while `CylinderHab7_FullScale_World`, the Residential Sector, and the 360° test ring remain 100% stationary (`hab_dpos = 0.000000`, `hab_drot = 0.000000`).
    - Screenshots: `godot/renders/qa/qa_outer_starfield_rotating_1.png` and `godot/renders/qa/qa_outer_starfield_rotating_2.png` (`741` sky sample pixels changed between captures).
 
-3. **Normal Functional RFID Sliding Doors (`SectorRFIDSlidingDoors`)**:
+3. **Normal Functional RFID Force-Field Doors (`SectorRFIDSlidingDoors`)**:
    - Installed clean double-leaf sliding doors across all 6 Residential Sector portals (`DOOR_APT201`, `DOOR_ALCOVE2C`, `DOOR_APT202`, `DOOR_RM1A`, `DOOR_RM1B`, `DOOR_SECTOR4_EXIT`) with brushed-steel panels, tempered vision windows, `StaticBody3D` + `BoxShape3D` colliders, and amber→green RFID status indicator strips.
    - Pressing `[F]` (or `[E]` at a door) within `4.8 m` triggers the wrist RFID scan, turns the door status strip green (`#3FAF6A`), and smoothly slides both leaves + colliders open (`DOOR_SLIDE_SPEED = 2.0`).
    - Every door verified in automated QA: blocks passage when closed, opens on `[F]` RFID scan (`blend = 1.000`), and allows the player to walk straight through. Screenshot: `godot/renders/qa/qa_rfid_door_closed_vs_opened.png`.

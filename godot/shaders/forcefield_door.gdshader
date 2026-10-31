@@ -22,6 +22,14 @@ uniform float scanline_density = 140.0;
 uniform float scanline_strength : hint_range(0.0, 1.0) = 0.15;
 uniform float jitter_strength : hint_range(0.0, 0.02) = 0.004;
 uniform float glow_energy : hint_range(0.0, 6.0) = 1.2;
+// Optional maps. hint_default_white/black keeps the procedural look identical until GDScript assigns them.
+uniform sampler2D state_albedo : hint_default_white, repeat_enable, filter_linear_mipmap;
+uniform sampler2D state_emission : hint_default_black, repeat_enable, filter_linear_mipmap;
+uniform sampler2D stall_noise_mask : hint_default_black, repeat_enable, filter_linear_mipmap;
+uniform float stall_amount : hint_range(0.0, 1.0) = 0.0;
+uniform sampler2D split_seam_albedo : hint_default_black, repeat_enable, filter_linear_mipmap;
+uniform sampler2D split_seam_emission : hint_default_black, repeat_enable, filter_linear_mipmap;
+uniform float split_seam : hint_range(0.0, 1.0) = 0.0;
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -100,6 +108,28 @@ void fragment() {
 
 	float a = opacity * field_color.a * alive * edge_fade * (0.55 + 0.45 * body * stat * scan) ;
 	a = max(a, alive * clamp((arcs + rim * 0.5) * opacity, 0.0, 1.0));
+
+	// State maps: white albedo and black emission are a no-op, so an unset material matches the procedural field.
+	vec2 tuv = uv * 2.0;
+	col *= texture(state_albedo, tuv).rgb;
+	col += texture(state_emission, tuv).rgb * glow_energy;
+
+	// Stall mask (R blotches, G tear bands, B dropout). Weight is 0 until stall_amount > 0.
+	vec3 smask = texture(stall_noise_mask, uv * 2.0 + vec2(t * 0.02, t * 0.80)).rgb;
+	float tear = texture(stall_noise_mask, vec2(uv.x * 2.0, fract(uv.y + t * 0.80))).g;
+	float drop = step(0.50, smask.b) * step(0.62, hash21(cell + vec2(floor(t * 12.0), 3.0)));
+	float stall_mod = clamp(smask.r * 0.5 + 0.55, 0.35, 1.0) * mix(0.55, 1.0, tear) * mix(1.0, 0.25, drop);
+	float stall_flick = mix(1.0, stall_mod, stall_amount);
+	col *= stall_flick;
+	a = mix(a, max(a * stall_flick, 0.15), stall_amount);
+
+	// Split seam: a narrow strip at UV.x = 0.5 (the A/B join when halves keep full-opening UVs).
+	float seam_w = (1.0 - smoothstep(0.0, 0.08, abs(uv.x - 0.5))) * split_seam;
+	vec2 seam_uv = vec2(fract(uv.y * 2.0 - t * 0.4), 0.5);
+	vec3 seam_col = texture(split_seam_albedo, seam_uv).rgb + texture(split_seam_emission, seam_uv).rgb;
+	col += seam_col * seam_w * glow_energy * 2.0;
+	a = max(a, seam_w * 0.90);
+
 	ALBEDO = col;
 	ALPHA = clamp(a, 0.0, 1.0);
 }
