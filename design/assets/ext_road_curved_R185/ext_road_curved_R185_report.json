@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_road_curved_R185_01",
+  "style": "Slate_Carriageway",
+  "tris": 200,
+  "budget_ok": true,
+  "size": [
+   4.994,
+   0.078,
+   5.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_road_curved_R185/ext_road_curved_R185_01.glb"
+ },
+ {
+  "cand": "ext_road_curved_R185_02",
+  "style": "Pearl_Pavers_Gutters",
+  "tris": 200,
+  "budget_ok": true,
+  "size": [
+   4.994,
+   0.074,
+   5.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_road_curved_R185/ext_road_curved_R185_02.glb"
+ },
+ {
+  "cand": "ext_road_curved_R185_03",
+  "style": "Cart_Track",
+  "tris": 200,
+  "budget_ok": true,
+  "size": [
+   4.994,
+   0.078,
+   5.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_road_curved_R185/ext_road_curved_R185_03.glb"
+ },
+ {
+  "cand": "ext_road_curved_R185_04",
+  "style": "Shared_Street_Crossing",
+  "tris": 200,
+  "budget_ok": true,
+  "size": [
+   4.994,
+   0.078,
+   5.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_road_curved_R185/ext_road_curved_R185_04.glb"
+ },
+ {
+  "cand": "ext_road_curved_R185_05",
+  "style": "Drain_Crown",
+  "tris": 182,
+  "budget_ok": true,
+  "size": [
+   4.994,
+   0.094,
+   5.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_road_curved_R185/ext_road_curved_R185_05.glb"
+ }
+]
