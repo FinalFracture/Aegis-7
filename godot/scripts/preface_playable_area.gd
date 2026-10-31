@@ -84,6 +84,15 @@ const EXT_TS4_Z := 0.0
 const EXT_TS4_RADIUS := 1.5
 const EXT_RENDER_SETTLE_FRAMES := 30
 const EXT_RENDER_HOLD_FRAMES := 10
+const EXT_KIND_GROUND := 0
+const EXT_KIND_SOLID := 1
+const EXT_KIND_CAR := 2
+const EXT_KIND_DECAL := 3
+const EXT_SNAP_FROM := 3.0
+const EXT_SNAP_DEPTH := 12.0
+const EXT_CORNER_INSET := 0.05
+const EXT_DECAL_LIFT := 0.005
+const EXT_TS4_FOOTPRINT_MAX := 4.05
 
 const CAMERAS := [
 	{"name": "cam_01_top_floor_apartment_open_portal", "pos": Vector3(-6.55, 5.72, 4.85), "target": Vector3(-10.45, 5.05, 6.35), "fov": 58.0, "fp_wrist": true},
@@ -274,6 +283,9 @@ var _ext_shot: int = 0
 var _ext_shot_frames: int = -1
 var _ext_scene_cache: Dictionary = {}
 var _ext_shape_cache: Dictionary = {}
+## placement_assert_exterior.gd waits on this signal and the exterior_spawned meta flag.
+signal exterior_spawned
+var hidden_ts4: int = 0
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
 var _qa_ff_door: bool = false
@@ -496,15 +508,22 @@ func _run_qa_nav_reach() -> void:
 	var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
 	var map := RID()
 	var ready := false
+	# Region is already in the tree. Wait until the map has synced, then at least 3 physics frames
+	# so door links (enabled only while the field is open) are on the region's map.
 	for _i: int in 180:
 		await get_tree().physics_frame
-		if region != null:
+		if region != null and is_instance_valid(region):
 			map = region.get_navigation_map()
 		if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0:
-			await get_tree().physics_frame
-			await get_tree().physics_frame
 			ready = true
 			break
+	if ready:
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+		if region != null and is_instance_valid(region):
+			map = region.get_navigation_map()
+	_print_nav_qa_stats(region)
 	var total := _interactables.size()
 	var reachable := 0
 	var failures := 0
@@ -515,7 +534,7 @@ func _run_qa_nav_reach() -> void:
 		print("[NAV-QA] DONE reachable=0/%d failures=%d" % [total, failures])
 		get_tree().quit(1)
 		return
-	var spawn := Vector3(-9.35, 4.25, 6.20)
+	var spawn := NavigationServer3D.map_get_closest_point(map, Vector3(-9.35, 4.25, 6.20))
 	for it: Dictionary in _interactables:
 		var id := _nav_qa_id(it)
 		var node := it.get("node") as Node3D
@@ -537,6 +556,67 @@ func _run_qa_nav_reach() -> void:
 			print("[NAV-QA] FAIL %s closest_dist=%.2f path_end_dist=%.2f path_pts=%d" % [id, closest_dist, end_dist, path.size()])
 	print("[NAV-QA] DONE reachable=%d/%d failures=%d" % [reachable, total, failures])
 	get_tree().quit(0 if failures == 0 else 1)
+
+
+func _print_nav_qa_stats(region: NavigationRegion3D) -> void:
+	var polygons := 0
+	var vertices := 0
+	var islands := 0
+	if region != null and is_instance_valid(region) and region.navigation_mesh != null:
+		var mesh := region.navigation_mesh
+		polygons = mesh.get_polygon_count()
+		vertices = mesh.get_vertices().size()
+		islands = _nav_island_count(mesh)
+	print("[NAV-QA] polygons=%d vertices=%d islands=%d" % [polygons, vertices, islands])
+
+
+func _nav_island_count(mesh: NavigationMesh) -> int:
+	var n := mesh.get_polygon_count()
+	if n == 0:
+		return 0
+	var verts := mesh.get_vertices()
+	var parent: Array[int] = []
+	parent.resize(n)
+	for i: int in n:
+		parent[i] = i
+	var buckets: Dictionary = {}
+	for pi: int in n:
+		var poly := mesh.get_polygon(pi)
+		for k: int in poly.size():
+			var p: Vector3 = verts[poly[k]]
+			var key := Vector3i(int(round(p.x / 0.05)), int(round(p.y / 0.05)), int(round(p.z / 0.05)))
+			if buckets.has(key):
+				_nav_uf_union(parent, pi, int(buckets[key]))
+			else:
+				buckets[key] = pi
+			for ox: int in range(-1, 2):
+				for oy: int in range(-1, 2):
+					for oz: int in range(-1, 2):
+						var nk := Vector3i(key.x + ox, key.y + oy, key.z + oz)
+						if buckets.has(nk):
+							_nav_uf_union(parent, pi, int(buckets[nk]))
+	var roots: Dictionary = {}
+	for i2: int in n:
+		roots[_nav_uf_find(parent, i2)] = true
+	return roots.size()
+
+
+func _nav_uf_find(parent: Array[int], i: int) -> int:
+	var root := i
+	while parent[root] != root:
+		root = parent[root]
+	while parent[i] != root:
+		var nxt := parent[i]
+		parent[i] = root
+		i = nxt
+	return root
+
+
+func _nav_uf_union(parent: Array[int], a: int, b: int) -> void:
+	var ra := _nav_uf_find(parent, a)
+	var rb := _nav_uf_find(parent, b)
+	if ra != rb:
+		parent[rb] = ra
 
 
 func _ensure_child(nm: String) -> Node3D:
@@ -6231,7 +6311,7 @@ func _ext_is_solid(asset: String) -> bool:
 	var base: String = _ext_base(asset)
 	if base.begins_with("ext_paving_") or base.begins_with("ext_curb_"):
 		return true
-	return base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_tram_platform_kerb" or base == "ext_maglev_guideway" or base == "ext_canal_edge" or base == "ext_tram_shelter" or base == "ext_maglev_car_body" or base == "hydro_planter_tiered_exterior"
+	return base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_tram_platform_kerb" or base == "ext_maglev_guideway" or base == "ext_canal_edge" or base == "ext_tram_shelter" or base == "ext_maglev_car_body" or base == "ext_maglev_magnet_module" or base == "hydro_planter_tiered_exterior"
 
 
 func _ext_packed_scene(asset: String) -> PackedScene:
@@ -6330,52 +6410,261 @@ func _ext_disable_collision_shapes(root: Node) -> void:
 			stack.append(ch)
 
 
-func _ext_hide_middle_west_ts4(ext_root: Node) -> int:
-	# #49 replaces the middle west TS-4. Do not walk the placements we just spawned:
-	# their names include ext_ts4_* and they sit on the same pivot.
-	var hidden: int = 0
-	var r2: float = EXT_TS4_RADIUS * EXT_TS4_RADIUS
+func _ext_spawn_kind(asset: String) -> int:
+	if _ext_is_surface_sticker(asset):
+		return EXT_KIND_DECAL
+	var base: String = _ext_base(asset)
+	if base == "ext_maglev_car_body":
+		return EXT_KIND_CAR
+	if base.begins_with("ext_paving_") or base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_canal_edge" or base == "ext_maglev_guideway":
+		return EXT_KIND_GROUND
+	return EXT_KIND_SOLID
+
+
+func _ext_mark_spawned(spawned: int, hidden: int) -> void:
+	hidden_ts4 = hidden
+	set_meta("hidden_ts4", hidden)
+	set_meta("exterior_spawned", true)
+	print("[EXT] spawned=%d hidden_ts4=%d" % [spawned, hidden])
+	exterior_spawned.emit()
+
+
+func _ext_has_collision_relation(mi: Node) -> bool:
+	var p: Node = mi.get_parent()
+	while p != null:
+		if p is CollisionObject3D:
+			return true
+		p = p.get_parent()
+	var stack: Array[Node] = []
+	for ch: Node in mi.get_children():
+		stack.append(ch)
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is CollisionObject3D or n is CollisionShape3D:
+			return true
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	return false
+
+
+func _ext_ground_mesh_ok(mi: MeshInstance3D) -> bool:
+	if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
+		return false
+	if _ext_has_collision_relation(mi):
+		return false
+	var aabb: AABB = mi.global_transform * mi.get_aabb()
+	var top: float = aabb.position.y + aabb.size.y
+	if top < -0.5 or top > 0.6:
+		return false
+	if aabb.size.y > 0.8:
+		return false
+	if aabb.size.x < 1.5 and aabb.size.z < 1.5:
+		return false
+	var centre: Vector3 = aabb.get_center()
+	# Exterior only: promenade (z < -8.5) or the side walks (|x| > 15).
+	if centre.z >= -8.5 and absf(centre.x) <= 15.0:
+		return false
+	return true
+
+
+func _ext_add_ground_colliders() -> int:
+	var meshes: Array[MeshInstance3D] = []
 	var stack: Array[Node] = [self]
 	while not stack.is_empty():
 		var n: Node = stack.pop_back()
-		if n == ext_root or n.is_in_group("exterior_placement"):
-			continue
-		if n != self and n is Node3D:
-			var lname: String = String(n.name).to_lower()
-			if lname.contains("ts4") or lname.contains("ts_4"):
-				var gp: Vector3 = (n as Node3D).global_position
-				var dx: float = gp.x - EXT_TS4_X
-				var dz: float = gp.z - EXT_TS4_Z
-				if dx * dx + dz * dz <= r2:
-					(n as Node3D).visible = false
-					_ext_disable_collision_shapes(n)
-					hidden += 1
+		if n is MeshInstance3D:
+			meshes.append(n as MeshInstance3D)
 		for ch: Node in n.get_children():
 			stack.append(ch)
-	return hidden
+	var count: int = 0
+	for mi: MeshInstance3D in meshes:
+		if not _ext_ground_mesh_ok(mi):
+			continue
+		var shape: ConcavePolygonShape3D = mi.mesh.create_trimesh_shape()
+		if shape == null:
+			continue
+		shape.margin = 0.0
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = "ExtGroundCol"
+		body.add_to_group("ext_ground_col")
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = "ExtGroundShape"
+		cs.shape = shape
+		body.add_child(cs)
+		mi.add_child(body)
+		count += 1
+	return count
 
 
-func _spawn_exterior_placements() -> void:
-	var root: Node3D = Node3D.new()
-	root.name = "ExteriorPlacements_v1_3"
-	add_child(root)
-	var spawned: int = 0
+func _ext_merged_aabb(root_n: Node3D) -> Dictionary:
+	var merged: AABB = AABB()
+	var any: bool = false
+	var stack: Array[Node] = [root_n]
+	while not stack.is_empty():
+		var curr: Node = stack.pop_back()
+		if curr is MeshInstance3D:
+			var mi: MeshInstance3D = curr as MeshInstance3D
+			if mi.mesh != null:
+				var bb: AABB = mi.global_transform * mi.get_aabb()
+				if any:
+					merged = merged.merge(bb)
+				else:
+					merged = bb
+					any = true
+		for ch: Node in curr.get_children():
+			stack.append(ch)
+	return {"ok": any, "aabb": merged}
+
+
+func _ext_collision_rids(root_n: Node) -> Array[RID]:
+	var rids: Array[RID] = []
+	var stack: Array[Node] = [root_n]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is CollisionObject3D:
+			rids.append((n as CollisionObject3D).get_rid())
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	return rids
+
+
+func _ext_snap_exclude(inst: Node3D, kind: int, ext_root: Node) -> Array[RID]:
+	var exclude: Array[RID] = []
+	var asset: String = String(inst.get_meta("ext_asset", ""))
+	if kind == EXT_KIND_GROUND:
+		return _ext_collision_rids(ext_root)
+	for ch: Node in ext_root.get_children():
+		if not (ch is Node3D):
+			continue
+		var ch_asset: String = String(ch.get_meta("ext_asset", ""))
+		var ch_kind: int = _ext_spawn_kind(ch_asset)
+		if ch == inst:
+			exclude.append_array(_ext_collision_rids(ch))
+			continue
+		if kind == EXT_KIND_DECAL:
+			# Track scuffs rest on the guideway. The car and magnet are stacked above it.
+			if asset.to_lower().contains("scuff") and (ch_kind == EXT_KIND_CAR or _ext_base(ch_asset) == "ext_maglev_magnet_module"):
+				exclude.append_array(_ext_collision_rids(ch))
+			continue
+		if ch_kind == EXT_KIND_GROUND or ch_kind == EXT_KIND_DECAL:
+			continue
+		# Cars keep magnet modules (and the guideway, which is ground-like).
+		if kind == EXT_KIND_CAR and _ext_base(ch_asset) == "ext_maglev_magnet_module":
+			continue
+		exclude.append_array(_ext_collision_rids(ch))
+	return exclude
+
+
+func _ext_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to)
+	rq.exclude = exclude
+	rq.collide_with_bodies = true
+	rq.collide_with_areas = false
+	rq.hit_from_inside = false
+	return space.intersect_ray(rq)
+
+
+func _ext_max_hit_y(inst: Node3D, aabb: AABB, exclude: Array[RID]) -> Dictionary:
+	var world: World3D = inst.get_world_3d()
+	if world == null:
+		return {"ok": false, "y": 0.0}
+	var space: PhysicsDirectSpaceState3D = world.direct_space_state
+	if space == null:
+		return {"ok": false, "y": 0.0}
+	var start_y: float = inst.global_position.y + EXT_SNAP_FROM
+	var end_y: float = inst.global_position.y - EXT_SNAP_DEPTH
+	var pts: Array[Vector2] = []
+	var centre: Vector3 = aabb.get_center()
+	pts.append(Vector2(centre.x, centre.z))
+	var inset_x: float = minf(EXT_CORNER_INSET, maxf(aabb.size.x * 0.49, 0.0))
+	var inset_z: float = minf(EXT_CORNER_INSET, maxf(aabb.size.z * 0.49, 0.0))
+	var x0: float = aabb.position.x + inset_x
+	var x1: float = aabb.position.x + aabb.size.x - inset_x
+	var z0: float = aabb.position.z + inset_z
+	var z1: float = aabb.position.z + aabb.size.z - inset_z
+	pts.append(Vector2(x0, z0))
+	pts.append(Vector2(x1, z0))
+	pts.append(Vector2(x0, z1))
+	pts.append(Vector2(x1, z1))
+	var best: float = -INF
+	var any: bool = false
+	for p: Vector2 in pts:
+		var hit: Dictionary = _ext_ray(space, Vector3(p.x, start_y, p.y), Vector3(p.x, end_y, p.y), exclude)
+		if hit.is_empty():
+			continue
+		var hy: float = (hit["position"] as Vector3).y
+		if not any or hy > best:
+			best = hy
+			any = true
+	if not any:
+		return {"ok": false, "y": 0.0}
+	return {"ok": true, "y": best}
+
+
+func _ext_magnet_top_for_car(car_aabb: AABB, ext_root: Node) -> Dictionary:
+	var c: Vector3 = car_aabb.get_center()
+	var best_d: float = INF
+	var best_y: float = 0.0
+	var any: bool = false
+	for ch: Node in ext_root.get_children():
+		if not (ch is Node3D):
+			continue
+		if _ext_base(String(ch.get_meta("ext_asset", ""))) != "ext_maglev_magnet_module":
+			continue
+		var merged: Dictionary = _ext_merged_aabb(ch as Node3D)
+		if not bool(merged["ok"]):
+			continue
+		var bb: AABB = merged["aabb"] as AABB
+		var mc: Vector3 = bb.get_center()
+		var d: float = Vector2(c.x, c.z).distance_to(Vector2(mc.x, mc.z))
+		if d < best_d:
+			best_d = d
+			best_y = bb.position.y + bb.size.y
+			any = true
+	if not any or best_d > 2.0:
+		return {"ok": false, "y": 0.0}
+	return {"ok": true, "y": best_y}
+
+
+func _ext_snap_instance(inst: Node3D, kind: int, ext_root: Node) -> void:
+	var merged: Dictionary = _ext_merged_aabb(inst)
+	var asset: String = String(inst.get_meta("ext_asset", ""))
+	var eid: int = int(inst.get_meta("ext_id", -1))
+	if not bool(merged["ok"]):
+		push_warning("[EXT] no ground under id=%s asset=%s (empty aabb)" % [str(eid), asset])
+		return
+	var aabb: AABB = merged["aabb"] as AABB
+	var hit: Dictionary = _ext_max_hit_y(inst, aabb, _ext_snap_exclude(inst, kind, ext_root))
+	# Plan stack: car body bottom rests on its magnet module top.
+	if kind == EXT_KIND_CAR:
+		var mag: Dictionary = _ext_magnet_top_for_car(aabb, ext_root)
+		if bool(mag["ok"]):
+			hit = {"ok": true, "y": float(mag["y"])}
+	if not bool(hit["ok"]):
+		push_warning("[EXT] no ground under id=%s asset=%s" % [str(eid), asset])
+		return
+	var lift: float = EXT_DECAL_LIFT if kind == EXT_KIND_DECAL else 0.0
+	var target: float = float(hit["y"]) + lift
+	if kind == EXT_KIND_DECAL and target < float(hit["y"]):
+		target = float(hit["y"])
+	var bottom: float = aabb.position.y
+	inst.global_position.y += target - bottom
+
+
+func _ext_fill_buckets(buckets: Array) -> bool:
 	var fa: FileAccess = FileAccess.open(EXT_PLACEMENTS_PATH, FileAccess.READ)
 	if fa == null:
 		push_warning("[EXT] cannot open %s" % EXT_PLACEMENTS_PATH)
-		print("[EXT] spawned=0 hidden_ts4=0")
-		return
+		return false
 	var parsed: Variant = JSON.parse_string(fa.get_as_text())
 	fa.close()
 	if parsed == null or not (parsed is Dictionary):
 		push_warning("[EXT] %s did not parse" % EXT_PLACEMENTS_PATH)
-		print("[EXT] spawned=0 hidden_ts4=0")
-		return
+		return false
 	var raw: Variant = (parsed as Dictionary).get("placements", [])
 	if not (raw is Array):
 		push_warning("[EXT] %s has no placements array" % EXT_PLACEMENTS_PATH)
-		print("[EXT] spawned=0 hidden_ts4=0")
-		return
+		return false
 	var placements: Array = raw as Array
 	for i: int in range(placements.size()):
 		var item: Variant = placements[i]
@@ -6387,33 +6676,198 @@ func _spawn_exterior_placements() -> void:
 		if asset == "":
 			push_warning("[EXT] skip index %d (empty asset)" % i)
 			continue
-		var packed: PackedScene = _ext_packed_scene(asset)
-		if packed == null:
+		entry["_i"] = i
+		var kind: int = _ext_spawn_kind(asset)
+		var bucket: Array = buckets[kind]
+		bucket.append(entry)
+		buckets[kind] = bucket
+	return true
+
+
+func _ext_spawn_one(entry: Dictionary, root: Node3D) -> bool:
+	var asset: String = String(entry.get("asset", ""))
+	var packed: PackedScene = _ext_packed_scene(asset)
+	if packed == null:
+		return false
+	var inst_n: Node = packed.instantiate()
+	if inst_n == null or not (inst_n is Node3D):
+		if inst_n != null:
+			inst_n.free()
+		push_warning("[EXT] %s did not instance a Node3D" % asset)
+		return false
+	var inst: Node3D = inst_n as Node3D
+	var eid: int = int(entry.get("id", -1))
+	var idx: int = int(entry.get("_i", 0))
+	inst.name = "Ext_%d_%s_%d" % [eid, _ext_base(asset), idx]
+	inst.position = Vector3(float(entry.get("x", 0.0)), float(entry.get("y", 0.0)), float(entry.get("z", 0.0)))
+	var euler: Vector3 = inst.rotation_degrees
+	euler.y = float(entry.get("rot_deg", 0.0))
+	inst.rotation_degrees = euler
+	inst.set_meta("ext_id", eid)
+	inst.set_meta("ext_asset", asset)
+	inst.add_to_group("exterior_placement")
+	var kind: int = _ext_spawn_kind(asset)
+	if kind == EXT_KIND_DECAL:
+		_set_tree_cast_shadow(inst, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	elif _ext_is_solid(asset):
+		_ext_add_solid_collision(inst, asset)
+	root.add_child(inst)
+	_ext_snap_instance(inst, kind, root)
+	return true
+
+
+func _ext_skip_ts4_branch(n: Node, ext_root: Node) -> bool:
+	if n == ext_root or n == _player_body or n == _actors_container or n == _props_container or n == _lights_container:
+		return true
+	if String(n.name).begins_with("Ext_"):
+		return true
+	if n.is_in_group("exterior_placement"):
+		return true
+	return false
+
+
+func _ext_aabb_is_ts4_standin(aabb: AABB) -> bool:
+	# Middle-west planter/tree: taller than 1 m, footprint about 4 m, centred on (-16.6, 0).
+	if aabb.size.y <= 1.0:
+		return false
+	if maxf(aabb.size.x, aabb.size.z) > EXT_TS4_FOOTPRINT_MAX:
+		return false
+	var c: Vector3 = aabb.get_center()
+	var dx: float = c.x - EXT_TS4_X
+	var dz: float = c.z - EXT_TS4_Z
+	return dx * dx + dz * dz <= EXT_TS4_RADIUS * EXT_TS4_RADIUS
+
+
+func _ext_hide_ts4_node(n: Node) -> void:
+	if n is Node3D:
+		(n as Node3D).visible = false
+	_ext_disable_collision_shapes(n)
+
+
+func _ext_hide_middle_west_ts4(ext_root: Node) -> int:
+	# #49 replaces the middle west TS-4. Do not walk the placements we just spawned:
+	# their names include ext_ts4_* and they sit on the same pivot.
+	var hidden: int = 0
+	var r2: float = EXT_TS4_RADIUS * EXT_TS4_RADIUS
+	var stack: Array[Node] = [self]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if _ext_skip_ts4_branch(n, ext_root):
 			continue
-		var inst_n: Node = packed.instantiate()
-		if inst_n == null or not (inst_n is Node3D):
-			if inst_n != null:
-				inst_n.free()
-			push_warning("[EXT] %s did not instance a Node3D" % asset)
+		if n != self and n is Node3D:
+			var lname: String = String(n.name).to_lower()
+			if lname.contains("ts4") or lname.contains("ts_4"):
+				var gp: Vector3 = (n as Node3D).global_position
+				var dx: float = gp.x - EXT_TS4_X
+				var dz: float = gp.z - EXT_TS4_Z
+				if dx * dx + dz * dz <= r2:
+					_ext_hide_ts4_node(n)
+					hidden += 1
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	if hidden > 0:
+		return hidden
+	# No TS-4 name in range. Hide visuals whose bounds look like that planter/tree.
+	var near: Array[MeshInstance3D] = []
+	stack = [self]
+	while not stack.is_empty():
+		var n2: Node = stack.pop_back()
+		if _ext_skip_ts4_branch(n2, ext_root):
 			continue
-		var inst: Node3D = inst_n as Node3D
-		var eid: int = int(entry.get("id", -1))
-		inst.name = "Ext_%d_%s_%d" % [eid, _ext_base(asset), i]
-		inst.position = Vector3(float(entry.get("x", 0.0)), float(entry.get("y", 0.0)), float(entry.get("z", 0.0)))
-		var euler: Vector3 = inst.rotation_degrees
-		euler.y = float(entry.get("rot_deg", 0.0))
-		inst.rotation_degrees = euler
-		inst.set_meta("ext_id", eid)
-		inst.set_meta("ext_asset", asset)
-		inst.add_to_group("exterior_placement")
-		if _ext_is_surface_sticker(asset):
-			_set_tree_cast_shadow(inst, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
-		elif _ext_is_solid(asset):
-			_ext_add_solid_collision(inst, asset)
-		root.add_child(inst)
-		spawned += 1
+		if n2 is MeshInstance3D and (n2 as MeshInstance3D).mesh != null:
+			var mi: MeshInstance3D = n2 as MeshInstance3D
+			var bb: AABB = mi.global_transform * mi.get_aabb()
+			if _ext_aabb_is_ts4_standin(bb):
+				_ext_hide_ts4_node(mi)
+				hidden += 1
+			else:
+				var mc: Vector3 = bb.get_center()
+				var mdx: float = mc.x - EXT_TS4_X
+				var mdz: float = mc.z - EXT_TS4_Z
+				if mdx * mdx + mdz * mdz <= r2:
+					near.append(mi)
+		elif n2 is CollisionObject3D and not (n2 is CharacterBody3D) and not n2.is_in_group("ext_ground_col"):
+			var body: CollisionObject3D = n2 as CollisionObject3D
+			var origin: Vector3 = body.global_position
+			var odx: float = origin.x - EXT_TS4_X
+			var odz: float = origin.z - EXT_TS4_Z
+			if odx * odx + odz * odz <= r2 and _ext_collision_standin(body):
+				_ext_hide_ts4_node(body)
+				hidden += 1
+		for ch2: Node in n2.get_children():
+			stack.append(ch2)
+	if hidden > 0:
+		# Hide the shorter pieces of the same planter (pot, foliage) centred on the spot.
+		for piece: MeshInstance3D in near:
+			var pb: AABB = piece.global_transform * piece.get_aabb()
+			if pb.size.y > 0.3 and maxf(pb.size.x, pb.size.z) <= EXT_TS4_FOOTPRINT_MAX:
+				_ext_hide_ts4_node(piece)
+				hidden += 1
+		return hidden
+	if near.is_empty():
+		return hidden
+	# Split planter: no single mesh is tall enough, but the pieces centred on the spot are.
+	var merged: AABB = AABB()
+	var any_near: bool = false
+	for piece: MeshInstance3D in near:
+		var pb: AABB = piece.global_transform * piece.get_aabb()
+		if any_near:
+			merged = merged.merge(pb)
+		else:
+			merged = pb
+			any_near = true
+	if any_near and _ext_aabb_is_ts4_standin(merged):
+		for piece2: MeshInstance3D in near:
+			_ext_hide_ts4_node(piece2)
+			hidden += 1
+	return hidden
+
+
+func _ext_collision_standin(body: CollisionObject3D) -> bool:
+	var merged: AABB = AABB()
+	var any: bool = false
+	for ch: Node in body.get_children():
+		if not (ch is CollisionShape3D):
+			continue
+		var cs: CollisionShape3D = ch as CollisionShape3D
+		if cs.shape == null:
+			continue
+		var dbg: ArrayMesh = cs.shape.get_debug_mesh()
+		if dbg == null:
+			continue
+		var bb: AABB = cs.global_transform * dbg.get_aabb()
+		if any:
+			merged = merged.merge(bb)
+		else:
+			merged = bb
+			any = true
+	return any and _ext_aabb_is_ts4_standin(merged)
+
+
+func _spawn_exterior_placements() -> void:
+	var n_ground: int = _ext_add_ground_colliders()
+	print("[EXT] ground_colliders=%d" % n_ground)
+	await get_tree().physics_frame
+	var root: Node3D = Node3D.new()
+	root.name = "ExteriorPlacements_v1_3"
+	add_child(root)
+	# Ground-like, then solids, then cars (on magnets), then decals. A physics frame between
+	# groups lets the next group snap onto colliders from the previous one.
+	var buckets: Array = [[], [], [], []]
+	var spawned: int = 0
+	if not _ext_fill_buckets(buckets):
+		var hidden_fail: int = _ext_hide_middle_west_ts4(root)
+		_ext_mark_spawned(0, hidden_fail)
+		return
+	var order: Array[int] = [EXT_KIND_GROUND, EXT_KIND_SOLID, EXT_KIND_CAR, EXT_KIND_DECAL]
+	for kind: int in order:
+		var batch: Array = buckets[kind]
+		for item: Variant in batch:
+			if item is Dictionary and _ext_spawn_one(item as Dictionary, root):
+				spawned += 1
+		await get_tree().physics_frame
 	var hidden: int = _ext_hide_middle_west_ts4(root)
-	print("[EXT] spawned=%d hidden_ts4=%d" % [spawned, hidden])
+	_ext_mark_spawned(spawned, hidden)
 
 
 func _process_qa_exterior_render() -> void:

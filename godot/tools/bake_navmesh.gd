@@ -5,7 +5,9 @@ extends SceneTree
 ## --qa-placement is a user arg so preface_playable_area keeps interior streaming off.
 ## The scene skips PlayableNavRegion while this script is on the command line.
 ## Force-field door fields are excluded so doorways stay open in the mesh.
-## Furniture tops, the roof slab, and geometry outside x -50..60 are excluded.
+## Baking AABB is x -50..60, y -1..12, z -60..40 (apartments near y 4.25, and the hatch).
+## Furniture and roof are name/group exclusions of that node's own colliders, not floors.
+## Polygons with any vertex x > 100 (gravity ring) are dropped after the bake.
 ## Exit 0 when the baked mesh has at least one polygon, else 1.
 
 const SCENE_PATH := "res://scenes/preface/preface_playable_area.tscn"
@@ -60,15 +62,15 @@ func _bake() -> void:
 	navmesh.cell_size = 0.1
 	navmesh.cell_height = 0.05
 	navmesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
-	# Residential playable only. x -50..60 drops the gravity-ring islands at x 143..157.
-	# y tops out at 7.2 so the roof slab at y 8.95 is outside the bake.
-	navmesh.filter_baking_aabb = AABB(Vector3(-50.0, -1.0, -50.0), Vector3(110.0, 8.2, 70.0))
+	# x -50..60, y -1..12, z -60..40. Tall enough for the apartments (y ~4.25) and the hatch.
+	# Do not clip y at 7.2: that rejected interior meshes that also reach the roof.
+	navmesh.filter_baking_aabb = AABB(Vector3(-50.0, -1.0, -60.0), Vector3(110.0, 13.0, 100.0))
 	_exclude_force_field_doors()
 	_exclude_furniture_and_roof()
 	var source := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(navmesh, source, _scene)
 	NavigationServer3D.bake_from_source_geometry_data(navmesh, source)
-	_drop_stray_flat_islands(navmesh)
+	_drop_far_x_polygons(navmesh)
 	_compact_navmesh(navmesh)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/nav"))
 	var err := ResourceSaver.save(navmesh, NAV_PATH)
@@ -110,16 +112,33 @@ func _disable_field_shape(cs: CollisionShape3D) -> void:
 
 
 func _exclude_furniture_and_roof() -> void:
+	# Name or group on this node only. Do not strip a parent and take the floors with it.
 	if _scene == null:
 		return
 	var stack: Array[Node] = [_scene]
 	while not stack.is_empty():
 		var n: Node = stack.pop_back()
-		if _is_furniture_or_roof(n):
-			_strip_collision_under(n)
-			continue
+		if _is_furniture_or_roof(n) and not _is_walkable_floor_name(n):
+			if n is CollisionObject3D:
+				_drop_collision_node(n)
+				continue
+			_drop_direct_collision_children(n)
 		for ch: Node in n.get_children():
 			stack.append(ch)
+
+
+func _is_walkable_floor_name(n: Node) -> bool:
+	var nm := String(n.name).to_lower()
+	return nm.contains("floor") or nm.contains("deck") or nm.contains("promenade") or nm.contains("stair") or nm.contains("walkway") or nm.contains("ground")
+
+
+func _drop_direct_collision_children(n: Node) -> void:
+	var cols: Array[Node] = []
+	for ch: Node in n.get_children():
+		if ch is CollisionObject3D or ch is CollisionShape3D:
+			cols.append(ch)
+	for c: Node in cols:
+		_drop_collision_node(c)
 
 
 func _is_furniture_or_roof(n: Node) -> bool:
@@ -130,19 +149,6 @@ func _is_furniture_or_roof(n: Node) -> bool:
 		if nm.contains(bit):
 			return true
 	return false
-
-
-func _strip_collision_under(root: Node) -> void:
-	var bodies: Array[Node] = []
-	var stack: Array[Node] = [root]
-	while not stack.is_empty():
-		var n: Node = stack.pop_back()
-		if n is CollisionObject3D or n is CollisionShape3D:
-			bodies.append(n)
-		for ch: Node in n.get_children():
-			stack.append(ch)
-	for b: Node in bodies:
-		_drop_collision_node(b)
 
 
 func _drop_collision_node(n: Node) -> void:
@@ -163,56 +169,27 @@ func _drop_collision_node(n: Node) -> void:
 		parent.remove_child(n)
 
 
-func _is_stray_nav_y(y: float) -> bool:
-	# Flat islands on furniture tops (~0.8, ~1.65, ~5.1 above the floors) and the roof slab.
-	if absf(y - 0.80) <= 0.20:
-		return true
-	if absf(y - 1.65) <= 0.20:
-		return true
-	if absf(y - 5.10) <= 0.20:
-		return true
-	if absf(y - 8.95) <= 0.30:
-		return true
-	return false
-
-
-func _drop_stray_flat_islands(navmesh: NavigationMesh) -> void:
+func _drop_far_x_polygons(navmesh: NavigationMesh) -> void:
+	# Gravity-ring islands sit around x 143..157. Drop any polygon that reaches past x 100.
 	var n := navmesh.get_polygon_count()
 	if n == 0:
 		return
 	var verts := navmesh.get_vertices()
-	var parent := _polygon_parents(navmesh)
-	var groups: Dictionary = {}
-	for i: int in n:
-		var root := _uf_find(parent, i)
-		var bucket: Array = groups.get(root, [])
-		bucket.append(i)
-		groups[root] = bucket
-	var drop: Dictionary = {}
-	for key: Variant in groups.keys():
-		var polys: Array = groups[key]
-		var ymin := INF
-		var ymax := -INF
-		var ysum := 0.0
-		var yc := 0
-		for pi: Variant in polys:
-			for vi: int in navmesh.get_polygon(int(pi)):
-				var y := verts[vi].y
-				ymin = minf(ymin, y)
-				ymax = maxf(ymax, y)
-				ysum += y
-				yc += 1
-		if yc == 0 or ymax - ymin > 0.25:
-			continue
-		if _is_stray_nav_y(ysum / float(yc)):
-			for pi2: Variant in polys:
-				drop[int(pi2)] = true
-	if drop.is_empty():
-		return
 	var kept: Array[PackedInt32Array] = []
+	var dropped := false
 	for i: int in n:
-		if not drop.has(i):
-			kept.append(navmesh.get_polygon(i))
+		var poly := navmesh.get_polygon(i)
+		var far := false
+		for vi: int in poly:
+			if verts[vi].x > 100.0:
+				far = true
+				break
+		if far:
+			dropped = true
+		else:
+			kept.append(poly)
+	if not dropped:
+		return
 	navmesh.clear_polygons()
 	for poly: PackedInt32Array in kept:
 		navmesh.add_polygon(poly)
