@@ -57,7 +57,8 @@ func _process(_delta: float) -> bool:
 
 func _bake() -> void:
 	var navmesh := NavigationMesh.new()
-	navmesh.agent_radius = 0.3
+	# 0.25 is 5 x cell_size, so the radius lands on the voxel grid. Height and climb stay.
+	navmesh.agent_radius = 0.25
 	navmesh.agent_height = 1.75
 	navmesh.agent_max_climb = 0.3
 	navmesh.cell_size = 0.05

@@ -549,13 +549,14 @@ func _nav_separating_doors(a: Vector3, b: Vector3) -> PackedStringArray:
 	return out
 
 
-## Pass only when the path ends within 1 m of the interactable's world position (3D). No approach point.
+## Pass only when the path ends within 1 m horizontally (XZ) of the interactable. No approach point.
 func _nav_strict_reach(map: RID, spawn_pt: Vector3, target: Vector3) -> Dictionary:
 	var closest := NavigationServer3D.map_get_closest_point(map, target)
 	var path := NavigationServer3D.map_get_path(map, spawn_pt, closest, true)
 	var end_dist := -1.0
 	if not path.is_empty():
-		end_dist = path[path.size() - 1].distance_to(target)
+		var end: Vector3 = path[path.size() - 1]
+		end_dist = Vector2(end.x, end.z).distance_to(Vector2(target.x, target.z))
 	return {
 		"reached": not path.is_empty() and end_dist <= 1.0,
 		"end_dist": end_dist,
@@ -593,6 +594,8 @@ func _nav_qa_set_fields(open_state: bool) -> void:
 
 
 ## --qa-nav-reach: closed fields must block every gated interactable; open fields must reach all.
+## DOOR_* interactables sit on the door plane and are used from outside, so they are left out of the
+## closed-phase gated list. They stay in the open-phase reach list below.
 func _run_qa_nav_reach() -> void:
 	var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
 	_nav_qa_set_fields(false)
@@ -608,6 +611,8 @@ func _run_qa_nav_reach() -> void:
 		if node == null or not is_instance_valid(node):
 			continue
 		nodes[id] = node
+		if id.begins_with("DOOR_"):
+			continue
 		var doors := _nav_separating_doors(SPAWN_POS, node.global_position)
 		if doors.is_empty():
 			continue
@@ -6546,6 +6551,58 @@ func _ext_rel_transform(root: Node3D, node: Node3D) -> Transform3D:
 	return xf
 
 
+## Visual mesh bounds in `inst` local space. Collision helpers are not part of the prop top.
+func _ext_local_visual_aabb(inst: Node3D) -> Dictionary:
+	var merged: AABB = AABB()
+	var any: bool = false
+	var stack: Array[Node] = [inst]
+	while not stack.is_empty():
+		var curr: Node = stack.pop_back()
+		if curr is MeshInstance3D:
+			var mi: MeshInstance3D = curr as MeshInstance3D
+			if _ext_mesh_is_visual(mi, inst):
+				var bb: AABB = _ext_rel_transform(inst, mi) * mi.get_aabb()
+				if any:
+					merged = merged.merge(bb)
+				else:
+					merged = bb
+					any = true
+		for ch: Node in curr.get_children():
+			stack.append(ch)
+	return {"ok": any, "aabb": merged}
+
+
+## Thin lid on the visual top so a down-ray hits the infill top, not the body under the paver joints.
+func _ext_add_infill_top_cap(inst: Node3D, body: StaticBody3D) -> void:
+	var merged: Dictionary = _ext_local_visual_aabb(inst)
+	if not bool(merged["ok"]):
+		return
+	var bb: AABB = merged["aabb"] as AABB
+	if bb.size.x < 0.05 or bb.size.z < 0.05:
+		return
+	var thick: float = 0.004
+	var top: float = bb.position.y + bb.size.y
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = "ExtTopCap"
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = Vector3(bb.size.x, thick, bb.size.z)
+	shape.margin = 0.0
+	cs.shape = shape
+	cs.position = Vector3(bb.get_center().x, top - thick * 0.5, bb.get_center().z)
+	body.add_child(cs)
+
+
+func _ext_hit_on_ground_prop(collider: Object) -> bool:
+	if not (collider is Node):
+		return false
+	var n: Node = collider as Node
+	while n != null:
+		if n.has_meta("ext_asset"):
+			return _ext_spawn_kind(String(n.get_meta("ext_asset"))) == EXT_KIND_GROUND
+		n = n.get_parent()
+	return false
+
+
 func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 	var meshes: Array[MeshInstance3D] = _ext_collect_meshes(inst)
 	var fill: bool = not _ext_shape_cache.has(asset)
@@ -6587,6 +6644,8 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 		any = true
 	if fill:
 		_ext_shape_cache[asset] = cached
+	if any and _ext_base(asset) == "ext_platform_infill":
+		_ext_add_infill_top_cap(inst, body)
 	if any:
 		inst.add_child(body)
 
@@ -6770,6 +6829,8 @@ func _ext_snap_exclude(inst: Node3D, kind: int, ext_root: Node) -> Array[RID]:
 			if asset.to_lower().contains("scuff") and (ch_kind == EXT_KIND_CAR or _ext_base(ch_asset) == "ext_maglev_magnet_module"):
 				exclude.append_array(_ext_collision_rids(ch))
 			continue
+		# Infill, paving, kerb ramp, guideway, and canal edge are ground. A solid stands on them,
+		# so their bodies stay in the down-ray. Decals are not a support surface.
 		if ch_kind == EXT_KIND_GROUND or ch_kind == EXT_KIND_DECAL:
 			continue
 		# Cars keep magnet modules (and the guideway, which is ground-like).
@@ -6811,6 +6872,7 @@ func _ext_max_hit_y(inst: Node3D, aabb: AABB, exclude: Array[RID]) -> Dictionary
 	pts.append(Vector2(x0, z1))
 	pts.append(Vector2(x1, z1))
 	var hits: Array[float] = []
+	var ground_hits: Array[float] = []
 	var center_y: float = 0.0
 	var have_center: bool = false
 	for i: int in range(pts.size()):
@@ -6823,7 +6885,19 @@ func _ext_max_hit_y(inst: Node3D, aabb: AABB, exclude: Array[RID]) -> Dictionary
 			center_y = hy
 			have_center = true
 		hits.append(hy)
-	return _ext_support_from_hits(hits, center_y, have_center)
+		if _ext_hit_on_ground_prop(hit.get("collider")):
+			ground_hits.append(hy)
+	# Ground-like samples (centre + inset corners) report their highest hit, so a joint in the
+	# infill body cannot hide the paver top. Other hits keep the guardrail lift filter.
+	var filtered: Dictionary = _ext_support_from_hits(hits, center_y, have_center)
+	if ground_hits.is_empty():
+		return filtered
+	var top_y: float = ground_hits[0]
+	for gy: float in ground_hits:
+		top_y = maxf(top_y, gy)
+	if not bool(filtered["ok"]) or top_y > float(filtered["y"]):
+		return {"ok": true, "y": top_y}
+	return filtered
 
 
 ## Highest support that is still within EXT_SUPPORT_LIFT of the centre hit.
