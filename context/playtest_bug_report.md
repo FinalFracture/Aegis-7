@@ -525,3 +525,13 @@ New, low:
 - E793-01 LOW (Gage): every QA run ends with exit-time leaks (110 ObjectDB, 33 "instance_notify_deleted", GL RID leaks). Exit only; no gameplay impact.
 - E793-02 LOW (Gage): --qa-reticle-stars-doors takes more than 5 min headless (timed out at 300 s, finished under 900 s). Slow for CI.
 Screenshots: godot/renders/qa/pass_e793448/ (door_hub_ingame_rm1b, forcefield_door_mid_dissolve, troubleshoot_simple_ui, troubleshoot_simple_ui_won).
+
+## QA pass 1a3c5b0 (Patch, 2026-10-31, box, Godot 4.7.2 opengl3/xvfb, fresh clone /tmp/qa_1a3c5b0)
+Regression suite: placement 26/26, hand 36/36, reticle-stars-doors 89/0, troubleshoot-simple 13/0, forcefield 9/0, door hubs seated 9/9 with 0.003 m gap. Import log clean. No script errors. No regressions; all fixes from the e793448 pass still hold.
+Pathfinding: FAIL. Throwaway /tmp nav_reach.gd ran NavigationServer3D paths from the spawn (-9.35,4.25,6.20) to 25 interactables: 1 OK, 24 FAIL (raycasts along every path segment found 0 wall/prop hits). Islands analysis: 16 islands.
+- NAV-01 HIGH (Gage): the spawn sits on an Apt 201 island (14 polys, x -13.3..-6, z 3.3..8.3, y 4.55) that is cut off from the main 293-poly island. The APT 202 room (21 polys) is cut off the same way. The bake used static colliders with the force-field doors closed, so every doorway is a wall. There are no NavigationLink3D links across doors. Result: none of the pickups, the D-204 hatch, the terminal, the bunks/props 38/39/42/43 or the other doors can be reached from the spawn. Fix: add per-door NavigationLink3D (enabled when the field is open), or bake with fields open and gate at runtime.
+- NAV-02 LOW (Gage): stray islands. Furniture tops (0.8 m x2, 1.65 m x3, 5.05-5.25 m x3, 4.4 m 4-poly piece), a 24-poly roof slab at y 8.95, and two islands at x 143-157 (y 20-22 and 38-41, 330 polys). Exclude them from the bake (collision layer mask or a source group).
+- Known limit, not a bug: exterior coverage is thin. The ground perimeter strip (27 polys, y 0.1) is disconnected, and the 24 exterior props exist only in the plan JSON.
+Layout v1.3 review (design/exterior_placements_v1_3.json, 1147 placements): no exact duplicates; the floor y values look plausible.
+- LAY-01 MED (Gage): maglev cars (id 19) at x 21.084 and 8.916 are 12.168 m apart, but the note says Xc 21.153 / Xc2 8.847 (12.306 m car length). The JSON values disagree with the formula, so the cars overlap by about 0.138 m (limit 0.010).
+Screenshots: godot/renders/qa/pass_1a3c5b0/ (01_navmesh_topdown_islands, 02_door_hub_rm1b, 03_ts_simple_won, 04_layout_v1_3_plan).
