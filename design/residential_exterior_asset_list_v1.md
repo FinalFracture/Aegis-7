@@ -98,7 +98,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | ~~48~~ | ~~Bedroll + hot plate + crate (shelter sleeper)~~ — CUT by Jared 2026-10-30 1:31 PM CT | tram shelter | 0 | — | 0 |
 | 49 | Patch tape + mismatched liner decals + **dead-foliage material swap** for one west-sidewalk TS-4 (plan story beat) | hydro beds, planters | 1 | set | 100 |
 | 50 | Litter / spill drift decals (Coriolis, antispinward) | Spin Sts | 1 | set | 200 |
-| 51 | Sprocket wheel-track + coupler-scuff decals, + **kerb scuff decals at the stop** (plan wear beat) | apron, door jamb, platform kerb | 1 | set | 100 |
+| 51 | Maglev wear decals: **guideway dust + stator wear streaks**, **platform-edge foot scuffs**, + **kerb scuff decals at the stop** (plan wear beat); Sprocket wheel-track decals on apron/door jamb kept (Sprocket robot story, not the tram) — coupler/tram wheel-track scuffs removed (Atlas PM call 2026-10-30 9:28 PM CT, maglev) | guideway, platform kerb, apron, door jamb | 1 | set | 100 |
 | 52 | Pictogram notice board (wordless) | stop | 1 | 1.0 × 0.1 × 1.4 | 400 |
 
 ## L. Characters (placed, already modeled)

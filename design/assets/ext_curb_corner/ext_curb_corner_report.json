@@ -2,12 +2,12 @@
  {
   "cand": "ext_curb_corner_01",
   "style": "Chamfer_Slate",
-  "tris": 36,
-  "budget_ok": true,
+  "tris": 148,
+  "budget_ok": false,
   "size": [
-   0.3,
+   0.304,
    0.15,
-   0.3
+   0.304
   ],
   "pivot": {
    "min_y": 0.0,
@@ -15,7 +15,7 @@
    "cz": 0.0
   },
   "clip_pass": true,
-  "worst_overlap": 0.0,
+  "worst_overlap": 0.004,
   "overlaps_over": [],
   "coplanar": [],
   "open": [],
