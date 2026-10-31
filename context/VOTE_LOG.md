@@ -1720,3 +1720,4 @@
 
 ### #18 catenary mast + wire span — CUT
 - **Atlas PM call (not a Jared vote), Oct 30 8:37 PM CT:** cut because power is ground-fed (#17 05). Revivable by Jared.
+- **Atlas PM call (not a Jared vote), Oct 30 8:48 PM CT — option (a) trimmed rail:** `ext_tram_rail_module_05_trim.glb` (05 with the platform-side bed edge cut 0.35 m; rails/power rail unchanged relative to track centre; 224 tris; clip-check + validate PASS alone and assembled with 6x kerb 02, 4 mm seam) re-promoted over `godot/assets/models/ext_tram_rail_module.glb`. Prior promoted file backed up as `design/assets/ext_tram_rail_module/ext_tram_rail_module_promoted_backup_pre_trim.glb`.

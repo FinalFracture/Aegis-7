@@ -15,7 +15,7 @@ FMAT["a7_pearl"] = _PBR(name="A7_PearlAlabaster", baseColorFactor=(0xD8/255, 0xD
 FMAT["a7_cyan"] = _PBR(name="A7_CivicCyan", baseColorFactor=(0x38/255, 0xB8/255, 0xC8/255, 1), metallicFactor=0.1, roughnessFactor=0.4)
 PL, CY = "a7_pearl", "a7_cyan"
 XB, XR, ZH, TOR = 4.994, 4.997, 1.75, .20
-RZ = (-.7535, .7535); HW = .036   # rail centres, head half-width
+RZ = (-.7535, .7535); HW = .036; ZP = 1.396   # rail centres, head half-width
 
 def rails(p, y0, foot=None):
     p.add("Rails", T, *[box(-XR, XR, y0, TOR, z - HW, z + HW) for z in RZ])
@@ -46,14 +46,15 @@ def track(v):
         p.add("Cross_Ties", G, *[box(x - .08, x + .08, .078, .12, RZ[0] + .16 - E, RZ[1] - .16 + E) for x in (-4, -2, 0, 2, 4)])
         rails(p, .14 - E)
         p.add("Edge_Stripes", A, *[box(-XB + .01, XB - .01, .08 - E, .084, z - .03, z + .03) for z in (-ZH + .15, ZH - .15)])
-    elif v == 5:  # Ground Power Rail: gunmetal slab, slate grooved deck, central titanium/amber ground-power strip (no catenary needed), cyan side lines
-        p.add("Base_Slab", G, box(-XB + .003, XB - .003, 0, .12, -ZH + .01, ZH - .01))
-        g = .012; zs = [-ZH, RZ[0] - HW - g, RZ[0] + HW + g, -.06, .06, RZ[1] - HW - g, RZ[1] + HW + g, ZH]
+    elif v in (5, 6):  # 6 = 05 trimmed: platform-side (+Z) bed edge cut 0.35 m (ZP = 1.396 from track centre)  # Ground Power Rail: gunmetal slab, slate grooved deck, central titanium/amber ground-power strip (no catenary needed), cyan side lines
+        zp = ZH if v == 5 else ZP
+        p.add("Base_Slab", G, box(-XB + .003, XB - .003, 0, .12, -ZH + .01, zp - .01))
+        g = .012; zs = [-ZH, RZ[0] - HW - g, RZ[0] + HW + g, -.06, .06, RZ[1] - HW - g, RZ[1] + HW + g, zp]
         p.add("Deck", S, *[box(-XB, XB, .12 - E, .19, zs[i], zs[i+1]) for i in (0, 2, 4, 6)])
         rails(p, .12 - E)
         p.add("Power_Rail", T, box(-XR, XR, .12 - E, .185, -.045, .045))
         p.add("Power_Markers", A, *[box(x - .2, x + .2, .185 - E, .19, -.03, .03) for x in (-3, -1, 1, 3)])
-        p.add("Side_Lines", CY, *[box(-XB + .01, XB - .01, .19 - E, .194, z - .04, z + .04) for z in (-ZH + .2, ZH - .2)])
+        p.add("Side_Lines", CY, *[box(-XB + .01, XB - .01, .19 - E, .194, z - .04, z + .04) for z in (-ZH + .2, zp - .2)])
     return p
 ITERS = [(1, "Embedded_Street_Slab"), (2, "Composite_Sleeper_Block"), (3, "Civic_Lit_Bed"), (4, "Steel_Ladder_Track"), (5, "Ground_Power_Rail")]
 sf.ASSETS["rail"] = ("ext_tram_rail_module", track, ITERS, 400, "#17 tram rail module 10x3.5 (gauge 1.435, TOR 0.20, tiles @10 m)")
