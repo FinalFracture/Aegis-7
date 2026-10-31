@@ -116,15 +116,39 @@ def in_rect(x, z, r):
     return r[0] <= x <= r[1] and r[2] <= z <= r[3]
 CURB_PITCH, CURB_LEN, CURB_OFF = 1.997, 1.994, 0.304 / 2.0  # 3 mm joints; centreline half a curb outside the edge
 CURB_HALF = CURB_LEN / 2.0
+CURB1_PITCH, CURB1_LEN = 0.997, 0.994  # ext_curb_segment_1m.glb (Chamfer Slate 1 m), same 3 mm joints
 def curb_run(start, fixed, length, along_x, rot, note):
-    n = int(math.ceil(length / CURB_PITCH - 1e-9)); out = []
-    for k in range(n):
-        t = start + CURB_HALF + CURB_PITCH * k
-        x, z = (t, fixed) if along_x else (fixed, t)
-        extra = "; last segment overhangs the run and is to be trimmed" if k == n - 1 else ""
-        out.append(P(41, "ext_curb_segment.glb", x, 0, z, rot, note + extra))
+    # Rook, Oct 31: fill each edge with whole 2 m segments, then close the ends with 1 m segments (one each end if two fit,
+    # else one). No overhang past the edge, no scaling (the spawner has no scale field). Leftover < 0.997 m is split
+    # equally at both run ends (small centred gap). Edges < 0.994 m get no segment (corners only).
+    J = 0.003; n2 = int(math.floor((length + J) / CURB_PITCH + 1e-9)); rem = length + J - n2 * CURB_PITCH
+    n1 = int(math.floor(rem / CURB1_PITCH + 1e-9)); pieces = [1] * (n1 // 2 + n1 % 2) + [2] * n2 + [1] * (n1 // 2)
+    lens = [CURB_LEN if k == 2 else CURB1_LEN for k in pieces]
+    # Atlas PM call (Oct 31): exact-fit Chamfer Slate filler closes any leftover >= FILL_MIN, 3 mm joints at both ends + to
+    # neighbours. filler = edge - pieces - (k+2) joints, rounded to whole mm (model ext_curb_segment_<mm>mm.glb).
+    fl = length - sum(lens) - (len(lens) + 2) * J
+    if fl >= FILL_MIN:
+        mm = int(round(fl * 1000)); FILLERS.add(mm); lens.append(mm / 1000.0); pieces.append(mm); t = start + J
+    else:
+        t = start + (length - (sum(lens) + (len(lens) - 1) * J)) / 2.0
+    out = []
+    for k, ln in zip(pieces, lens):
+        c = t + ln / 2.0; t += ln + J
+        x, z = (c, fixed) if along_x else (fixed, c)
+        a = {2: "ext_curb_segment.glb", 1: "ext_curb_segment_1m.glb"}.get(k, "ext_curb_segment_%dmm.glb" % k)
+        out.append(P(41, a, x, 0, z, rot, note + {2: "", 1: " (1 m)"}.get(k, " (filler %d mm)" % k)))
     return out
-shelter = P(15, "ext_tram_shelter.glb", 15, 0.297, -16.25, 180, "rot 180: open side (local +Z) faces the guideway boarding edge at -Z")
+FILL_MIN, FILLERS = 0.30, set()
+def merge_beds(rects, gap):
+    # One curb per edge: planters in a row closer than two curb widths share one outline (no curb in the 0.2 m gaps).
+    rects = sorted(rects, key=lambda r: (r[0], r[3], r[1])); out = []
+    for r in rects:
+        for i, m in enumerate(out):
+            if m[0] == r[0] and abs(m[4] - r[4]) < 1e-9 and abs(m[5] - r[5]) < 1e-9 and r[2] - m[3] < gap:
+                out[i] = (m[0], None, m[2], max(m[3], r[3]), m[4], m[5]); break
+        else: out.append((r[0], None, r[2], r[3], r[4], r[5]))
+    return out
+shelter = P(15, "ext_tram_shelter.glb", 15, 0.297, -15.92, 180, "rot 180: open side (local +Z) faces the guideway boarding edge at -Z")
 kerbs = [P(16, "ext_tram_platform_kerb.glb", x, 0, -17.55, 180, "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21") for x in range(10, 21, 2)]
 gw_over = 9.994 / 2.0 - (47 - 45)
 guides = []
@@ -133,14 +157,15 @@ for x in range(-45, 46, 10):
     if x in (-45, 45): note += "; end overhangs scene bounds X -47..47 by %.3f m each side (~3 m)" % gw_over
     guides.append(P(17, "ext_maglev_guideway.glb", x, 0, -20.077, 0, note))
 Xc = round(15.0 + 12.306 / 2.0, 4); Xc2 = round(Xc - 12.306, 4)
-bodies = [P(19, "ext_maglev_car_body.glb", Xc - 0.069, 0.06, -19.90, 0, "car 1; Xc=%.4f = 15.0+12.306/2" % Xc),
-          P(19, "ext_maglev_car_body.glb", Xc2 + 0.069, 0.06, -19.90, 180, "car 2; Xc2=%.4f = Xc-12.306" % Xc2)]
-mags = [P(19, "ext_maglev_magnet_module.glb", Xc - 0.30, 0.06, -19.90, 0, "car 1 magnet; Xc=%.4f" % Xc),
-        P(19, "ext_maglev_magnet_module.glb", Xc2 + 0.30, 0.06, -19.90, 180, "car 2 magnet; Xc2=%.4f" % Xc2)]
+# Body pivot x is Xc / Xc2 exactly (21.153 / 8.847). Magnets keep their offset from the body
+# (the old body sat at Xc-0.069 / Xc2+0.069, so each magnet shifts by the same +0.069 / -0.069).
+bodies = [P(19, "ext_maglev_car_body.glb", Xc, 0.06, -19.90, 0, "car 1; Xc=%.4f = 15.0+12.306/2" % Xc),
+          P(19, "ext_maglev_car_body.glb", Xc2, 0.06, -19.90, 180, "car 2; Xc2=%.4f = Xc-12.306" % Xc2)]
+mags = [P(19, "ext_maglev_magnet_module.glb", Xc - 0.30 + 0.069, 0.06, -19.90, 0, "car 1 magnet; Xc=%.4f" % Xc),
+        P(19, "ext_maglev_magnet_module.glb", Xc2 + 0.30 - 0.069, 0.06, -19.90, 180, "car 2 magnet; Xc2=%.4f" % Xc2)]
 curb_segs, corners = [], []
-for o in O:
-    if not o[0].startswith(("planter S", "planter N", "hydro planter W", "hydro bed")): continue
-    nm, x0, x1, z0, z1 = o[0], o[1], o[2], o[3], o[4]
+BEDS = merge_beds([(o[0], None, o[1], o[2], o[3], o[4]) for o in O if o[0].startswith(("planter S", "planter N", "hydro planter W", "hydro bed"))], 2 * 0.304 + 0.001)
+for nm, _, x0, x1, z0, z1 in BEDS:
     tag = "%s (%.1f..%.1f, %.1f..%.1f)" % (nm, x0, x1, z0, z1)
     curb_segs += curb_run(x0, z0 - CURB_OFF, x1 - x0, True, 0, tag + " south")
     curb_segs += curb_run(x0, z1 + CURB_OFF, x1 - x0, True, 0, tag + " north")
@@ -160,6 +185,18 @@ for seg in curb_segs:
     if any(box_hit(aabb_xz(seg["x"], seg["z"], CURB_LEN, 0.304, seg["rot_deg"]), b) for b in blockers): n_skip += 1
     else: kept.append(seg)
 curb_segs = kept
+# Greedy de-dupe (Rook): corners first, then segments in run order; drop any piece overlapping one already kept.
+CURB_SIZE = {"ext_curb_segment.glb": (CURB_LEN, 0.304), "ext_curb_segment_1m.glb": (CURB1_LEN, 0.304), "ext_curb_corner.glb": (0.304, 0.304)}
+def csize(a):
+    if a in CURB_SIZE: return CURB_SIZE[a]
+    return (int(a.split("_")[-1][:-6]) / 1000.0, 0.304)  # ext_curb_segment_<mm>mm.glb
+def _cbox(p): return aabb_xz(p["x"], p["z"], *csize(p["asset"]), p["rot_deg"])
+_kept, n_dedupe, DEDUPED = [], 0, []
+for p in corners + curb_segs:
+    b = _cbox(p)
+    if any(box_hit(b, k, 1e-3) for k in _kept): n_dedupe += 1; DEDUPED.append(p)
+    else: _kept.append(b)
+corners = [p for p in corners if p not in DEDUPED]; curb_segs = [p for p in curb_segs if p not in DEDUPED]
 # #44 grid: corner at the platform west end (9, -18.5). +Z centres -17.5+2j; -Z centres -19.5-2j.
 PLAZA_BOX = (9.0, 18.0, -25.6, -12.5)  # given slice: shelter + kerb ramp + canal-edge north face, not the full canal run
 GUIDE_BED = (-47.0, 47.0, -21.65, -18.504); PLATFORM_BOX = (9.0, 21.0, -18.5, -15.5)
@@ -214,7 +251,7 @@ QC.append(("kerbs contiguous with no gaps", bad))
 bad = []
 kerb_boxes = [aabb_xz(p["x"], p["z"], 1.994, 1.9, p["rot_deg"]) for p in kerbs]
 for p in curb_segs + corners:
-    sx, sz = (CURB_LEN, 0.304) if p["asset"] == "ext_curb_segment.glb" else (0.304, 0.304)
+    sx, sz = csize(p["asset"])
     if any(box_hit(aabb_xz(p["x"], p["z"], sx, sz, p["rot_deg"]), k) for k in kerb_boxes): bad.append((p["x"], p["z"]))
 QC.append(("no curb under a kerb", bad))
 bad = []
@@ -234,6 +271,12 @@ for a, b in zip(gb, gb[1:]):
 QC.append(("guideway run covers X -47..47", bad))
 QC.append(("guideway scuff modules", [] if [p["x"] for p in scuff_g] == [5, 15, 25] else [p["x"] for p in scuff_g]))
 QC.append(("kerb scuffs", [p["x"] for p in PLACEMENTS if p["asset"] == "ext_track_scuff_kerb.glb"]))
+CAR_LEN = 12.306
+body_boxes = [aabb_xz(p["x"], p["z"], CAR_LEN, 2.66, p["rot_deg"]) for p in bodies]
+bad = []
+if len(body_boxes) == 2 and aabb_gap(body_boxes[0], body_boxes[1]) < -0.010:
+    bad.append(round(aabb_gap(body_boxes[0], body_boxes[1]), 4))
+QC.append(("maglev car bodies do not overlap", bad))
 for q in QC: print("QC:",q)
 assert all((not v) if isinstance(v,list) else True for _,v in QC), "QC failed"
 print("benches",len(BENCH),"bins",len(BIN),"bollards",sum(len(v[0]) for v in BROWS.values()),"objects",len(O),"poles",len(POLES),"planters",sum(o[0].startswith("planter") for o in O))
@@ -250,7 +293,7 @@ for key in order:
     p = groups[key][0]
     print("%-8s %-42s %5d  (%s, %s, %s, %s)" % (p["id"], p["asset"], len(groups[key]), p["x"], p["y"], p["z"], p["rot_deg"]))
 print("--- resolved TBD ---")
-print("#15 shelter rot 180 at (15, 0.297, -16.25); open side local +Z faces guideway boarding edge -Z")
+print("#15 shelter rot 180 at (15, 0.297, -15.92); open side local +Z faces guideway boarding edge -Z")
 print("#16 kerb x", [p["x"] for p in kerbs], "rot 180 z -17.55")
 print("#17 guideway x", [p["x"] for p in guides], "n", len(guides), "end overhang m", round(gw_over, 4))
 print("#19 Xc", Xc, "Xc2", Xc2, "bodies", [(p["x"], p["rot_deg"]) for p in bodies], "magnets", [(p["x"], p["rot_deg"]) for p in mags])
@@ -262,7 +305,7 @@ print("#49 dead foliage and wear decal (-16.6, 0, 0) rot 90; neighbour refs z", 
 print("#50 Spin St W centre X", round(xw, 4), "Spin St E centre X", round(xe, 4))
 print("#51 guideway scuff x", [p["x"] for p in scuff_g], "kerb scuffs", 0)
 resolved = {"15_rot_deg": 180, "16_kerb_x": [p["x"] for p in kerbs], "17_guideway_x": [p["x"] for p in guides], "17_end_overhang_m": round(gw_over, 4),
-            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_corners": len(corners), "41_skipped": n_skip,
+            "19_Xc": Xc, "19_Xc2": Xc2, "41_segments": len(curb_segs), "41_segments_2m": sum(p["asset"] == "ext_curb_segment.glb" for p in curb_segs), "41_segments_1m": sum(p["asset"] == "ext_curb_segment_1m.glb" for p in curb_segs), "41_fillers_mm": {str(m): sum(p["asset"] == "ext_curb_segment_%dmm.glb" % m for p in curb_segs) for m in sorted(FILLERS)}, "41_corners": len(corners), "41_skipped": n_skip, "41_deduped": n_dedupe, "41_beds_merged": len(BEDS),
             "44_grid_origin_corner": [9, -18.5], "44_pitch_m": 2.0, "44_plaza_count": len(plaza_tiles), "44_promenade_count": len(prom_tiles),
             "46_canal_x0_x1_n": [canal[0]["x"], canal[-1]["x"], len(canal)], "47_length_m": round(L, 4), "47_n": len(desire), "47_yaw_deg": desire[0]["rot_deg"],
             "47_centres": [[p["x"], p["z"]] for p in desire], "49_rot_deg": 90, "50_spin_st_w_x": round(xw, 4), "50_spin_st_e_x": round(xe, 4),
@@ -272,7 +315,7 @@ with open(os.path.join(HERE, "exterior_placements_v1_3.json"), "w", encoding="ut
     fh.write("\n")
 print("wrote", os.path.join(HERE, "exterior_placements_v1_3.json"))
 ASSET_SIZE = {"ext_tram_shelter.glb": (6.024, 1.304), "ext_tram_platform_kerb.glb": (1.994, 1.9), "ext_maglev_guideway.glb": (9.994, 3.146),
-              "ext_maglev_car_body.glb": (12.162, 2.66), "ext_maglev_magnet_module.glb": (11.0, 1.412), "ext_curb_segment.glb": (1.994, 0.304),
+              "ext_maglev_car_body.glb": (12.162, 2.66), "ext_maglev_magnet_module.glb": (11.0, 1.412), "ext_curb_segment.glb": (1.994, 0.304), "ext_curb_segment_1m.glb": (0.994, 0.304),
               "ext_curb_corner.glb": (0.304, 0.304), "ext_platform_infill.glb": (11.994, 1.096), "ext_kerb_ramp.glb": (1.5, 3.0),
               "ext_canal_edge.glb": (1.994, 0.4), "ext_desire_path_decal.glb": (1.2, 4.0), "ext_ts4_dead_foliage.glb": (4.0, 0.406),
               "ext_ts4_wear_decal.glb": (4.0, 0.406), "hydro_planter_tiered_exterior.glb": (4.0, 0.406),
@@ -283,7 +326,7 @@ def draw_v13(ax):
         if k == "walk": R_(ax, x0, x1, z0, z1, "none", ec="#A8B0B8", lw=0.15, z=4, hatch="..")
     R_(ax, 9, 18, -25.6, -12.5, "none", ec="#C47B3A", lw=1.0, z=6)
     for p in plaza_tiles: ax.plot(p["x"], p["z"], marker="s", ms=3.2, color="#E39A45", zorder=6, linestyle="none")
-    style = {"ext_maglev_guideway.glb": ("#8E97A3", WALL, 0.45, 0.95, 5, None), "ext_curb_segment.glb": ("#5E6872", "#3A424C", 0.2, 0.9, 7, None),
+    style = {"ext_maglev_guideway.glb": ("#8E97A3", WALL, 0.45, 0.95, 5, None), "ext_curb_segment.glb": ("#5E6872", "#3A424C", 0.2, 0.9, 7, None), "ext_curb_segment_1m.glb": ("#5E6872", "#3A424C", 0.2, 0.9, 7, None),
              "ext_curb_corner.glb": ("#3E4650", "#3A424C", 0.2, 0.9, 7, None), "ext_canal_edge.glb": ("#7FA8B3", "#3B5966", 0.3, 0.95, 7, None),
              "ext_tram_platform_kerb.glb": ("#2E6BFF", WALL, 0.35, 0.9, 8, None), "ext_platform_infill.glb": ("#C5CAD1", WALL, 0.4, 0.75, 7, None),
              "ext_kerb_ramp.glb": ("#F4C98A", "#8A5A12", 0.6, 0.95, 8, None), "ext_tram_shelter.glb": ("#1A1E24", VIO, 1.3, 0.95, 9, None),
@@ -295,6 +338,8 @@ def draw_v13(ax):
         if p["asset"] in ("ext_paving_promenade.glb", "ext_paving_plaza.glb"): continue
         if p["asset"].startswith("ext_litter_drift"):
             fc, ec, lw, alpha, z, hatch = (ORG, WALL, 0.4, 0.9, 13, None); sx, sz = 1.07, 2.97
+        elif p["asset"].startswith("ext_curb_segment_") and p["asset"].endswith("mm.glb"):
+            fc, ec, lw, alpha, z, hatch = style["ext_curb_segment.glb"]; sx, sz = csize(p["asset"])
         else:
             fc, ec, lw, alpha, z, hatch = style[p["asset"]]; sx, sz = ASSET_SIZE[p["asset"]]
         rot = p["rot_deg"]; r = rot % 360.0; q = int(round(r / 90.0))

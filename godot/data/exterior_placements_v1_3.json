@@ -1,0 +1,9234 @@
+{
+  "version": "v1.3",
+  "yaw": "degrees about +Y; local +Z is front",
+  "resolved": {
+    "15_rot_deg": 180,
+    "16_kerb_x": [
+      10.0,
+      12.0,
+      14.0,
+      16.0,
+      18.0,
+      20.0
+    ],
+    "17_guideway_x": [
+      -45.0,
+      -35.0,
+      -25.0,
+      -15.0,
+      -5.0,
+      5.0,
+      15.0,
+      25.0,
+      35.0,
+      45.0
+    ],
+    "17_end_overhang_m": 2.997,
+    "19_Xc": 21.153,
+    "19_Xc2": 8.847,
+    "41_segments": 200,
+    "41_segments_2m": 168,
+    "41_segments_1m": 8,
+    "41_fillers_mm": {
+      "397": 6,
+      "809": 4,
+      "894": 14
+    },
+    "41_corners": 40,
+    "41_skipped": 0,
+    "41_deduped": 0,
+    "41_beds_merged": 10,
+    "44_grid_origin_corner": [
+      9,
+      -18.5
+    ],
+    "44_pitch_m": 2.0,
+    "44_plaza_count": 14,
+    "44_promenade_count": 677,
+    "46_canal_x0_x1_n": [
+      -46.0,
+      46.0,
+      47
+    ],
+    "47_length_m": 10.0283,
+    "47_n": 3,
+    "47_yaw_deg": -76.4709,
+    "47_centres": [
+      [
+        7.8055,
+        -13.5281
+      ],
+      [
+        3.9165,
+        -12.5924
+      ],
+      [
+        0.0275,
+        -11.6566
+      ]
+    ],
+    "49_rot_deg": 90,
+    "50_spin_st_w_x": -20.0,
+    "50_spin_st_e_x": 20.0,
+    "51_guideway_scuff_x": [
+      5.0,
+      15.0,
+      25.0
+    ]
+  },
+  "placements": [
+    {
+      "id": 15,
+      "asset": "ext_tram_shelter.glb",
+      "x": 15.0,
+      "y": 0.297,
+      "z": -15.92,
+      "rot_deg": 180.0,
+      "note": "rot 180: open side (local +Z) faces the guideway boarding edge at -Z"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 16,
+      "asset": "ext_tram_platform_kerb.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -17.55,
+      "rot_deg": 180.0,
+      "note": "rot 180, front face Z -18.5; 2 m steps from the west end of platform X 9..21"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": -45.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90; end overhangs scene bounds X -47..47 by 2.997 m each side (~3 m)"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": -35.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": -25.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": -15.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": -5.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": 5.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": 15.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": 25.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": 35.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90"
+    },
+    {
+      "id": 17,
+      "asset": "ext_maglev_guideway.glb",
+      "x": 45.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "10 m pitch across the section; rot 0; track centre Z -19.90; end overhangs scene bounds X -47..47 by 2.997 m each side (~3 m)"
+    },
+    {
+      "id": 19,
+      "asset": "ext_maglev_car_body.glb",
+      "x": 21.153,
+      "y": 0.06,
+      "z": -19.9,
+      "rot_deg": 0.0,
+      "note": "car 1; Xc=21.1530 = 15.0+12.306/2"
+    },
+    {
+      "id": 19,
+      "asset": "ext_maglev_car_body.glb",
+      "x": 8.847,
+      "y": 0.06,
+      "z": -19.9,
+      "rot_deg": 180.0,
+      "note": "car 2; Xc2=8.8470 = Xc-12.306"
+    },
+    {
+      "id": 19,
+      "asset": "ext_maglev_magnet_module.glb",
+      "x": 20.922,
+      "y": 0.06,
+      "z": -19.9,
+      "rot_deg": 0.0,
+      "note": "car 1 magnet; Xc=21.1530"
+    },
+    {
+      "id": 19,
+      "asset": "ext_maglev_magnet_module.glb",
+      "x": 9.078,
+      "y": 0.06,
+      "z": -19.9,
+      "rot_deg": 180.0,
+      "note": "car 2 magnet; Xc2=8.8470"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 19.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 19.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 21.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 21.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.994,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.997,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.003,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.006,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 23.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 23.95,
+      "rot_deg": 90.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": -7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": -7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) south (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": -2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) north (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": -2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) north (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -5.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -4.0015,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -5.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -4.0015,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": -2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": -2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) south (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": 2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) north (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": 2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) north (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -0.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 0.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -0.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 0.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": 2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": 2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) south (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.3,
+      "y": 0.0,
+      "z": 7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) north (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_397mm.glb",
+      "x": -15.6015,
+      "y": 0.0,
+      "z": 7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) north (filler 397 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 4.0015,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 5.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) west"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 4.0015,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 5.9985,
+      "rot_deg": 90.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -13.291,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.794,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.797,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -7.8,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -5.803,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -3.806,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -1.809,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -13.291,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.794,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.797,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -7.8,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -5.803,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -3.806,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -1.809,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": 9.55,
+      "rot_deg": 90.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -0.648,
+      "y": 0.0,
+      "z": 9.55,
+      "rot_deg": 90.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 9.003,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 11.0,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 12.997,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 9.003,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 11.0,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 12.997,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": 7.848,
+      "y": 0.0,
+      "z": 9.55,
+      "rot_deg": 90.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": 14.152,
+      "y": 0.0,
+      "z": 9.55,
+      "rot_deg": 90.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -12.8,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -10.803,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.806,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.809,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.812,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_809mm.glb",
+      "x": -3.4075,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) south (filler 809 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -12.8,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -10.803,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.806,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.809,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.812,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_809mm.glb",
+      "x": -3.4075,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) north (filler 809 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": -9.55,
+      "rot_deg": 90.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": -9.55,
+      "rot_deg": 90.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 5.997,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 7.994,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 9.991,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 11.988,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_809mm.glb",
+      "x": 13.3925,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) south (filler 809 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 5.997,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 7.994,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 9.991,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 11.988,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_809mm.glb",
+      "x": 13.3925,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) north (filler 809 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": 2.848,
+      "y": 0.0,
+      "z": -9.55,
+      "rot_deg": 90.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) west (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_894mm.glb",
+      "x": 13.952,
+      "y": 0.0,
+      "z": -9.55,
+      "rot_deg": 90.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) east (filler 894 mm)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -45.9595,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -43.9625,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -41.9655,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -39.9685,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -37.9715,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -35.9745,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -33.9775,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -31.9805,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -29.9835,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -27.9865,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -25.9895,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -23.9925,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -21.9955,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -19.9985,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -18.0015,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -16.0045,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -14.0075,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -12.0105,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -10.0135,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -8.0165,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -6.0195,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -4.0225,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -2.0255,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -0.0285,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 1.9685,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 3.9655,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 5.9625,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 7.9595,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X -47..9"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 22.018,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 24.015,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 26.012,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 28.009,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 30.006,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 32.003,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 35.997,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 37.994,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 39.991,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 41.988,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 43.985,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 45.982,
+      "y": 0.0,
+      "z": -18.352,
+      "rot_deg": 0.0,
+      "note": "guideway north X 21..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -45.931,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -43.934,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -41.937,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -39.94,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -37.943,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -35.946,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -33.949,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -31.952,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -29.955,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -27.958,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -25.961,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -23.964,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -21.967,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -19.97,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -17.973,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -15.976,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -13.979,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -11.982,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -9.985,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -7.988,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -5.991,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -3.994,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -1.997,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": -0.0,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 1.997,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 3.994,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 5.991,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 7.988,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 9.985,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 11.982,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 13.979,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 15.976,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 17.973,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 19.97,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 21.967,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 23.964,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 25.961,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 27.958,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 29.955,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 31.952,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 33.949,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 35.946,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 37.943,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 39.94,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 41.937,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 43.934,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment.glb",
+      "x": 45.931,
+      "y": 0.0,
+      "z": -21.802,
+      "rot_deg": 0.0,
+      "note": "guideway south X -47..47"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 19.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 20.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 19.5..20.4) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 21.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 22.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 21.5..22.4) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 23.348,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.152,
+      "y": 0.0,
+      "z": 24.552,
+      "rot_deg": 0.0,
+      "note": "hydro bed (-13.0..-3.0, 23.5..24.4) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": -2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": -2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -15.248,
+      "y": 0.0,
+      "z": 7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -16.952,
+      "y": 0.0,
+      "z": 7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -0.648,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -0.648,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 7.848,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 14.152,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 14.152,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 7.848,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (8.0..14.0, 9.1..10.0) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -2.848,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": -13.952,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (-13.8..-3.0, -10.0..-9.1) outside corner NW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 2.848,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) outside corner SW"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 13.952,
+      "y": 0.0,
+      "z": -10.152,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) outside corner SE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 13.952,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) outside corner NE"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_corner.glb",
+      "x": 2.848,
+      "y": 0.0,
+      "z": -8.948,
+      "rot_deg": 0.0,
+      "note": "planter S (3.0..13.8, -10.0..-9.1) outside corner NW"
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": "promenade; 2 m grid origin corner (9, -18.5); walk zones including former Spin St / service lane; not plaza, not under a non-walkable object"
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -17.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -15.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -11.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -9.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -7.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -5.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -1.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 0.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 2.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 4.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 6.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 8.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 10.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 12.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 14.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 16.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 18.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 20.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 22.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 24.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 26.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 28.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 30.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 32.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 34.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 36.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 38.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_promenade.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": 40.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": "plaza; 2 m grid origin corner (9, -18.5); box X 9..18, Z -25.6..-12.5; not on guideway, platform, shelter, ramp or infill"
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -25.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -23.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": 44,
+      "asset": "ext_paving_plaza.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -13.5,
+      "rot_deg": 0.0,
+      "note": ""
+    },
+    {
+      "id": "infill",
+      "asset": "ext_platform_infill.glb",
+      "x": 15.0,
+      "y": 0.0,
+      "z": -16.048,
+      "rot_deg": 0.0,
+      "note": "platform infill"
+    },
+    {
+      "id": 45,
+      "asset": "ext_kerb_ramp.glb",
+      "x": 9.75,
+      "y": 0.0,
+      "z": -13.996,
+      "rot_deg": 0.0,
+      "note": "kerb ramp at the platform west end"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -46.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -44.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -42.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -40.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -38.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -36.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -34.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -32.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -30.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -28.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -26.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -24.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -22.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -20.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -18.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -16.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -14.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -12.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -10.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -8.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -6.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -4.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 0.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 2.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 4.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 6.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 8.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 10.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 12.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 14.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 16.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 18.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 20.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 22.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 24.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 26.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 28.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 30.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 32.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 34.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 36.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 38.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 40.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 42.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 44.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 46,
+      "asset": "ext_canal_edge.glb",
+      "x": 46.0,
+      "y": 0.0,
+      "z": -25.8,
+      "rot_deg": 180.0,
+      "note": "rot 180; 2 m modules X -46..46"
+    },
+    {
+      "id": 47,
+      "asset": "ext_desire_path_decal.glb",
+      "x": 7.8055,
+      "y": 0.053,
+      "z": -13.5281,
+      "rot_deg": -76.4709,
+      "note": "from kerb-ramp foot (9.75, -13.996) to Sector-4 exit ramp foot (0, -11.65); L=10.028 m, n=3, yaw=-76.4709 deg; the entrance at Z -9 is reached up that ramp; local +Z along the path"
+    },
+    {
+      "id": 47,
+      "asset": "ext_desire_path_decal.glb",
+      "x": 3.9165,
+      "y": 0.053,
+      "z": -12.5924,
+      "rot_deg": -76.4709,
+      "note": "from kerb-ramp foot (9.75, -13.996) to Sector-4 exit ramp foot (0, -11.65); L=10.028 m, n=3, yaw=-76.4709 deg; the entrance at Z -9 is reached up that ramp; local +Z along the path"
+    },
+    {
+      "id": 47,
+      "asset": "ext_desire_path_decal.glb",
+      "x": 0.0275,
+      "y": 0.053,
+      "z": -11.6566,
+      "rot_deg": -76.4709,
+      "note": "from kerb-ramp foot (9.75, -13.996) to Sector-4 exit ramp foot (0, -11.65); L=10.028 m, n=3, yaw=-76.4709 deg; the entrance at Z -9 is reached up that ramp; local +Z along the path"
+    },
+    {
+      "id": 49,
+      "asset": "ext_ts4_dead_foliage.glb",
+      "x": -16.6,
+      "y": 0.0,
+      "z": 0.0,
+      "rot_deg": 90.0,
+      "note": "replaces middle west TS-4 (hydro planter W z0 -2, Z -2..2); rot 90, back (local -Z) to Spin St W edge X -16.8; 4 m along Z"
+    },
+    {
+      "id": 49,
+      "asset": "ext_ts4_wear_decal.glb",
+      "x": -16.6,
+      "y": 0.0,
+      "z": 0.0,
+      "rot_deg": 90.0,
+      "note": "identical transform to the dead TS-4"
+    },
+    {
+      "id": 25,
+      "asset": "hydro_planter_tiered_exterior.glb",
+      "x": -16.6,
+      "y": 0.0,
+      "z": -5.0,
+      "rot_deg": 90.0,
+      "note": "existing TS-4 reference"
+    },
+    {
+      "id": 25,
+      "asset": "hydro_planter_tiered_exterior.glb",
+      "x": -16.6,
+      "y": 0.0,
+      "z": 5.0,
+      "rot_deg": 90.0,
+      "note": "existing TS-4 reference"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_01.glb",
+      "x": -20.0,
+      "y": 0.05,
+      "z": -7.0,
+      "rot_deg": 0.0,
+      "note": "W 01; walkway centre X=(zone x0+x1)/2 = -20.0000"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_03.glb",
+      "x": -20.0,
+      "y": 0.05,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": "W 03; walkway centre X=(zone x0+x1)/2 = -20.0000"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_05.glb",
+      "x": -20.0,
+      "y": 0.05,
+      "z": 2.0,
+      "rot_deg": 0.0,
+      "note": "W 05; walkway centre X=(zone x0+x1)/2 = -20.0000"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_02.glb",
+      "x": 20.0,
+      "y": 0.05,
+      "z": -7.0,
+      "rot_deg": 0.0,
+      "note": "E 02; walkway centre X=(zone x0+x1)/2 = 20.0000"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_04.glb",
+      "x": 20.0,
+      "y": 0.05,
+      "z": -3.5,
+      "rot_deg": 0.0,
+      "note": "E 04; walkway centre X=(zone x0+x1)/2 = 20.0000"
+    },
+    {
+      "id": 50,
+      "asset": "ext_litter_drift_03.glb",
+      "x": 20.0,
+      "y": 0.05,
+      "z": 2.0,
+      "rot_deg": 0.0,
+      "note": "E 03; walkway centre X=(zone x0+x1)/2 = 20.0000"
+    },
+    {
+      "id": 51,
+      "asset": "ext_track_scuff_guideway.glb",
+      "x": 5.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "identical transform to guideway module at the stop (X 15) or one module either side"
+    },
+    {
+      "id": 51,
+      "asset": "ext_track_scuff_guideway.glb",
+      "x": 15.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "identical transform to guideway module at the stop (X 15) or one module either side"
+    },
+    {
+      "id": 51,
+      "asset": "ext_track_scuff_guideway.glb",
+      "x": 25.0,
+      "y": 0.0,
+      "z": -20.077,
+      "rot_deg": 0.0,
+      "note": "identical transform to guideway module at the stop (X 15) or one module either side"
+    }
+  ]
+}
