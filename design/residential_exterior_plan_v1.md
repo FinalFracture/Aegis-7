@@ -135,3 +135,8 @@ What this means on the ground:
 ## Handoffs
 - **Gage:** at rebuild time, change window streaming so windowed units keep real interiors to 30 m, then show the card (decision 2). Also add the service door as a navmesh link for Sprocket and as an egress.
 - **Rook:** build to `residential_exterior_asset_list_v1.md`.
+
+## Layout note — tram track shift (Atlas PM call, 2026-10-30 8:37 PM CT)
+- Track centre moves 0.35 m toward the platform: **Z -20.25 -> Z -19.90** (rail module `ext_tram_rail_module.glb`, rotated 180°, X pitch 10 m). Car side (2.6 m wide) lands at Z -18.60 -> **~0.10 m platform gap**, no boarding sill.
+- **Layout-script update needed** (`residential_exterior_plan_v1.py` "tram band" + rail placement): the 3.5 m module centred at -19.90 spans Z -18.15..-21.65, so its +Z 0.35 m runs under the kerb (#16, Z -18.5..-16.6, y 0..0.30). Resolve by either (a) a trimmed rail-module variant with the +Z edge at local z 1.40 (Rook can cut it), or (b) letting the kerb sit over the bed edge (kerb base would clip bed top y 0.19). Recommend (a).
+- #18 catenary mast + wire span **CUT** (Atlas PM call; power is ground-fed via the centre power rail). Revivable by Jared. Remove catenary poles from the plan when the script is next run.

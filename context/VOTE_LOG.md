@@ -1711,3 +1711,12 @@
 - **Candidates:** `design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_01..05.glb`, sheet `ext_tram_platform_kerb_contact_sheet.png` (all clip-check + validate PASS; tiles @2.0 m, 6 mm joints).
 - **Deciding vote: Jared (Oct 30, 8:31 PM CT), relayed via Atlas.**
 - **#16 Kerb WINNER:** `#02 Cyan_Tactile` (`ext_tram_platform_kerb_02.glb`, 112 tris) -> `godot/assets/models/ext_tram_platform_kerb.glb`
+
+### #17 tram rail module (Rook, box pipeline, Oct 30)
+- **Candidates:** `design/assets/ext_tram_rail_module/ext_tram_rail_module_01..05.glb`, sheet `ext_tram_rail_module_contact_sheet.png` (all clip-check + validate PASS; gauge 1.435, TOR 0.20, tiles @10 m).
+- **Deciding vote: Jared (Oct 30, 8:37 PM CT), relayed via Atlas.**
+- **#17 Rail WINNER:** `#05 Ground_Power_Rail` (`ext_tram_rail_module_05.glb`, 224 tris) -> `godot/assets/models/ext_tram_rail_module.glb`
+- **Atlas PM call (not a Jared vote), 8:37 PM CT:** track centre moves to Z -19.90 (~0.10 m platform gap, no sill); layout note in `design/residential_exterior_plan_v1.md`.
+
+### #18 catenary mast + wire span — CUT
+- **Atlas PM call (not a Jared vote), Oct 30 8:37 PM CT:** cut because power is ground-fed (#17 05). Revivable by Jared.

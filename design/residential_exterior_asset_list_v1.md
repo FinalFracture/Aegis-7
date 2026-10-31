@@ -31,7 +31,7 @@ Source: the approved `residential_exterior_plan_v1.md` and the **v1.1 QC plan** 
 | 15 | Tram stop shelter (lived-in) | platform, X 12..18, Z -16.9..-15.6 (v1.2 plan) | 1 | 6.0 × 1.3 × 2.8 | 5,800 |
 | 16 | Tram platform kerb module | stop platform, X 9..21 | 6 | 2.0 × 1.9 × 0.3 | 300 |
 | 17 | Tram rail module (twin track, axial) | Z -19..-22 | 10 | 10 × 3.5 | 400 |
-| 18 | Catenary mast + wire span | along tram line | 5 | 0.3 × 3.5 × 6.0 | 900 |
+| ~~18~~ | ~~Catenary mast + wire span~~ — CUT by Atlas PM call 2026-10-30 8:37 PM CT (ground-fed power, #17 = 05 Ground Power Rail); revivable by Jared | along tram line | 0 | — | 0 |
 | 19 | Tram vehicle (live, 2-car), split for the <6,000 cap: **19a** car body w/ cab (one mesh, mirrored for car 2) 5,800; **19b** bogie + coupler 1,500 (×4); **19c** pantograph 800 (×1) | tram line | 1 set | 24 × 2.6 × 3.4 overall (car 12 × 2.6 × 3.4) | ~18,400 set |
 | 20 | Stop totem / timetable panel | stop | 1 | 0.5 × 0.3 × 2.4 | 500 |
 
