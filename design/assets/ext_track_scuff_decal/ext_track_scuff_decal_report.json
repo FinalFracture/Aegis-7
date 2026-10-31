@@ -1,0 +1,52 @@
+{
+ "01": {
+  "tris": 6,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "coplanar_pairs": 0,
+  "uv_blend": true,
+  "sprocket_overlap": 0,
+  "gap_ok": true,
+  "pass": true
+ },
+ "02": {
+  "tris": 8,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "coplanar_pairs": 0,
+  "uv_blend": true,
+  "sprocket_overlap": 0,
+  "gap_ok": true,
+  "pass": true
+ },
+ "03": {
+  "tris": 8,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "coplanar_pairs": 0,
+  "uv_blend": true,
+  "sprocket_overlap": 0,
+  "gap_ok": true,
+  "pass": true
+ },
+ "04": {
+  "tris": 8,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "coplanar_pairs": 0,
+  "uv_blend": true,
+  "sprocket_overlap": 0,
+  "gap_ok": true,
+  "pass": true
+ },
+ "05": {
+  "tris": 14,
+  "min_clear_m": 0.003,
+  "inside_hits": 0,
+  "coplanar_pairs": 0,
+  "uv_blend": true,
+  "sprocket_overlap": 0,
+  "gap_ok": true,
+  "pass": true
+ }
+}
