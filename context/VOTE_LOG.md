@@ -1727,3 +1727,5 @@
 - **#19 wheeled tram candidates 01-05 SUPERSEDED, not picked** (`design/assets/ext_tram_vehicle/`). Vehicle to be redone as maglev later.
 - **#15 shelter (05) and #16 kerb (02) stay promoted.**
 - **#17 maglev guideway:** candidates `design/assets/ext_maglev_guideway/ext_maglev_guideway_01..05.glb` + contact sheet + kerb fit sheet, awaiting Jared's pick.
+- **Deciding vote: Jared (Oct 30, 8:59 PM CT), relayed via Atlas.**
+- **#17 Maglev guideway WINNER:** `#01 T_Beam` (`ext_maglev_guideway_01.glb`, 160 tris, nodes `Stator_Lev`, `Stator_Guide`, `Guide_Glow`) -> `godot/assets/models/ext_maglev_guideway.glb` (rot 0, origin Z -20.077, track centre Z -19.90).
