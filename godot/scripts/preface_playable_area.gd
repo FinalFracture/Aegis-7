@@ -387,6 +387,18 @@ func _ready() -> void:
 			_player_body.global_position = SPAWN_POS
 			_player_body.velocity = Vector3.ZERO
 			_player_body.rotation_degrees = Vector3(0.0, SPAWN_YAW_DEG, 0.0)
+	# D670-05. Baked mesh covers interior + exterior walk: ramp, platform, hatch, walkways.
+	# Skip while tools/bake_navmesh.gd is the running script (its path is on OS.get_cmdline_args()).
+	var baking_nav := false
+	for nav_arg: String in OS.get_cmdline_args():
+		if nav_arg.contains("bake_navmesh"):
+			baking_nav = true
+			break
+	if not baking_nav and ResourceLoader.exists("res://assets/nav/preface_navmesh.tres"):
+		var nav_region := NavigationRegion3D.new()
+		nav_region.name = "PlayableNavRegion"
+		nav_region.navigation_mesh = load("res://assets/nav/preface_navmesh.tres") as NavigationMesh
+		add_child(nav_region)
 
 
 func _ensure_child(nm: String) -> Node3D:

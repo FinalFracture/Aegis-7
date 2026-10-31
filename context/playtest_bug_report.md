@@ -513,3 +513,15 @@ _Box only: fresh clone of 5db7c01 in /tmp/qa_5db7c01 (cloned from the box repo; 
 | D670-01 | Gage | High | Still failing (2 T38 checks), unchanged. |
 
 Not checked: realism, navmesh/wayfinding, lighting/shadows, performance, hub backing, keyboard/mouse input on the UI beyond the QA script, Windows runs.
+
+## QA pass e793448 (Patch, 2026-10-31, box, Godot 4.7.2 opengl3/xvfb, fresh clone /tmp/qa_e793448)
+Results: placement 26/26, hand 36/36, reticle-stars-doors 89/0, troubleshoot-simple 13/0, forcefield-door 9/0 PASS, door-hub-shot OK. Import log clean (0 errors). No script or parse errors.
+1. Realism: PASS. The RM1B door, hub and field look plausible (screenshot).
+2. Pathfinding: N/A, no navmesh in this push (D670-05 still open, comes in the next push).
+3. Clipping: PASS. D670-04 FIXED: all 5 hubs seated 9/9 rays, back gap HUB_SEAT_GAP=0.003 m (allowed 0-0.015). Tangent shifts: RM1A 0.22, RM1B 0.12, APT201/202 0.02, SECTOR4_EXIT 0.
+4. Shading and lighting: PASS. D670-06 FIXED (Mat_Occluder_Gunmetal). D670-07 FIXED (scenes ssr_enabled=false; runtime enables it only when the method is forward_plus).
+5. UI, pickups and errors: 5DB-03 FIXED (e_aim_hatch_opens_ui: Hatch_D204_EmitterPanel opens D-204). 5DB-01/02 FIXED (pcba_python_puzzle_ui is not referenced by any scene or script). Troubleshoot UI: no hints; it stays open after a win and closes on EXIT; the board matches simple_final_netlist (unchanged since 5db7c01, previously validated). D670-01 FIXED (BCI headband prompt correct, collected, collected_bci_respawned=false).
+New, low:
+- E793-01 LOW (Gage): every QA run ends with exit-time leaks (110 ObjectDB, 33 "instance_notify_deleted", GL RID leaks). Exit only; no gameplay impact.
+- E793-02 LOW (Gage): --qa-reticle-stars-doors takes more than 5 min headless (timed out at 300 s, finished under 900 s). Slow for CI.
+Screenshots: godot/renders/qa/pass_e793448/ (door_hub_ingame_rm1b, forcefield_door_mid_dissolve, troubleshoot_simple_ui, troubleshoot_simple_ui_won).
