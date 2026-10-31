@@ -1,0 +1,255 @@
+{
+ "01": {
+  "clip_runs": [
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   }
+  ],
+  "litter_n": 14,
+  "tris": 420,
+  "floor_contact": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "floor_ok": true,
+  "watertight": true,
+  "litter_intersections": 0,
+  "decal_litter_hits": 0,
+  "decal_offsets": [],
+  "decal_offset_ok": true,
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "size": [
+   1.065,
+   0.09,
+   2.97
+  ],
+  "uv_blend": true,
+  "pass": true
+ },
+ "02": {
+  "clip_runs": [
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   }
+  ],
+  "litter_n": 5,
+  "tris": 194,
+  "floor_contact": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "floor_ok": true,
+  "watertight": true,
+  "litter_intersections": 0,
+  "decal_litter_hits": 0,
+  "decal_offsets": [
+   0.003
+  ],
+  "decal_offset_ok": true,
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "size": [
+   0.949,
+   0.09,
+   2.792
+  ],
+  "uv_blend": true,
+  "pass": true
+ },
+ "03": {
+  "clip_runs": [
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   }
+  ],
+  "litter_n": 7,
+  "tris": 268,
+  "floor_contact": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "floor_ok": true,
+  "watertight": true,
+  "litter_intersections": 0,
+  "decal_litter_hits": 0,
+  "decal_offsets": [
+   0.003,
+   0.0045
+  ],
+  "decal_offset_ok": true,
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "size": [
+   0.961,
+   0.066,
+   2.675
+  ],
+  "uv_blend": true,
+  "pass": true
+ },
+ "04": {
+  "clip_runs": [
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   }
+  ],
+  "litter_n": 6,
+  "tris": 136,
+  "floor_contact": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "floor_ok": true,
+  "watertight": true,
+  "litter_intersections": 0,
+  "decal_litter_hits": 0,
+  "decal_offsets": [
+   0.003,
+   0.0045
+  ],
+  "decal_offset_ok": true,
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "size": [
+   1.175,
+   0.09,
+   2.886
+  ],
+  "uv_blend": true,
+  "pass": true
+ },
+ "05": {
+  "clip_runs": [
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   },
+   {
+    "overlap": [],
+    "coplanar": [],
+    "open": []
+   }
+  ],
+  "litter_n": 6,
+  "tris": 230,
+  "floor_contact": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "floor_ok": true,
+  "watertight": true,
+  "litter_intersections": 0,
+  "decal_litter_hits": 0,
+  "decal_offsets": [
+   0.003
+  ],
+  "decal_offset_ok": true,
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "size": [
+   1.05,
+   0.09,
+   2.811
+  ],
+  "uv_blend": true,
+  "pass": true
+ }
+}
