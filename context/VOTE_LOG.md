@@ -1781,3 +1781,9 @@
 - **Candidates:** `design/assets/ext_litter_drift/ext_litter_drift_01..05.glb` (all clip-check PASS, commit 17ca8d4).
 - **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas: keep ALL FIVE** as a variant set, chosen by what spilled -> `godot/assets/models/ext_litter_drift_01..05.glb`. Placement: y 0.05, rot 0, drift -Z.
 - **Atlas PM call (not a Jared vote):** 3 patches at X ±17.4 (Spin St walkways).
+
+### #51 maglev track & scuff decals (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_track_scuff_decal/ext_track_scuff_{guideway,kerb}_01..05.glb` (all checks PASS, commit 89b0104).
+- **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
+- **#51 WINNER:** `#03 Boarding Wear` -> `godot/assets/models/ext_track_scuff_guideway.glb` + `godot/assets/models/ext_track_scuff_kerb.glb`. Transform = same as host guideway module / platform kerb. Sprocket wheel-track decals kept, untouched.
+- **Atlas PM call (not a Jared vote), Oct 31:** #50 litter = 3 patches per Spin Street (6 total), mixed variants, no repeat on the same street.

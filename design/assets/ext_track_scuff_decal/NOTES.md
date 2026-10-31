@@ -13,3 +13,7 @@ Per candidate NN: `ext_track_scuff_guideway_NN.glb` + `ext_track_scuff_kerb_NN.g
 | 05 | Full Wear Set | 14 | All four beats layered; densest story. |
 
 Checks (`ext_track_scuff_decal_report.json`, against the promoted guideway + kerb): all PASS — clearance to host 3 mm (2-5 mm), 0 decal points inside closed host parts, stacked layers 1.5 mm apart (0 coplanar), 0 overlap with the Sprocket apron/jamb zone (world-space test), UV + BLEND, <6000 tris. Sub-part overlap N/A (open single-sided quads). Avoided by design: tactile bars (z 0.40-0.68) and safety line (z 0.81-0.87) on the deck, Guide_Glow on the flange.
+
+## WINNER: 03 Boarding Wear (Jared, Oct 31 2026, via Atlas)
+- Promoted -> `godot/assets/models/ext_track_scuff_guideway.glb` + `godot/assets/models/ext_track_scuff_kerb.glb`.
+- Transforms: guideway overlay = identical transform to every `ext_maglev_guideway.glb` module (rot 0, origin Z -20.077, y 0, 10 m X pitch). Kerb overlay = identical transform to every `ext_tram_platform_kerb.glb` at the stop (rot 180°, origin Z -17.55, y 0). Sprocket wheel-track decals untouched.
