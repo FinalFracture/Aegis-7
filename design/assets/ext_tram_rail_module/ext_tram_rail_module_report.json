@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_tram_rail_module_01",
+  "style": "Embedded_Street_Slab",
+  "tris": 128,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.2,
+   3.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0035,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_rail_module/ext_tram_rail_module_01.glb"
+ },
+ {
+  "cand": "ext_tram_rail_module_02",
+  "style": "Composite_Sleeper_Block",
+  "tris": 352,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.2,
+   3.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_rail_module/ext_tram_rail_module_02.glb"
+ },
+ {
+  "cand": "ext_tram_rail_module_03",
+  "style": "Civic_Lit_Bed",
+  "tris": 176,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.2,
+   3.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_rail_module/ext_tram_rail_module_03.glb"
+ },
+ {
+  "cand": "ext_tram_rail_module_04",
+  "style": "Steel_Ladder_Track",
+  "tris": 192,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.2,
+   3.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_rail_module/ext_tram_rail_module_04.glb"
+ },
+ {
+  "cand": "ext_tram_rail_module_05",
+  "style": "Ground_Power_Rail",
+  "tris": 224,
+  "budget_ok": true,
+  "size": [
+   9.994,
+   0.2,
+   3.5
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0038,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_rail_module/ext_tram_rail_module_05.glb"
+ }
+]
