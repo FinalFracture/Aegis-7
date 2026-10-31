@@ -18,3 +18,15 @@ Fix during build: 03 had two decals on the same layer (non-overlapping, but tigh
 ## APPROVED: all 5 as a variant set (Jared, Oct 31 2026, via Atlas)
 - Promoted -> `godot/assets/models/ext_litter_drift_01..05.glb`; pick the variant by what spilled.
 - Placement: y 0.05, rotation 0 (drift toward -Z, antispinward). Atlas PM call: 3 patches on the Spin St walkways at X ±17.4.
+
+## Layout — Atlas PM call (not a Jared vote), Oct 31: 3 patches per Spin Street, 6 total, mixed variants, no repeat on a street
+Proposed by Rook (positions are a proposal for Gage/Atlas; all y 0.05, rot 0, drift -Z). Patches are ≤1.2 x 3.0 m; spacing is tighter toward -Z (heavier drift at the promenade end).
+| Street | Variant | Centre X | Centre Z | Z span | Clearance |
+|---|---|---|---|---|---|
+| Spin St W | ext_litter_drift_01 | -17.4 | -7.0 | -8.5..-5.5 | 0.8 m north of bollards (Z -9.3) |
+| Spin St W | ext_litter_drift_03 | -17.4 | -3.5 | -4.85..-2.15 | |
+| Spin St W | ext_litter_drift_05 | -17.4 | +2.0 | +0.6..+3.4 | |
+| Spin St E | ext_litter_drift_02 | +17.4 | -7.0 | -8.4..-5.6 | 0.8 m N of bollards; nook (Z ≤ -9.6) is south of the bollards, ≥2.1 m clear |
+| Spin St E | ext_litter_drift_04 | +17.4 | -3.5 | -4.95..-2.05 | |
+| Spin St E | ext_litter_drift_03 | +17.4 | +2.0 | +0.65..+3.35 | |
+Note: X ±17.4 is Atlas's value. Spin St E bollards span X 17.9..22.1, so the street centreline may be nearer X ±20 — TBD for Gage to confirm X so patches sit on the walkway, not across a kerb/curb.
