@@ -1729,3 +1729,9 @@
 - **#17 maglev guideway:** candidates `design/assets/ext_maglev_guideway/ext_maglev_guideway_01..05.glb` + contact sheet + kerb fit sheet, awaiting Jared's pick.
 - **Deciding vote: Jared (Oct 30, 8:59 PM CT), relayed via Atlas.**
 - **#17 Maglev guideway WINNER:** `#01 T_Beam` (`ext_maglev_guideway_01.glb`, 160 tris, nodes `Stator_Lev`, `Stator_Guide`, `Guide_Glow`) -> `godot/assets/models/ext_maglev_guideway.glb` (rot 0, origin Z -20.077, track centre Z -19.90).
+
+### #19 maglev vehicle (Rook, box pipeline, Oct 30)
+- **Candidates:** `design/assets/ext_maglev_vehicle/ext_maglev_car_body_01..05.glb` + `ext_maglev_magnet_module_01..05.glb`, sheet `ext_maglev_vehicle_contact_sheet.png` (all clip-check + validate PASS alone and assembled with guideway + 6 kerbs).
+- **Deciding vote: Jared (Oct 30, 9:08 PM CT), relayed via Atlas.**
+- **#19 Maglev vehicle WINNER:** `#01 Civic_Pearl_Classic` -> `godot/assets/models/ext_maglev_car_body.glb` (1,376 tris) + `godot/assets/models/ext_maglev_magnet_module.glb` (96 tris). Placement/clearances: `design/assets/ext_maglev_vehicle/NOTES.md` (godot/assets/models holds GLBs only, so notes stay in design/).
+- **Tram/transit set CLOSED:** #15 shelter 05, #16 kerb 02, #17 maglev guideway 01, #19 maglev vehicle 01 promoted; #18 catenary cut; ground-power rail + wheeled tram superseded.
