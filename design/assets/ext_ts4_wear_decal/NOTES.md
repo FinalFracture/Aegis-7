@@ -17,3 +17,4 @@ Checks (`ext_ts4_wear_decal_report.json`, tested against the promoted TS-4): all
 ## WINNER: 02 Mismatched Pearl (Jared, Oct 31 2026, via Atlas)
 - Promoted -> `godot/assets/models/ext_ts4_wear_decal.glb` (8 tris) + `godot/assets/models/ext_ts4_dead_foliage.glb`.
 - Placement: the decal overlay shares the TS-4 pivot — use the identical transform of the TS-4 it dresses. `ext_ts4_dead_foliage.glb` REPLACES (not overlays) the one dead west-sidewalk TS-4 (row 25: back to Spin St W kerb, X -16.8..-16.39, one of z0 -7 / -2 / 3; which instance is a layout call).
+- **Atlas PM call (not a Jared vote), Oct 31:** the dead TS-4 is the middle west-sidewalk spot, X -16.6, Z -2.

@@ -1775,3 +1775,9 @@
 - **Candidates:** `design/assets/ext_ts4_wear_decal/ext_ts4_wear_decal_01..05.glb` + `ext_ts4_dead_foliage_01..05.glb` (all checks PASS, commit 3be7475).
 - **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
 - **#49 WINNER:** `#02 Mismatched Pearl` -> `godot/assets/models/ext_ts4_wear_decal.glb` + `godot/assets/models/ext_ts4_dead_foliage.glb`. Placement: decal = same transform as its TS-4; dead variant replaces the one west-sidewalk TS-4.
+- **Atlas PM call (not a Jared vote), Oct 31:** #49 dead TS-4 = middle west-sidewalk spot (X -16.6, Z -2).
+
+### #50 litter drift (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_litter_drift/ext_litter_drift_01..05.glb` (all clip-check PASS, commit 17ca8d4).
+- **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas: keep ALL FIVE** as a variant set, chosen by what spilled -> `godot/assets/models/ext_litter_drift_01..05.glb`. Placement: y 0.05, rot 0, drift -Z.
+- **Atlas PM call (not a Jared vote):** 3 patches at X ±17.4 (Spin St walkways).

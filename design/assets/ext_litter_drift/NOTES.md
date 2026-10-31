@@ -14,3 +14,7 @@ Solid litter: watertight lying cans/cups, crumpled wrappers, flat packets, ratio
 
 Checks (`ext_litter_drift_report.json`): all PASS on 3 seeds of ext_clip_check (0 overlaps, 0 coplanar, 0 open), floor contact 0.000 for every piece (±0.005), 0 litter-litter AABB intersections (≥2 cm gaps), 0 litter on decals, decal offsets 3/4.5 mm, pivot (0,0,0), UV + BLEND decals, <6000 tris.
 Fix during build: 03 had two decals on the same layer (non-overlapping, but tightened) -> second moved to layer 1 (+1.5 mm).
+
+## APPROVED: all 5 as a variant set (Jared, Oct 31 2026, via Atlas)
+- Promoted -> `godot/assets/models/ext_litter_drift_01..05.glb`; pick the variant by what spilled.
+- Placement: y 0.05, rotation 0 (drift toward -Z, antispinward). Atlas PM call: 3 patches on the Spin St walkways at X ±17.4.
