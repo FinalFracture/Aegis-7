@@ -1706,3 +1706,8 @@
 - **Candidates:** `design/assets/ext_tram_shelter/ext_tram_shelter_01..05.glb`, sheet `ext_tram_shelter_contact_sheet.png` (all clip-check + validate PASS).
 - **Deciding vote: Jared (Oct 30, 8:27 PM CT), relayed via Atlas.**
 - **#15 Tram shelter WINNER:** `#05 Glass_Pavilion` (`ext_tram_shelter_05.glb`, 696 tris, nodes `Timetable_Screen`, `Arrival_Beacon`, `Roof_Downlight`) -> `godot/assets/models/ext_tram_shelter.glb`
+
+### #16 tram platform kerb (Rook, box pipeline, Oct 30)
+- **Candidates:** `design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_01..05.glb`, sheet `ext_tram_platform_kerb_contact_sheet.png` (all clip-check + validate PASS; tiles @2.0 m, 6 mm joints).
+- **Deciding vote: Jared (Oct 30, 8:31 PM CT), relayed via Atlas.**
+- **#16 Kerb WINNER:** `#02 Cyan_Tactile` (`ext_tram_platform_kerb_02.glb`, 112 tris) -> `godot/assets/models/ext_tram_platform_kerb.glb`
