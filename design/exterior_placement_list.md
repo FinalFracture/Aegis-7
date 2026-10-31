@@ -6,8 +6,8 @@ World axes: X axial (fore -X / aft +X), +Z spinward, -Z antispinward (promenade/
 | 15 | Tram (maglev) shelter, 05 Glass Pavilion | `ext_tram_shelter.glb` | (15, 0.297, -16.25), rot 180; open side (local +Z) faces the guideway. Footprint X 12..18, Z -16.9..-15.6 (centre X 15.0, Z -16.25) | 1 | rot 180, open side to the guideway |
 | 16 | Platform kerb, 02 Cyan Tactile | `ext_tram_platform_kerb.glb` | rot 180, y 0, origin Z -17.55; front face Z -18.5; X 10, 12, 14, 16, 18, 20 | 6 on platform X 9..21 | X 10..20 step 2 |
 | 17 | Maglev guideway, 01 T-Beam | `ext_maglev_guideway.glb` | rot 0, y 0, origin Z -20.077; track centre Z -19.90; X -45..45 step 10 | 10 | X -45, -35, -25, -15, -5, 5, 15, 25, 35, 45 |
-| 19 | Maglev car body, 01 Civic Pearl Classic | `ext_maglev_car_body.glb` | pair centred on shelter X 15. Xc=21.153, Xc2=8.847. Car 1 (21.084, 0.06, -19.90) rot 0; car 2 (8.916, 0.06, -19.90) rot 180 | 2 cars (set 24.31 m) | centred on shelter X 15 at the stop |
-| 19 | Maglev magnet module | `ext_maglev_magnet_module.glb` | car 1 (20.853, 0.06, -19.90) rot 0; car 2 (9.147, 0.06, -19.90) rot 180 | 1 per car | same Xc / Xc2 as the bodies |
+| 19 | Maglev car body, 01 Civic Pearl Classic | `ext_maglev_car_body.glb` | pair centred on shelter X 15. Xc=21.153, Xc2=8.847. Car 1 (21.153, 0.06, -19.90) rot 0; car 2 (8.847, 0.06, -19.90) rot 180 | 2 cars (set 24.31 m) | centred on shelter X 15 at the stop |
+| 19 | Maglev magnet module | `ext_maglev_magnet_module.glb` | car 1 (20.922, 0.06, -19.90) rot 0; car 2 (9.078, 0.06, -19.90) rot 180 | 1 per car | offset from the body, shifted with it |
 | 41 | Curb segment, 01 Chamfer Slate | `ext_curb_segment.glb` | y 0; pitch 1.997 m (segment 1.994 m, 3 mm joints); centreline 0.152 m outside the bed edge; rot 0 along X, rot 90 along Z | 270 placed (271 built, 1 skipped) | runs listed below |
 | 41 | Curb corner | `ext_curb_corner.glb` | y 0, rot 0, at each bed's four outside corners (offset 0.152 m out on both axes) | 100 | same beds as the segment runs |
 | 44 | Paving promenade, 04 Tactile Guidance | `ext_paving_promenade.glb` | y 0 (top 0.05); 2 m grid, origin corner (9, -18.5) | other walkways | promenade on the other walkway cells of that grid |
@@ -36,7 +36,7 @@ Notes
   - Hydro bed ×3. X -13..-3; Z 19.5..20.4, 21.5..22.4, 23.5..24.4. South 6, north 6, west 1, east 1, plus 4 corners (42 segments, 12 corners).
   - Guideway north X -47..9 at Z -18.352, rot 0: 29 segments, last dropped. Guideway north X 21..47 at Z -18.352: 14 segments. Guideway south X -47..47 at Z -21.802: 48 segments.
   - Placed: 270 segments, 100 corners. Skipped: 1.
-- #19: Xc = 15 + 12.306/2 = 21.153, Xc2 = Xc - 12.306 = 8.847, so the two-car set is centred on the shelter at X 15. Body offsets ±0.069; magnet offsets ±0.30.
+- #19: Xc = 15 + 12.306/2 = 21.153, Xc2 = Xc - 12.306 = 8.847, so the two-car set is centred on the shelter at X 15. Body x is Xc and Xc2. Magnets keep their offset from the bodies (20.922 and 9.078).
 - #44: grid corners sit on (9, -18.5) with a 2 m pitch. Plaza is that grid inside X 9..18, Z -25.6..-12.5 (14 tiles after the skips above). Promenade is the other walkway cells on the same grid (walk, and not building, plot, green, water, guideway, or a solid object).
 - #47: three 4 m segments cover the 10.028 m line. Centres are 2 m, 6 m, and 10 m from (9.75, -13.996). The Sector-4 entrance at Z -9 is up the exit ramp from (0, -11.65).
 - #49: the middle west TS-4 is the hydro planter whose box is Z -2..2. Dead foliage replaces it at the box centre (-16.6, 0, 0), rot 90. The wear decal uses that same transform.

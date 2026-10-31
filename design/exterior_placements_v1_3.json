@@ -224,7 +224,7 @@
     {
       "id": 19,
       "asset": "ext_maglev_car_body.glb",
-      "x": 21.084,
+      "x": 21.153,
       "y": 0.06,
       "z": -19.9,
       "rot_deg": 0.0,
@@ -233,7 +233,7 @@
     {
       "id": 19,
       "asset": "ext_maglev_car_body.glb",
-      "x": 8.916,
+      "x": 8.847,
       "y": 0.06,
       "z": -19.9,
       "rot_deg": 180.0,
@@ -242,7 +242,7 @@
     {
       "id": 19,
       "asset": "ext_maglev_magnet_module.glb",
-      "x": 20.853,
+      "x": 20.922,
       "y": 0.06,
       "z": -19.9,
       "rot_deg": 0.0,
@@ -251,7 +251,7 @@
     {
       "id": 19,
       "asset": "ext_maglev_magnet_module.glb",
-      "x": 9.147,
+      "x": 9.078,
       "y": 0.06,
       "z": -19.9,
       "rot_deg": 180.0,

@@ -133,10 +133,12 @@ for x in range(-45, 46, 10):
     if x in (-45, 45): note += "; end overhangs scene bounds X -47..47 by %.3f m each side (~3 m)" % gw_over
     guides.append(P(17, "ext_maglev_guideway.glb", x, 0, -20.077, 0, note))
 Xc = round(15.0 + 12.306 / 2.0, 4); Xc2 = round(Xc - 12.306, 4)
-bodies = [P(19, "ext_maglev_car_body.glb", Xc - 0.069, 0.06, -19.90, 0, "car 1; Xc=%.4f = 15.0+12.306/2" % Xc),
-          P(19, "ext_maglev_car_body.glb", Xc2 + 0.069, 0.06, -19.90, 180, "car 2; Xc2=%.4f = Xc-12.306" % Xc2)]
-mags = [P(19, "ext_maglev_magnet_module.glb", Xc - 0.30, 0.06, -19.90, 0, "car 1 magnet; Xc=%.4f" % Xc),
-        P(19, "ext_maglev_magnet_module.glb", Xc2 + 0.30, 0.06, -19.90, 180, "car 2 magnet; Xc2=%.4f" % Xc2)]
+# Body pivot x is Xc / Xc2 exactly (21.153 / 8.847). Magnets keep their offset from the body
+# (the old body sat at Xc-0.069 / Xc2+0.069, so each magnet shifts by the same +0.069 / -0.069).
+bodies = [P(19, "ext_maglev_car_body.glb", Xc, 0.06, -19.90, 0, "car 1; Xc=%.4f = 15.0+12.306/2" % Xc),
+          P(19, "ext_maglev_car_body.glb", Xc2, 0.06, -19.90, 180, "car 2; Xc2=%.4f = Xc-12.306" % Xc2)]
+mags = [P(19, "ext_maglev_magnet_module.glb", Xc - 0.30 + 0.069, 0.06, -19.90, 0, "car 1 magnet; Xc=%.4f" % Xc),
+        P(19, "ext_maglev_magnet_module.glb", Xc2 + 0.30 - 0.069, 0.06, -19.90, 180, "car 2 magnet; Xc2=%.4f" % Xc2)]
 curb_segs, corners = [], []
 for o in O:
     if not o[0].startswith(("planter S", "planter N", "hydro planter W", "hydro bed")): continue
@@ -234,6 +236,12 @@ for a, b in zip(gb, gb[1:]):
 QC.append(("guideway run covers X -47..47", bad))
 QC.append(("guideway scuff modules", [] if [p["x"] for p in scuff_g] == [5, 15, 25] else [p["x"] for p in scuff_g]))
 QC.append(("kerb scuffs", [p["x"] for p in PLACEMENTS if p["asset"] == "ext_track_scuff_kerb.glb"]))
+CAR_LEN = 12.306
+body_boxes = [aabb_xz(p["x"], p["z"], CAR_LEN, 2.66, p["rot_deg"]) for p in bodies]
+bad = []
+if len(body_boxes) == 2 and aabb_gap(body_boxes[0], body_boxes[1]) < -0.010:
+    bad.append(round(aabb_gap(body_boxes[0], body_boxes[1]), 4))
+QC.append(("maglev car bodies do not overlap", bad))
 for q in QC: print("QC:",q)
 assert all((not v) if isinstance(v,list) else True for _,v in QC), "QC failed"
 print("benches",len(BENCH),"bins",len(BIN),"bollards",sum(len(v[0]) for v in BROWS.values()),"objects",len(O),"poles",len(POLES),"planters",sum(o[0].startswith("planter") for o in O))

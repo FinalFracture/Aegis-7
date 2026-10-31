@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -77,12 +77,27 @@ const TEX_DIRS := [
 ]
 const OUT_DIRS := ["res://renders/preface"]
 const QA_DIR := "res://renders/qa"
+const EXT_PLACEMENTS_PATH := "res://data/exterior_placements_v1_3.json"
+const EXT_RENDER_DIR := "res://renders/queue_2026-10-31"
+const EXT_TS4_X := -16.6
+const EXT_TS4_Z := 0.0
+const EXT_TS4_RADIUS := 1.5
+const EXT_RENDER_SETTLE_FRAMES := 30
+const EXT_RENDER_HOLD_FRAMES := 10
 
 const CAMERAS := [
 	{"name": "cam_01_top_floor_apartment_open_portal", "pos": Vector3(-6.55, 5.72, 4.85), "target": Vector3(-10.45, 5.05, 6.35), "fov": 58.0, "fp_wrist": true},
 	{"name": "cam_02_two_story_atrium_staircase_and_sweep_bot", "pos": Vector3(-6.20, 5.95, 2.05), "target": Vector3(5.80, 2.55, -3.20), "fov": 58.0, "fp_wrist": false},
 	{"name": "cam_03_open_side_rooms_and_puddle_substation", "pos": Vector3(3.65, 1.85, 0.35), "target": Vector3(4.65, 1.25, 6.50), "fov": 56.0, "fp_wrist": false},
 	{"name": "cam_04_ground_concourse_open_exit_and_faction_bots", "pos": Vector3(-2.35, 2.05, -1.65), "target": Vector3(0.15, 1.35, -8.85), "fov": 55.0, "fp_wrist": false}
+]
+
+# --qa-exterior-render. Eye, then look-at. Saved as item4_<name>.png.
+const EXT_RENDER_VIEWS: Array[Dictionary] = [
+	{"name": "shelter_platform", "pos": Vector3(15.0, 1.7, -8.0), "at": Vector3(15.0, 1.0, -18.0)},
+	{"name": "plaza_ramp", "pos": Vector3(4.0, 1.7, -8.0), "at": Vector3(12.0, 0.5, -18.0)},
+	{"name": "canal_edge", "pos": Vector3(0.0, 3.0, -15.0), "at": Vector3(0.0, 0.0, -25.8)},
+	{"name": "west_walkway", "pos": Vector3(-20.0, 1.7, 6.0), "at": Vector3(-18.0, 0.5, -6.0)}
 ]
 
 # Player controller tuning
@@ -195,6 +210,7 @@ const FF_TEX_DIR := "res://assets/textures/force_field/"
 const FF_STALL_STRENGTH := 0.40
 const FF_STALL_TIME := 2.0
 const FF_DENY_TIME := 0.3
+const NAV_LINK_OFFSET := 0.8          # metres either side of a force-field door plane along its normal
 const FF_BASE_STATIC := 0.35
 const FF_BASE_JITTER := 0.004
 const FF_BASE_ARC := 0.8
@@ -253,11 +269,17 @@ var _walk_swing_amp: float = 0.0
 var _flashlight: SpotLight3D
 var _qa_hand: bool = false
 var _qa_placement: bool = false
+var _qa_ext_render: bool = false
+var _ext_shot: int = 0
+var _ext_shot_frames: int = -1
+var _ext_scene_cache: Dictionary = {}
+var _ext_shape_cache: Dictionary = {}
 var _qa_cyl: bool = false
 var _qa_t38: bool = false
 var _qa_ff_door: bool = false
 var _qa_hub_shot: bool = false
 var _qa_ts: bool = false
+var _qa_nav_reach: bool = false
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
 var _ff_shader: Shader = null
@@ -337,6 +359,10 @@ func _ready() -> void:
 			_qa_hand = true
 		elif arg == "--qa-placement":
 			_qa_placement = true
+		elif arg == "--qa-exterior-render":
+			_qa_ext_render = true
+		elif arg == "--qa-nav-reach":
+			_qa_nav_reach = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -350,8 +376,18 @@ func _ready() -> void:
 		_batch_render = false
 		_validate_only = false
 		_capture_hud = false
-	if DisplayServer.get_name() == "headless" and not _batch_render and not _qa_hand and not _qa_placement:
+	if _qa_ext_render:
+		_batch_render = false
+		_validate_only = false
+		_capture_hud = false
+		if DisplayServer.get_name() != "headless":
+			DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if DisplayServer.get_name() == "headless" and not _batch_render and not _qa_hand and not _qa_placement and not _qa_ext_render and not _qa_nav_reach:
 		_validate_only = true
+		_capture_hud = false
+	if _qa_nav_reach:
+		_batch_render = false
+		_validate_only = false
 		_capture_hud = false
 
 	_assemble_open_doorless_sector()
@@ -399,6 +435,108 @@ func _ready() -> void:
 		nav_region.name = "PlayableNavRegion"
 		nav_region.navigation_mesh = load("res://assets/nav/preface_navmesh.tres") as NavigationMesh
 		add_child(nav_region)
+		_add_forcefield_nav_links()
+	if _qa_nav_reach:
+		_run_qa_nav_reach.call_deferred()
+	# After sector and prop setup. Both playable scenes use this script.
+	_spawn_exterior_placements()
+
+
+func _add_forcefield_nav_links() -> void:
+	for door: Dictionary in _rfid_doors:
+		var droot: Node3D = door.get("root") as Node3D
+		if droot == null or not is_instance_valid(droot):
+			continue
+		var link := NavigationLink3D.new()
+		link.name = "NavLink_" + String(door["id"])
+		var normal := droot.global_transform.basis.z
+		if normal.length_squared() < 0.0001:
+			normal = Vector3.FORWARD
+		else:
+			normal = normal.normalized()
+		add_child(link)
+		link.global_position = droot.global_position
+		link.global_rotation = Vector3.ZERO
+		link.start_position = -normal * NAV_LINK_OFFSET
+		link.end_position = normal * NAV_LINK_OFFSET
+		link.bidirectional = true
+		link.enabled = _door_field_is_open(door)
+		door["nav_link"] = link
+
+
+func _door_field_is_open(door: Dictionary) -> bool:
+	var st := String(door.get("ff_state", ""))
+	if st == "stall" or st == "deny":
+		return false
+	return bool(door.get("open", false))
+
+
+func _sync_door_nav_link(door: Dictionary) -> void:
+	var link := door.get("nav_link") as NavigationLink3D
+	if link == null or not is_instance_valid(link):
+		return
+	link.enabled = _door_field_is_open(door)
+
+
+func _nav_qa_id(it: Dictionary) -> String:
+	if it.has("id") and String(it["id"]) != "":
+		return String(it["id"])
+	if it.has("door_id") and String(it["door_id"]) != "":
+		return String(it["door_id"])
+	var node := it.get("node") as Node
+	if node != null and is_instance_valid(node):
+		return String(node.name)
+	return String(it.get("label", "interactable"))
+
+
+## --qa-nav-reach: open every force-field door, wait for the nav map, path from spawn to each interactable.
+func _run_qa_nav_reach() -> void:
+	for door: Dictionary in _rfid_doors:
+		_set_door_dissolve_immediate(door, 1.0)
+	var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
+	var map := RID()
+	var ready := false
+	for _i: int in 180:
+		await get_tree().physics_frame
+		if region != null:
+			map = region.get_navigation_map()
+		if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0:
+			await get_tree().physics_frame
+			await get_tree().physics_frame
+			ready = true
+			break
+	var total := _interactables.size()
+	var reachable := 0
+	var failures := 0
+	if not ready or not map.is_valid():
+		for it: Dictionary in _interactables:
+			failures += 1
+			print("[NAV-QA] FAIL %s nav map not ready" % _nav_qa_id(it))
+		print("[NAV-QA] DONE reachable=0/%d failures=%d" % [total, failures])
+		get_tree().quit(1)
+		return
+	var spawn := Vector3(-9.35, 4.25, 6.20)
+	for it: Dictionary in _interactables:
+		var id := _nav_qa_id(it)
+		var node := it.get("node") as Node3D
+		if node == null or not is_instance_valid(node):
+			failures += 1
+			print("[NAV-QA] FAIL %s missing node" % id)
+			continue
+		var target := node.global_position
+		var closest := NavigationServer3D.map_get_closest_point(map, target)
+		var path := NavigationServer3D.map_get_path(map, spawn, closest, true)
+		var closest_dist := closest.distance_to(target)
+		var end_dist := -1.0
+		if not path.is_empty():
+			end_dist = path[path.size() - 1].distance_to(closest)
+		if not path.is_empty() and end_dist <= 1.0 and closest_dist <= 1.5:
+			reachable += 1
+		else:
+			failures += 1
+			print("[NAV-QA] FAIL %s closest_dist=%.2f path_end_dist=%.2f path_pts=%d" % [id, closest_dist, end_dist, path.size()])
+	print("[NAV-QA] DONE reachable=%d/%d failures=%d" % [reachable, total, failures])
+	get_tree().quit(0 if failures == 0 else 1)
 
 
 func _ensure_child(nm: String) -> Node3D:
@@ -2375,6 +2513,9 @@ func _process(delta: float) -> void:
 	_ff_tick_active_stalls(delta)
 	_update_rfid_doors(delta)
 	_sync_reticle_to_viewport_center()
+	if _qa_ext_render:
+		_process_qa_exterior_render()
+		return
 	if _batch_render:
 		_process_batch_render()
 		return
@@ -4568,6 +4709,7 @@ func _ff_apply_colliders(door: Dictionary, force_on: bool = false) -> void:
 	if not split:
 		var blocking: bool = force_on or not bool(door.get("open", false))
 		_ff_set_cs(door.get("field_collider") as CollisionShape3D, blocking)
+		_sync_door_nav_link(door)
 		return
 	_ff_set_cs(door.get("field_collider") as CollisionShape3D, false)
 	var a_on: bool = true
@@ -4583,6 +4725,7 @@ func _ff_apply_colliders(door: Dictionary, force_on: bool = false) -> void:
 		b_on = bool(door.get("half_b_on", true))
 	_ff_set_cs(door.get("col_a") as CollisionShape3D, a_on)
 	_ff_set_cs(door.get("col_b") as CollisionShape3D, b_on)
+	_sync_door_nav_link(door)
 
 
 func _ff_write_noise_params(door: Dictionary, opacity: float, static_s: float, jitter: float, arc: float, stall_amount: float) -> void:
@@ -4729,6 +4872,7 @@ func _ff_surge_from_stall(door: Dictionary) -> void:
 	_ff_write_noise_params(door, float(door.get("opacity", FF_DEFAULT_OPACITY)), FF_BASE_STATIC, FF_BASE_JITTER, FF_BASE_ARC, 0.0)
 	_ff_apply_state_textures(door, "locked")
 	_ff_apply_colliders(door, true)
+	_sync_door_nav_link(door)
 	_set_door_light(door, false)
 	var lmat: StandardMaterial3D = door.get("led_mat") as StandardMaterial3D
 	if lmat != null:
@@ -4769,6 +4913,7 @@ func _ff_end_deny(door: Dictionary) -> void:
 		lmat.albedo_color = col
 		lmat.emission_energy_multiplier = float(door.get("deny_energy", 2.0))
 	_ff_apply_colliders(door, false)
+	_sync_door_nav_link(door)
 
 
 ## Partial-power stall. Field stays near 40% strength with noise on opacity, static, jitter and arcs.
@@ -4792,6 +4937,7 @@ func stall_door(door_id: String, duration: float = 2.0) -> bool:
 	_ff_apply_state_textures(door, "stall")
 	_set_door_light(door, false)
 	_ff_apply_colliders(door, true)
+	_sync_door_nav_link(door)
 	_ff_tick_stall(door, 0.0)
 	return true
 
@@ -4823,6 +4969,7 @@ func deny_flicker(door_id: String) -> bool:
 	_ff_apply_state_textures(door, "deny")
 	_set_door_light(door, false)
 	_ff_apply_colliders(door, true)
+	_sync_door_nav_link(door)
 	return true
 
 
@@ -4977,6 +5124,7 @@ func _finish_door_field(door: Dictionary, open_state: bool) -> void:
 		door["strength"] = 1.0
 		_ff_apply_state_textures(door, "ready" if open_state else "locked")
 	_ff_apply_colliders(door, false)
+	_sync_door_nav_link(door)
 	_set_door_light(door, open_state)
 
 
@@ -5037,6 +5185,7 @@ func _set_door_open_state(door: Dictionary, open_target: bool) -> void:
 	door["ff_state"] = "open" if open_target else "locked"
 	door["strength"] = 1.0
 	_ff_apply_state_textures(door, "ready" if open_target else "locked")
+	_sync_door_nav_link(door)
 	var mats: Array[ShaderMaterial] = _ff_mats(door)
 	if mats.is_empty():
 		return
@@ -6063,3 +6212,257 @@ func _run_troubleshoot_simple_qa() -> void:
 	print("[TS-QA] SUMMARY failures=%d e_aim_hatch_opens_ui=%s e_ignored_while_ui_open=%s look_locked_while_open=%s" % [_qa_failures, "PASS" if opened_ok else "FAIL", "PASS" if ignored_ok else "FAIL", "PASS" if look_locked else "FAIL"])
 	print("[TS-QA] DONE failures=", _qa_failures)
 	get_tree().quit(0 if _qa_failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# Exterior placements v1.3 (design/exterior_placements_v1_3.json)
+# ------------------------------------------------------------------------------
+func _ext_base(asset: String) -> String:
+	return asset.get_file().get_basename()
+
+
+func _ext_is_surface_sticker(asset: String) -> bool:
+	# Decals, litter, scuffs, wear, and desire-path: no collision, no shadow.
+	var n: String = asset.to_lower()
+	return n.contains("decal") or n.contains("litter") or n.contains("scuff") or n.contains("wear") or n.contains("desire")
+
+
+func _ext_is_solid(asset: String) -> bool:
+	var base: String = _ext_base(asset)
+	if base.begins_with("ext_paving_") or base.begins_with("ext_curb_"):
+		return true
+	return base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_tram_platform_kerb" or base == "ext_maglev_guideway" or base == "ext_canal_edge" or base == "ext_tram_shelter" or base == "ext_maglev_car_body" or base == "hydro_planter_tiered_exterior"
+
+
+func _ext_packed_scene(asset: String) -> PackedScene:
+	if _ext_scene_cache.has(asset):
+		return _ext_scene_cache[asset] as PackedScene
+	var path: String = "res://assets/models/" + asset.get_file()
+	var packed: PackedScene = null
+	if ResourceLoader.exists(path) or FileAccess.file_exists(ProjectSettings.globalize_path(path)):
+		packed = load(path) as PackedScene
+	if packed == null:
+		push_warning("[EXT] missing asset %s" % path)
+	_ext_scene_cache[asset] = packed
+	return packed
+
+
+func _ext_collect_meshes(root: Node) -> Array[MeshInstance3D]:
+	var out: Array[MeshInstance3D] = []
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is MeshInstance3D and (n as MeshInstance3D).mesh != null:
+			out.append(n as MeshInstance3D)
+		var kids: Array[Node] = []
+		for ch: Node in n.get_children():
+			kids.append(ch)
+		for i: int in range(kids.size() - 1, -1, -1):
+			stack.append(kids[i])
+	return out
+
+
+func _ext_rel_transform(root: Node3D, node: Node3D) -> Transform3D:
+	var xf: Transform3D = Transform3D.IDENTITY
+	var current: Node = node
+	while current != null and current != root:
+		if current is Node3D:
+			xf = (current as Node3D).transform * xf
+		current = current.get_parent()
+	return xf
+
+
+func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
+	var meshes: Array[MeshInstance3D] = _ext_collect_meshes(inst)
+	var fill: bool = not _ext_shape_cache.has(asset)
+	var cached: Array = []
+	if fill:
+		cached.resize(meshes.size())
+	else:
+		cached = _ext_shape_cache[asset] as Array
+	var unique: Dictionary = {}
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "ExtCollision"
+	var any: bool = false
+	for i: int in range(meshes.size()):
+		var mi: MeshInstance3D = meshes[i]
+		var shape: ConcavePolygonShape3D = null
+		if fill:
+			if mi.mesh.get_surface_count() <= 0:
+				cached[i] = null
+				continue
+			var mid: int = mi.mesh.get_instance_id()
+			if unique.has(mid):
+				shape = unique[mid] as ConcavePolygonShape3D
+			else:
+				shape = mi.mesh.create_trimesh_shape()
+				if shape != null:
+					# Shared across instances of this asset. Margin 0 keeps the hit on the mesh.
+					shape.margin = 0.0
+				unique[mid] = shape
+			cached[i] = shape
+		elif i < cached.size():
+			shape = cached[i] as ConcavePolygonShape3D
+		if shape == null:
+			continue
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = "ExtShape_%d" % i
+		cs.shape = shape
+		cs.transform = _ext_rel_transform(inst, mi)
+		body.add_child(cs)
+		any = true
+	if fill:
+		_ext_shape_cache[asset] = cached
+	if any:
+		inst.add_child(body)
+
+
+func _ext_disable_collision_shapes(root: Node) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if c is CollisionShape3D:
+			(c as CollisionShape3D).disabled = true
+		elif c is CollisionObject3D:
+			(c as CollisionObject3D).collision_layer = 0
+			(c as CollisionObject3D).collision_mask = 0
+		for ch: Node in c.get_children():
+			stack.append(ch)
+
+
+func _ext_hide_middle_west_ts4(ext_root: Node) -> int:
+	# #49 replaces the middle west TS-4. Do not walk the placements we just spawned:
+	# their names include ext_ts4_* and they sit on the same pivot.
+	var hidden: int = 0
+	var r2: float = EXT_TS4_RADIUS * EXT_TS4_RADIUS
+	var stack: Array[Node] = [self]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n == ext_root or n.is_in_group("exterior_placement"):
+			continue
+		if n != self and n is Node3D:
+			var lname: String = String(n.name).to_lower()
+			if lname.contains("ts4") or lname.contains("ts_4"):
+				var gp: Vector3 = (n as Node3D).global_position
+				var dx: float = gp.x - EXT_TS4_X
+				var dz: float = gp.z - EXT_TS4_Z
+				if dx * dx + dz * dz <= r2:
+					(n as Node3D).visible = false
+					_ext_disable_collision_shapes(n)
+					hidden += 1
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	return hidden
+
+
+func _spawn_exterior_placements() -> void:
+	var root: Node3D = Node3D.new()
+	root.name = "ExteriorPlacements_v1_3"
+	add_child(root)
+	var spawned: int = 0
+	var fa: FileAccess = FileAccess.open(EXT_PLACEMENTS_PATH, FileAccess.READ)
+	if fa == null:
+		push_warning("[EXT] cannot open %s" % EXT_PLACEMENTS_PATH)
+		print("[EXT] spawned=0 hidden_ts4=0")
+		return
+	var parsed: Variant = JSON.parse_string(fa.get_as_text())
+	fa.close()
+	if parsed == null or not (parsed is Dictionary):
+		push_warning("[EXT] %s did not parse" % EXT_PLACEMENTS_PATH)
+		print("[EXT] spawned=0 hidden_ts4=0")
+		return
+	var raw: Variant = (parsed as Dictionary).get("placements", [])
+	if not (raw is Array):
+		push_warning("[EXT] %s has no placements array" % EXT_PLACEMENTS_PATH)
+		print("[EXT] spawned=0 hidden_ts4=0")
+		return
+	var placements: Array = raw as Array
+	for i: int in range(placements.size()):
+		var item: Variant = placements[i]
+		if not (item is Dictionary):
+			push_warning("[EXT] skip index %d (not an object)" % i)
+			continue
+		var entry: Dictionary = item as Dictionary
+		var asset: String = String(entry.get("asset", ""))
+		if asset == "":
+			push_warning("[EXT] skip index %d (empty asset)" % i)
+			continue
+		var packed: PackedScene = _ext_packed_scene(asset)
+		if packed == null:
+			continue
+		var inst_n: Node = packed.instantiate()
+		if inst_n == null or not (inst_n is Node3D):
+			if inst_n != null:
+				inst_n.free()
+			push_warning("[EXT] %s did not instance a Node3D" % asset)
+			continue
+		var inst: Node3D = inst_n as Node3D
+		var eid: int = int(entry.get("id", -1))
+		inst.name = "Ext_%d_%s_%d" % [eid, _ext_base(asset), i]
+		inst.position = Vector3(float(entry.get("x", 0.0)), float(entry.get("y", 0.0)), float(entry.get("z", 0.0)))
+		var euler: Vector3 = inst.rotation_degrees
+		euler.y = float(entry.get("rot_deg", 0.0))
+		inst.rotation_degrees = euler
+		inst.set_meta("ext_id", eid)
+		inst.set_meta("ext_asset", asset)
+		inst.add_to_group("exterior_placement")
+		if _ext_is_surface_sticker(asset):
+			_set_tree_cast_shadow(inst, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		elif _ext_is_solid(asset):
+			_ext_add_solid_collision(inst, asset)
+		root.add_child(inst)
+		spawned += 1
+	var hidden: int = _ext_hide_middle_west_ts4(root)
+	print("[EXT] spawned=%d hidden_ts4=%d" % [spawned, hidden])
+
+
+func _process_qa_exterior_render() -> void:
+	if _camera == null:
+		push_warning("[EXT] no camera for exterior render")
+		get_tree().quit(1)
+		return
+	if _frame_counter < EXT_RENDER_SETTLE_FRAMES:
+		return
+	if _ext_shot_frames < 0:
+		if _hud != null:
+			_hud.visible = false
+		_ext_aim_shot(_ext_shot)
+		_ext_shot_frames = 0
+		return
+	_ext_shot_frames += 1
+	if _ext_shot_frames < EXT_RENDER_HOLD_FRAMES:
+		return
+	_ext_save_shot(_ext_shot)
+	_ext_shot += 1
+	if _ext_shot >= EXT_RENDER_VIEWS.size():
+		print("[EXT] exterior render done")
+		get_tree().quit(0)
+		return
+	_ext_aim_shot(_ext_shot)
+	_ext_shot_frames = 0
+
+
+func _ext_aim_shot(idx: int) -> void:
+	var view: Dictionary = EXT_RENDER_VIEWS[idx]
+	_qa_free_cam(view["pos"] as Vector3, view["at"] as Vector3, Vector3.UP, 58.0)
+	_camera.current = true
+	print("[EXT] render %s" % String(view["name"]))
+
+
+func _ext_save_shot(idx: int) -> void:
+	var shot_name: String = String(EXT_RENDER_VIEWS[idx]["name"])
+	var rel: String = "%s/item4_%s.png" % [EXT_RENDER_DIR, shot_name]
+	var tex: ViewportTexture = get_viewport().get_texture()
+	if tex == null:
+		push_warning("[EXT] no viewport texture for %s" % rel)
+		return
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		push_warning("[EXT] empty viewport image for %s" % rel)
+		return
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(EXT_RENDER_DIR))
+	var abs_path: String = ProjectSettings.globalize_path(rel)
+	if img.save_png(abs_path) == OK:
+		print("[EXT] saved %s" % rel)
+	else:
+		push_warning("[EXT] failed to save %s" % rel)
