@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_paving_plaza_01",
+  "style": "Grid_Slab",
+  "tris": 64,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.053,
+   1.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_paving_plaza/ext_paving_plaza_01.glb"
+ },
+ {
+  "cand": "ext_paving_plaza_02",
+  "style": "Running_Bond",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.053,
+   1.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_paving_plaza/ext_paving_plaza_02.glb"
+ },
+ {
+  "cand": "ext_paving_plaza_03",
+  "style": "Titanium_Inlay_Cross",
+  "tris": 120,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.053,
+   1.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_paving_plaza/ext_paving_plaza_03.glb"
+ },
+ {
+  "cand": "ext_paving_plaza_04",
+  "style": "Tactile_Guidance",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.059,
+   1.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_paving_plaza/ext_paving_plaza_04.glb"
+ },
+ {
+  "cand": "ext_paving_plaza_05",
+  "style": "Lit_Joint",
+  "tris": 120,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.057,
+   1.994
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_paving_plaza/ext_paving_plaza_05.glb"
+ }
+]
