@@ -1770,3 +1770,8 @@
 - **Candidates:** `design/assets/ext_desire_path_decal/ext_desire_path_decal_01..05.glb` (all checks PASS, commit 1e17eee).
 - **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
 - **#47 WINNER:** `#05 Worn Tactile` (36 tris) -> `godot/assets/models/ext_desire_path_decal.glb`. Placement: y 0.053, alpha BLEND, 1.2 x 4.0 m segment tiling along Z.
+
+### #49 TS-4 wear decals (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_ts4_wear_decal/ext_ts4_wear_decal_01..05.glb` + `ext_ts4_dead_foliage_01..05.glb` (all checks PASS, commit 3be7475).
+- **Deciding vote: Jared (Oct 31, 2026), relayed via Atlas.**
+- **#49 WINNER:** `#02 Mismatched Pearl` -> `godot/assets/models/ext_ts4_wear_decal.glb` + `godot/assets/models/ext_ts4_dead_foliage.glb`. Placement: decal = same transform as its TS-4; dead variant replaces the one west-sidewalk TS-4.
