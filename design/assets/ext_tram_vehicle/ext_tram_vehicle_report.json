@@ -1,0 +1,192 @@
+[
+ {
+  "body": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_car_body_01.glb",
+   "tris": 1664,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.28,
+    2.66
+   ],
+   "validate": true
+  },
+  "bogie": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_bogie_01.glb",
+   "tris": 768,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    2.4,
+    0.595,
+    1.86
+   ],
+   "validate": true
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": []
+  },
+  "cand": 1,
+  "style": "Civic_Pearl_Classic"
+ },
+ {
+  "body": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_car_body_02.glb",
+   "tris": 1680,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.28,
+    2.66
+   ],
+   "validate": true
+  },
+  "bogie": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_bogie_02.glb",
+   "tris": 832,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    2.4,
+    0.595,
+    1.86
+   ],
+   "validate": true
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": []
+  },
+  "cand": 2,
+  "style": "Bullet_Nose"
+ },
+ {
+  "body": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_car_body_03.glb",
+   "tris": 1696,
+   "clip_pass": true,
+   "worst": 0.0079,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.28,
+    2.66
+   ],
+   "validate": true
+  },
+  "bogie": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_bogie_03.glb",
+   "tris": 768,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    2.4,
+    0.595,
+    1.86
+   ],
+   "validate": true
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": []
+  },
+  "cand": 3,
+  "style": "Carbon_Slate_Express"
+ },
+ {
+  "body": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_car_body_04.glb",
+   "tris": 1632,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.28,
+    2.66
+   ],
+   "validate": true
+  },
+  "bogie": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_bogie_04.glb",
+   "tris": 832,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    2.4,
+    0.595,
+    1.86
+   ],
+   "validate": true
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": []
+  },
+  "cand": 4,
+  "style": "Panoramic_Glass"
+ },
+ {
+  "body": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_car_body_05.glb",
+   "tris": 1696,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.28,
+    2.66
+   ],
+   "validate": true
+  },
+  "bogie": {
+   "glb": "design/assets/ext_tram_vehicle/ext_tram_bogie_05.glb",
+   "tris": 768,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    2.4,
+    0.595,
+    1.86
+   ],
+   "validate": true
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": []
+  },
+  "cand": 5,
+  "style": "Duo_Tone_Workhorse"
+ }
+]
