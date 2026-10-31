@@ -1,0 +1,252 @@
+[
+ {
+  "cand": 1,
+  "style": "Civic_Pearl_Classic",
+  "magnets": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_magnet_module_01.glb",
+   "tris": 96,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    11.0,
+    0.194,
+    1.412
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.3,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "body": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_car_body_01.glb",
+   "tris": 1376,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.34,
+    2.66
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.069,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "kerb_gap": 0.07
+  }
+ },
+ {
+  "cand": 2,
+  "style": "Bullet_Nose",
+  "magnets": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_magnet_module_02.glb",
+   "tris": 288,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    10.8,
+    0.194,
+    1.412
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.2,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "body": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_car_body_02.glb",
+   "tris": 1392,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.34,
+    2.66
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.069,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "kerb_gap": 0.07
+  }
+ },
+ {
+  "cand": 3,
+  "style": "Carbon_Slate_Express",
+  "magnets": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_magnet_module_03.glb",
+   "tris": 128,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    11.0,
+    0.194,
+    1.492
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.3,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "body": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_car_body_03.glb",
+   "tris": 1408,
+   "clip_pass": true,
+   "worst": 0.0079,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.34,
+    2.66
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.069,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "kerb_gap": 0.07
+  }
+ },
+ {
+  "cand": 4,
+  "style": "Panoramic_Glass",
+  "magnets": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_magnet_module_04.glb",
+   "tris": 384,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    10.9,
+    0.194,
+    1.412
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.25,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "body": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_car_body_04.glb",
+   "tris": 1344,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.34,
+    2.66
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.069,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "kerb_gap": 0.07
+  }
+ },
+ {
+  "cand": 5,
+  "style": "Duo_Tone_Workhorse",
+  "magnets": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_magnet_module_05.glb",
+   "tris": 128,
+   "clip_pass": true,
+   "worst": 0.004,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    11.0,
+    0.194,
+    1.412
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.3,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "body": {
+   "glb": "design/assets/ext_maglev_vehicle/ext_maglev_car_body_05.glb",
+   "tris": 1408,
+   "clip_pass": true,
+   "worst": 0.008,
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "size": [
+    12.162,
+    3.34,
+    2.66
+   ],
+   "validate": true,
+   "origin_in_car_frame": {
+    "x": -0.069,
+    "y": 0.06,
+    "z": 0.0
+   }
+  },
+  "assembly": {
+   "bad": [],
+   "coplanar": [],
+   "open": [],
+   "kerb_gap": 0.07
+  }
+ }
+]
