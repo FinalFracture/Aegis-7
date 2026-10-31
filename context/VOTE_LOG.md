@@ -1755,3 +1755,8 @@
 ### Platform-back infill (Rook, Oct 31) — single version, no vote (Atlas PM call / Jared waived)
 - `ext_platform_infill.glb` (592 tris, 11.994 x 1.096 x 0.30; paving-04 tactile top) -> `godot/assets/models/ext_platform_infill.glb`. Origin (15.0, 0, -16.048), rot 0; 4 mm to kerb back. Clip PASS alone and with 6 kerbs + shelter (y 0.297) + promenade paving 04 (4 seeds). Back face = 0.25 m step to paving -> #45 ramp.
 - **Fix found by the assembly check:** promoted `ext_tram_shelter.glb` (05) had glass-pane ends coplanar with kick-rail ends (intermittent clip flag); panes now end 2 mm into the posts. Re-exported + re-promoted (696 tris, clip PASS on 4 seeds).
+
+### #45 accessible kerb ramp (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_kerb_ramp/ext_kerb_ramp_01..05.glb` (all clip-check + validate PASS, alone + infill/kerb/paving fit).
+- **Deciding vote: Jared (Oct 31, 8:32 AM CT), relayed via Atlas.**
+- **#45 Ramp WINNER:** `#02 Railed` (144 tris, titanium handrails 0.9 m) -> `godot/assets/models/ext_kerb_ramp.glb`. Placement: rot 0, origin X 9.75, y 0, Z -13.996; 1.5 x 3.0 m, rise 0.25 (paving 0.05 -> platform 0.30), 1:12; high end butts infill back (Z -15.5) with 4 mm.
