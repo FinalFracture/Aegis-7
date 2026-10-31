@@ -253,6 +253,9 @@ var _qa_cyl: bool = false
 var _qa_t38: bool = false
 var _qa_ff_door: bool = false
 var _qa_hub_shot: bool = false
+var _qa_ts: bool = false
+var _ts_layer: CanvasLayer
+var _ts_ui: TroubleshootSimpleUI
 var _ff_shader: Shader = null
 var _ff_tex_cache: Dictionary = {}
 var _glb_cache: Dictionary = {}
@@ -323,6 +326,9 @@ func _ready() -> void:
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
+		elif arg == "--qa-troubleshoot-simple":
+			_qa_ts = true
+			_qa_hand = true
 		elif arg == "--qa-placement":
 			_qa_placement = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
@@ -363,6 +369,8 @@ func _ready() -> void:
 			_run_door_hub_shot.call_deferred()
 		elif _qa_t38:
 			_run_reticle_stars_doors_qa.call_deferred()
+		elif _qa_ts:
+			_run_troubleshoot_simple_qa.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -5662,3 +5670,126 @@ func _run_reticle_stars_doors_qa() -> void:
 		fa.close()
 	print("[T38-QA] DONE failures=", _qa_failures, " log=", fn)
 	get_tree().quit(1 if _qa_failures > 0 else 0)
+
+
+# ------------------------------------------------------------------------------
+# Simple troubleshoot UI (Hatch Field Emitter D-204)
+# ------------------------------------------------------------------------------
+func open_troubleshoot_simple(device_id: String = "D-204") -> TroubleshootSimpleUI:
+	if _ts_ui != null and is_instance_valid(_ts_ui) and not _ts_ui.is_queued_for_deletion():
+		_ts_ui.device_id = device_id
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		return _ts_ui
+	var packed := load("res://scenes/ui/troubleshoot_simple.tscn") as PackedScene
+	if packed == null:
+		push_error("[Troubleshoot] missing res://scenes/ui/troubleshoot_simple.tscn")
+		return null
+	_ts_layer = CanvasLayer.new()
+	_ts_layer.name = "TroubleshootSimpleLayer"
+	_ts_layer.layer = 40
+	add_child(_ts_layer)
+	var ui := packed.instantiate() as TroubleshootSimpleUI
+	if ui == null:
+		push_error("[Troubleshoot] scene root is not TroubleshootSimpleUI")
+		_ts_layer.queue_free()
+		_ts_layer = null
+		return null
+	ui.name = "TroubleshootSimpleUI"
+	ui.device_id = device_id
+	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_ts_layer.add_child(ui)
+	_ts_ui = ui
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	ui.field_released.connect(_on_troubleshoot_field_released)
+	ui.exited.connect(_on_troubleshoot_exited)
+	return ui
+
+
+func _on_troubleshoot_field_released(device_id: String) -> void:
+	var door: Dictionary = _find_door(device_id)
+	if door.is_empty():
+		print("[Troubleshoot] no door \"%s\"" % device_id)
+		return
+	# Win releases the field (dissolve open). A wrong pin only stalls inside the UI.
+	_set_door_open_state(door, true)
+
+
+func _on_troubleshoot_exited() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if _ts_layer != null and is_instance_valid(_ts_layer):
+		_ts_layer.queue_free()
+	_ts_layer = null
+	_ts_ui = null
+
+
+func _ts_qa(nm: String, ok: bool, detail: String) -> void:
+	print("[TS-QA] %s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail])
+	if not ok:
+		_qa_failures += 1
+
+
+func _ts_save_png(fname: String) -> bool:
+	await RenderingServer.frame_post_draw
+	var tex: ViewportTexture = get_viewport().get_texture()
+	if tex == null:
+		_ts_qa("screenshot_" + fname.get_basename(), false, "no viewport texture")
+		return false
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		_ts_qa("screenshot_" + fname.get_basename(), false, "empty viewport image")
+		return false
+	var dir: String = ProjectSettings.globalize_path("res://renders/queue_2026-10-31")
+	DirAccess.make_dir_recursive_absolute(dir)
+	var path: String = dir.path_join(fname)
+	var err: Error = img.save_png(path)
+	var ok: bool = err == OK
+	_ts_qa("screenshot_" + fname.get_basename(), ok, path if ok else "save error %s" % err)
+	return ok
+
+
+func _run_troubleshoot_simple_qa() -> void:
+	_qa_failures = 0
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var ui: TroubleshootSimpleUI = open_troubleshoot_simple("D-204")
+	if ui == null:
+		_ts_qa("ui_opened", false, "null")
+		get_tree().quit(1)
+		return
+	var box: Dictionary = {"n": 0}
+	ui.field_released.connect(func(id: String) -> void:
+		box["n"] = int(box["n"]) + 1
+		box["id"] = id
+	)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_ts_qa("initial_not_won", not ui.is_won() and not ui.is_break_repaired(), "won=%s repaired=%s" % [ui.is_won(), ui.is_break_repaired()])
+	await _ts_save_png("troubleshoot_simple_ui.png")
+	ui.commit_pin("3")
+	_ts_qa("pin3_without_repair", not ui.is_won() and int(box["n"]) == 0, "won=%s released=%d status=%s" % [ui.is_won(), int(box["n"]), ui.status_text()])
+	ui.repair_break()
+	_ts_qa("repair_continuous", ui.is_break_repaired() and not ui.is_won(), "repaired=%s won=%s wire=%d" % [ui.is_break_repaired(), ui.is_won(), ui.consumable_count("wire")])
+	ui.commit_pin("1")
+	var stalled: bool = ui.status_text().contains("[FIELD STALLED AT 40%]")
+	_ts_qa("commit1_stalled", stalled and not ui.is_won(), "status=%s won=%s" % [ui.status_text(), ui.is_won()])
+	ui.commit_pin("3")
+	var won_status: bool = ui.status_text().contains("[FIELD RELEASED]")
+	_ts_qa("commit3_won", ui.is_won() and int(box["n"]) == 1 and won_status and String(box.get("id", "")) == "D-204", "won=%s released=%d id=%s status=%s" % [ui.is_won(), int(box["n"]), String(box.get("id", "")), ui.status_text()])
+	var still_open: bool = is_instance_valid(ui) and ui.is_inside_tree() and ui.visible and not ui.is_queued_for_deletion()
+	_ts_qa("ui_open_after_win", still_open, "visible=%s in_tree=%s" % [ui.visible if is_instance_valid(ui) else false, ui.is_inside_tree() if is_instance_valid(ui) else false])
+	var board: Control = ui.find_child("BoardView", true, false) as Control
+	if board != null:
+		board.queue_redraw()
+	await get_tree().process_frame
+	await _ts_save_png("troubleshoot_simple_ui_won.png")
+	var exit_btn: Button = ui.find_child("ExitButton", true, false) as Button
+	if exit_btn == null:
+		_ts_qa("exit_closes", false, "ExitButton missing")
+	else:
+		exit_btn.pressed.emit()
+		var closed: bool = (not is_instance_valid(ui)) or ui.is_queued_for_deletion() or not ui.visible
+		_ts_qa("exit_closes", closed, "queued=%s visible=%s" % [ui.is_queued_for_deletion() if is_instance_valid(ui) else true, ui.visible if is_instance_valid(ui) else false])
+	print("[TS-QA] DONE failures=", _qa_failures)
+	get_tree().quit(0 if _qa_failures == 0 else 1)
