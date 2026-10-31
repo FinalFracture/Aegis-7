@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_curb_corner_01",
+  "style": "Chamfer_Slate",
+  "tris": 36,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   0.15,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_corner/ext_curb_corner_01.glb"
+ },
+ {
+  "cand": "ext_curb_corner_02",
+  "style": "Titanium_Nosing",
+  "tris": 72,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   0.15,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_corner/ext_curb_corner_02.glb"
+ },
+ {
+  "cand": "ext_curb_corner_03",
+  "style": "Pearl_Bullnose",
+  "tris": 36,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   0.15,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_corner/ext_curb_corner_03.glb"
+ },
+ {
+  "cand": "ext_curb_corner_04",
+  "style": "Drain_Inlet",
+  "tris": 72,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   0.15,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_corner/ext_curb_corner_04.glb"
+ },
+ {
+  "cand": "ext_curb_corner_05",
+  "style": "Lit_Edge",
+  "tris": 72,
+  "budget_ok": true,
+  "size": [
+   0.3,
+   0.154,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_corner/ext_curb_corner_05.glb"
+ }
+]

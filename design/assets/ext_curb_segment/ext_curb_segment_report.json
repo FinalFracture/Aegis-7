@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_curb_segment_01",
+  "style": "Chamfer_Slate",
+  "tris": 36,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.15,
+   0.304
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_segment/ext_curb_segment_01.glb"
+ },
+ {
+  "cand": "ext_curb_segment_02",
+  "style": "Titanium_Nosing",
+  "tris": 48,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.15,
+   0.304
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_segment/ext_curb_segment_02.glb"
+ },
+ {
+  "cand": "ext_curb_segment_03",
+  "style": "Pearl_Bullnose",
+  "tris": 44,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.15,
+   0.35
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_segment/ext_curb_segment_03.glb"
+ },
+ {
+  "cand": "ext_curb_segment_04",
+  "style": "Drain_Inlet",
+  "tris": 112,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.15,
+   0.3
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_segment/ext_curb_segment_04.glb"
+ },
+ {
+  "cand": "ext_curb_segment_05",
+  "style": "Lit_Edge",
+  "tris": 96,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.15,
+   0.306
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_curb_segment/ext_curb_segment_05.glb"
+ }
+]
