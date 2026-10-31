@@ -88,6 +88,8 @@ const EXT_KIND_DECAL := 3
 const EXT_SNAP_ABOVE := 0.3
 const EXT_SNAP_DEPTH := 12.0
 const EXT_CORNER_INSET := 0.05
+# Corner samples that only clip a rail (east guardrail top is y 1.245) must not lift the prop.
+const EXT_SUPPORT_LIFT := 0.40
 const EXT_DECAL_LIFT := 0.005
 # Plan is x -47..47, z -26..40.5. Two metres of margin, deck top matching PromenadePlazaDeckSlab.
 const EXT_GROUND_X0 := -49.0
@@ -161,7 +163,7 @@ const CORE_PAD_RADIUS := 1.4
 # [t38u] Rotating distant outer starfield cylinder & RFID doors ([t45u] force-field)
 const STARFIELD_CYL_RADIUS := 2200.0
 const STARFIELD_CYL_LENGTH := 4800.0
-const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s around longitudinal cylinder axis)
+const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s) about the world +X cylinder axis
 const SCAN_ZONE_RANGE := 1.4          # [QA-HUB-01] max 3D distance probe point -> hub ScanZone
 const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward . dir-to-ScanZone
 const DOOR_DISSOLVE_TIME := 0.8
@@ -476,6 +478,8 @@ func _add_forcefield_nav_links() -> void:
 		link.bidirectional = true
 		link.enabled = _door_field_is_open(door)
 		door["nav_link"] = link
+	# 0.8 m endpoints sit past the carved door gap; snap them onto the mesh within 1 m.
+	_apply_nav_link_radius.call_deferred()
 
 
 func _door_field_is_open(door: Dictionary) -> bool:
@@ -492,6 +496,17 @@ func _sync_door_nav_link(door: Dictionary) -> void:
 	link.enabled = _door_field_is_open(door)
 
 
+func _apply_nav_link_radius() -> void:
+	for _i: int in 30:
+		var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
+		if region != null and is_instance_valid(region):
+			var map := region.get_navigation_map()
+			if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0:
+				NavigationServer3D.map_set_link_connection_radius(map, 1.0)
+				return
+		await get_tree().physics_frame
+
+
 func _nav_qa_id(it: Dictionary) -> String:
 	if it.has("id") and String(it["id"]) != "":
 		return String(it["id"])
@@ -503,36 +518,55 @@ func _nav_qa_id(it: Dictionary) -> String:
 	return String(it.get("label", "interactable"))
 
 
-## 0.8 m in front of the interactable, on the player side.
-## Local +Z is the facing used by doors and props. If that faces away from the navmesh, use the offset to the closest nav point.
-func _nav_approach_point(node: Node3D, target: Vector3, closest: Vector3) -> Vector3:
-	var facing := node.global_transform.basis.z
-	facing.y = 0.0
-	var to_nav := closest - target
-	to_nav.y = 0.0
-	var dir := Vector3.ZERO
-	var face_ok := facing.length_squared() > 0.0001
-	var nav_ok := to_nav.length_squared() > 0.0004
-	if face_ok and nav_ok:
-		dir = facing.normalized() if facing.normalized().dot(to_nav.normalized()) >= 0.0 else to_nav.normalized()
-	elif nav_ok:
-		dir = to_nav.normalized()
-	elif face_ok:
-		dir = facing.normalized()
-	else:
-		dir = Vector3(0.0, 0.0, -1.0)
-	return target + dir * 0.8
+## True when p is on the interior side of this door. The door plane itself is outside the volume.
+func _nav_point_in_door_room(door_id: String, p: Vector3) -> bool:
+	match door_id:
+		"DOOR_APT201":
+			return p.y > 3.3 and p.y < 8.2 and p.x > -14.6 and p.x < -5.2 and p.z > 2.75 and p.z < 9.6
+		"DOOR_APT202":
+			return p.y > 3.3 and p.y < 8.2 and p.x > 5.2 and p.x < 14.6 and p.z > 2.75 and p.z < 9.6
+		"DOOR_ALCOVE2C":
+			return p.y > 3.3 and p.y < 8.2 and p.x > -14.6 and p.x < -7.4 and p.z < -3.55 and p.z > -7.2
+		"DOOR_RM1A":
+			return ROOM_1A_INTERIOR.has_point(p)
+		"DOOR_RM1B":
+			return ROOM_1B_INTERIOR.has_point(p)
+		"DOOR_SECTOR4_EXIT":
+			return p.y < 3.6 and p.z < -8.90 and p.x > -18.5 and p.x < 18.5
+		_:
+			return false
 
 
-## --qa-nav-reach: open every force-field door, wait for the nav map, path from spawn to each interactable.
-func _run_qa_nav_reach() -> void:
+## Doors whose interior contains exactly one of the two points. That door is the gate between them.
+func _nav_separating_doors(a: Vector3, b: Vector3) -> PackedStringArray:
+	var out := PackedStringArray()
 	for door: Dictionary in _rfid_doors:
-		_set_door_dissolve_immediate(door, 1.0)
-	var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
+		var id := String(door.get("id", ""))
+		if id == "":
+			continue
+		if _nav_point_in_door_room(id, a) != _nav_point_in_door_room(id, b):
+			out.append(id)
+	return out
+
+
+## Pass only when the path ends within 1 m of the interactable's world position (3D). No approach point.
+func _nav_strict_reach(map: RID, spawn_pt: Vector3, target: Vector3) -> Dictionary:
+	var closest := NavigationServer3D.map_get_closest_point(map, target)
+	var path := NavigationServer3D.map_get_path(map, spawn_pt, closest, true)
+	var end_dist := -1.0
+	if not path.is_empty():
+		end_dist = path[path.size() - 1].distance_to(target)
+	return {
+		"reached": not path.is_empty() and end_dist <= 1.0,
+		"end_dist": end_dist,
+		"closest_dist": closest.distance_to(target),
+		"pts": path.size(),
+	}
+
+
+func _nav_qa_await_map(region: NavigationRegion3D) -> RID:
 	var map := RID()
 	var ready := false
-	# Region is already in the tree. Wait until the map has synced, then at least 3 physics frames
-	# so door links (enabled only while the field is open) are on the region's map.
 	for _i: int in 180:
 		await get_tree().physics_frame
 		if region != null and is_instance_valid(region):
@@ -541,51 +575,101 @@ func _run_qa_nav_reach() -> void:
 			ready = true
 			break
 	if ready:
-		await get_tree().physics_frame
-		await get_tree().physics_frame
-		await get_tree().physics_frame
+		for _k: int in 3:
+			await get_tree().physics_frame
 		if region != null and is_instance_valid(region):
 			map = region.get_navigation_map()
+	if map.is_valid():
+		NavigationServer3D.map_set_link_connection_radius(map, 1.0)
+	return map
+
+
+func _nav_qa_set_fields(open_state: bool) -> void:
+	for door: Dictionary in _rfid_doors:
+		_set_door_dissolve_immediate(door, 1.0 if open_state else 0.0)
+		var link := door.get("nav_link") as NavigationLink3D
+		if link != null and is_instance_valid(link):
+			link.enabled = open_state and _door_field_is_open(door)
+
+
+## --qa-nav-reach: closed fields must block every gated interactable; open fields must reach all.
+func _run_qa_nav_reach() -> void:
+	var region := get_node_or_null("PlayableNavRegion") as NavigationRegion3D
+	_nav_qa_set_fields(false)
+	var map := await _nav_qa_await_map(region)
 	_print_nav_qa_stats(region)
 	var total := _interactables.size()
-	var reachable := 0
-	var failures := 0
-	if not ready or not map.is_valid():
-		for it: Dictionary in _interactables:
-			failures += 1
-			print("[NAV-QA] FAIL %s nav map not ready" % _nav_qa_id(it))
-		print("[NAV-QA] DONE reachable=0/%d failures=%d" % [total, failures])
-		get_tree().quit(1)
-		return
-	var spawn := NavigationServer3D.map_get_closest_point(map, Vector3(-9.35, 4.25, 6.20))
+	var gated_ids: PackedStringArray = PackedStringArray()
+	var gated_doors: Dictionary = {}
+	var nodes: Dictionary = {}
 	for it: Dictionary in _interactables:
 		var id := _nav_qa_id(it)
 		var node := it.get("node") as Node3D
 		if node == null or not is_instance_valid(node):
-			failures += 1
-			print("[NAV-QA] FAIL %s missing node" % id)
 			continue
-		var target := node.global_position
-		var closest := NavigationServer3D.map_get_closest_point(map, target)
-		var path := NavigationServer3D.map_get_path(map, spawn, closest, true)
-		var closest_dist := closest.distance_to(target)
-		var end_dist := -1.0
-		if not path.is_empty():
-			end_dist = path[path.size() - 1].distance_to(closest)
-		var reached := not path.is_empty() and end_dist <= 1.0 and closest_dist <= 1.5
-		# Path ended short of a point that is still within 1.5 m. Retry 0.8 m in front (player side).
-		if not reached and closest_dist <= 1.5 and (path.is_empty() or end_dist > 1.0):
-			var approach := _nav_approach_point(node, target, closest)
-			if approach.distance_to(target) <= 1.6:
-				var closest_a := NavigationServer3D.map_get_closest_point(map, approach)
-				var path_a := NavigationServer3D.map_get_path(map, spawn, closest_a, true)
-				if not path_a.is_empty() and path_a[path_a.size() - 1].distance_to(approach) <= 1.0:
-					reached = true
-		if reached:
-			reachable += 1
+		nodes[id] = node
+		var doors := _nav_separating_doors(SPAWN_POS, node.global_position)
+		if doors.is_empty():
+			continue
+		gated_ids.append(id)
+		gated_doors[id] = doors
+	var gated_n := gated_ids.size()
+	if not map.is_valid():
+		for it2: Dictionary in _interactables:
+			print("[NAV-QA] FAIL %s nav map not ready" % _nav_qa_id(it2))
+		print("[NAV-QA] closed: unreachable=0/%d leaks=%d" % [gated_n, gated_n])
+		print("[NAV-QA] DONE reachable=0/%d failures=%d" % [total, gated_n + total])
+		get_tree().quit(1)
+		return
+	var spawn_pt := NavigationServer3D.map_get_closest_point(map, SPAWN_POS)
+	var unreachable := 0
+	var leaks := 0
+	for gid: String in gated_ids:
+		var gnode := nodes[gid] as Node3D
+		var reach: Dictionary = _nav_strict_reach(map, spawn_pt, gnode.global_position)
+		if bool(reach["reached"]):
+			leaks += 1
+			var door_list: PackedStringArray = gated_doors[gid] as PackedStringArray
+			print("[NAV-QA] FAIL %s leak doors=%s path_end_dist=%.2f path_pts=%d" % [gid, ",".join(door_list), float(reach["end_dist"]), int(reach["pts"])])
 		else:
-			failures += 1
-			print("[NAV-QA] FAIL %s closest_dist=%.2f path_end_dist=%.2f path_pts=%d" % [id, closest_dist, end_dist, path.size()])
+			unreachable += 1
+	print("[NAV-QA] closed: unreachable=%d/%d leaks=%d" % [unreachable, gated_n, leaks])
+	var iter_before := NavigationServer3D.map_get_iteration_id(map)
+	_nav_qa_set_fields(true)
+	for _i: int in 60:
+		await get_tree().physics_frame
+		if region != null and is_instance_valid(region):
+			map = region.get_navigation_map()
+		if map.is_valid() and NavigationServer3D.map_get_iteration_id(map) != iter_before:
+			break
+	for _k: int in 3:
+		await get_tree().physics_frame
+	if region != null and is_instance_valid(region):
+		map = region.get_navigation_map()
+	if map.is_valid():
+		NavigationServer3D.map_set_link_connection_radius(map, 1.0)
+		spawn_pt = NavigationServer3D.map_get_closest_point(map, SPAWN_POS)
+	var reachable := 0
+	var phase_b_fails := 0
+	if not map.is_valid():
+		for it3: Dictionary in _interactables:
+			phase_b_fails += 1
+			print("[NAV-QA] FAIL %s nav map not ready" % _nav_qa_id(it3))
+	else:
+		for it4: Dictionary in _interactables:
+			var id4 := _nav_qa_id(it4)
+			var node4 := it4.get("node") as Node3D
+			if node4 == null or not is_instance_valid(node4):
+				phase_b_fails += 1
+				print("[NAV-QA] FAIL %s missing node" % id4)
+				continue
+			var reach4: Dictionary = _nav_strict_reach(map, spawn_pt, node4.global_position)
+			if bool(reach4["reached"]):
+				reachable += 1
+			else:
+				phase_b_fails += 1
+				print("[NAV-QA] FAIL %s closest_dist=%.2f path_end_dist=%.2f path_pts=%d" % [id4, float(reach4["closest_dist"]), float(reach4["end_dist"]), int(reach4["pts"])])
+	var failures := leaks + phase_b_fails
 	print("[NAV-QA] DONE reachable=%d/%d failures=%d" % [reachable, total, failures])
 	get_tree().quit(0 if failures == 0 else 1)
 
@@ -911,18 +995,21 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	hab_root.name = "CylinderHab7_FullScale_World"
 	parent.add_child(hab_root)
 
-	# 1. Instantiate the full-scale 800m x 400m (R = 200m) O'Neill Cylinder Hab-7 Interior Megastructure
-	# Aligned so the Residential Sector Atrium (Z = -9.15m..+9.0m) sits at the Sector-4 Promenade Bay (Valley A bottom nadir)
-	# and looking South out Open_Portal_Sector_Exit (-Z) or up through the Atrium Skylight (+Y) looks straight down the
-	# curving 800m cylinder axis with paired axial solar rails, Ring-A..Ring-E ribs, agricultural terraces,
-	# opposite habitation blocks curving overhead at 120 deg and 240 deg, and the central zero-G docking hub!
+	# 1. Instantiate the full-scale 800m x 400m (R = 200m) O'Neill Cylinder Hab-7 interior backdrop.
+	# Static pose (no spin animation). Valley A is the bottom nadir under the Sector-4 promenade; the map is not moved.
+	# Looking along world ±X looks down the 800m spin axis (axial solar rails, Ring-A..Ring-E). Looking up (+Y)
+	# sees the opposite valleys overhead; looking south (-Z) looks across the valley, not along the axis.
 	var cyl_path: String = _find_first_existing(CYLINDER_MAP_PATHS)
 	var cyl_pivot: Node3D = Node3D.new()
 	cyl_pivot.name = "CylinderHab7_DrumAxisPivot"
-	# Cylinder local X is axial [-368..+354]; rotate -90 deg Y so axial +X maps to -Z (looking out Sector-4 Promenade Exit)
-	# and roll 43 deg around local X so Valley A (137 deg) sits at bottom nadir (180 deg, Y = -14.5m below axis Y = 185.5m).
-	cyl_pivot.position = Vector3(0.0, 185.5, -135.0)
-	cyl_pivot.rotation_degrees = Vector3(0.0, -90.0, 43.0)
+	# Cylinder local X is the spin axis (authored axial span about [-368..+354]). No yaw: local +X stays world +X,
+	# the map's long axis (exterior x -47..47). Godot Euler order is YXZ, so a Z component would pitch the axis;
+	# the valley roll is a pure X rotation. Mesh theta is measured from +Y toward +Z, and positive X increases it,
+	# so +43 deg takes Valley A (137 deg) to bottom nadir (180 deg). Child offset y -200 cancels the GLB axis at y 200,
+	# so this pivot is the axis. Height 185.5 m puts the inner-surface nadir (R ≈ 185.5) on the map ground (y 0.12);
+	# the outer hull nadir is near y -14.5. The 135 m axial offset is along X, and Z = 0 holds the axis over the map centre line.
+	cyl_pivot.position = Vector3(135.0, 185.5, 0.0)
+	cyl_pivot.rotation_degrees = Vector3(43.0, 0.0, 0.0)
 	hab_root.add_child(cyl_pivot)
 
 	var cyl_node: Node3D = _load_glb_scene(cyl_path, 0.85)
@@ -2621,7 +2708,7 @@ func _process(delta: float) -> void:
 	_frame_counter += 1
 	_time += delta
 	if _starfield_cylinder != null and is_instance_valid(_starfield_cylinder):
-		_starfield_cylinder.rotate_z(STARFIELD_ROT_SPEED * delta)
+		_starfield_cylinder.rotate_x(STARFIELD_ROT_SPEED * delta)
 	_ff_tick_active_stalls(delta)
 	_update_rfid_doors(delta)
 	_sync_reticle_to_viewport_center()
@@ -2840,6 +2927,74 @@ func _qa_place(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
 	_update_interior_streaming(pos)
 
 
+## Exterior deck spot that is not embedded in a prop. Rings of 1 m out to 12 m from preferred.
+## Y is the downward-ray hit + 0.05. The capsule must be clear, with 3 m on +X/-X/+Z/-Z and 2.5 m headroom.
+func _qa_find_clear_spot(preferred: Vector3) -> Vector3:
+	if _player_body == null:
+		return preferred
+	var cs: CollisionShape3D = _player_body.get_node_or_null("PlayerCapsule") as CollisionShape3D
+	if cs == null or cs.shape == null:
+		return preferred
+	var world: World3D = _player_body.get_world_3d()
+	if world == null or world.direct_space_state == null:
+		return preferred
+	var space: PhysicsDirectSpaceState3D = world.direct_space_state
+	var exclude: Array[RID] = [_player_body.get_rid()]
+	for ring: int in range(0, 13):
+		var radius: float = float(ring)
+		var steps: int = 1 if ring == 0 else maxi(8, ceili(TAU * radius))
+		for step: int in steps:
+			var ang: float = 0.0 if steps <= 1 else TAU * float(step) / float(steps)
+			var x: float = preferred.x + cos(ang) * radius
+			var z: float = preferred.z + sin(ang) * radius
+			# Stay on the promenade deck, inside the rails (x ±18, z -45) and outside the interior floor.
+			if x < -17.0 or x > 17.0 or z < -44.0 or z > -9.6:
+				continue
+			var down: Dictionary = _qa_deck_ray(space, Vector3(x, 8.0, z), Vector3(x, -1.0, z), exclude)
+			if down.is_empty():
+				continue
+			var hy: float = (down["position"] as Vector3).y
+			# Reject roofs and tall props. Deck, platform, and the low guideway are in this band.
+			if hy < -0.05 or hy > 0.80:
+				continue
+			var spot: Vector3 = Vector3(x, hy + 0.05, z)
+			if _qa_spot_clear(space, cs, spot, exclude):
+				return spot
+	return preferred
+
+
+func _qa_deck_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to)
+	rq.exclude = exclude
+	rq.collide_with_bodies = true
+	rq.collide_with_areas = false
+	rq.hit_from_inside = false
+	return space.intersect_ray(rq)
+
+
+func _qa_spot_clear(space: PhysicsDirectSpaceState3D, cs: CollisionShape3D, spot: Vector3, exclude: Array[RID]) -> bool:
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	q.shape = cs.shape
+	q.transform = Transform3D(Basis.IDENTITY, spot) * cs.transform
+	q.exclude = exclude
+	q.collide_with_bodies = true
+	q.collide_with_areas = false
+	if not space.intersect_shape(q, 1).is_empty():
+		return false
+	# cast_motion moves the player's capsule. -Z is the yaw-0 sprint (~2.7 m over 20 frames).
+	var motions: Array[Vector3] = [
+		Vector3(3.0, 0.0, 0.0), Vector3(-3.0, 0.0, 0.0),
+		Vector3(0.0, 0.0, 3.0), Vector3(0.0, 0.0, -3.0),
+		Vector3(0.0, 2.5, 0.0),
+	]
+	for motion: Vector3 in motions:
+		q.motion = motion
+		var frac: PackedFloat32Array = space.cast_motion(q)
+		if frac.is_empty() or frac[0] < 0.999:
+			return false
+	return true
+
+
 ## Yaw 0 faces world -Z. Pitch is the camera pivot X rotation (negative looks down).
 func _qa_aim_at(target: Vector3) -> void:
 	if _player_body == null:
@@ -2987,7 +3142,8 @@ func _run_hand_controls_qa() -> void:
 	_qa_check("stop_swing_eases_out", _walk_swing_amp < 0.001 and absf(hl_stop.origin.z - ARM_LOWERED_POS.z) < 0.002, "amp=%.3f z=%.3f" % [_walk_swing_amp, hl_stop.origin.z])
 
 	# --- 5. Shift sprint, A / S / D strafe ---
-	_qa_place(Vector3(0.0, 0.25, -15.0), 0.0, -4.0)
+	var move_spot: Vector3 = _qa_find_clear_spot(Vector3(-4.0, 0.12, -12.0))
+	_qa_place(move_spot, 0.0, -4.0)
 	await _qa_frames(10)
 	_qa_key(KEY_SHIFT, true)
 	_qa_key(KEY_W, true)
@@ -3000,7 +3156,7 @@ func _run_hand_controls_qa() -> void:
 	_qa_key(KEY_SHIFT, false)
 	_qa_check("shift_sprint", absf(sp - SPRINT_SPEED) < 0.1 and absf(dph - 8.6) < 0.2, "speed=%.2f m/s swing_freq=%.2f rad/s" % [sp, dph])
 	for kd: Array in [[KEY_A, Vector3(-1, 0, 0), "A_strafe_left"], [KEY_D, Vector3(1, 0, 0), "D_strafe_right"], [KEY_S, Vector3(0, 0, 1), "S_backpedal"]]:
-		_qa_place(Vector3(0.0, 0.25, -20.0), 0.0, -4.0)
+		_qa_place(move_spot, 0.0, -4.0)
 		await _qa_frames(8)
 		var q0: Vector3 = _player_body.global_position
 		_qa_key(kd[0] as Key, true)
@@ -3877,11 +4033,12 @@ func _make_procedural_starfield_texture() -> ImageTexture:
 
 
 func _build_starfield_outer_cylinder(parent: Node3D) -> void:
-	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7 axis (Y = 185.5m, Z-axis).
-	# The outer starfield cylinder rotates in _process(delta) while CylinderHab7_FullScale_World stays 100% stationary!
+	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7.
+	# Same axis as CylinderHab7_DrumAxisPivot: world +X through (135, 185.5, 0). No valley roll (a full shell).
+	# This shell spins about that axis in _process; the habitat drum stays stationary (no spin animation).
 	_starfield_cylinder = Node3D.new()
 	_starfield_cylinder.name = "StarfieldOuterCylinder"
-	_starfield_cylinder.position = Vector3(0.0, 185.5, -135.0)
+	_starfield_cylinder.position = Vector3(135.0, 185.5, 0.0)
 	parent.add_child(_starfield_cylinder)
 
 	var star_tex: ImageTexture = _make_procedural_starfield_texture()
@@ -3905,8 +4062,9 @@ func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	cm.cap_top = true
 	cm.cap_bottom = true
 	barrel.mesh = cm
-	# CylinderMesh height is along local Y; rotate 90 deg around X so the cylinder axis aligns with world Z.
-	barrel.rotation = Vector3(PI * 0.5, 0.0, 0.0)
+	# CylinderMesh height is along local Y. -90 deg about Z maps that axis onto parent +X (world +X).
+	# Parent then spins about X, so the shell stays coaxial with the habitat drum.
+	barrel.rotation_degrees = Vector3(0.0, 0.0, -90.0)
 	barrel.material_override = smat
 	barrel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	barrel.extra_cull_margin = 16384.0
@@ -5724,18 +5882,18 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_t38_check("starfield_outer_cylinder_geometry", _starfield_cylinder != null and star_r >= 1800.0 and star_l >= 4000.0 and _camera.far >= 5000.0,
 		"exists=%s R=%.1f m L=%.1f m camera_far=%.1f m" % [_starfield_cylinder != null, star_r, star_l, _camera.far])
 
-	# Place player outside on the Sector-4 Promenade deck looking toward the forward end-cap starfield vista
-	_qa_place(Vector3(0.0, 0.25, -32.0), 0.0, 12.0)
+	# Promenade deck, looking along the cylinder axis (world +X, yaw -90) toward the end-cap starfield vista.
+	_qa_place(Vector3(0.0, 0.25, -32.0), -90.0, 12.0)
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
-	var star_rot0: float = _starfield_cylinder.rotation.z if _starfield_cylinder != null else 0.0
+	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
 	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
 	await _qa_frames(90)
 	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
-	var star_rot1: float = _starfield_cylinder.rotation.z if _starfield_cylinder != null else 0.0
+	var star_rot1: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
 	# Advance starfield rotation by an extra visual arc so the two screenshots clearly show star rotation
 	if _starfield_cylinder != null:
-		_starfield_cylinder.rotate_z(deg_to_rad(14.0))
+		_starfield_cylinder.rotate_x(deg_to_rad(14.0))
 	var img_star2: Image = await _qa_capture("qa_outer_starfield_rotating_2.png")
 	var d_star_rot: float = absf(star_rot1 - star_rot0)
 	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
@@ -6513,7 +6671,30 @@ func _ext_add_ground_colliders() -> int:
 	return count
 
 
-func _ext_merged_aabb(root_n: Node3D) -> Dictionary:
+func _ext_name_is_helper(nm: String) -> bool:
+	var n: String = nm.to_lower()
+	if n.contains("collision") or n.contains("collider") or n.contains("helper") or n.contains("proxy") or n.contains("colonly") or n.contains("ucx"):
+		return true
+	return n.ends_with("_col") or n.ends_with("-col") or n.contains("_col_") or n.contains("-col-")
+
+
+## Visual meshes only. Collision-only and helper nodes (and anything parented under them) are not the prop bottom.
+func _ext_mesh_is_visual(mi: MeshInstance3D, root_n: Node) -> bool:
+	if mi.mesh == null or not mi.visible:
+		return false
+	var n: Node = mi
+	while n != null:
+		if _ext_name_is_helper(String(n.name)):
+			return false
+		if n != root_n and (n is CollisionObject3D or n is CollisionShape3D):
+			return false
+		if n == root_n:
+			break
+		n = n.get_parent()
+	return true
+
+
+func _ext_union_mesh_aabb(root_n: Node3D, visual_only: bool) -> Dictionary:
 	var merged: AABB = AABB()
 	var any: bool = false
 	var stack: Array[Node] = [root_n]
@@ -6521,7 +6702,7 @@ func _ext_merged_aabb(root_n: Node3D) -> Dictionary:
 		var curr: Node = stack.pop_back()
 		if curr is MeshInstance3D:
 			var mi: MeshInstance3D = curr as MeshInstance3D
-			if mi.mesh != null:
+			if mi.mesh != null and (not visual_only or _ext_mesh_is_visual(mi, root_n)):
 				var bb: AABB = mi.global_transform * mi.get_aabb()
 				if any:
 					merged = merged.merge(bb)
@@ -6531,6 +6712,24 @@ func _ext_merged_aabb(root_n: Node3D) -> Dictionary:
 		for ch: Node in curr.get_children():
 			stack.append(ch)
 	return {"ok": any, "aabb": merged}
+
+
+func _ext_merged_aabb(root_n: Node3D) -> Dictionary:
+	var visual: Dictionary = _ext_union_mesh_aabb(root_n, true)
+	if bool(visual["ok"]):
+		return visual
+	return _ext_union_mesh_aabb(root_n, false)
+
+
+func _ext_collider_is_under(root_n: Node, collider: Object) -> bool:
+	if not (collider is Node):
+		return false
+	var n: Node = collider as Node
+	while n != null:
+		if n == root_n:
+			return true
+		n = n.get_parent()
+	return false
 
 
 func _ext_collision_rids(root_n: Node) -> Array[RID]:
@@ -6548,9 +6747,12 @@ func _ext_collision_rids(root_n: Node) -> Array[RID]:
 func _ext_snap_exclude(inst: Node3D, kind: int, ext_root: Node) -> Array[RID]:
 	var exclude: Array[RID] = []
 	var asset: String = String(inst.get_meta("ext_asset", ""))
+	# Always drop this prop's bodies so the ray cannot land on its own roof or posts.
+	exclude.append_array(_ext_collision_rids(inst))
 	if kind == EXT_KIND_GROUND:
 		# Placement colliders only. ExtGroundExtension stays outside this root so these rays hit it.
-		return _ext_collision_rids(ext_root)
+		exclude.append_array(_ext_collision_rids(ext_root))
+		return exclude
 	for ch: Node in ext_root.get_children():
 		if not (ch is Node3D):
 			continue
@@ -6604,18 +6806,41 @@ func _ext_max_hit_y(inst: Node3D, aabb: AABB, exclude: Array[RID]) -> Dictionary
 	pts.append(Vector2(x1, z0))
 	pts.append(Vector2(x0, z1))
 	pts.append(Vector2(x1, z1))
-	var best: float = -INF
-	var any: bool = false
-	for p: Vector2 in pts:
+	var hits: Array[float] = []
+	var center_y: float = 0.0
+	var have_center: bool = false
+	for i: int in range(pts.size()):
+		var p: Vector2 = pts[i]
 		var hit: Dictionary = _ext_ray(space, Vector3(p.x, start_y, p.y), Vector3(p.x, end_y, p.y), exclude)
-		if hit.is_empty():
+		if hit.is_empty() or _ext_collider_is_under(inst, hit.get("collider")):
 			continue
 		var hy: float = (hit["position"] as Vector3).y
-		if not any or hy > best:
-			best = hy
+		if i == 0:
+			center_y = hy
+			have_center = true
+		hits.append(hy)
+	return _ext_support_from_hits(hits, center_y, have_center)
+
+
+## Highest support that is still within EXT_SUPPORT_LIFT of the centre hit.
+## A footprint corner on PromenadeEastGuardrail (top y 1.245) must not lift the whole prop.
+func _ext_support_from_hits(hits: Array[float], center_y: float, have_center: bool) -> Dictionary:
+	if hits.is_empty():
+		return {"ok": false, "y": 0.0}
+	var anchor: float = center_y if have_center else hits[0]
+	if not have_center:
+		for h: float in hits:
+			anchor = minf(anchor, h)
+	var best: float = -INF
+	var any: bool = false
+	for h2: float in hits:
+		if h2 > anchor + EXT_SUPPORT_LIFT:
+			continue
+		if not any or h2 > best:
+			best = h2
 			any = true
 	if not any:
-		return {"ok": false, "y": 0.0}
+		return {"ok": true, "y": anchor}
 	return {"ok": true, "y": best}
 
 
