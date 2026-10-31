@@ -1,5 +1,5 @@
 {
- "board": "Hatch Actuator D-204 controller (Sector-4 exit hatch)",
+ "board": "Hatch Field Emitter D-204 controller (Sector-4 exit hatch)",
  "revision": "final (r3 #02 balanced_twolayer, R1/R2 removed)",
  "layers": [
   "top",
@@ -26,7 +26,7 @@
   },
   "C5": {
    "value": "470uF 35V",
-   "description": "VMOT bulk electrolytic",
+   "description": "VFLD bulk electrolytic",
    "footprint": "two4",
    "pins": [
     "1",
@@ -119,7 +119,7 @@
   },
   "U3": {
    "value": "DRV8871",
-   "description": "H-bridge motor driver 3.6 A",
+   "description": "H-bridge field-emitter driver 3.6 A",
    "footprint": "hbridge",
    "pins": [
     "IN1",
@@ -131,8 +131,8 @@
    ]
   },
   "J2": {
-   "value": "MOTOR",
-   "description": "Hatch actuator motor connector",
+   "value": "EMITTER",
+   "description": "Force-field emitter (FE1) connector",
    "footprint": "conn2v",
    "pins": [
     "1",
@@ -231,7 +231,7 @@
   }
  },
  "nets": {
-  "VMOT_IN": {
+  "VFLD_IN": {
    "nodes": [
     "J1.1",
     "F1.1"
@@ -239,7 +239,7 @@
    "class": "power",
    "width_grid": 0.8
   },
-  "VMOT": {
+  "VFLD": {
    "nodes": [
     "F1.2",
     "C5.1",
@@ -311,7 +311,7 @@
    "class": "power",
    "width_grid": 0.7
   },
-  "MOT_IN1": {
+  "DRV_IN1": {
    "nodes": [
     "U2.PB0_IN1",
     "U3.IN1"
@@ -319,7 +319,7 @@
    "class": "signal",
    "width_grid": 0.28
   },
-  "MOT_IN2": {
+  "DRV_IN2": {
    "nodes": [
     "U2.PB1_IN2",
     "U3.IN2"
@@ -397,7 +397,7 @@
   }
  },
  "intentional_fault": {
-  "scorched": "C5 (470uF VMOT bulk cap)",
+  "scorched": "C5 (470uF VFLD bulk cap)",
   "open": {
    "net": "RESET_N",
    "between": [

@@ -1,5 +1,5 @@
 {
- "board": "Hatch Actuator D-204 \u2014 SIMPLE tier FINAL (r3 #03 holo_panels + changes)",
+ "board": "Hatch Field Emitter D-204 \u2014 SIMPLE tier FINAL (r3 #03 holo_panels + changes)",
  "components": {
   "J1": {
    "label": "GRID POWER",
@@ -20,9 +20,9 @@
     "P3"
    ]
   },
-  "M1": {
-   "label": "DOOR MOTOR",
-   "value": "hatch actuator motor",
+  "FE1": {
+   "label": "FIELD EMITTER",
+   "value": "force-field emitter (hatch field)",
    "pins": [
     "IN",
     "GND"
@@ -60,7 +60,7 @@
    "GND1",
    "U1.GND",
    "GND2",
-   "M1.GND",
+   "FE1.GND",
    "GND3"
   ],
   "OUT1": [
@@ -71,7 +71,7 @@
   ],
   "OUT3": [
    "U1.P3",
-   "M1.IN"
+   "FE1.IN"
   ]
  },
  "intentional_fault": {
@@ -79,7 +79,7 @@
    "net": "OUT3",
    "between": [
     "U1.P3",
-    "M1.IN"
+    "FE1.IN"
    ],
    "look": "trace chunk missing + subtle burn, no spark"
   }
@@ -88,11 +88,11 @@
   "U1.P1": "no trace; player draws it",
   "U1.P2": "no trace; player draws it"
  },
- "win_condition": "OUT3 break repaired (Super Wire across the gap) AND python MOTOR_PIN == 3",
+ "win_condition": "OUT3 break repaired (Super Wire across the gap) AND python FIELD_PIN == 3",
  "code": {
-  "constant": "MOTOR_PIN",
+  "constant": "FIELD_PIN",
   "editable": [
-   "MOTOR_PIN"
+   "FIELD_PIN"
   ],
   "default": 1,
   "correct": 3,
