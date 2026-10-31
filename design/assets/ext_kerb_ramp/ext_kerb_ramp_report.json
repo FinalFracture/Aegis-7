@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_kerb_ramp_01",
+  "style": "Plain_Wedge",
+  "tris": 112,
+  "budget_ok": true,
+  "size": [
+   1.5,
+   0.302,
+   3.0
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_kerb_ramp/ext_kerb_ramp_01.glb"
+ },
+ {
+  "cand": "ext_kerb_ramp_02",
+  "style": "Railed",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   1.5,
+   1.228,
+   3.0
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0068,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_kerb_ramp/ext_kerb_ramp_02.glb"
+ },
+ {
+  "cand": "ext_kerb_ramp_03",
+  "style": "Side_Upstands",
+  "tris": 144,
+  "budget_ok": true,
+  "size": [
+   1.5,
+   0.4,
+   3.002
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_kerb_ramp/ext_kerb_ramp_03.glb"
+ },
+ {
+  "cand": "ext_kerb_ramp_04",
+  "style": "Flared",
+  "tris": 120,
+  "budget_ok": true,
+  "size": [
+   1.5,
+   0.302,
+   3.0
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_kerb_ramp/ext_kerb_ramp_04.glb"
+ },
+ {
+  "cand": "ext_kerb_ramp_05",
+  "style": "Lit_Edge",
+  "tris": 128,
+  "budget_ok": true,
+  "size": [
+   1.5,
+   0.303,
+   3.0
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_kerb_ramp/ext_kerb_ramp_05.glb"
+ }
+]
