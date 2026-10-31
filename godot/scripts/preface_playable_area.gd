@@ -1004,12 +1004,16 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	cyl_pivot.name = "CylinderHab7_DrumAxisPivot"
 	# Cylinder local X is the spin axis (authored axial span about [-368..+354]). No yaw: local +X stays world +X,
 	# the map's long axis (exterior x -47..47). Godot Euler order is YXZ, so a Z component would pitch the axis;
-	# the valley roll is a pure X rotation. Mesh theta is measured from +Y toward +Z, and positive X increases it,
-	# so +43 deg takes Valley A (137 deg) to bottom nadir (180 deg). Child offset y -200 cancels the GLB axis at y 200,
-	# so this pivot is the axis. Height 185.5 m puts the inner-surface nadir (R ≈ 185.5) on the map ground (y 0.12);
-	# the outer hull nadir is near y -14.5. The 135 m axial offset is along X, and Z = 0 holds the axis over the map centre line.
-	cyl_pivot.position = Vector3(135.0, 185.5, 0.0)
-	cyl_pivot.rotation_degrees = Vector3(43.0, 0.0, 0.0)
+	# the valley roll is a pure X rotation. Child offset y -200 cancels the GLB axis at y 200, so this pivot is the axis.
+	# Measured with raycasts against the cylinder mesh: rotation (43, 0, 0) pushes terrain up through the map;
+	# (-43, 0, 0) puts the Valley A floor (circular arc, R ~ 200) under the map, with its valley wall at z ~ -26
+	# (matching the canal edge at -25.8). Surface height is constant along X (axis parallel to the map's long axis).
+	# Raising the axis 2.2 m (y 187.7) makes the inner surface just touch the deck plane: surface max y -0.1 at z 42
+	# (the map's highest point); nadir ~ -7.0 at z -8. A flat 66 m footprint on an R 200 m arc cannot be fully tangent;
+	# the deck touches the surface at its north edge and floats above the valley floor elsewhere.
+	# The 135 m axial offset is along X, and Z = 0 holds the axis over the map centre line.
+	cyl_pivot.position = Vector3(135.0, 187.7, 0.0)
+	cyl_pivot.rotation_degrees = Vector3(-43.0, 0.0, 0.0)
 	hab_root.add_child(cyl_pivot)
 
 	var cyl_node: Node3D = _load_glb_scene(cyl_path, 0.85)
