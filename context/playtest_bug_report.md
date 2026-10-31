@@ -458,3 +458,32 @@ Run in a temp worktree at `c29df73`. One 3/4 shot per door, about 2.5 m out, plu
 - **DOOR_SECTOR4_EXIT: PASS (cosmetic).** Back 248 mm inside the wall, no gap or z-fighting. Same proud slab edge.
 - Frames and filler panels look flush with no visible frame-to-wall gaps in all 6 shots. On every hub, the mesh centres sit about 80 mm behind the backing's front face; the display still reads, but the hub body is partly buried in the slab.
 - **QA-BK-01 (Minor):** In the backing fit near `scripts/preface_playable_area.gd:3813`, APT201 gets no backing, and the ALCOVE2C backing has no wall behind it. Seat both against the real jamb/wall, or add a collider to the ALCOVE2C pier.
+
+## QA pass: force-field doors push d670e81 (Patch, 2026-10-31 CDT)
+_Box only: fresh `git clone` to /tmp/qa_d670e81, Godot 4.7.2 + xvfb + opengl3 (llvmpipe). No project files edited; throwaway scripts in /tmp. Logs + shots: `godot/renders/qa/pass_d670e81/`._
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Realism | PARTIAL (visual only): frame/hub scale plausible; amber field reads as locked. Not measured against cylinder spec. |
+| 2 | Pathfinding / wayfinding | FAIL / not verifiable: 0 NavigationRegion3D, 0 NavigationAgent3D in the main scene. Door walk-through checks pass (T38 QA). Signage/tactile not audited. |
+| 3 | Clipping (3d-part-clipping-check) | PASS for props (placement_assert --qa-placement 26/26). FAIL rule B3 for door hubs: 3–6 of 9 hub-face rays find no wall within 0.05 m on all 5 hubs logged; code adds a runtime `HubWallBacking` panel instead of seating the hub. |
+| 4 | Shading / lighting | PASS with notes: no emissive >8x, 13 lights (3 shadowed); SSR warning (gl_compatibility has no SSR); 7 visible `Occ_*` occluder slabs have no material. Light leaks / decal z-fighting not inspected. |
+| 5a | Fresh clone / imports / script errors | PASS: import exit 0, 0 SCRIPT ERRORs in any run. Only GL leak errors at exit (engine). |
+| 5b | Force-field behaviour | PASS: --qa-forcefield-door 9/9 (stall collider on, split A/B hold until sync, release after full sync), 4/4 shots. Service-call scene loads, `[SERVICE-DOOR] ready 2.40x2.60 split=true calib=3`. |
+| 5c | Regression T38 | FAIL: --qa-reticle-stars-doors failures=2 (was 0). |
+| 5d | Troubleshoot UI rules | FAIL: in-game `pcba_python_puzzle_ui.gd` still the old I-Spy UI; subtitle spells out the solution (no-hints rule); board is a static PNG (`ui_pcba_circuit_board_panel.png`) with no netlist, so it fails pcba-puzzle-circuit-validity step 1/5. Close is via [P/ESC] only (success does not auto-close: OK). Design boards validate: simple_final PASS (5 nets/12 pads/0 errors); final report PASS. |
+| 5e | Performance | Draw calls 453, objects 444, 102.6k prims, ~1.0 GB vmem at spawn. FPS (1.1) is llvmpipe software and not meaningful. |
+| — | placement_assert --qa-placement | 26 pass, 0 fail |
+
+### Bugs
+| ID | Owner | Sev | Repro / evidence |
+|---|---|---|---|
+| D670-01 | Gage | High | `--qa-reticle-stars-doors`: `pickup_collected_before_exit` collects `Apt201_ToolWall_SuperWire_Spool` not `Workbench_BCI_Headband` (inv_bci=0); `interior_respawn_on_vestibule_reentry` respawns collected BCI (z=-12.5, was -6.0). Log `qa_reticle-stars-doors.log`. Not bisected (could predate d670e81). |
+| D670-02 | Gage | Med | Troubleshoot UI gives the answer in its subtitle ("PLUG SUPER WIRE INTO [RESET] PIN & SEAT +5A BATTERY") and in the Python label; violates no-hints. pcba_python_puzzle_ui.gd:117, :200. |
+| D670-03 | Gage | Med | In-game PCB art is a static PNG with no netlist; replace with validated `design/ui/troubleshoot_simple_final/` or `troubleshoot_final/` boards. |
+| D670-04 | Gage | Med | Door hubs not wall-backed (3–6/9 rays miss at 0.05 m) on ALCOVE2C, APT202, RM1A, RM1B, SECTOR4_EXIT; runtime backing panel masks it. Seat hubs on walls. Log `probe.log` [HUB] lines. |
+| D670-05 | Gage | Med | No navmesh in the playable scene, so reachability/dead-end checks can't be automated. |
+| D670-06 | Rook/Gage | Low | 7 visible occluder slabs (`Occ_L2_*`, `Occ_Roof_*`) have no material (default shading if seen). |
+| D670-07 | Gage | Low | SSR enabled in WorldEnvironment but unsupported by gl_compatibility (warning every run). |
+
+Not checked: realism measurements, signage/tactile cues, light leaks, decal z-fighting, shadow artifacts, real-GPU fps/frame time, hand-controls QA, Windows runs.
