@@ -1,0 +1,117 @@
+[
+ {
+  "cand": "ext_tram_platform_kerb_01",
+  "style": "Pearl_Deck",
+  "tris": 64,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.3,
+   1.9
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_01.glb"
+ },
+ {
+  "cand": "ext_tram_platform_kerb_02",
+  "style": "Cyan_Tactile",
+  "tris": 112,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.3,
+   1.9
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_02.glb"
+ },
+ {
+  "cand": "ext_tram_platform_kerb_03",
+  "style": "Overhang_Lip",
+  "tris": 80,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.304,
+   1.9
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_03.glb"
+ },
+ {
+  "cand": "ext_tram_platform_kerb_04",
+  "style": "Drain_Grate",
+  "tris": 160,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.298,
+   1.9
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.004,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_04.glb"
+ },
+ {
+  "cand": "ext_tram_platform_kerb_05",
+  "style": "Chevron_Wayfinding",
+  "tris": 136,
+  "budget_ok": true,
+  "size": [
+   1.994,
+   0.3,
+   1.898
+  ],
+  "pivot": {
+   "min_y": 0.0,
+   "cx": 0.0,
+   "cz": 0.0
+  },
+  "clip_pass": true,
+  "worst_overlap": 0.0039,
+  "overlaps_over": [],
+  "coplanar": [],
+  "open": [],
+  "nouv": [],
+  "glb": "design/assets/ext_tram_platform_kerb/ext_tram_platform_kerb_05.glb"
+ }
+]
