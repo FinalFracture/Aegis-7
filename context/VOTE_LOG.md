@@ -1745,3 +1745,13 @@
 ### #42 curved road + #43 flat road — CUT (Jared, Oct 31 5:04 AM CT, via Atlas)
 - **Jared:** no traditional roads; maglev is the only transport for now. Both CUT, revivable. #42 candidates 01-05 shelved in `design/assets/ext_road_curved_R185/shelved/` (no pick).
 - #41 curb (promoted) now edges walkways/planters instead of roads — flagged to Atlas in case it no longer has a use.
+
+### #44 paving kit (Rook, box pipeline, Oct 31)
+- **Candidates:** `design/assets/ext_paving_promenade/ext_paving_promenade_01..05.glb` + `design/assets/ext_paving_plaza/ext_paving_plaza_01..05.glb` (all clip-check + validate PASS, alone and 2x2 tiling + curb).
+- **Deciding vote: Jared (Oct 31, 5:13 AM CT), relayed via Atlas.**
+- **#44 Paving WINNER:** `#04 Tactile_Guidance` -> `godot/assets/models/ext_paving_promenade.glb` (144 tris) + `godot/assets/models/ext_paving_plaza.glb` (144 tris).
+- **Atlas PM calls (not Jared votes), 5:13 AM CT:** keep #41 curb, repurposed as edging for green/planter beds and the guideway corridor edge ("may have no use" flag cleared); layout-script note added to remove road zones from `residential_exterior_plan_v1.py`.
+
+### Platform-back infill (Rook, Oct 31) — single version, no vote (Atlas PM call / Jared waived)
+- `ext_platform_infill.glb` (592 tris, 11.994 x 1.096 x 0.30; paving-04 tactile top) -> `godot/assets/models/ext_platform_infill.glb`. Origin (15.0, 0, -16.048), rot 0; 4 mm to kerb back. Clip PASS alone and with 6 kerbs + shelter (y 0.297) + promenade paving 04 (4 seeds). Back face = 0.25 m step to paving -> #45 ramp.
+- **Fix found by the assembly check:** promoted `ext_tram_shelter.glb` (05) had glass-pane ends coplanar with kick-rail ends (intermittent clip flag); panes now end 2 mm into the posts. Re-exported + re-promoted (696 tris, clip PASS on 4 seeds).

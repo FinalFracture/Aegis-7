@@ -145,4 +145,5 @@ What this means on the ground:
 
 ## Update 2026-10-31 5:04 AM CT (Jared): no traditional roads
 - #42 curved road and #43 flat road CUT (revivable). Spin St W/E and the service lane become pedestrian walkways paved with #44; maglev is the only transport.
-- The promoted #41 curb (`ext_curb_segment` / `ext_curb_corner`) now edges walkways and planters (0.15 m step, base on paving top). **Flag for Atlas:** if walkways are flush with the plaza/promenade, the curb may no longer have a use. Layout-script: remove road zones / Spin St road surfaces when next run.
+- The promoted #41 curb (`ext_curb_segment` / `ext_curb_corner`) is **kept (Atlas PM call, 5:13 AM CT)** as edging for green/planter beds and the guideway corridor edge (0.15 m step, base on paving top y 0.047).
+- **Layout-script note (Atlas PM call):** remove the road zones (`road` kind: Spin St W/E, service lane, 'tram band' road surface) from `residential_exterior_plan_v1.py` and re-zone them as `walk` (paving #44 04) when the script is next run; .py not edited here.

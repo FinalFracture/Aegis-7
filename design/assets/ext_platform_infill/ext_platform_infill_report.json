@@ -1,0 +1,15 @@
+{
+ "tris": 592,
+ "clip_pass": true,
+ "worst": 0.0039,
+ "coplanar": [],
+ "size": [
+  11.994,
+  0.306,
+  1.096
+ ],
+ "validate": true,
+ "asm_bad": [],
+ "asm_coplanar": [],
+ "asm_open": []
+}

@@ -19,7 +19,7 @@ def posts(p, xs, zs, y1, w=.1, d=.1, mat=G, name="Posts"):
 def wall_glass(p, xs, z, y0, y1, pw=.1, skip=(), name="Rear_Glass"):  # panes between posts, ends embedded E
     for i in range(len(xs) - 1):
         if i in skip: continue
-        p.add(name, GL, box(xs[i] + pw/2 - E, xs[i+1] - pw/2 + E, y0, y1, z - .006, z + .006))
+        p.add(name, GL, box(xs[i] + pw/2 - .002, xs[i+1] - pw/2 + .002, y0, y1, z - .006, z + .006))
 def kick(p, xs, z, y0=.12, y1=.3, pw=.1, mat=G, dz=.03, name="Kick_Rails"):
     for i in range(len(xs) - 1): p.add(name, mat, box(xs[i] + pw/2 - E, xs[i+1] - pw/2 + E, y0, y1, z - dz, z + dz))
 def timetable(p, x0, x1, z, y0=1.0, y1=1.9, pw=.1):  # framed panel filling the bay: real cut-out, glass split above/below
