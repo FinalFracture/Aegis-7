@@ -225,6 +225,7 @@ const FF_STALL_STRENGTH := 0.40
 const FF_STALL_TIME := 2.0
 const FF_DENY_TIME := 0.3
 const NAV_LINK_OFFSET := 0.8          # metres either side of a force-field door plane along its normal
+const HATCH_NAV_ID := "HATCH_D204"    # field gate; link stays off until the D-204 field is open
 const FF_BASE_STATIC := 0.35
 const FF_BASE_JITTER := 0.004
 const FF_BASE_ARC := 0.8
@@ -314,6 +315,8 @@ var _pickup_templates: Dictionary = {}
 var _ring_root: Node3D
 var _starfield_cylinder: Node3D
 var _rfid_doors: Array[Dictionary] = []
+var _hatch_link: NavigationLink3D = null
+var _hatch_open: bool = false
 var _reticle_box: Control
 var _reticle_center_px: Vector2 = Vector2(960.0, 540.0)
 var _gravity_boxes: Array[Dictionary] = []
@@ -478,8 +481,39 @@ func _add_forcefield_nav_links() -> void:
 		link.bidirectional = true
 		link.enabled = _door_field_is_open(door)
 		door["nav_link"] = link
+	_add_hatch_nav_link()
 	# 0.8 m endpoints sit past the carved door gap; snap them onto the mesh within 1 m.
 	_apply_nav_link_radius.call_deferred()
+
+
+func _add_hatch_nav_link() -> void:
+	# Same shape as a door link. The emitter is the D-204 field gate; the link stays off while the field is closed.
+	if _props_container == null:
+		return
+	var panel: Node3D = _props_container.get_node_or_null("Hatch_D204_EmitterPanel") as Node3D
+	if panel == null or not is_instance_valid(panel):
+		return
+	var link := NavigationLink3D.new()
+	link.name = "NavLink_HATCH_D204"
+	var normal := panel.global_transform.basis.z
+	if normal.length_squared() < 0.0001:
+		normal = Vector3.FORWARD
+	else:
+		normal = normal.normalized()
+	add_child(link)
+	link.global_position = panel.global_position
+	link.global_rotation = Vector3.ZERO
+	link.start_position = -normal * NAV_LINK_OFFSET
+	link.end_position = normal * NAV_LINK_OFFSET
+	link.bidirectional = true
+	link.enabled = _hatch_open
+	_hatch_link = link
+
+
+func _set_hatch_field_open(open_state: bool) -> void:
+	_hatch_open = open_state
+	if _hatch_link != null and is_instance_valid(_hatch_link):
+		_hatch_link.enabled = open_state
 
 
 func _door_field_is_open(door: Dictionary) -> bool:
@@ -533,6 +567,9 @@ func _nav_point_in_door_room(door_id: String, p: Vector3) -> bool:
 			return ROOM_1B_INTERIOR.has_point(p)
 		"DOOR_SECTOR4_EXIT":
 			return p.y < 3.6 and p.z < -8.90 and p.x > -18.5 and p.x < 18.5
+		"HATCH_D204":
+			# Under the Apt201 slab, inside Room1A. The slab is the field-gated floor between them.
+			return p.y < 4.05 and p.x > -13.6 and p.x < -5.4 and ROOM_1A_INTERIOR.has_point(p)
 		_:
 			return false
 
@@ -546,6 +583,8 @@ func _nav_separating_doors(a: Vector3, b: Vector3) -> PackedStringArray:
 			continue
 		if _nav_point_in_door_room(id, a) != _nav_point_in_door_room(id, b):
 			out.append(id)
+	if _nav_point_in_door_room(HATCH_NAV_ID, a) != _nav_point_in_door_room(HATCH_NAV_ID, b):
+		out.append(HATCH_NAV_ID)
 	return out
 
 
@@ -562,6 +601,7 @@ func _nav_strict_reach(map: RID, spawn_pt: Vector3, target: Vector3) -> Dictiona
 		"end_dist": end_dist,
 		"closest_dist": closest.distance_to(target),
 		"pts": path.size(),
+		"path": path,
 	}
 
 
@@ -591,6 +631,7 @@ func _nav_qa_set_fields(open_state: bool) -> void:
 		var link := door.get("nav_link") as NavigationLink3D
 		if link != null and is_instance_valid(link):
 			link.enabled = open_state and _door_field_is_open(door)
+	_set_hatch_field_open(open_state)
 
 
 ## --qa-nav-reach: closed fields must block every gated interactable; open fields must reach all.
@@ -636,6 +677,10 @@ func _run_qa_nav_reach() -> void:
 			leaks += 1
 			var door_list: PackedStringArray = gated_doors[gid] as PackedStringArray
 			print("[NAV-QA] FAIL %s leak doors=%s path_end_dist=%.2f path_pts=%d" % [gid, ",".join(door_list), float(reach["end_dist"]), int(reach["pts"])])
+			var leak_path: PackedVector3Array = reach["path"]
+			for pi: int in leak_path.size():
+				var lp: Vector3 = leak_path[pi]
+				print("[NAV-QA] leak_path %s i=%d %.2f,%.2f,%.2f" % [gid, pi, lp.x, lp.y, lp.z])
 		else:
 			unreachable += 1
 	print("[NAV-QA] closed: unreachable=%d/%d leaks=%d" % [unreachable, gated_n, leaks])
@@ -6378,6 +6423,7 @@ func open_troubleshoot_simple(device_id: String = "D-204") -> TroubleshootSimple
 func _on_troubleshoot_field_released(_device_id: String) -> void:
 	# Win releases the field (dissolve open). A wrong pin only stalls inside the UI.
 	# The hatch id is DOOR_D204; this sector has no hatch door mesh yet.
+	_set_hatch_field_open(true)
 	var door: Dictionary = _find_door("DOOR_D204")
 	if door.is_empty():
 		print("[TS] D-204 released (no hatch door in this sector yet)")

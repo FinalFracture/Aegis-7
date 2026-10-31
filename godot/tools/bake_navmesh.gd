@@ -6,6 +6,9 @@ extends SceneTree
 ## The scene skips PlayableNavRegion while this script is on the command line.
 ## Closed force-field door colliders are baked as obstacles, so doorways are cut.
 ## A 0.2 m BakeDoorObstacle on each door plane also extends 0.3 m below the pivot.
+## Field-gated openings (D-204 hatch, service-field and closed-hatch colliders) get the same
+## obstacle, 0.1 m larger than the opening on each side. The Apt201 slab seam at z 6.20 is a
+## bake-only wall: that slab covers the Room1A spool, so a closed-field path was ending on it.
 ## Baking AABB is x -50..60, y -1..12, z -60..40 (apartments near y 4.25, and the hatch).
 ## Furniture and roof are name/group exclusions of that node's own colliders, not floors.
 ## Polygons with any vertex x > 100 (gravity ring) are dropped after the bake.
@@ -68,6 +71,8 @@ func _bake() -> void:
 	# Do not clip y at 7.2: that rejected interior meshes that also reach the roof.
 	navmesh.filter_baking_aabb = AABB(Vector3(-50.0, -1.0, -60.0), Vector3(110.0, 13.0, 100.0))
 	_block_force_field_doors()
+	_block_field_gated_openings()
+	_block_apt201_slab_seam()
 	_exclude_furniture_and_roof()
 	var source := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(navmesh, source, _scene)
@@ -172,6 +177,123 @@ func _add_bake_door_box(field_body: StaticBody3D) -> void:
 	bs.size = Vector3(maxf(x1 - x0, 0.20), maxf(y1 - y0, 0.20), 0.20)
 	cs.shape = bs
 	body_box.add_child(cs)
+
+
+func _block_field_gated_openings() -> void:
+	# Door FieldCollider bodies already have a BakeDoorObstacle. This pass catches every other
+	# field-gated opening: the D-204 hatch, a service field, or a closed hatch collider.
+	if _scene == null:
+		return
+	var stack: Array[Node] = [_scene]
+	var hits: Array[Node] = []
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if _is_gated_opening_node(n) and not _ancestor_has_bake_obstacle(n):
+			hits.append(n)
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	for node: Node in hits:
+		_add_gated_opening_obstacle(node)
+
+
+func _is_gated_opening_node(n: Node) -> bool:
+	var nm := String(n.name).to_lower()
+	if nm == "bakedoorobstacle" or nm.begins_with("bakedoorobstacle") or nm.begins_with("bakeslab"):
+		return false
+	var named := nm.contains("hatch") or nm.contains("d204") or nm.contains("servicefield")
+	named = named or (nm.contains("closed") and (nm.contains("hatch") or nm.contains("field")))
+	if named:
+		return true
+	# "Field" only on a collider. FieldPlane meshes and the door model are not openings.
+	if not (n is CollisionObject3D or n is CollisionShape3D):
+		return false
+	return nm.contains("field") or nm.contains("forcefield")
+
+
+func _ancestor_has_bake_obstacle(n: Node) -> bool:
+	var c: Node = n
+	while c != null:
+		if c.get_node_or_null("BakeDoorObstacle") != null:
+			return true
+		c = c.get_parent()
+	return false
+
+
+func _add_gated_opening_obstacle(node: Node) -> void:
+	var aabb := _opening_world_aabb(node)
+	if aabb.size.length_squared() <= 0.0001:
+		return
+	# 0.1 m past the opening on each side, and 0.3 m lower so the box bites the floor.
+	aabb.position -= Vector3(0.1, 0.4, 0.1)
+	aabb.size += Vector3(0.2, 0.5, 0.2)
+	var body := StaticBody3D.new()
+	var nm := String(node.name)
+	body.name = "BakeDoorObstacle_" + nm
+	body.collision_layer = 1
+	body.collision_mask = 1
+	body.position = aabb.get_center()
+	_scene.add_child(body)
+	var cs := CollisionShape3D.new()
+	cs.name = "BakeDoorObstacle_Shape"
+	var bs := BoxShape3D.new()
+	bs.size = Vector3(maxf(aabb.size.x, 0.20), maxf(aabb.size.y, 0.20), maxf(aabb.size.z, 0.20))
+	cs.shape = bs
+	body.add_child(cs)
+
+
+func _opening_world_aabb(node: Node) -> AABB:
+	var found := AABB()
+	var any := false
+	var stack: Array[Node] = [node]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is CollisionShape3D:
+			var cs := n as CollisionShape3D
+			var shape: Shape3D = cs.shape
+			if shape is BoxShape3D and cs.global_transform != null:
+				var ext: Vector3 = (shape as BoxShape3D).size * 0.5
+				var xf: Transform3D = cs.global_transform
+				for sx: float in [-1.0, 1.0]:
+					for sy: float in [-1.0, 1.0]:
+						for sz: float in [-1.0, 1.0]:
+							var corner: Vector3 = xf * Vector3(ext.x * sx, ext.y * sy, ext.z * sz)
+							if not any:
+								found = AABB(corner, Vector3.ZERO)
+								any = true
+							else:
+								found = found.expand(corner)
+		if n != node:
+			pass
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	if not any:
+		return AABB()
+	return found
+
+
+func _block_apt201_slab_seam() -> void:
+	# The leak is not a door. Spawn (-9.35, 4.25, 6.20) and the Room1A spool (-6.15, 0.98, 7.25)
+	# share an XZ footprint: Tech_Apartment_Upper's slab (about x -13.6..-5.4, z 2.7..8.5, top y 4.35)
+	# sits on the mezzanine deck directly above the laundry shelf. With every field link off, the
+	# path stays on that slab and still ends 0.55 m away horizontally, which the QA counts as a reach.
+	# There is no Hatch_D204 collider in the sector (the emitter panel is an empty marker on the
+	# alcove tool wall). A thin bake-only wall across the slab, x -13.95..-5.45 at z 6.20, meets the
+	# west shell and the Apt201 east wall. The reachable mesh stops south of it, more than 1 m from
+	# the spool. Nothing north of the seam is an interactable.
+	if _scene == null:
+		return
+	var body := StaticBody3D.new()
+	body.name = "BakeSlabGapObstacle"
+	body.collision_layer = 1
+	body.collision_mask = 1
+	body.position = Vector3(-9.70, 4.75, 6.20)
+	_scene.add_child(body)
+	var cs := CollisionShape3D.new()
+	cs.name = "BakeSlabGapObstacle_Shape"
+	var bs := BoxShape3D.new()
+	bs.size = Vector3(8.50, 1.50, 0.10)
+	cs.shape = bs
+	body.add_child(cs)
 
 
 func _exclude_furniture_and_roof() -> void:
