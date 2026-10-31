@@ -23,10 +23,10 @@ def quad(r, y0, y1, n=6, sq=.3):  # corner plan: square sq x sq centred, outside
 CH = [(-.15, 0), (.15, 0), (.15, .11), (.11, .15), (-.15, .15)]                     # chamfered road-top edge
 BN = [(-.15, 0), (.15, 0), (.15, .09)] + [(.09 + .06 * np.cos(a), .09 + .06 * np.sin(a)) for a in np.linspace(0, np.pi / 2, 4)][1:] + [(-.15, .15)]  # bullnose
 
-def curb(v):
-    p = Pod(f"ext_curb_segment_0{v}")
+def curb(v, L=L, name=None):
+    p = Pod(name or f"ext_curb_segment_0{v}")
     if v == 1:  # Chamfer Slate: chamfered carbon-slate curb, amber reflector strip on the road face
-        p.add("Curb", S, prof(CH, -L, L)); p.add("Reflector_Strip", A, box(-.9, .9, .05, .08, .15 - E, .154))
+        p.add("Curb", S, prof(CH, -L, L)); p.add("Reflector_Strip", A, box(-(L - .097), L - .097, .05, .08, .15 - E, .154))
     elif v == 2:  # Titanium Nosing: slate body capped with a titanium angle nosing on the road-top edge
         p.add("Curb", S, box(-L, L, 0, .135, -.15, .15)); p.add("Nosing", T, box(-L + .002, L - .002, .135 - E, .15, .09, .154))
         p.add("Top_Cap", S, box(-L + .002, L - .002, .133, .148, -.148, .09 + E))
@@ -60,6 +60,18 @@ def corner(v):
 ITERS = [(1, "Chamfer_Slate"), (2, "Titanium_Nosing"), (3, "Pearl_Bullnose"), (4, "Drain_Inlet"), (5, "Lit_Edge")]
 sf.ASSETS["curb"] = ("ext_curb_segment", curb, ITERS, 120, "#41 curb straight 2.0x0.3x0.15 (tiles @2.0 m, +Z road)")
 sf.ASSETS["curb_corner"] = ("ext_curb_corner", corner, ITERS, 120, "#41 curb outside corner 0.3x0.3x0.15")
+def build_1m():
+    """1 m Chamfer Slate (01) variant: same profile/materials/UVs/amber strip (strip ends 0.097 m in from each end, as the 2 m),
+    half-length .497 -> 0.994 m long, 1 m pitch 0.997 with 3 mm joints. -> godot/assets/models/ext_curb_segment_1m.glb"""
+    from ext_street_furniture_generator import recenter, export_final
+    import ext_clip_check as cc
+    p = recenter(curb(1, L=.497, name="ext_curb_segment_1m")); chk = [cc.check(p.P, seed=s) for s in (0, 1, 2)]
+    gp = os.path.join(sf.ROOT, "godot/assets/models/ext_curb_segment_1m.glb"); tris, _ = export_final(p.P, [gp])
+    nouv = [k for k, (mk, m) in p.P.items() if "uv" not in m.metadata]
+    return dict(glb=gp, tris=tris, size=chk[0]["size"], pivot=chk[0]["pivot"], clip_pass=all(c["pass"] for c in chk),
+                overlaps=[c["overlap"] for c in chk], coplanar=[c["coplanar"] for c in chk], open=chk[0]["open"], nouv=nouv)
+if __name__ == "__main__" and "--1m" in sys.argv:
+    import validate_models as vm; r = build_1m(); print(r); print("validate", vm.validate_file(r["glb"], require_textures=False)); sys.exit()
 if __name__ == "__main__":
     import validate_models as vm
     for k in ("curb", "curb_corner"):

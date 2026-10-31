@@ -26,10 +26,12 @@
     "17_end_overhang_m": 2.997,
     "19_Xc": 21.153,
     "19_Xc2": 8.847,
-    "41_segments": 168,
+    "41_segments": 176,
+    "41_segments_2m": 168,
+    "41_segments_1m": 8,
     "41_corners": 40,
     "41_skipped": 0,
-    "41_deduped": 20,
+    "41_deduped": 0,
     "41_beds_merged": 10,
     "44_grid_origin_corner": [
       9,
@@ -531,6 +533,24 @@
     },
     {
       "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": -7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": -2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) north (1 m)"
+    },
+    {
+      "id": 41,
       "asset": "ext_curb_segment.glb",
       "x": -16.952,
       "y": 0.0,
@@ -564,6 +584,24 @@
       "z": -4.0015,
       "rot_deg": 90.0,
       "note": "hydro planter W (-16.8..-15.4, -7.0..-3.0) east"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": -2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": 2.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, -2.0..2.0) north (1 m)"
     },
     {
       "id": 41,
@@ -603,6 +641,24 @@
     },
     {
       "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": 2.848,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) south (1 m)"
+    },
+    {
+      "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -16.1,
+      "y": 0.0,
+      "z": 7.152,
+      "rot_deg": 0.0,
+      "note": "hydro planter W (-16.8..-15.4, 3.0..7.0) north (1 m)"
+    },
+    {
+      "id": 41,
       "asset": "ext_curb_segment.glb",
       "x": -16.952,
       "y": 0.0,
@@ -639,8 +695,17 @@
     },
     {
       "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -13.291,
+      "y": 0.0,
+      "z": 8.948,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) south (1 m)"
+    },
+    {
+      "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -12.2925,
+      "x": -11.794,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -649,7 +714,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -10.2955,
+      "x": -9.797,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -658,7 +723,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -8.2985,
+      "x": -7.8,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -667,7 +732,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -6.3015,
+      "x": -5.803,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -676,7 +741,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -4.3045,
+      "x": -3.806,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -685,7 +750,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -2.3075,
+      "x": -1.809,
       "y": 0.0,
       "z": 8.948,
       "rot_deg": 0.0,
@@ -693,8 +758,17 @@
     },
     {
       "id": 41,
+      "asset": "ext_curb_segment_1m.glb",
+      "x": -13.291,
+      "y": 0.0,
+      "z": 10.152,
+      "rot_deg": 0.0,
+      "note": "planter N (-13.8..-0.8, 9.1..10.0) north (1 m)"
+    },
+    {
+      "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -12.2925,
+      "x": -11.794,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -703,7 +777,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -10.2955,
+      "x": -9.797,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -712,7 +786,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -8.2985,
+      "x": -7.8,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -721,7 +795,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -6.3015,
+      "x": -5.803,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -730,7 +804,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -4.3045,
+      "x": -3.806,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -739,7 +813,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": -2.3075,
+      "x": -1.809,
       "y": 0.0,
       "z": 10.152,
       "rot_deg": 0.0,
@@ -1558,7 +1632,7 @@
     {
       "id": 41,
       "asset": "ext_curb_segment.glb",
-      "x": 0.0,
+      "x": -0.0,
       "y": 0.0,
       "z": -21.802,
       "rot_deg": 0.0,

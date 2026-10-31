@@ -9,6 +9,7 @@ World axes: X axial (fore -X / aft +X), +Z spinward, -Z antispinward (promenade/
 | 19 | Maglev car body, 01 Civic Pearl Classic | `ext_maglev_car_body.glb` | pair centred on shelter X 15. Xc=21.153, Xc2=8.847. Car 1 (21.153, 0.06, -19.90) rot 0; car 2 (8.847, 0.06, -19.90) rot 180 | 2 cars (set 24.31 m) | centred on shelter X 15 at the stop |
 | 19 | Maglev magnet module | `ext_maglev_magnet_module.glb` | car 1 (20.922, 0.06, -19.90) rot 0; car 2 (9.078, 0.06, -19.90) rot 180 | 1 per car | offset from the body, shifted with it |
 | 41 | Curb segment, 01 Chamfer Slate | `ext_curb_segment.glb` | y 0; pitch 1.997 m (segment 1.994 m, 3 mm joints); centreline 0.152 m outside the bed edge; rot 0 along X, rot 90 along Z | 168 placed (de-duped Oct 31, was 270) | runs listed below; segments fit inside each edge (no overhang) |
+| 41 | Curb segment 1 m, Chamfer Slate | `ext_curb_segment_1m.glb` | y 0; 0.994 x 0.304 x 0.15, pitch 0.997 (3 mm joints); same profile/materials/amber strip/pivot as the 2 m; rot 0 along X, rot 90 along Z | 8 | closes run ends where 2 m pieces leave ≥ 0.997 m |
 | 41 | Curb corner | `ext_curb_corner.glb` | y 0, rot 0, at each merged bed's four outside corners (offset 0.152 m out on both axes) | 40 (was 100) | same beds as the segment runs |
 | 44 | Paving promenade, 04 Tactile Guidance | `ext_paving_promenade.glb` | y 0 (top 0.05); 2 m grid, origin corner (9, -18.5) | other walkways | promenade on the other walkway cells of that grid |
 | 44 | Paving plaza, 04 Tactile Guidance | `ext_paving_plaza.glb` | y 0 (top 0.05); same 2 m grid; centres inside X 9..18, Z -25.6..-12.5, skipping guideway, platform, shelter, kerb ramp, and platform infill | 14 | grid origin (9, -18.5); plaza X 9..18, Z -25.6..-12.5 |
@@ -36,7 +37,11 @@ Notes
   - Hydro bed ×3: X -13..-3; Z 19.5..20.4, 21.5..22.4, 23.5..24.4. South 5 + north 5 + 4 corners each.
   - Short ends (0.9 m bed ends, 1.4 m hydro-planter ends) carry corners only: a 1.994 m segment can't fit between the corners. Runs are centred, leaving < 1 pitch split between the two ends.
   - Guideway north X -47..9 at Z -18.352: 28 segments. Guideway north X 21..47: 13. Guideway south X -47..47 at Z -21.802: 47. None in the kerb span X 9..21.
-  - Placed: 168 segments, 40 corners (was 270 + 100).
+  - 1 m segments (Oct 31): each edge is filled with whole 2 m pieces, then 1 m pieces where ≥ 0.997 m remains; leftover is split equally at both run ends; no scaling (spawner has no scale field).
+    1 m used: hydro planter W south + north ends (6, 0.203 m gap each side), planter N X -13.8..-0.8 south + north (2).
+  - Gaps left (total per edge, half at each end): 0.9 m bed ends (planter S ×2, planter N ×2, hydro bed ×3 = 14 ends) 0.900, corners only (0.994 m doesn't fit, would hit corners);
+    planter S runs 0.818; hydro planter W ends 0.406; guideway south 0.144, north X -47..9 0.087, north X 21..47 0.042; planter N 0.024 / 0.012; hydro bed 0.018; hydro planter W sides 0.009.
+  - Placed: 168 x 2 m + 8 x 1 m segments, 40 corners (was 270 + 100). Verified 0 curb-curb / 0 curb-kerb.
 - #19: Xc = 15 + 12.306/2 = 21.153, Xc2 = Xc - 12.306 = 8.847, so the two-car set is centred on the shelter at X 15. Body x is Xc and Xc2. Magnets keep their offset from the bodies (20.922 and 9.078).
 - #44: grid corners sit on (9, -18.5) with a 2 m pitch. Plaza is that grid inside X 9..18, Z -25.6..-12.5 (14 tiles after the skips above). Promenade is the other walkway cells on the same grid (walk, and not building, plot, green, water, guideway, or a solid object).
 - #47: three 4 m segments cover the 10.028 m line. Centres are 2 m, 6 m, and 10 m from (9.75, -13.996). The Sector-4 entrance at Z -9 is up the exit ramp from (0, -11.65).
