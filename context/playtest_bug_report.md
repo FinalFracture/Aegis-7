@@ -566,3 +566,19 @@ Suites (my runs): exterior 1024/0, placement 26/26, hand 36/36, reticle-stars-do
 - NAV-02 open and worse: 40 islands (was 31). Main ground island 609 polys. The upper floors and furniture tops are split off, though links make them reachable.
 - Earlier bug IDs still pass: D670-01/04/06/07, 5DB-01/02/03, LAY-01. E793-01 (exit leaks) and E793-02 (reticle run 332 s) are still open. PERF-01 not rechecked (no batching change in this push).
 Screenshots: godot/renders/qa/pass_66f3f35/ (01_navmesh_topdown_islands, 03_axial_view_drum_visible_ingame, 04_sky_up_from_deck, 05_exterior_horizon_drum, 06_gage_cylinder_after, 07_reticle_test_starfield_drum_hidden).
+
+## QA pass 797fc94 (Patch, 2026-10-31, box, Godot 4.7.2 opengl3/xvfb, fresh clone /tmp/qa_797fc94 at exactly 797fc94)
+Suites: placement 26/26, exterior 1024/0, hand 36/36, reticle-stars-doors 90/0 (324 s; window_starfield_visible_and_moving PASS changed=2219), forcefield 9/0, troubleshoot-simple 12/0, nav-reach 25/25 (40 islands), door hubs seated. Import clean, no script errors.
+- Troubleshoot count: Gage is right. There are 12 checks; my earlier 13 counted the SUMMARY line (it contains "=PASS"). Correction to the e793448, 196012f and 66f3f35 entries: those were 12 checks too.
+- Stars in normal play (my /tmp sky.gd, drum visible, star_px = isolated bright pixels at least 0.3 above their neighbours): deck window view 294-392, end-cap axial 743, other end cap 426, looking up 115-169. Earlier pass: 2 (sky brightness count). PASS, Jared's requirement is met.
+- Orbit: starfield rotation 0.171 to 0.241 rad over 20 frames. Sun direction follows the orbit ((0.1,-0.99,0.13) to (0.1,-0.53,-0.84) at +60 deg to (0.1,+1.0,-0.02) at +180 deg). Drum transform change = 0.000000 in every frame. PASS.
+- Lighting across the orbit: no black or blown-out frames (blown 0-8.8%, black 1.5-12.5% from the dark sky). Shadows enabled. The glass shows a tint and reflection.
+- LIT-01 LOW (Gage): at +180 deg the sun points straight up (from under the land) and still lights the deck, a little brighter (mean lum 0.389 vs 0.338). The drum doesn't occlude it. Fade or disable the sun when it's behind the shell.
+- CYL-01 FIXED: no flat grey sky. The large black slabs from 66f3f35 are gone.
+- CYL-02 FIXED: drum pivot and starfield both at (135, 187.2, 0).
+- WIN-01 MED (Gage): window-slice edges have jagged, sawtooth, spike-shaped shell fragments along both long sides of the cutout (01, 04, 05). This looks like broken triangulation where the 36 deg slice cuts the shell. Not realistic.
+- Grass slab (a=163 deg, opposite the window): reads as plausible green strips on the far side (07). No clipping seen at this distance. Placeholder is acceptable.
+- NAV-03 still fixed (my script: closed 24/25 blocked, only the APT 201 door from outside; open 25/25 floor-reachable within 0.97 m). The navmesh logs "8 edge errors" (overlapping edges), filed under NAV-02, which is still open at 40 islands.
+- Performance (uncontended, same perf.gd and default pose): avg frame 873 ms against 1052 ms at 196012f (llvmpipe), 2603 draw calls, 158.6k primitives, load 272 ms. No regression. PERF-01 (draw calls) still open.
+- All earlier IDs still pass: D670-01/04/06/07, 5DB-01/02/03, LAY-01/02, HAND-01, NAV-01/03. Still open: E793-01 (exit leaks), E793-02 (reticle 324 s), NAV-02, PERF-01.
+Screenshots: godot/renders/qa/pass_797fc94/ (01_window_t0, 02_window_after_20_frames, 03_window_orbit_plus60, 04_window_orbit_plus180, 05_endcap_axial, 06_endcap_other, 07_up_opposite_grass, 08_up_steep).
