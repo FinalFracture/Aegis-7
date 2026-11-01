@@ -2187,10 +2187,13 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 	},
 	{
 		# M-44. Maintenance east wall, inner face x=5.9. Mesh depth 0.8 (local Z -0.4..0.4).
-		# Yaw -90 maps local -Z onto world +X, so the back is 8 mm off the wall. Plan z is 1.0..3.5.
+		# Yaw -90 maps local -Z onto world +X, so the back is 8 mm off the wall.
+		# Width 2.5 m. Centre z 2.40 puts the footprint at z 1.15..3.65, 0.15 m clear of the
+		# corridor wall (inner face z=1.0). North of that is open floor; Kelvin is at z=6.0,
+		# and the Maintenance door (x 2.2..4.2) does not reach this x.
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(5.492, 0.12, 2.25),
+		"position": Vector3(5.492, 0.12, 2.40),
 		"yaw": -90.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
@@ -8051,21 +8054,39 @@ func _run_qa_player_exit() -> void:
 		get_tree().quit(1)
 		return
 	var root_pos: Vector3 = (door["root"] as Node3D).global_position
-	var dir: Vector3 = root_pos - _player_body.global_position
+	# Opening is root.x ± 0.75. A straight walk at the root stops west of that span (spawn is
+	# northwest), and the later -Z walk hits the wall. Stand on the centreline, 1.15 m north
+	# of the door: inside the 2 m flat scan, clear of the closed field and the z=1.0 wall.
+	var stand: Vector3 = Vector3(root_pos.x, root_pos.y, root_pos.z + 1.15)
+	var dir: Vector3 = stand - _player_body.global_position
 	_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
 	_qa_key(KEY_W, true)
 	await _qa_idle(2)
 	var walked: int = 0
 	var horiz: float = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
-	while walked < 240 and horiz > 1.3:
-		if walked % 10 == 0:
-			dir = root_pos - _player_body.global_position
+	var x_err: float = absf(_player_body.global_position.x - root_pos.x)
+	while walked < 280 and (horiz > 1.3 or x_err > 0.08):
+		var pos_now: Vector3 = _player_body.global_position
+		var aim: Vector3 = stand
+		# Already south of the stand: correct X only, do not walk into the closed field.
+		if pos_now.z < root_pos.z + 1.05:
+			aim = Vector3(root_pos.x, pos_now.y, pos_now.z)
+		dir = aim - pos_now
+		dir.y = 0.0
+		if dir.length() > 0.02:
 			_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
 		await get_tree().physics_frame
 		walked += 1
 		horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
+		x_err = absf(_player_body.global_position.x - root_pos.x)
 	_qa_key(KEY_W, false)
 	await _qa_idle(2)
+	# Face the doorway so the RFID scan (2 m flat, facing) still opens it.
+	dir = root_pos - _player_body.global_position
+	dir.y = 0.0
+	if dir.length() > 0.05:
+		_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+	horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
 	if horiz <= 1.3:
 		print("[EXIT-QA] PASS | walk_to_door | horiz=%.2f m frames=%d pos=%s" % [horiz, walked, str(_player_body.global_position)])
 	else:
