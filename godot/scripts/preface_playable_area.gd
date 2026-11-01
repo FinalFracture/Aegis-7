@@ -271,8 +271,33 @@ var _sun_base_basis: Basis  # [CYL-02] authored sun basis; _process orbits it wi
 var _fill: DirectionalLight3D
 var _task_lights: Array[OmniLight3D] = []
 var _task_base: Array[Dictionary] = []
+var _spot_lights: Array[SpotLight3D] = []
+var _spot_base: Array[Dictionary] = []
+var _emissive_mats: Array[Dictionary] = []
+var _reflection_probe: ReflectionProbe
+var _probe_rebake_frames: int = 0
 var _emergency: bool = false
+var _light_tween: Tween
+var _light_tween_serial: int = 0
+var _lighting_tween_active: bool = false
+var _sun_energy_authored: float = 1.4
+var _fill_energy_authored: float = 0.28
+var _ambient_energy_authored: float = 0.30
+var _ambient_color_authored: Color = Color(0.62, 0.68, 0.78, 1.0)
+# Live values at the moment a restore starts. An interrupted flicker eases from here.
+var _restore_sun: float = 1.4
+var _restore_fill: float = 0.28
+var _restore_amb_color: Color = Color(0.62, 0.68, 0.78, 1.0)
+var _restore_amb_energy: float = 0.30
+var _restore_task: Array[Dictionary] = []
+var _restore_spot_energy: Array[float] = []
+var _restore_emissive_energy: Array[float] = []
 var _time: float = 0.0
+# Grass slab UV domain, set for the duration of _add_recreation_grass_slab.
+var _slab_uv_x0: float = 0.0
+var _slab_uv_x1: float = 1.0
+var _slab_uv_a0: float = 0.0
+var _slab_uv_a1: float = 1.0
 
 # RFID pulse rings + body-anchored arm kinematics ([t31u])
 var _pulse_rings_root: Node3D
@@ -353,9 +378,21 @@ func _ready() -> void:
 	if _world_env != null and _world_env.environment != null:
 		var env: Environment = _world_env.environment.duplicate() as Environment
 		env.ssr_enabled = RenderingServer.get_current_rendering_method() == "forward_plus"
-		# [CYL-01] Black space behind the habitat. Ambient stays as authored (ambient_light_source is COLOR).
+		# [M-19] Black space. Reflections read the background, not a sky. Ambient is a colour.
+		# Sun full-exposure is 1.4, so this ambient is lower than the old 0.42 sky fill.
 		env.background_mode = Environment.BG_COLOR
 		env.background_color = Color(0, 0, 0, 1)
+		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		env.ambient_light_color = Color(0.62, 0.68, 0.78, 1)
+		env.ambient_light_energy = 0.30
+		env.reflected_light_source = Environment.REFLECTION_SOURCE_BG
+		env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+		env.tonemap_exposure = 1.0
+		env.tonemap_white = 4.0
+		env.glow_enabled = true
+		env.glow_intensity = 0.4
+		env.glow_bloom = 0.05
+		env.glow_hdr_threshold = 1.0
 		_world_env.environment = env
 
 	var all_args: PackedStringArray = OS.get_cmdline_args() + OS.get_cmdline_user_args()
@@ -1061,9 +1098,21 @@ func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3,
 ## Safety-floor boxes share one StaticBody, so these are their own StaticBody3D nodes on the same parent.
 func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	var rail_mat: StandardMaterial3D = StandardMaterial3D.new()
-	rail_mat.albedo_color = Color(0.78, 0.80, 0.83)
-	rail_mat.metallic = 0.35
-	rail_mat.roughness = 0.38
+	# [M-36] Brushed titanium. Roughness/metallic scalars are multipliers on the ORM channels.
+	rail_mat.albedo_color = Color(1, 1, 1, 1)
+	rail_mat.metallic = 1.0
+	rail_mat.roughness = 1.0
+	var rail_alb: Texture2D = _load_tex("qa03/rail_brushed_titanium_albedo.png")
+	var rail_orm: Texture2D = _load_tex("qa03/rail_brushed_titanium_orm.png")
+	if rail_alb != null:
+		rail_mat.albedo_texture = rail_alb
+	if rail_orm != null:
+		rail_mat.metallic_texture = rail_orm
+		rail_mat.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
+		rail_mat.roughness_texture = rail_orm
+		rail_mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+	rail_mat.uv1_triplanar = true
+	rail_mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	var az0: float = -5.69
 	var az1: float = -3.94
 	var alen: float = az1 - az0
@@ -1078,10 +1127,26 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	# so the hub's back rays miss and HubWallBacking floats. This box matches the header slab (z -3.64..-3.46,
 	# north face -3.46) and covers the hub sample columns at world x -10.51, -10.23, -9.96. It starts 4 cm
 	# east of the opening edge x=-10.60. Door roots are not moved. APT201 already seats on its west pier.
+	# [M-49] Gunmetal jamb. ORM: R ao, G roughness ~0.65, B metallic. Box size and position are unchanged.
 	var jamb_mat: StandardMaterial3D = StandardMaterial3D.new()
-	jamb_mat.albedo_color = Color(0.26, 0.29, 0.33)
-	jamb_mat.metallic = 0.8
-	jamb_mat.roughness = 0.34
+	jamb_mat.albedo_color = Color(1, 1, 1, 1)
+	jamb_mat.metallic = 1.0
+	jamb_mat.roughness = 1.0
+	var jamb_alb: Texture2D = _load_tex("qa03/door_jamb_gunmetal_albedo.png")
+	var jamb_orm: Texture2D = _load_tex("qa03/door_jamb_gunmetal_orm.png")
+	if jamb_alb != null:
+		jamb_mat.albedo_texture = jamb_alb
+	else:
+		jamb_mat.albedo_color = Color("#282E38")
+	if jamb_orm != null:
+		jamb_mat.metallic_texture = jamb_orm
+		jamb_mat.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
+		jamb_mat.roughness_texture = jamb_orm
+		jamb_mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+	else:
+		jamb_mat.roughness = 0.65
+	jamb_mat.uv1_triplanar = true
+	jamb_mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	_add_seam_static_box(parent, "QA_BK01_Alcove2C_EastJamb", Vector3(0.76, 2.78, 0.18), Vector3(-10.18, 5.71, -3.55), jamb_mat)
 
 
@@ -1134,10 +1199,11 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	if cyl_node != null:
 		cyl_node.name = "CylinderHab7_FullScale_Mesh"
 		cyl_node.position = Vector3(0.0, -200.0, 0.0)
-		_set_tree_cast_shadow(cyl_node, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 		cyl_pivot.add_child(cyl_node)
 		# Mesh edit only. Pivot pose above is the drum axis; this never rotates CylinderHab7_DrumAxisPivot.
 		_cut_observation_window(cyl_node, cyl_pivot)
+		# [M-04] Opaque drum hull casts shadows, so the sun reaches the interior only through the cut window.
+		_enable_hull_shadows(cyl_node)
 
 	_build_starfield_outer_cylinder(hab_root)
 
@@ -1158,7 +1224,7 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	var rail_mat: StandardMaterial3D = StandardMaterial3D.new()
 	rail_mat.albedo_color = Color(0.24, 0.28, 0.33, 1.0)
 	rail_mat.metallic = 0.82
-	rail_mat.roughness = 0.28
+	rail_mat.roughness = 0.36
 
 	var amber_mat: StandardMaterial3D = StandardMaterial3D.new()
 	amber_mat.albedo_color = COLOR_AMBER
@@ -1245,6 +1311,214 @@ func _world_triangle_hits_map_box(a: Vector3, b: Vector3, c: Vector3, box: AABB,
 	for ei: int in range(edge_from.size()):
 		var hit: Variant = Geometry3D.segment_intersects_triangle(edge_from[ei], edge_to[ei], a, b, c)
 		if hit != null:
+			return true
+	return false
+
+
+# [M-15] Table value, or -1 when the surface is not luminous. holo/lens keep authored energy × 0.8.
+# "oled" is tested before "led" because the shorter token is a substring.
+func _m15_emission_energy(blob: String, existing_energy: float = 1.0, emission_on: bool = false) -> float:
+	var n: String = blob.to_lower().replace("_", "").replace("-", "")
+	if n.contains("luminaire") or n.contains("ceilingpanel") or n.contains("lightstrip"):
+		return 2.0
+	if n.contains("headersign") or n.contains("signage"):
+		return 1.5
+	if n.contains("oled") or n.contains("amber"):
+		return 1.2
+	if n.contains("status") or n.contains("led"):
+		return 3.0
+	if n.contains("holo") or n.contains("lens"):
+		# M-34 already applied the ×0.8 rule during material upgrade. Don't apply it twice.
+		if emission_on and existing_energy > 0.0:
+			return existing_energy
+		return 0.8
+	return -1.0
+
+
+func _make_observation_window_glass_material() -> StandardMaterial3D:
+	var glass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	glass_mat.resource_name = "Mat_ObservationWindowGlass"
+	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_mat.albedo_color = Color(0.70, 0.82, 0.88, 0.14)
+	glass_mat.metallic = 0.0
+	glass_mat.metallic_specular = 0.5
+	glass_mat.roughness = 0.04
+	glass_mat.rim_enabled = true
+	glass_mat.rim = 0.35
+	glass_mat.rim_tint = 0.6
+	glass_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	glass_mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+	return glass_mat
+
+
+func _append_facing_tri(verts: PackedVector3Array, norms: PackedVector3Array, a: Vector3, b: Vector3, c: Vector3, face_dir: Vector3) -> void:
+	var fn: Vector3 = (b - a).cross(c - a)
+	if fn.dot(face_dir) < 0.0:
+		var swap: Vector3 = b
+		b = c
+		c = swap
+		fn = -fn
+	var nrm: Vector3 = face_dir.normalized()
+	if fn.length() > 0.0000001:
+		nrm = fn.normalized()
+	verts.append(a)
+	verts.append(b)
+	verts.append(c)
+	norms.append(nrm)
+	norms.append(nrm)
+	norms.append(nrm)
+
+
+func _spawn_centered_mesh(parent: Node3D, verts: PackedVector3Array, norms: PackedVector3Array, mat: Material, node_name: String, priority: int, sorting_offset: float) -> void:
+	if verts.is_empty():
+		return
+	var centroid: Vector3 = Vector3.ZERO
+	for v: Vector3 in verts:
+		centroid += v
+	centroid /= float(verts.size())
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i: int in range(verts.size()):
+		st.set_normal(norms[i])
+		st.add_vertex(verts[i] - centroid)
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = node_name
+	var built: ArrayMesh = st.commit()
+	if built != null and built.get_surface_count() > 0:
+		built.surface_set_name(0, node_name)
+	mi.mesh = built
+	mi.position = centroid
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.render_priority = priority
+	mi.sorting_offset = sorting_offset
+	parent.add_child(mi)
+
+
+func _add_facing_tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, face_dir: Vector3) -> void:
+	var fn: Vector3 = (b - a).cross(c - a)
+	if fn.dot(face_dir) < 0.0:
+		st.add_vertex(a)
+		st.add_vertex(c)
+		st.add_vertex(b)
+	else:
+		st.add_vertex(a)
+		st.add_vertex(b)
+		st.add_vertex(c)
+
+
+func _add_facing_quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, face_dir: Vector3) -> void:
+	_add_facing_tri(st, a, b, c, face_dir)
+	_add_facing_tri(st, a, c, d, face_dir)
+
+
+# [M-17] Opaque ribs every 6° across the 36° wedge (5 interior + 2 edges), plus a 1.2 m cap ring.
+func _add_observation_mullions(cyl_node: Node3D, a0: float, cap_x_neg: float, cap_x_pos: float) -> void:
+	var half_rad: float = deg_to_rad(18.0)
+	var r_out: float = 199.0
+	var r_in: float = 198.8
+	var half_ang: float = 0.15 / r_out
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i: int in range(7):
+		var ang: float = a0 - half_rad + deg_to_rad(6.0) * float(i)
+		_add_mullion_rib(st, ang - half_ang, ang + half_ang, r_in, r_out, cap_x_neg, cap_x_pos)
+	_add_cap_perimeter_ring(st, cap_x_neg, 1.0, 198.8, 200.0)
+	_add_cap_perimeter_ring(st, cap_x_pos, -1.0, 198.8, 200.0)
+	st.generate_normals()
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "ObservationWindowMullions"
+	mi.mesh = st.commit()
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.resource_name = "Mat_ObservationWindowMullion"
+	mat.albedo_color = Color("#1A1E24")
+	mat.metallic = 1.0
+	mat.roughness = 0.65
+	mat.cull_mode = BaseMaterial3D.CULL_BACK
+	var hull_tex: Texture2D = _load_tex("facade_titanium_gunmetal_hull.png")
+	if hull_tex != null:
+		mat.albedo_texture = hull_tex
+		mat.uv1_triplanar = true
+		mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	cyl_node.add_child(mi)
+
+
+func _add_mullion_rib(st: SurfaceTool, ang0: float, ang1: float, r_in: float, r_out: float, x0: float, x1: float) -> void:
+	var mid: float = (ang0 + ang1) * 0.5
+	var p000: Vector3 = _drum_shell_point(x0, r_in, ang0)
+	var p001: Vector3 = _drum_shell_point(x0, r_in, ang1)
+	var p010: Vector3 = _drum_shell_point(x0, r_out, ang0)
+	var p011: Vector3 = _drum_shell_point(x0, r_out, ang1)
+	var p100: Vector3 = _drum_shell_point(x1, r_in, ang0)
+	var p101: Vector3 = _drum_shell_point(x1, r_in, ang1)
+	var p110: Vector3 = _drum_shell_point(x1, r_out, ang0)
+	var p111: Vector3 = _drum_shell_point(x1, r_out, ang1)
+	var toward_axis: Vector3 = Vector3(0.0, -cos(mid), -sin(mid))
+	var away_axis: Vector3 = -toward_axis
+	_add_facing_quad(st, p000, p100, p101, p001, toward_axis)
+	_add_facing_quad(st, p010, p011, p111, p110, away_axis)
+	_add_facing_quad(st, p000, p010, p110, p100, Vector3(0.0, sin(ang0), -cos(ang0)))
+	_add_facing_quad(st, p001, p101, p111, p011, Vector3(0.0, -sin(ang1), cos(ang1)))
+	_add_facing_quad(st, p000, p001, p011, p010, Vector3(-1.0, 0.0, 0.0))
+	_add_facing_quad(st, p100, p110, p111, p101, Vector3(1.0, 0.0, 0.0))
+
+
+func _add_cap_perimeter_ring(st: SurfaceTool, cap_x: float, inward_sign: float, r_in: float, r_out: float) -> void:
+	var x_near: float = cap_x + inward_sign * 0.02
+	var x_far: float = cap_x + inward_sign * 0.10
+	var segs: int = 64
+	var face_near: Vector3 = Vector3(-inward_sign, 0.0, 0.0)
+	var face_far: Vector3 = Vector3(inward_sign, 0.0, 0.0)
+	for s: int in range(segs):
+		var t0: float = TAU * float(s) / float(segs)
+		var t1: float = TAU * float(s + 1) / float(segs)
+		var a0: Vector3 = Vector3(x_near, 200.0 + r_in * cos(t0), r_in * sin(t0))
+		var b0: Vector3 = Vector3(x_near, 200.0 + r_in * cos(t1), r_in * sin(t1))
+		var c0: Vector3 = Vector3(x_near, 200.0 + r_out * cos(t0), r_out * sin(t0))
+		var d0: Vector3 = Vector3(x_near, 200.0 + r_out * cos(t1), r_out * sin(t1))
+		var a1: Vector3 = Vector3(x_far, 200.0 + r_in * cos(t0), r_in * sin(t0))
+		var b1: Vector3 = Vector3(x_far, 200.0 + r_in * cos(t1), r_in * sin(t1))
+		var c1: Vector3 = Vector3(x_far, 200.0 + r_out * cos(t0), r_out * sin(t0))
+		var d1: Vector3 = Vector3(x_far, 200.0 + r_out * cos(t1), r_out * sin(t1))
+		_add_facing_quad(st, a0, b0, d0, c0, face_near)
+		_add_facing_quad(st, a1, c1, d1, b1, face_far)
+		var inner_dir: Vector3 = Vector3(0.0, -cos((t0 + t1) * 0.5), -sin((t0 + t1) * 0.5))
+		_add_facing_quad(st, a0, a1, b1, b0, inner_dir)
+		_add_facing_quad(st, c0, d0, d1, c1, -inner_dir)
+
+
+# [M-04] Double-sided so a hull face whose normal points inward still blocks the sun.
+func _enable_hull_shadows(root: Node3D) -> void:
+	if root == null:
+		return
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		var nm: String = String(c.name)
+		if nm.begins_with("ObservationWindowGlass"):
+			if c is GeometryInstance3D:
+				(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		elif c is MeshInstance3D:
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if _mesh_has_opaque_surface(mi):
+				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
+		for ch: Node in c.get_children():
+			stack.append(ch)
+
+
+func _mesh_has_opaque_surface(mi: MeshInstance3D) -> bool:
+	if mi.mesh == null:
+		return false
+	for s_idx: int in range(mi.mesh.get_surface_count()):
+		var mat: Material = mi.get_active_material(s_idx)
+		if mat is BaseMaterial3D:
+			if (mat as BaseMaterial3D).transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:
+				return true
+		elif mat != null:
+			return true
+		else:
 			return true
 	return false
 
@@ -1403,7 +1677,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 
 	print("[CYL-WINDOW] removed_wedge=%d removed_caps=%d removed_map=%d a0_deg=%.3f" % [removed_wedge, removed_caps, removed_map, rad_to_deg(a0)])
 
-	# [CYL-01] Opaque faces get a little emission so the side turned away from the sun is never pure black.
+	# [M-15] No blanket self-emission. Only named luminous surfaces emit; the night side is ambient.
 	for emi: MeshInstance3D in meshes:
 		if emi.mesh == null:
 			continue
@@ -1411,87 +1685,63 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 			var emat: Material = emi.get_active_material(s_idx)
 			if emat is BaseMaterial3D:
 				var bm: BaseMaterial3D = emat as BaseMaterial3D
-				if bm.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:
-					var dup: BaseMaterial3D = bm.duplicate() as BaseMaterial3D
-					if dup == null:
-						continue
+				var dup: BaseMaterial3D = bm.duplicate() as BaseMaterial3D
+				if dup == null:
+					continue
+				var blob: String = (bm.resource_name + " " + String(emi.name)).to_lower()
+				var energy: float = _m15_emission_energy(blob, dup.emission_energy_multiplier, dup.emission_enabled)
+				if energy < 0.0:
+					dup.emission_enabled = false
+					dup.emission_energy_multiplier = 0.0
+				else:
 					dup.emission_enabled = true
-					dup.emission = bm.albedo_color * 0.22
-					dup.emission_energy_multiplier = 1.0
-					emi.set_surface_override_material(s_idx, dup)
+					dup.emission = Color(1, 1, 1, 1)
+					dup.emission_energy_multiplier = energy
+					if dup.emission_texture == null and dup.albedo_texture != null:
+						dup.emission_texture = dup.albedo_texture
+					if dup.emission_texture != null:
+						dup.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
+				emi.set_surface_override_material(s_idx, dup)
 
-	# Glass strip just inside the shell, plus a full disc on each end cap. Same mesh, child of the GLB node,
-	# so it stays put with the drum. Values match the viewport_glass role in material_loader.gd (alpha blend).
-	var glass_mat: StandardMaterial3D = StandardMaterial3D.new()
-	glass_mat.resource_name = "Mat_ObservationWindowGlass"
-	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	glass_mat.albedo_color = Color(0.82, 0.92, 0.96, 0.06)
-	glass_mat.metallic = 0.85
-	glass_mat.roughness = 0.06
-	glass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# [M-17]/[M-18] Three single-sided glass meshes. Each origin sits on its own centroid.
+	# Normals face the habitat interior. From outside the hull the glass is not drawn.
+	var glass_mat: StandardMaterial3D = _make_observation_window_glass_material()
 	var wedge_segs: int = 12
 	var strip_r: float = 199.0
+	var strip_v: PackedVector3Array = PackedVector3Array()
+	var strip_n: PackedVector3Array = PackedVector3Array()
 	for seg: int in range(wedge_segs):
 		var ang0: float = a0 - half_rad + (half_rad * 2.0) * float(seg) / float(wedge_segs)
 		var ang1: float = a0 - half_rad + (half_rad * 2.0) * float(seg + 1) / float(wedge_segs)
-		# Radial unit in the (y - 200, z) plane. atan2(z, y - 200) recovers ang.
 		var n0: Vector3 = Vector3(0.0, cos(ang0), sin(ang0))
 		var n1: Vector3 = Vector3(0.0, cos(ang1), sin(ang1))
 		var p_n0: Vector3 = Vector3(-400.0, 200.0 + strip_r * n0.y, strip_r * n0.z)
 		var p_n1: Vector3 = Vector3(-400.0, 200.0 + strip_r * n1.y, strip_r * n1.z)
 		var p_f0: Vector3 = Vector3(400.0, 200.0 + strip_r * n0.y, strip_r * n0.z)
 		var p_f1: Vector3 = Vector3(400.0, 200.0 + strip_r * n1.y, strip_r * n1.z)
-		# Outward winding. Cull is disabled; the normal is only for the glint.
-		st.set_normal(n0)
-		st.add_vertex(p_n0)
-		st.set_normal(n1)
-		st.add_vertex(p_n1)
-		st.set_normal(n0)
-		st.add_vertex(p_f0)
-		st.set_normal(n1)
-		st.add_vertex(p_n1)
-		st.set_normal(n1)
-		st.add_vertex(p_f1)
-		st.set_normal(n0)
-		st.add_vertex(p_f0)
+		var mid: Vector3 = (p_n0 + p_n1 + p_f0) / 3.0
+		var inward: Vector3 = Vector3(0.0, 200.0 - mid.y, -mid.z)
+		_append_facing_tri(strip_v, strip_n, p_n0, p_f0, p_n1, inward)
+		_append_facing_tri(strip_v, strip_n, p_n1, p_f0, p_f1, inward)
+	_spawn_centered_mesh(cyl_node, strip_v, strip_n, glass_mat, "ObservationWindowGlass_Strip", -1, -50.0)
 	var disc_r: float = 200.0
 	var disc_segs: int = 48
 	var cap_xs: Array[float] = [cap_x_neg, cap_x_pos]
+	var cap_names: Array[String] = ["ObservationWindowGlass_CapA", "ObservationWindowGlass_CapB"]
 	for cap_i: int in range(cap_xs.size()):
 		var cap_x: float = cap_xs[cap_i]
-		var outward: float = -1.0 if cap_x < 0.0 else 1.0
-		var n_cap: Vector3 = Vector3(outward, 0.0, 0.0)
+		var cap_v: PackedVector3Array = PackedVector3Array()
+		var cap_n: PackedVector3Array = PackedVector3Array()
+		var interior_x: Vector3 = Vector3(1.0 if cap_x < 0.0 else -1.0, 0.0, 0.0)
 		var center: Vector3 = Vector3(cap_x, 200.0, 0.0)
 		for ds: int in range(disc_segs):
 			var t0: float = TAU * float(ds) / float(disc_segs)
 			var t1: float = TAU * float(ds + 1) / float(disc_segs)
 			var rim0: Vector3 = Vector3(cap_x, 200.0 + disc_r * cos(t0), disc_r * sin(t0))
 			var rim1: Vector3 = Vector3(cap_x, 200.0 + disc_r * cos(t1), disc_r * sin(t1))
-			# Increasing angle around +X is CCW when looking along -X. The negative cap swaps the rim.
-			st.set_normal(n_cap)
-			st.add_vertex(center)
-			if outward >= 0.0:
-				st.set_normal(n_cap)
-				st.add_vertex(rim0)
-				st.set_normal(n_cap)
-				st.add_vertex(rim1)
-			else:
-				st.set_normal(n_cap)
-				st.add_vertex(rim1)
-				st.set_normal(n_cap)
-				st.add_vertex(rim0)
-	var glass_mi: MeshInstance3D = MeshInstance3D.new()
-	glass_mi.name = "ObservationWindowGlass"
-	var glass_mesh: ArrayMesh = st.commit()
-	# Strip and both end-cap discs share this one mesh, named with the instance.
-	if glass_mesh != null and glass_mesh.get_surface_count() > 0:
-		glass_mesh.surface_set_name(0, "ObservationWindowGlass")
-	glass_mi.mesh = glass_mesh
-	glass_mi.material_override = glass_mat
-	glass_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	cyl_node.add_child(glass_mi)
+			_append_facing_tri(cap_v, cap_n, center, rim0, rim1, interior_x)
+		_spawn_centered_mesh(cyl_node, cap_v, cap_n, glass_mat, cap_names[cap_i], -2, 0.0)
+	_add_observation_mullions(cyl_node, a0, cap_x_neg, cap_x_pos)
 	_add_recreation_grass_slab(cyl_node, a0)
 
 
@@ -1499,11 +1749,28 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 # does not blend this face into a neighbour that shares the corner position.
 func _add_slab_tri(st: SurfaceTool, group: int, a: Vector3, b: Vector3, c: Vector3) -> void:
 	st.set_smooth_group(group)
+	st.set_uv(_slab_uv(a))
 	st.add_vertex(a)
 	st.set_smooth_group(group)
+	st.set_uv(_slab_uv(b))
 	st.add_vertex(b)
 	st.set_smooth_group(group)
+	st.set_uv(_slab_uv(c))
 	st.add_vertex(c)
+
+
+func _slab_uv(p: Vector3) -> Vector2:
+	var ang: float = atan2(p.z, p.y - 200.0)
+	var rel: float = angle_difference(ang, _slab_uv_a0)
+	var span: float = _slab_uv_a1 - _slab_uv_a0
+	var u: float = 0.0
+	if absf(span) > 0.0001:
+		u = clampf(rel / span, 0.0, 1.0)
+	var width: float = _slab_uv_x1 - _slab_uv_x0
+	var v: float = 0.0
+	if absf(width) > 0.0001:
+		v = clampf((p.x - _slab_uv_x0) / width, 0.0, 1.0)
+	return Vector2(u, v)
 
 
 # Axis sits at local (y = 200, z = 0). ang is atan2(z, y - 200), matching the window cut.
@@ -1522,6 +1789,10 @@ func _add_recreation_grass_slab(cyl_node: Node3D, a0: float) -> void:
 	var x1: float = 350.0
 	var r_top: float = 198.0
 	var r_bot: float = 199.5
+	_slab_uv_x0 = x0
+	_slab_uv_x1 = x1
+	_slab_uv_a0 = a_rec - half_rad
+	_slab_uv_a1 = a_rec + half_rad
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for seg: int in range(segs):
@@ -1567,9 +1838,29 @@ func _add_recreation_grass_slab(cyl_node: Node3D, a0: float) -> void:
 	grass_mi.name = "RecreationGrassSlab"
 	grass_mi.mesh = st.commit()
 	var grass_mat: StandardMaterial3D = StandardMaterial3D.new()
-	grass_mat.albedo_color = Color(0.24, 0.52, 0.18)
-	grass_mat.roughness = 0.95
-	grass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# [M-35] 2 m tiles: mesh UVs are 0–1 across the arc and the axial width.
+	var arc_len: float = r_top * (half_rad * 2.0)
+	var slab_w: float = x1 - x0
+	grass_mat.albedo_color = Color(1, 1, 1, 1)
+	grass_mat.roughness = 1.0
+	grass_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	grass_mat.uv1_scale = Vector3(arc_len / 2.0, slab_w / 2.0, 1.0)
+	var grass_alb: Texture2D = _load_tex("qa03/rec_grass_albedo.png")
+	var grass_nrm: Texture2D = _load_tex("qa03/rec_grass_normal.png")
+	var grass_orm: Texture2D = _load_tex("qa03/rec_grass_orm.png")
+	if grass_alb != null:
+		grass_mat.albedo_texture = grass_alb
+	if grass_nrm != null:
+		grass_mat.normal_enabled = true
+		grass_mat.normal_texture = grass_nrm
+		grass_mat.normal_scale = 0.6
+	if grass_orm != null:
+		grass_mat.roughness_texture = grass_orm
+		grass_mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+		grass_mat.ao_enabled = true
+		grass_mat.ao_texture = grass_orm
+		grass_mat.ao_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+		grass_mat.ao_light_affect = 0.3
 	grass_mi.material_override = grass_mat
 	cyl_node.add_child(grass_mi)
 	print("[CYL-REC] grass slab a_deg=%.3f" % rad_to_deg(a_rec))
@@ -1788,14 +2079,20 @@ func _spawn_apt201_bench_outline() -> void:
 	quad.size = Vector2(3.7, 2.5)
 	quad.orientation = PlaneMesh.FACE_Y
 	deck.mesh = quad
-	deck.position = Vector3(-12.05, 4.418, 7.65)
+	# [M-48] 6 mm above the previous 4.418 placement. Lit, so emergency ambient/sun dims it. No collider.
+	deck.position = Vector3(-12.05, 4.418 + 0.006, 7.65)
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color = Color(0.55, 0.50, 0.42, 0.55)
+	mat.albedo_color = Color(1, 1, 1, 1)
 	mat.roughness = 1.0
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.metallic = 0.0
+	mat.cull_mode = BaseMaterial3D.CULL_BACK
+	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+	var dust_tex: Texture2D = _load_tex("qa03/apt201_bench_dust_outline_decal.png")
+	if dust_tex != null:
+		mat.albedo_texture = dust_tex
 	deck.material_override = mat
+	deck.render_priority = -1
 	deck.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_props_container.add_child(deck)
 
@@ -2481,22 +2778,25 @@ func _setup_sector_lighting() -> void:
 		ch.free()
 	_task_lights.clear()
 	_task_base.clear()
+	_spot_lights.clear()
+	_spot_base.clear()
 
-	# Skylight directional sun angled steeply (-64 deg) through the central atrium skylight opening
-	# with 4-split PSSM cascades & calibrated normal bias so L2 floor slabs cast solid shadows and never peter-pan.
+	# Directional sun. 2-split shadows, 60 m, so the opaque drum hull occludes everything outside the window.
 	_sun = DirectionalLight3D.new()
 	_sun.name = "AtriumGoldenHourSunlight"
 	_sun.rotation_degrees = Vector3(-72.0, -162.0, 0.0)
 	# [CYL-02] Snapshot after the authored rotation. _process spins this about +X with the starfield.
 	_sun_base_basis = _sun.basis
-	_sun.light_color = Color("#FFF4E0")
-	_sun.light_energy = 0.78
+	# Unfiltered space sun. Energy is 1.4 at full exposure, then scaled by elevation in _process.
+	_sun.light_color = Color("#FFF6EA")
+	_sun.light_energy = 1.4
 	_sun.shadow_enabled = true
-	_sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	_sun.directional_shadow_max_distance = 45.0
-	_sun.shadow_bias = 0.015
-	_sun.shadow_normal_bias = 1.0
-	_sun.shadow_blur = 1.2
+	_sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	_sun.directional_shadow_max_distance = 60.0
+	_sun.shadow_bias = 0.03
+	_sun.shadow_normal_bias = 1.5
+	_sun.shadow_blur = 1.0
+	_sun.light_angular_distance = 0.5
 	_lights_container.add_child(_sun)
 
 	_fill = DirectionalLight3D.new()
@@ -2508,15 +2808,23 @@ func _setup_sector_lighting() -> void:
 	_lights_container.add_child(_fill)
 
 	# Box-projected ReflectionProbe covering the 28m x 18m x 9m residential atrium for grounded metallic & glass reflections.
-	var rprobe: ReflectionProbe = ReflectionProbe.new()
-	rprobe.name = "AtriumBoxReflectionProbe"
-	rprobe.position = Vector3(0.0, 4.4, 0.0)
-	rprobe.size = Vector3(30.0, 10.0, 20.0)
-	rprobe.box_projection = true
-	rprobe.intensity = 0.3
-	rprobe.ambient_mode = ReflectionProbe.AMBIENT_ENVIRONMENT
-	rprobe.update_mode = ReflectionProbe.UPDATE_ONCE
-	_lights_container.add_child(rprobe)
+	# [M-19] Godot 4.7 gl_compatibility supports ReflectionProbe, at most 2 overlapping any mesh. This is the only one.
+	var renderer: String = RenderingServer.get_current_rendering_method()
+	if renderer == "gl_compatibility" or renderer == "forward_plus" or renderer == "mobile":
+		var rprobe: ReflectionProbe = ReflectionProbe.new()
+		rprobe.name = "AtriumBoxReflectionProbe"
+		rprobe.position = Vector3(0.0, 4.4, 0.0)
+		rprobe.size = Vector3(30.0, 10.0, 20.0)
+		rprobe.box_projection = true
+		rprobe.interior = true
+		rprobe.intensity = 0.3
+		rprobe.ambient_mode = ReflectionProbe.AMBIENT_ENVIRONMENT
+		rprobe.update_mode = ReflectionProbe.UPDATE_ALWAYS
+		_lights_container.add_child(rprobe)
+		_reflection_probe = rprobe
+		_probe_rebake_frames = 2
+	else:
+		push_warning("[M-19] ReflectionProbe skipped; renderer has no probe support: " + renderer)
 
 	# Physical ceiling luminaires + clean room lighting (OmniLight3D shadow_enabled = false so rooms never have 2 competing sets of shadows
 	# or cast L2 character shadows down through floor slabs onto L1).
@@ -2570,23 +2878,255 @@ func _setup_sector_lighting() -> void:
 		sp.shadow_normal_bias = 1.0
 		sp.shadow_blur = 1.4
 		_lights_container.add_child(sp)
+		_spot_lights.append(sp)
+		_spot_base.append({"col": s_cfg["col"], "e": s_cfg["e"]})
+
+	_register_m15_emissives(self)
+	_cache_authored_lighting()
+	_apply_daylight_sun_fill()
+
+
+func _cache_authored_lighting() -> void:
+	_sun_energy_authored = 1.4
+	_fill_energy_authored = 0.28
+	if _world_env != null and _world_env.environment != null:
+		_ambient_energy_authored = _world_env.environment.ambient_light_energy
+		_ambient_color_authored = _world_env.environment.ambient_light_color
+
+
+func _sun_elevation_deg() -> float:
+	if _sun == null:
+		return 90.0
+	# Light rays travel along -Z. The sun sits along +Z. Deck up is world +Y.
+	var toward_sun: Vector3 = _sun.global_transform.basis.z
+	return rad_to_deg(asin(clampf(toward_sun.normalized().dot(Vector3.UP), -1.0, 1.0)))
+
+
+func _sun_energy_factor() -> float:
+	return clampf((_sun_elevation_deg() + 5.0) / 15.0, 0.0, 1.0)
+
+
+func _nominal_sun_energy() -> float:
+	return _sun_energy_authored * _sun_energy_factor()
+
+
+func _nominal_fill_energy() -> float:
+	var factor: float = _sun_energy_factor()
+	return _fill_energy_authored * (0.5 + 0.5 * factor)
+
+
+func _apply_daylight_sun_fill() -> void:
+	if _sun != null:
+		_sun.light_energy = _nominal_sun_energy()
+	if _fill != null:
+		_fill.light_energy = _nominal_fill_energy()
+
+
+func _apply_ambient(col: Color, energy: float) -> void:
+	if _world_env == null or _world_env.environment == null:
+		return
+	_world_env.environment.ambient_light_color = col
+	_world_env.environment.ambient_light_energy = energy
+
+
+func _apply_flicker_scale(scale: float) -> void:
+	if _sun != null:
+		_sun.light_energy = _nominal_sun_energy() * scale
+	if _fill != null:
+		_fill.light_energy = _nominal_fill_energy() * scale
+	_apply_ambient(_ambient_color_authored, _ambient_energy_authored * scale)
+	for i: int in range(_task_lights.size()):
+		var l: OmniLight3D = _task_lights[i]
+		l.light_color = _task_base[i]["col"] as Color
+		l.light_energy = float(_task_base[i]["e"]) * scale
+	for i: int in range(_spot_lights.size()):
+		var s: SpotLight3D = _spot_lights[i]
+		s.light_color = _spot_base[i]["col"] as Color
+		s.light_energy = float(_spot_base[i]["e"]) * scale
+	for rec: Dictionary in _emissive_mats:
+		var mat: BaseMaterial3D = rec["mat"] as BaseMaterial3D
+		if mat != null:
+			mat.emission_energy_multiplier = float(rec["energy"]) * scale
+
+
+func _apply_emergency_blend(t: float) -> void:
+	var u: float = clampf(t, 0.0, 1.0)
+	var emerg_amb: Color = Color("#3A1A16")
+	var emerg_task: Color = Color("#C2402A")
+	if _sun != null:
+		_sun.light_energy = lerpf(_nominal_sun_energy() * 0.8, 0.05, u)
+	if _fill != null:
+		_fill.light_energy = lerpf(_nominal_fill_energy() * 0.8, 0.03, u)
+	_apply_ambient(_ambient_color_authored.lerp(emerg_amb, u), lerpf(_ambient_energy_authored * 0.8, 0.10, u))
+	for i: int in range(_task_lights.size()):
+		var l: OmniLight3D = _task_lights[i]
+		var base_c: Color = _task_base[i]["col"] as Color
+		var base_e: float = float(_task_base[i]["e"])
+		l.light_color = base_c.lerp(emerg_task, u)
+		l.light_energy = lerpf(base_e * 0.8, base_e * 0.25, u)
+	for i: int in range(_spot_lights.size()):
+		var sp: SpotLight3D = _spot_lights[i]
+		var base_e2: float = float(_spot_base[i]["e"])
+		sp.light_energy = lerpf(base_e2 * 0.8, base_e2 * 0.15, u)
+	for rec2: Dictionary in _emissive_mats:
+		var mat2: BaseMaterial3D = rec2["mat"] as BaseMaterial3D
+		if mat2 == null:
+			continue
+		var base_em: float = float(rec2["energy"])
+		mat2.emission_energy_multiplier = lerpf(base_em * 0.8, float(rec2["emergency"]), u)
+
+
+func _snapshot_restore_sources() -> void:
+	_restore_sun = _sun.light_energy if _sun != null else 0.05
+	_restore_fill = _fill.light_energy if _fill != null else 0.03
+	_restore_amb_color = _ambient_color_authored
+	_restore_amb_energy = _ambient_energy_authored
+	if _world_env != null and _world_env.environment != null:
+		_restore_amb_color = _world_env.environment.ambient_light_color
+		_restore_amb_energy = _world_env.environment.ambient_light_energy
+	_restore_task.clear()
+	for i: int in range(_task_lights.size()):
+		var l: OmniLight3D = _task_lights[i]
+		_restore_task.append({"col": l.light_color, "e": l.light_energy})
+	_restore_spot_energy.clear()
+	for sp: SpotLight3D in _spot_lights:
+		_restore_spot_energy.append(sp.light_energy)
+	_restore_emissive_energy.clear()
+	for rec: Dictionary in _emissive_mats:
+		var mat: BaseMaterial3D = rec["mat"] as BaseMaterial3D
+		var e: float = float(rec["energy"])
+		if mat != null:
+			e = mat.emission_energy_multiplier
+		_restore_emissive_energy.append(e)
+
+
+func _apply_restore_global(t: float) -> void:
+	var u: float = clampf(t, 0.0, 1.0)
+	if _sun != null:
+		_sun.light_energy = lerpf(_restore_sun, _nominal_sun_energy(), u)
+	if _fill != null:
+		_fill.light_energy = lerpf(_restore_fill, _nominal_fill_energy(), u)
+	_apply_ambient(_restore_amb_color.lerp(_ambient_color_authored, u), lerpf(_restore_amb_energy, _ambient_energy_authored, u))
+
+
+func _apply_restore_task(t: float, i: int) -> void:
+	if i < 0 or i >= _task_lights.size() or i >= _restore_task.size():
+		return
+	var u: float = clampf(t, 0.0, 1.0)
+	var l: OmniLight3D = _task_lights[i]
+	var from_c: Color = _restore_task[i]["col"] as Color
+	var from_e: float = float(_restore_task[i]["e"])
+	var base_c: Color = _task_base[i]["col"] as Color
+	var base_e: float = float(_task_base[i]["e"])
+	l.light_color = from_c.lerp(base_c, u)
+	l.light_energy = lerpf(from_e, base_e, u)
+
+
+func _apply_restore_spot(t: float, i: int) -> void:
+	if i < 0 or i >= _spot_lights.size() or i >= _restore_spot_energy.size():
+		return
+	var base_e: float = float(_spot_base[i]["e"])
+	_spot_lights[i].light_energy = lerpf(_restore_spot_energy[i], base_e, clampf(t, 0.0, 1.0))
+
+
+func _apply_restore_emissive(t: float, i: int) -> void:
+	if i < 0 or i >= _emissive_mats.size() or i >= _restore_emissive_energy.size():
+		return
+	var mat: BaseMaterial3D = _emissive_mats[i]["mat"] as BaseMaterial3D
+	if mat == null:
+		return
+	var base_e: float = float(_emissive_mats[i]["energy"])
+	mat.emission_energy_multiplier = lerpf(_restore_emissive_energy[i], base_e, clampf(t, 0.0, 1.0))
+
+
+func _on_light_tween_done(serial: int) -> void:
+	if serial == _light_tween_serial:
+		_lighting_tween_active = false
+
+
+func _start_light_tween() -> Tween:
+	_light_tween_serial += 1
+	var serial: int = _light_tween_serial
+	if _light_tween != null and is_instance_valid(_light_tween):
+		_light_tween.kill()
+	var tw: Tween = create_tween()
+	_light_tween = tw
+	_lighting_tween_active = true
+	tw.finished.connect(_on_light_tween_done.bind(serial))
+	return tw
+
+
+func _register_m15_emissives(root: Node) -> void:
+	_emissive_mats.clear()
+	if root == null:
+		return
+	var seen: Dictionary = {}
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if c is MeshInstance3D:
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if mi.mesh != null:
+				for s_idx: int in range(mi.mesh.get_surface_count()):
+					var mat: Material = mi.get_active_material(s_idx)
+					if mat is BaseMaterial3D:
+						var bm: BaseMaterial3D = mat as BaseMaterial3D
+						if not bm.emission_enabled:
+							continue
+						var blob: String = (String(mi.name) + " " + bm.resource_name).to_lower()
+						if _m15_emission_energy(blob, bm.emission_energy_multiplier) < 0.0:
+							continue
+						var id: int = bm.get_instance_id()
+						if seen.has(id):
+							continue
+						seen[id] = true
+						var emerg: float = bm.emission_energy_multiplier * 0.10
+						if blob.replace("_", "").contains("emergency"):
+							emerg = 2.5
+						_emissive_mats.append({"mat": bm, "energy": bm.emission_energy_multiplier, "emergency": emerg})
+		for ch: Node in c.get_children():
+			stack.append(ch)
+
+
+func _retrigger_reflection_probe() -> void:
+	if _reflection_probe == null or not is_instance_valid(_reflection_probe):
+		return
+	_reflection_probe.interior = true
+	_reflection_probe.intensity = 0.3
+	_reflection_probe.update_mode = ReflectionProbe.UPDATE_ALWAYS
+	_probe_rebake_frames = 2
 
 
 func _set_emergency_lighting(on: bool) -> void:
 	_emergency = on
-	if _sun != null:
-		_sun.light_energy = 0.05 if on else 0.78
-	if _fill != null:
-		_fill.light_energy = 0.04 if on else 0.34
-	for i: int in range(_task_lights.size()):
-		var l: OmniLight3D = _task_lights[i]
-		if on:
-			l.light_color = Color("#C2402A")
-		else:
-			l.light_color = _task_base[i]["col"] as Color
-			l.light_energy = float(_task_base[i]["e"])
-	if _world_env != null and _world_env.environment != null:
-		_world_env.environment.ambient_light_energy = 0.07 if on else 0.36
+	var tw: Tween = _start_light_tween()
+	if on:
+		# 3 brownouts in 0.3 s (×0.4 → ×1 → ×0.2 → ×0.8), then 1.2 s expo ease-out to emergency.
+		_apply_flicker_scale(0.4)
+		tw.tween_interval(0.075)
+		tw.tween_callback(_apply_flicker_scale.bind(1.0))
+		tw.tween_interval(0.075)
+		tw.tween_callback(_apply_flicker_scale.bind(0.2))
+		tw.tween_interval(0.075)
+		tw.tween_callback(_apply_flicker_scale.bind(0.8))
+		tw.tween_interval(0.075)
+		tw.tween_method(_apply_emergency_blend, 0.0, 1.0, 1.2).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	else:
+		# 2.5 s sine from the live values (including a half-finished flicker) back to the cache.
+		# Luminaires, spots and emissives stagger 0.08 s per entry. Sun, fill and ambient do not.
+		_snapshot_restore_sources()
+		tw.set_parallel(true)
+		tw.tween_method(_apply_restore_global, 0.0, 1.0, 2.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		var slot: int = 0
+		for i: int in range(_task_lights.size()):
+			tw.tween_method(_apply_restore_task.bind(i), 0.0, 1.0, 2.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(0.08 * float(slot))
+			slot += 1
+		for j: int in range(_spot_lights.size()):
+			tw.tween_method(_apply_restore_spot.bind(j), 0.0, 1.0, 2.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(0.08 * float(slot))
+			slot += 1
+		for k: int in range(_emissive_mats.size()):
+			tw.tween_method(_apply_restore_emissive.bind(k), 0.0, 1.0, 2.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(0.08 * float(slot))
+			slot += 1
 	_show_toast("SOLAR FLARE PROTOCOL // EMERGENCY LIGHTING ENGAGED" if on else "NOMINAL 5500K DAYLIGHT RESTORED", 3.0)
 
 
@@ -2603,6 +3143,30 @@ func _set_tree_cast_shadow(root: Node3D, mode: GeometryInstance3D.ShadowCastingS
 			(c as GeometryInstance3D).cast_shadow = mode
 		for ch: Node in c.get_children():
 			st.append(ch)
+
+
+func _blob_has(blob: String, keys: Array) -> bool:
+	for key in keys:
+		if blob.contains(String(key)):
+			return true
+	return false
+
+
+# Used only when the glTF albedo is white. null means there is no table tint.
+func _prop_glass_tint(blob: String) -> Variant:
+	if _blob_has(blob, ["viewport", "window"]):
+		return Color(0.70, 0.82, 0.88, 0.14)
+	if blob.contains("hydro"):
+		return Color(0.72, 0.90, 0.80, 0.22)
+	if _blob_has(blob, ["suitbay", "locker"]):
+		return Color(0.75, 0.85, 0.95, 0.18)
+	if blob.contains("sonic_shield"):
+		return Color(0.80, 0.86, 0.95, 0.20)
+	if _blob_has(blob, ["autodoc", "med"]):
+		return Color(0.85, 0.92, 0.95, 0.20)
+	if blob.contains("transom"):
+		return Color(0.72, 0.80, 0.86, 0.32)
+	return null
 
 
 func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> void:
@@ -2650,24 +3214,43 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 			var mi: MeshInstance3D = curr as MeshInstance3D
 			if mi.mesh != null and mi.mesh.get_surface_count() > 0:
 				var has_opaque_surface: bool = false
+				var prop_glass: bool = false
+				var mesh_nm: String = String(mi.mesh.resource_name).to_lower()
 				for s_idx: int in range(mi.mesh.get_surface_count()):
 					var mat: Material = mi.get_active_material(s_idx)
 					if mat is StandardMaterial3D:
 						var smat: StandardMaterial3D = (mat as StandardMaterial3D).duplicate() as StandardMaterial3D
 						var mname: String = smat.resource_name.to_lower()
 						var pname: String = mi.name.to_lower()
-						smat.cull_mode = BaseMaterial3D.CULL_DISABLED
-						if mname.contains("glass") or mname.contains("translucent") or mname.contains("holo") or mname.contains("lens") or pname.contains("glass") or pname.contains("window"):
+						var blob: String = mname + " " + pname + " " + mesh_nm
+						# [M-34] Keep the glTF cull. DISABLED only for thin single-plane parts.
+						if _blob_has(blob, ["foliage", "leaf", "card", "decal", "cloth", "transom", "holo", "field"]):
+							smat.cull_mode = BaseMaterial3D.CULL_DISABLED
+						var is_glass: bool = _blob_has(blob, ["glass", "translucent", "holo", "lens", "viewport", "transom", "sonic_shield"]) or pname.contains("glass") or pname.contains("window")
+						if is_glass:
+							prop_glass = true
+							var authored: Color = smat.albedo_color
+							var authored_rough: float = smat.roughness
 							smat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-							smat.albedo_color = Color(0.35, 0.42, 0.47, clampf(smat.albedo_color.a, 0.22, 0.30))
-							smat.roughness = 0.08
-							smat.metallic = 0.16
-							smat.metallic_specular = 0.75
-							if mname.contains("holo") or mname.contains("lens"):
+							smat.metallic = 0.0
+							smat.metallic_specular = 0.5
+							smat.roughness = maxf(authored_rough, 0.04)
+							if _blob_has(blob, ["holo", "lens"]):
+								var base_e: float = smat.emission_energy_multiplier if smat.emission_enabled else emission_mult
+								smat.albedo_color = Color(authored.r, authored.g, authored.b, 0.35)
+								smat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+								smat.cull_mode = BaseMaterial3D.CULL_DISABLED
 								smat.emission_enabled = true
-								smat.emission_energy_multiplier = emission_mult * 0.8
+								smat.emission = Color(authored.r, authored.g, authored.b, 1.0)
+								smat.emission_energy_multiplier = base_e * 0.8
 							else:
 								smat.emission_enabled = false
+								var white: bool = authored.r > 0.97 and authored.g > 0.97 and authored.b > 0.97
+								var tint: Variant = _prop_glass_tint(blob) if white else null
+								if tint is Color:
+									smat.albedo_color = tint as Color
+								else:
+									smat.albedo_color = Color(authored.r, authored.g, authored.b, clampf(authored.a, 0.14, 0.40))
 						else:
 							has_opaque_surface = true
 							if mname.contains("amber") or mname.contains("hazard"):
@@ -2689,6 +3272,8 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 						mi.set_surface_override_material(s_idx, smat)
 					else:
 						has_opaque_surface = true
+				if prop_glass:
+					mi.render_priority = 0
 				if has_opaque_surface:
 					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 				else:
@@ -3382,6 +3967,13 @@ func _process(delta: float) -> void:
 		# [CYL-02] The sun rides the backdrop. The habitat drum is not rotated.
 		if is_instance_valid(_sun):
 			_sun.basis = Basis(Vector3.RIGHT, _starfield_cylinder.rotation.x) * _sun_base_basis
+			# Elevation fade. Emergency and its tween own the energy while they run.
+			if not _lighting_tween_active and not _emergency:
+				_apply_daylight_sun_fill()
+	if _probe_rebake_frames > 0 and _reflection_probe != null and is_instance_valid(_reflection_probe):
+		_probe_rebake_frames -= 1
+		if _probe_rebake_frames <= 0:
+			_reflection_probe.update_mode = ReflectionProbe.UPDATE_ONCE
 	_ff_tick_active_stalls(delta)
 	_update_rfid_doors(delta)
 	_sync_reticle_to_viewport_center()
@@ -3403,10 +3995,6 @@ func _process(delta: float) -> void:
 		_hud_scan.modulate.a = clampf(_scan_t / 0.8, 0.0, 1.0)
 		if _scan_t <= 0.0:
 			_hud_scan.visible = false
-	if _emergency:
-		var e: float = 0.30 + 0.22 * (0.5 + 0.5 * sin(_time * 3.2))
-		for l: OmniLight3D in _task_lights:
-			l.light_energy = e
 	_update_hud()
 	if _capture_hud:
 		_process_capture_f5_hud()
@@ -4667,14 +5255,16 @@ func _make_procedural_starfield_texture() -> ImageTexture:
 		Color(1.00, 0.80, 0.62, 1.0),
 		Color(0.86, 0.78, 1.00, 1.0)
 	]
-	# 2600 pinpoint stars
+	# 2600 stars, each at least 2 px wide so the mips keep them.
 	for i: int in range(2600):
-		var sx: int = rng.randi_range(0, w - 1)
-		var sy: int = rng.randi_range(0, h - 1)
+		var sx: int = rng.randi_range(0, w - 2)
+		var sy: int = rng.randi_range(0, h - 2)
 		var b: float = rng.randf_range(0.55, 1.0)
 		var col: Color = palette[i % palette.size()] * b
 		col.a = 1.0
-		img.set_pixel(sx, sy, col)
+		for ox: int in range(2):
+			for oy: int in range(2):
+				img.set_pixel(sx + ox, sy + oy, col)
 	# 420 medium 2x2 / cross stars
 	for i: int in range(420):
 		var mx: int = rng.randi_range(2, w - 3)
@@ -4723,8 +5313,9 @@ func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	smat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	smat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 	smat.albedo_texture = star_tex
-	smat.uv1_scale = Vector3(6.0, 3.0, 1.0)
-	smat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	# 9 tiles around the circumference (~1536 m) and 3 along the length (1600 m).
+	smat.uv1_scale = Vector3(9.0, 3.0, 1.0)
+	smat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 
 	var barrel: MeshInstance3D = MeshInstance3D.new()
 	barrel.name = "StarfieldOuterBarrelMesh"
@@ -4734,8 +5325,8 @@ func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	cm.height = STARFIELD_CYL_LENGTH
 	cm.radial_segments = 96
 	cm.rings = 1
-	cm.cap_top = true
-	cm.cap_bottom = true
+	cm.cap_top = false
+	cm.cap_bottom = false
 	barrel.mesh = cm
 	# CylinderMesh height is along local Y. -90 deg about Z maps that axis onto parent +X (world +X).
 	# Parent then spins about X, so the shell stays coaxial with the habitat drum.
@@ -4744,6 +5335,41 @@ func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	barrel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	barrel.extra_cull_margin = 16384.0
 	_starfield_cylinder.add_child(barrel)
+
+	# [M-33] Separate planar caps. CylinderMesh caps shared the barrel UV scale and smeared the stars.
+	var cap_mat: StandardMaterial3D = smat.duplicate() as StandardMaterial3D
+	cap_mat.resource_name = "Mat_StarfieldOuterCap"
+	cap_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	cap_mat.uv1_triplanar = false
+	cap_mat.uv1_scale = Vector3(4.0, 4.0, 1.0)
+	cap_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	var cap_size: float = STARFIELD_CYL_RADIUS * 2.0
+	var half_len: float = STARFIELD_CYL_LENGTH * 0.5
+	# Negative end: PlaneMesh FACE_X normal is +X, which faces back into the cylinder.
+	var cap_neg: MeshInstance3D = MeshInstance3D.new()
+	cap_neg.name = "StarfieldOuterCap_NegX"
+	var pm_neg: PlaneMesh = PlaneMesh.new()
+	pm_neg.size = Vector2(cap_size, cap_size)
+	pm_neg.orientation = PlaneMesh.FACE_X
+	cap_neg.mesh = pm_neg
+	cap_neg.position = Vector3(-half_len, 0.0, 0.0)
+	cap_neg.material_override = cap_mat
+	cap_neg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	cap_neg.extra_cull_margin = 16384.0
+	_starfield_cylinder.add_child(cap_neg)
+	# Positive end: flip the normal to -X so this face also points inward.
+	var cap_pos: MeshInstance3D = MeshInstance3D.new()
+	cap_pos.name = "StarfieldOuterCap_PosX"
+	var pm_pos: PlaneMesh = PlaneMesh.new()
+	pm_pos.size = Vector2(cap_size, cap_size)
+	pm_pos.orientation = PlaneMesh.FACE_X
+	cap_pos.mesh = pm_pos
+	cap_pos.position = Vector3(half_len, 0.0, 0.0)
+	cap_pos.rotation_degrees = Vector3(0.0, 180.0, 0.0)
+	cap_pos.material_override = cap_mat
+	cap_pos.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	cap_pos.extra_cull_margin = 16384.0
+	_starfield_cylinder.add_child(cap_pos)
 
 
 # ------------------------------------------------------------------------------
@@ -4856,6 +5482,8 @@ func _respawn_building_interiors() -> int:
 		if sl is SpotLight3D:
 			(sl as SpotLight3D).visible = true
 	_interiors_loaded = true
+	# [M-19] The probe is UPDATE_ONCE. Rebake for two frames after interiors stream back in.
+	_retrigger_reflection_probe()
 	print("[InteriorStreaming] RESPAWNED %d interior nodes (collected pickups preserved: %d)" % [restored, _collected_pickup_ids.size()])
 	return restored
 
@@ -5052,6 +5680,8 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 		if n_field != null and is_instance_valid(n_field):
 			n_field.material_override = fmat
 			n_field.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			# [M-18] Door fields draw over the observation window (strip -1 / caps -2).
+			n_field.render_priority = 1
 		# One emissive material per emitter part per door, tinted to the field colour by set_door_field().
 		var emit_mats: Dictionary = {}
 		for en: String in FF_EMITTER_ENERGY.keys():
@@ -6021,12 +6651,14 @@ func enable_split_field(door_id: String) -> bool:
 	a.transform = plane.transform
 	a.material_override = mat_a
 	a.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	a.render_priority = 1
 	var b: MeshInstance3D = MeshInstance3D.new()
 	b.name = "FieldPlane_B"
 	b.mesh = _ff_half_mesh(false)
 	b.transform = plane.transform
 	b.material_override = mat_b
 	b.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	b.render_priority = 1
 	parent.add_child(a)
 	parent.add_child(b)
 	plane.visible = false
