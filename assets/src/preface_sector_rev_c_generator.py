@@ -54,7 +54,27 @@ if LIFT_CUTOUTS:
 cut += [
         B(-1.9, 1.9, 3.85, 4.25, -8.9, -0.8),                # stair core: stair_set_switchback.glb supplies mid + L2 landings
         B(-1.9, 1.9, 8.75, 9.15, -8.9, -4.88)]              # skylight strip (stair_skylight.glb)
-shell = difference([union(solid, engine="manifold"), union(cut, engine="manifold")], engine="manifold")
+# rooms (name, level y, rect list x0,x1,z0,z1 clear-of-walls) -> marker nodes + QA
+ROOMS = {"101": (0, [(-13.9, -4.6, 1.0, 8.9)]), "Laundry": (0, [(-4.4, 0.4, 1.0, 8.9)]), "Maintenance": (0, [(0.6, 5.9, 1.0, 8.9)]),
+         "102": (0, [(6.1, 13.9, 1.0, 8.9)]), "103": (0, [(-13.9, -2.1, -8.9, -1.0), (-13.9, -10.1, -1.0, 0.8)]),
+         "104": (0, [(2.1, 13.9, -8.9, -1.0), (10.1, 13.9, -1.0, 0.8)]), "Corridor_L1": (0, [(-9.9, 9.9, -0.8, 0.8)]),
+         "StairCore": (0, [(-1.9, 1.9, -8.9, -0.8)]),
+         "201": (L2, [(-13.9, -0.1, 1.0, 8.9)]), "202": (L2, [(0.1, 13.9, 1.0, 8.9)]),
+         "203": (L2, [(-13.9, -2.1, -8.9, -1.0), (-13.9, -10.1, -1.0, 0.8)]), "204": (L2, [(2.1, 13.9, -8.9, -1.0), (10.1, 13.9, -1.0, 0.8)]),
+         "Corridor_L2": (L2, [(-9.9, 9.9, -0.8, 0.8)])}
+# M-61 r2: 20 mm 45-degree chamfer column in every concave (closure) room corner, full wall height. A ray/capsule aimed
+# exactly at a 90-degree corner line can slip between the two wall faces in a runtime trimesh; with the chamfer the
+# corner ray lands on a flat face (13 mm from the corner along each wall, invisible at play distance).
+base = union(solid, engine="manifold"); CH = 0.02; chamfers = []
+for _n, (_y, _rs) in ROOMS.items():
+    for (_x0, _x1, _z0, _z1) in _rs:
+        for _sx, _sz in ((-1, -1), (-1, 1), (1, -1), (1, 1)):
+            _cx, _cz = (_x0, _x1)[_sx > 0], (_z0, _z1)[_sz > 0]; _y1 = 3.9 if _y == 0 else TOP
+            if all(base.contains([[_cx + _sx * 0.03, _y + h, _cz + _sz * 0.03]])[0] for h in (0.3, 2.0, 3.6)):
+                c = trimesh.creation.box(extents=(CH, _y1 - _y + 0.02, CH))
+                c.apply_transform(trimesh.transformations.rotation_matrix(np.pi / 4, [0, 1, 0]))
+                c.apply_translation((_cx, (_y + _y1) / 2, _cz)); chamfers.append(c)
+shell = difference([union([base] + chamfers, engine="manifold"), union(cut, engine="manifold")], engine="manifold")
 assert shell.is_watertight and shell.is_volume, "shell not manifold"
 # glass panes 20 mm, centred in the wall, 5 mm into each reveal
 glass = []
@@ -62,12 +82,12 @@ for n, (a, b), y, k in WIN:
     y0, y1 = (3.0, 7.0) if y is None else (y + 0.9, y + 2.4)
     glass.append((n, B(a - .005, b + .005, y0 - .005, y1 + .005, -9.01, -8.99) if k == "S" else B(-14.01, -13.99, y0 - .005, y1 + .005, a - .005, b + .005)))
 # ---------------- UVs ----------------
-TILE = 3.5
+TILE = 3.5; GOFF = 0.173  # M-61 r2: grid offset keeps dice seams off round probe heights (e.g. y 7.0)
 def dice(m):
     for ax in range(3):
         lo, hi = m.bounds[:, ax]
-        for k in range(int(np.floor(lo / TILE)) + 1, int(np.ceil(hi / TILE))):
-            o = np.zeros(3); o[ax] = k * TILE; n = np.zeros(3); n[ax] = 1
+        for k in range(int(np.floor((lo - GOFF) / TILE)) + 1, int(np.ceil((hi - GOFF) / TILE))):
+            o = np.zeros(3); o[ax] = k * TILE + GOFF; n = np.zeros(3); n[ax] = 1
             a = trimesh.intersections.slice_mesh_plane(m, n, o); b = trimesh.intersections.slice_mesh_plane(m, -n, o)
             m = trimesh.util.concatenate([a, b])
     return m
@@ -77,7 +97,7 @@ def uv_mesh(m, mat):
     for fi, f in enumerate(F):
         n = Nf[fi]; ax = int(np.argmax(np.abs(n))); o = [i for i in range(3) if i != ax]
         rect = g.UV_FLOOR_SLATE if (ax == 1 and n[1] > 0.5) else g.UV_WALL_APT
-        c = V[f].mean(0); cell = np.floor(c / TILE) * TILE
+        c = V[f].mean(0); cell = np.floor((c - GOFF) / TILE) * TILE + GOFF
         loc = np.clip((V[f] - cell) / TILE, 0, 1)
         u0, u1, v0, v1 = rect
         uv[f, 0] = u0 + loc[:, o[0]] * (u1 - u0); uv[f, 1] = v0 + loc[:, o[1]] * (v1 - v0)
@@ -92,14 +112,6 @@ def split_y(m, y0, y1):
     if y0 is not None: m = trimesh.intersections.slice_mesh_plane(m, [0, 1, 0], [0, y0, 0])
     if y1 is not None: m = trimesh.intersections.slice_mesh_plane(m, [0, -1, 0], [0, y1, 0])
     return m
-# rooms (name, level y, rect list x0,x1,z0,z1 clear-of-walls) -> marker nodes + QA
-ROOMS = {"101": (0, [(-13.9, -4.6, 1.0, 8.9)]), "Laundry": (0, [(-4.4, 0.4, 1.0, 8.9)]), "Maintenance": (0, [(0.6, 5.9, 1.0, 8.9)]),
-         "102": (0, [(6.1, 13.9, 1.0, 8.9)]), "103": (0, [(-13.9, -2.1, -8.9, -1.0), (-13.9, -10.1, -1.0, 0.8)]),
-         "104": (0, [(2.1, 13.9, -8.9, -1.0), (10.1, 13.9, -1.0, 0.8)]), "Corridor_L1": (0, [(-9.9, 9.9, -0.8, 0.8)]),
-         "StairCore": (0, [(-1.9, 1.9, -8.9, -0.8)]),
-         "201": (L2, [(-13.9, -0.1, 1.0, 8.9)]), "202": (L2, [(0.1, 13.9, 1.0, 8.9)]),
-         "203": (L2, [(-13.9, -2.1, -8.9, -1.0), (-13.9, -10.1, -1.0, 0.8)]), "204": (L2, [(2.1, 13.9, -8.9, -1.0), (10.1, 13.9, -1.0, 0.8)]),
-         "Corridor_L2": (L2, [(-9.9, 9.9, -0.8, 0.8)])}
 def build():
     src = trimesh.load(GLB)
     mats = {gm.visual.material.name: gm.visual.material for gm in src.geometry.values()}
