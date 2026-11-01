@@ -179,3 +179,91 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
   - Convert the Spin Streets and service lane to walkways.
   - Re-run the navmesh and HAND/NAV QA.
 - **Rook:** review the points listed in the commit report (stepped plinths, guideway joints, station platform-edge modules).
+
+## Rook review (3D modeling, 2026-10-31)
+Reviewed against R = 200 m (floor), the promoted GLBs, and Vance's text above (unchanged). All numbers recomputed: sag s = c²/8R, turn = L/R.
+Promoted dims used: `ext_maglev_guideway.glb` 10.0 × 3.146 m bed, **0.163 m tall** (flange/stator top +0.160, glow +0.163); `ext_maglev_car_body.glb` 12.162 × 2.66 × 3.34 m, placed at guideway base +0.06, floor = base +0.30 (= rail top +0.14), roof = base +3.40; 2-car set 24.31 m; kerb edge 1.40 m from track centre (70 mm gap).
+
+1. **Plinth step bays — RISK (M-1 = BLOCKER for "hidden" steps).**
+   - Per-bay sag checks out: 9 m 0.051, 10 m 0.0625, 12.6 m 0.099 m.
+   - But if bays are level in the building frame (building rotated to local up at its centre, rule P3), the step between neighbouring bays is b·d/R, where b is the bay width and d the distance of the joint from the centre:
+     - H-* 18 m, 2 × 9 bays: symmetric, so 0 step. The footprint edges sit 0.20 m below the centre floor (gap). This needs a 0.20 m skirt; a single 0.10 m shim fails.
+     - C-1..4 30 m, 3 × 10: steps 0.25 m at d = ±5. OK at the top of Vance's range.
+     - M-1 40 m, 4 × 10: centre bays equal, outer steps (15² − 5²)/400 = **0.50 m**, not 0.06–0.25. Two 0.5 m steps can't hide under a planter; each needs a 6 m 1:12 ramp, or stairs.
+   - Fix: M-1 → 8 × 5 m bays (steps 0.125 / 0.25 / 0.375 m) or 0.5 m terraced stairs; or put M-1 on piers (flat deck, 1.0 m max pier rise).
+   - Clipping rule: each level bay sits at its own highest floor point (its inner edge), so the slab never sinks into the curved ground. The gap at the outer edge is ≤ b²·(2d+b)/(4bR)… in practice ≤ 0.25 m, closed by a skirt mesh, never by sinking the plinth.
+2. **Re-bending #42 from R 185.5 to 200 — RISK (scope).**
+   - Math OK: 5 m chord sag 16.85 → 15.63 mm (Δ 1.2 mm), 18 m 0.218 → 0.2025 m.
+   - But #42 (curved road) and #43 are **CUT** (Jared, Oct 31, "no roads"). Only shelved candidates exist in `design/assets/ext_road_curved_R185/shelved/`.
+   - Reviving them as a curved *walkway* kit is Jared's call (the cut is revivable), not a parameter change.
+   - The rest of the preface (paving, curb, kerb, canal edge, guideway) is flat-tiled and isn't bent at all. At R 200 a 2 m paving tile sags 2.5 mm (snaps fine). Without the curved kit, the curved floor itself must be the walk surface.
+3. **2.87° ring joints / fascia hiding the 62–64 mm bow — RISK.**
+   - At rail level the radius is ≈195 m, not 200, so the joint is 10/195 rad = **2.94°** (1.47° mitre per module end), not 2.87°. Using 2.87° drifts 0.073° per joint.
+   - Closure: the full ring circumference at R 195 is 1225.2 m = **122.52 modules**, not a whole number. Use 123 modules of **9.961 m** (or 9.96 m + one closer), each turning 2.927°.
+   - The 62–64 mm "bow" is the polygon-vs-arc offset. A chain of straight chords has no visible bow to hide, so the fascia isn't needed for that. What the fascia must hide is the **mitre gap at each pier**: 1.2 m beam × tan 1.47° ≈ 31 mm wedge per side. Recommend a pier-cap joint cover.
+   - The +10.5 m crossing level (R 189.5) changes the angle again (3.02°).
+   - The promoted `ext_maglev_guideway.glb` is a 0.163 m slab with no beam, so the elevated 1.2 m T-beam span, pier and pier cap are **new assets** (see 6).
+4. **R ≈ 195 ring platform edges, 75 mm gap vs 92 mm mid-ordinate — BLOCKER (wrong axis).**
+   - Mid-ordinate of the 12.162 m car on R 195 = 12.162²/(8 × 195) = **95 mm** (not 92).
+   - The ring curve is **vertical**: it follows the floor around the cylinder axis. A straight car on a curved ring deck gives a **vertical** floor mismatch of up to 95 mm (car mid above the platform if the ends match, or ±47 mm split). It does not give a horizontal edge gap, so curved *edge* modules don't fix it.
+   - A ±47 mm step at the door is over a sensible 20 mm boarding tolerance.
+   - Fix: build ring-line stations as a **straight tangent 30 m segment** (flat deck and track on piers; the floor below drops 0.577 m at the platform ends, absorbed by pier height), with the 2.94° kinks outside the platform. Then platform edges stay straight like the seam lines.
+   - Seam lines: car half-width 1.33 + 75 mm → edge at 1.405 m from track centre (promoted kerb: 1.40 / 70 mm). OK.
+5. **6 × 4 m stair/lift towers — RISK (too small) + BLOCKER (platform position).**
+   - Rise 5.4 m = 2 × 2.7 m at ≤ 180 mm → **15 risers per flight** (exactly 180 mm). The going at 280 mm is 14 treads = 3.92 m per flight.
+   - Dog-leg footprint: 3.92 run + 1.2 half landing + 1.2 bottom landing = 6.32 m > 6 m.
+   - Width: 2 × 1.2 flights + 1.6 lift = 4.0 m with zero walls, shaft or clearances.
+   - Recommend **7.0 × 5.0 m** (stairs 2 × 1.2 + 0.1 well + 0.15 walls, lift shaft 1.9 × 1.9 incl. walls).
+   - Memorial: east tower x 108..114 vs memorial x 117.4..121.6 → **3.4 m in x, confirmed**. They are also 5.8 m apart in z (tower z 54.5..58.5, memorial 45.6..48.7), so there's no conflict. A 7 m tower at x 107..114 still leaves 3.4 m.
+   - **The towers fill the whole 4 m forecourt** (z 54.5..58.5), blocking the forecourt walk. Shift them to z 50.5..54.5 (promenade edge) or widen the forecourt.
+   - **BLOCKER:** the platform z 59.3..62.3 overlaps the train. The guideway centre is at z 62.83, so the car occupies z 61.50..64.16. The platform edge must be at 62.83 − 1.405 = **z 61.43**, so the platform is z 57.93..61.43 (3.5 m).
+   - That platform sits over the canal (z 58.5..61.0). Platform piers every 10 m (5.1) would stand in the canal, but 5.1 puts piers only on the seam rib. Decide between a cantilever off the rib piers (3.5 m + fascia) or piers on the canal coping.
+   - The towers need a ~0.6 m bridge from z 58.5 to the platform at 57.93 (they touch).
+6. **Deck +5.4 / rail top +5.0 / beam 1.2 / 3.8 m clear / car floor — BLOCKER (0.26 m step).**
+   - With the promoted car and guideway, car floor = rail top + 0.14 → **+5.14 m**, not +5.4. A +5.4 deck gives a 0.26 m step up into the platform from the car.
+   - Fix: rail top **+5.26** (deck stays +5.4, still inside the 4.6–6.1 band), or deck +5.14.
+   - Beam soffit = rail top − 0.163 slab − 1.2 beam ≈ +3.64 at rail top 5.0 (+3.90 at 5.26). Vance's 3.8 m drops the slab; still ≥ 2.5 m. OK.
+   - Car roof = base + 3.40 → +8.24 at rail top 5.0 (+8.50 at 5.26). This matters for item 9.
+   - Is "+5.0 above floor" measured from the floor or from the top of the 2–3 m seam rib? If from the rib top, everything rises 2–3 m: Q-R1.
+7. **Building tilt 12–15.8° vs neighbours and seam rib — RISK.**
+   - Tilts OK: 42/200 rad = 12.03°, 55/200 = 15.76°. A row centre at |z| 33 tilts 9.45°.
+   - Tops converge by h/R: a 4 m gap at 17.6 m height closes to 3.65 m (OK).
+   - Overlaps found:
+     - (a) **K-1 (z −58..−46) and G-1 (z −62..−48) overlap the Civic Promenade (z −54.5..−45)**.
+     - (b) **G-1 to z −62 reaches the seam rib**. A 2–3 m rib at z −62.83 spans about −61.3..−64.3, so the overlap is 0.7 m.
+     - (c) **H-A2 (x 79..99) and H-A5 (x 151..171) overlap the 6 m cross-walks at x 100 and x 150** (x 97..103, 147..153) by 2 m each.
+     - (d) The x 100 cross-walk runs through **P-1** (x 86..114); B1 needs an exemption.
+   - Fix: re-grid H-A to the 44 m blocks (2 × 20 m with a 4 m gap per block), pull K-1/G-1 to z ≥ −45 or move the promenade, and keep 1.5 m off the rib.
+   - Clipping: author each building upright in its own frame and place it at its own (x, z) with a rotation of z/R. Never reuse one transform for a row spread over z.
+8. **Canal culvert under S4|5 at x 540 vs piers — RISK.**
+   - Open-track piers every 20 m from x 0 put a **pier exactly at x 540**, on the culvert. Also, the x 500 local stop (platform x 485..515, piers every 10 m) sits over the Headwater Basin (x 500..540, z 48..61).
+   - Fix: put the culvert mid-span at **x 530** (piers at 520/540), or span the culvert with a 20 m transfer beam. Keep basin piers out of the pool or mark them as wading piers.
+   - The canal runs to x 560 but exits at 540, which leaves a 20 m dead end. End the canal at 540, or clarify.
+9. **Ring ramp to +10.5 m within ±70 m at 4% — BLOCKER (geometrically impossible).**
+   - The rise is 10.5 − 5.0 = 5.5 m. At 4% that needs **137.5 m**; inside 70 m it is **7.9%**.
+   - 4% over 70 m gives only 2.8 m (rail top +7.8), which is **below the seam car roof (+8.24)**.
+   - Minimum ring rail top = car roof 8.24 + 0.3 clearance + 1.2 beam + 0.163 = **+9.9 m** → rise 4.9 m → 122.5 m at 4%.
+   - Transfer stations sit *at* the crossings and need ≥ 30 m flat, so ramps start at ±15 m: ±138 m total. Ring stations are 200 m apart along x; along the ring the neighbouring seam crossing is 125.66 m away, so **ramps from adjacent crossings overlap**. The ring line would have to stay up at +9.9 m for the whole ring.
+   - Options:
+     - Keep the ring line permanently at an upper level (+9.9..10.5 m), all 10 transfer stations two-level. Simplest.
+     - Let the seam line dip at crossings instead (Vance's Q3 alternative): the same 4.9 m drop needs the same run along x, and that fits, since crossings are 200 m apart along x.
+     - Accept 8% for a maglev, which is plausible for maglev but outside the stated 4%.
+   - Recommend the seam-line dip or a permanent upper ring level. Q3 for Jared.
+10. **1:12 cross-walk ramps at plinth steps — OK with a note.**
+    - Cross-walks lie on the curved floor itself, which is locally level everywhere (radial gravity), so they need **no ramps** except where they meet a plinth.
+    - Ramp lengths at 1:12: 0.10 → 1.2 m, 0.20 → 2.4 m, 0.25 → 3.0 m, 0.50 (M-1) → 6.0 m.
+    - Use the promoted `ext_kerb_ramp.glb` pattern: 1.5 m wide, 1:12. The 3.0 m version already covers ≤ 0.25 m.
+    - Clipping: ramps sit at their low-end floor contact (±0.005 m) and butt the plinth with a 4 mm joint (same rule as #45).
+
+**General modelling notes**
+- Snapping: Gage snaps props to the ground at spawn. For any footprint wider than 2 m in z, use the multi-point (corner) contact and the highest point, never centre-only, or edges sink by c²/8R.
+- Tri budget: the promoted guideway is 160 tris per 10 m. A beam, pier and cap set at ~600 tris per 10 m × (800 m × 2 seam lines + 5 rings × 1225 m) ≈ 7,700 modules ≈ 4.6M tris. Needs instancing (MultiMesh) plus an LOD that merges 5 modules beyond 100 m.
+- Coplanar risk: the plinth slab top vs paving tiles (keep paving 3 mm above the plinth top or omit it), and the canal coping vs the platform underside (≥ 20 mm).
+- Modularity: new assets needed are the elevated T-beam span (10 m, plus a 9.961 m ring variant), pier (rib-mounted and free-standing), pier cap/joint cover (2.94° mitre), a 30 m straight station deck kit, a 7 × 5 m access tower, a plinth skirt (0.05–0.5 m), and a 6 m 1:12 ramp.
+
+**Open questions for Vance**
+- Q-R1: is +5.0 m rail top measured from the floor or from the seam rib top?
+- Q-R2: should the platform be cantilevered off the rib or on piers in the canal? (Item 5.)
+- Q-R3: does the M-1 re-bay (8 × 5 m) or pier deck work for the market hall?
+- Q-R4: should the crossing level be resolved by a seam dip or a permanent upper ring level? (Item 9, Q3.)
+- Q-R5: is the #42 revival as a walkway kit needed at all, or does the curved floor serve as the walk surface?
