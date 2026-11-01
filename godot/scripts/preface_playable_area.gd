@@ -1166,6 +1166,28 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 
 
 
+# World triangle against the playable-map AABB.
+# (a) any vertex inside the box, (b) any triangle edge meets the box,
+# (c) any of the 12 box edges meets the triangle.
+func _world_triangle_hits_map_box(a: Vector3, b: Vector3, c: Vector3, box: AABB, edge_from: PackedVector3Array, edge_to: PackedVector3Array) -> bool:
+	var lo: Vector3 = a.min(b.min(c))
+	var hi: Vector3 = a.max(b.max(c))
+	var b0: Vector3 = box.position
+	var b1: Vector3 = b0 + box.size
+	# Separated AABBs cannot meet. Touching the boundary still falls through to the exact tests.
+	if hi.x < b0.x or lo.x > b1.x or hi.y < b0.y or lo.y > b1.y or hi.z < b0.z or lo.z > b1.z:
+		return false
+	if box.has_point(a) or box.has_point(b) or box.has_point(c):
+		return true
+	if box.intersects_segment(a, b) or box.intersects_segment(b, c) or box.intersects_segment(c, a):
+		return true
+	for ei: int in range(edge_from.size()):
+		var hit: Variant = Geometry3D.segment_intersects_triangle(edge_from[ei], edge_to[ei], a, b, c)
+		if hit != null:
+			return true
+	return false
+
+
 # Observation window: 36 degree radial wedge, full length, plus glass end caps.
 # The drum pivot is not touched. GLB local +X is the spin axis; the axis sits at local (y = 200, z = 0)
 # because the mesh node is offset by (0, -200, 0). Centroids are measured in that cyl_node frame.
@@ -1193,6 +1215,19 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 			meshes.append(n as MeshInstance3D)
 		for ch: Node in n.get_children():
 			stack.append(ch)
+
+	# World AABB x -60..60, y -1..40, z -45..45. Twelve edges, four along each axis.
+	var map_box: AABB = AABB(Vector3(-60.0, -1.0, -45.0), Vector3(120.0, 41.0, 90.0))
+	var map_e0: PackedVector3Array = PackedVector3Array([
+		Vector3(-60.0, -1.0, -45.0), Vector3(-60.0, 40.0, -45.0), Vector3(-60.0, -1.0, 45.0), Vector3(-60.0, 40.0, 45.0),
+		Vector3(-60.0, -1.0, -45.0), Vector3(60.0, -1.0, -45.0), Vector3(-60.0, -1.0, 45.0), Vector3(60.0, -1.0, 45.0),
+		Vector3(-60.0, -1.0, -45.0), Vector3(-60.0, 40.0, -45.0), Vector3(60.0, -1.0, -45.0), Vector3(60.0, 40.0, -45.0),
+	])
+	var map_e1: PackedVector3Array = PackedVector3Array([
+		Vector3(60.0, -1.0, -45.0), Vector3(60.0, 40.0, -45.0), Vector3(60.0, -1.0, 45.0), Vector3(60.0, 40.0, 45.0),
+		Vector3(-60.0, 40.0, -45.0), Vector3(60.0, 40.0, -45.0), Vector3(-60.0, 40.0, 45.0), Vector3(60.0, 40.0, 45.0),
+		Vector3(-60.0, -1.0, 45.0), Vector3(-60.0, 40.0, 45.0), Vector3(60.0, -1.0, 45.0), Vector3(60.0, 40.0, 45.0),
+	])
 
 	for mi: MeshInstance3D in meshes:
 		if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
@@ -1263,14 +1298,12 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 				var drop_cap: bool = absf(c.x) >= 330.0 and absf(fn.x) > 0.85 and r >= 20.0
 				# Drum skin through the playable map is a flat ceiling over the deck and hides the window.
 				# local_verts are cyl_node-local; world = cyl_node.global_transform * local_vertex.
+				# Drop the face when it meets the map volume: a vertex inside, a triangle edge through the
+				# box, or a box edge through the triangle.
 				var w0: Vector3 = cyl_node.global_transform * p0
 				var w1: Vector3 = cyl_node.global_transform * p1
 				var w2: Vector3 = cyl_node.global_transform * p2
-				var drop_map: bool = (
-					(w0.x >= -60.0 and w0.x <= 60.0 and w0.y >= -1.0 and w0.y <= 40.0 and w0.z >= -45.0 and w0.z <= 45.0)
-					or (w1.x >= -60.0 and w1.x <= 60.0 and w1.y >= -1.0 and w1.y <= 40.0 and w1.z >= -45.0 and w1.z <= 45.0)
-					or (w2.x >= -60.0 and w2.x <= 60.0 and w2.y >= -1.0 and w2.y <= 40.0 and w2.z >= -45.0 and w2.z <= 45.0)
-				)
+				var drop_map: bool = _world_triangle_hits_map_box(w0, w1, w2, map_box, map_e0, map_e1)
 				if drop_wedge:
 					removed_wedge += 1
 				if drop_cap:
@@ -1398,6 +1431,87 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 	glass_mi.material_override = glass_mat
 	glass_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	cyl_node.add_child(glass_mi)
+	_add_recreation_grass_slab(cyl_node, a0)
+
+
+# One hard-edged triangle. Smooth group is set on every vertex so generate_normals
+# does not blend this face into a neighbour that shares the corner position.
+func _add_slab_tri(st: SurfaceTool, group: int, a: Vector3, b: Vector3, c: Vector3) -> void:
+	st.set_smooth_group(group)
+	st.add_vertex(a)
+	st.set_smooth_group(group)
+	st.add_vertex(b)
+	st.set_smooth_group(group)
+	st.add_vertex(c)
+
+
+# Axis sits at local (y = 200, z = 0). ang is atan2(z, y - 200), matching the window cut.
+func _drum_shell_point(along_x: float, radius: float, ang: float) -> Vector3:
+	return Vector3(along_x, 200.0 + radius * cos(ang), radius * sin(ang))
+
+
+# Recreation placeholder opposite the window. Curved inner-shell slab, 36 degree wedge
+# centred at a0 + PI. Top at r = 198 faces the axis; bottom at r = 199.5. Drum triangles
+# under the slab are kept.
+func _add_recreation_grass_slab(cyl_node: Node3D, a0: float) -> void:
+	var a_rec: float = a0 + PI
+	var half_rad: float = deg_to_rad(18.0)
+	var segs: int = 24
+	var x0: float = -360.0
+	var x1: float = 350.0
+	var r_top: float = 198.0
+	var r_bot: float = 199.5
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for seg: int in range(segs):
+		var ang0: float = a_rec - half_rad + (half_rad * 2.0) * float(seg) / float(segs)
+		var ang1: float = a_rec - half_rad + (half_rad * 2.0) * float(seg + 1) / float(segs)
+		var top00: Vector3 = _drum_shell_point(x0, r_top, ang0)
+		var top01: Vector3 = _drum_shell_point(x0, r_top, ang1)
+		var top10: Vector3 = _drum_shell_point(x1, r_top, ang0)
+		var top11: Vector3 = _drum_shell_point(x1, r_top, ang1)
+		var bot00: Vector3 = _drum_shell_point(x0, r_bot, ang0)
+		var bot01: Vector3 = _drum_shell_point(x0, r_bot, ang1)
+		var bot10: Vector3 = _drum_shell_point(x1, r_bot, ang0)
+		var bot11: Vector3 = _drum_shell_point(x1, r_bot, ang1)
+		# Top: clockwise from the axis, so the generated normal points toward the axis.
+		_add_slab_tri(st, 1, top00, top01, top10)
+		_add_slab_tri(st, 1, top01, top11, top10)
+		# Bottom: opposite winding, normal away from the axis.
+		_add_slab_tri(st, 2, bot00, bot10, bot01)
+		_add_slab_tri(st, 2, bot01, bot10, bot11)
+		# Cap at local x = -360, normal -X.
+		_add_slab_tri(st, 3, top00, bot00, top01)
+		_add_slab_tri(st, 3, top01, bot00, bot01)
+		# Cap at local x = 350, normal +X.
+		_add_slab_tri(st, 4, top10, top11, bot10)
+		_add_slab_tri(st, 4, top11, bot11, bot10)
+	var a_lo: float = a_rec - half_rad
+	var a_hi: float = a_rec + half_rad
+	var lo_top0: Vector3 = _drum_shell_point(x0, r_top, a_lo)
+	var lo_top1: Vector3 = _drum_shell_point(x1, r_top, a_lo)
+	var lo_bot0: Vector3 = _drum_shell_point(x0, r_bot, a_lo)
+	var lo_bot1: Vector3 = _drum_shell_point(x1, r_bot, a_lo)
+	var hi_top0: Vector3 = _drum_shell_point(x0, r_top, a_hi)
+	var hi_top1: Vector3 = _drum_shell_point(x1, r_top, a_hi)
+	var hi_bot0: Vector3 = _drum_shell_point(x0, r_bot, a_hi)
+	var hi_bot1: Vector3 = _drum_shell_point(x1, r_bot, a_hi)
+	# Wedge sides. Outward is the decreasing-angle direction at a_lo, increasing at a_hi.
+	_add_slab_tri(st, 5, lo_top0, lo_top1, lo_bot0)
+	_add_slab_tri(st, 5, lo_top1, lo_bot1, lo_bot0)
+	_add_slab_tri(st, 6, hi_top0, hi_bot0, hi_top1)
+	_add_slab_tri(st, 6, hi_top1, hi_bot0, hi_bot1)
+	st.generate_normals()
+	var grass_mi: MeshInstance3D = MeshInstance3D.new()
+	grass_mi.name = "RecreationGrassSlab"
+	grass_mi.mesh = st.commit()
+	var grass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	grass_mat.albedo_color = Color(0.24, 0.52, 0.18)
+	grass_mat.roughness = 0.95
+	grass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	grass_mi.material_override = grass_mat
+	cyl_node.add_child(grass_mi)
+	print("[CYL-REC] grass slab a_deg=%.3f" % rad_to_deg(a_rec))
 
 
 func _make_signage_skin_material(v_offset: float, v_scale: float) -> StandardMaterial3D:
