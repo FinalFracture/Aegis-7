@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-30T04:03:00-05:00",
+  "updated_at": "2026-11-01T08:38:00-06:00",
   "continuity_rule": "Every replacement bot must follow the exact same role purpose as its predecessor and read both its handoff file and all reference files listed in reference_files on its first turn.",
   "team": {
     "Atlas": {
-      "id": "f7d262d1-8cde-4c78-8b07-3ab3fd11c960",
+      "id": "038035ec-9495-437e-984d-0493ca58383b",
       "previous_id": "3a664a65-34d6-47ae-a9f6-337906efe2a3",
       "previous_name": "delete-Atlas",
       "role": "Game PM",
@@ -295,6 +295,38 @@
       "previous_id": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b",
       "previous_name": "delete-Patch",
       "replaces": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b"
+    },
+    "QA-01": {
+      "name": "QA-01",
+      "id": "2545742b-97c1-463e-9e12-f54f21ef9e47",
+      "role": "QA Tester",
+      "purpose": "Cylinder Hab-7 tester, focus: Navigation & egress"
+    },
+    "QA-02": {
+      "name": "QA-02",
+      "id": "a0b988cc-9e1d-48ad-bc0a-4f46fa3547e0",
+      "role": "QA Tester",
+      "purpose": "Cylinder Hab-7 tester, focus: Geometry & collision",
+      "previous_id": "483886ab-b7b2-4913-953d-1bfb2e9b987a",
+      "handoff_file": "/workspace/game-project/context/qa02-handoff-v1.md"
+    },
+    "QA-03": {
+      "name": "QA-03",
+      "id": "58a63754-66ba-462b-ada0-e8c727d3d5a9",
+      "role": "QA Tester",
+      "purpose": "Cylinder Hab-7 tester, focus: Lighting, materials & visuals"
+    },
+    "QA-04": {
+      "name": "QA-04",
+      "id": "38716c8a-2c0d-456b-9250-982d36ace0b5",
+      "role": "QA Tester",
+      "purpose": "Cylinder Hab-7 tester, focus: Layout & prop compliance"
+    },
+    "QA-05": {
+      "name": "QA-05",
+      "id": "5e75ca97-87eb-481b-b8e3-886a92426582",
+      "role": "QA Tester",
+      "purpose": "Cylinder Hab-7 tester, focus: Stability, performance & input"
     }
   },
   "usage_budget_file": "/workspace/game-project/context/usage_budget.json",
@@ -369,7 +401,7 @@
       "name": "delete-Atlas",
       "id": "3a664a65-34d6-47ae-a9f6-337906efe2a3",
       "role": "Game PM",
-      "replaced_by": "f7d262d1-8cde-4c78-8b07-3ab3fd11c960",
+      "replaced_by": "038035ec-9495-437e-984d-0493ca58383b",
       "rotated_at": "2026-10-30T04:03:00-05:00",
       "handoff_file": "/workspace/game-project/context/atlas-handoff-v4.md",
       "status": "pending_rename_to_delete-Atlas (renamed last)"
@@ -436,6 +468,24 @@
       "rotated_at": "2026-10-30T04:03:00-05:00",
       "handoff_file": "/workspace/game-project/context/scribe-handoff-v5.md",
       "status": "pending_rename_to_delete-Scribe (renamed last)"
+    },
+    {
+      "name": "delete-Atlas-v5",
+      "id": "f7d262d1-8cde-4c78-8b07-3ab3fd11c960",
+      "role": "Game PM",
+      "replaced_by": "038035ec-9495-437e-984d-0493ca58383b",
+      "rotated_at": "2026-11-01T08:37:00-06:00",
+      "handoff_file": "/workspace/game-project/context/atlas-handoff-v6.md",
+      "status": "retired_pending_user_delete"
+    },
+    {
+      "name": "delete-QA-02",
+      "id": "483886ab-b7b2-4913-953d-1bfb2e9b987a",
+      "role": "QA Tester",
+      "replaced_by": "a0b988cc-9e1d-48ad-bc0a-4f46fa3547e0",
+      "rotated_at": "2026-11-01T09:50:00-06:00",
+      "handoff_file": "/workspace/game-project/context/qa02-handoff-v1.md",
+      "status": "retired_pending_user_delete"
     }
   ],
   "coding_rule": "All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\\Users\\upchu\\.grok\\bin\\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage. Do not write/edit .gd/.tscn/.py code directly in Grok Bot sessions; drive it via that CLI.",
