@@ -7241,7 +7241,7 @@ func _run_qa_egress() -> void:
 		{"label": "(8.9, -15.9)", "xz": Vector2(8.9, -15.9), "door": ""},
 		{"label": "(10.2, -16.3)", "xz": Vector2(10.2, -16.3), "door": ""},
 		{"label": "(12.3, -16.7)", "xz": Vector2(12.3, -16.7), "door": ""},
-		{"label": "(15.0, -16.0)", "xz": Vector2(15.0, -16.0), "door": "", "final": true}
+		{"label": "(12.8, -16.6)", "xz": Vector2(12.8, -16.6), "door": "", "final": true}
 	]
 	_qa_egress_print_route(wps)
 	if _player_body == null:
@@ -7279,7 +7279,7 @@ func _run_qa_egress() -> void:
 				if _qa_egress_door_ready(door) or horiz < 0.8:
 					arrived = true
 					break
-			elif is_final and horiz <= 1.5 and pos.y >= 0.15:
+			elif is_final and horiz <= 1.5 and pos.y >= 0.25:
 				arrived = true
 				break
 			elif horiz < 0.8:
@@ -7310,8 +7310,8 @@ func _run_qa_egress() -> void:
 		elif is_final:
 			var end_p: Vector3 = _player_body.global_position
 			var end_h: float = Vector2(end_p.x, end_p.z).distance_to(xz)
-			# Platform body origin sits near y 0.18. Within 1.5 m of (15.0, -16.0) and y >= 0.15.
-			ok = end_h <= 1.5 and end_p.y >= 0.15
+			# Raised platform. Deck is about 0.05. Within 1.5 m of (12.8, -16.6) and y >= 0.25.
+			ok = end_h <= 1.5 and end_p.y >= 0.25
 		else:
 			ok = arrived
 		var here: Vector3 = _player_body.global_position

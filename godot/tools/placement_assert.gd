@@ -30,27 +30,25 @@ const PAIR_GAP_MIN := 0.02
 const FRONT_DEPTH := 0.60
 const MESH_REPORT_MAX := 5
 const SAT_AXIS_EPS := 1.0e-16
-# Room-shell corners as (x, floor_y, z). Samples at floor + 0.8 / 1.6 / 2.4.
-const SEAM_CORNERS: Array[Vector3] = [
-	Vector3(-12.74, 4.32, -3.40),
-	Vector3(-12.74, 4.32, -5.69),
-	Vector3(-5.35, 4.32, 2.65),
-	Vector3(-5.35, 4.32, 8.55),
-	Vector3(5.35, 4.32, 2.65),
-	Vector3(5.35, 4.32, 8.55),
-	Vector3(-14.04, 0.12, -9.00),
-	Vector3(14.04, 0.12, -9.00),
-	Vector3(-14.04, 0.12, 9.04),
-	Vector3(14.04, 0.12, 9.04),
-	Vector3(-4.75, 0.12, 7.98),
-	Vector3(8.25, 0.12, 8.16),
-	Vector3(0.75, 0.12, 8.16),
+# Room-shell corners as (x, z, floor_y, sx, sz). sx/sz is the inside quadrant.
+# Samples at floor + 0.8 / 1.6 / 2.4. One ray starts 0.5 m inside on each axis.
+const SEAM_CORNERS: Array[Dictionary] = [
+	{"x": -12.74, "z": -3.40, "y": 4.32, "sx": 1, "sz": -1},
+	{"x": -12.74, "z": -5.69, "y": 4.32, "sx": 1, "sz": 1},
+	{"x": -5.35, "z": 2.65, "y": 4.32, "sx": -1, "sz": 1},
+	{"x": -5.35, "z": 8.55, "y": 4.32, "sx": -1, "sz": -1},
+	{"x": 5.35, "z": 2.65, "y": 4.32, "sx": 1, "sz": 1},
+	{"x": 5.35, "z": 8.55, "y": 4.32, "sx": 1, "sz": -1},
+	{"x": -14.04, "z": -9.00, "y": 0.12, "sx": 1, "sz": 1},
+	{"x": 14.04, "z": -9.00, "y": 0.12, "sx": -1, "sz": 1},
+	{"x": -14.04, "z": 9.04, "y": 0.12, "sx": 1, "sz": -1},
+	{"x": 14.04, "z": 9.04, "y": 0.12, "sx": -1, "sz": -1},
+	{"x": -4.75, "z": 7.98, "y": 0.12, "sx": -1, "sz": -1},
+	{"x": 8.25, "z": 8.16, "y": 0.12, "sx": -1, "sz": -1},
+	{"x": 0.75, "z": 8.16, "y": 0.12, "sx": 1, "sz": -1},
 ]
 const SEAM_HEIGHTS: Array[float] = [0.8, 1.6, 2.4]
-const SEAM_DIAG_START := 0.6
-const SEAM_DIAG_LEN := 1.2
-const SEAM_AXIS_LEN := 0.3
-const SEAM_MIN_HITS := 3
+const SEAM_PAST_MAX := 0.010
 
 const FALLBACK_SPECS: Array[Dictionary] = [
 	{"id": "Prop38_FoldingCounter", "mount": "wall"},
@@ -703,67 +701,29 @@ func _report(ok: bool, id: String, check: String, detail: String) -> void:
 		print("FAIL %s %s %s" % [id, check, detail])
 
 
-# Corner-seam audit. Each diagonal starts 0.6 m off the corner (that quadrant) and runs 1.2 m
-# toward the corner and past it. A convex corner blocks 3 of the 4 diagonals. A notch is a miss
-# in a quadrant whose two adjacent 0.3 m axis rays both hit. gap = max(0, 0.6 - distance along
-# the ray); that is not an XZ distance and not 0.6*sqrt(2).
+# Corner-seam audit. Each corner has one inside quadrant (sx, sz). The ray starts
+# 0.5 m inside on x and z and runs toward the corner. Length is 0.5*sqrt(2) + 0.3.
+# past = hit_distance - 0.5*sqrt(2). PASS when a hit is at most 0.010 m past the corner.
 func _run_seam_audit(space: PhysicsDirectSpaceState3D) -> void:
-	var quadrants: Array[Vector2i] = [Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
-	for corner: Vector3 in SEAM_CORNERS:
+	var to_corner: float = 0.5 * sqrt(2.0)
+	var ray_len: float = to_corner + 0.3
+	for spec: Dictionary in SEAM_CORNERS:
+		var corner: Vector3 = Vector3(float(spec["x"]), float(spec["y"]), float(spec["z"]))
+		var sx: float = float(spec["sx"])
+		var sz: float = float(spec["sz"])
 		for hoff: float in SEAM_HEIGHTS:
 			var height: float = corner.y + hoff
-			var origin: Vector3 = Vector3(corner.x, height, corner.z)
-			var axis_hits: Dictionary = _seam_axis_hits(space, origin)
-			var rows: Array[Dictionary] = []
-			var hit_n: int = 0
-			for q: Vector2i in quadrants:
-				var sx: int = q.x
-				var sz: int = q.y
-				# Start in this quadrant. Travel toward the corner and 0.6 m beyond it.
-				var travel: Vector3 = Vector3(-float(sx), 0.0, -float(sz)).normalized()
-				var start: Vector3 = origin - travel * SEAM_DIAG_START
-				var end_p: Vector3 = start + travel * SEAM_DIAG_LEN
-				var hit: Dictionary = _seam_ray(space, start, end_p)
-				var got: bool = not hit.is_empty()
-				var gap: float = -1.0
-				if got:
-					var along: float = ((hit["position"] as Vector3) - start).dot(travel)
-					gap = maxf(0.0, SEAM_DIAG_START - along)
-					hit_n += 1
-				var ax: String = "%sX" % _seam_sign(sx)
-				var az: String = "%sZ" % _seam_sign(sz)
-				rows.append({
-					"quadrant": "%s%s" % [ax, az],
-					"hit": got,
-					"gap": gap,
-					"both": bool(axis_hits.get(ax, false)) and bool(axis_hits.get(az, false)),
-				})
-			for row: Dictionary in rows:
-				var got_hit: bool = bool(row["hit"])
-				var both: bool = bool(row["both"])
-				var notch: bool = (not got_hit) and both
-				var too_few: bool = (not got_hit) and hit_n < SEAM_MIN_HITS
-				var ok: bool = (not notch) and (not too_few)
-				var gap_txt: String = "none"
-				if got_hit:
-					gap_txt = _fmt(float(row["gap"]))
-				var detail: String = "gap=%s" % gap_txt
-				if notch:
-					detail += " notch=1"
-				elif too_few:
-					detail += " hits=%d/4" % hit_n
-				_seam_line(ok, corner, height, String(row["quadrant"]), detail)
-
-
-func _seam_axis_hits(space: PhysicsDirectSpaceState3D, origin: Vector3) -> Dictionary:
-	var hits: Dictionary = {}
-	var dirs: Array[Vector3] = [Vector3(1, 0, 0), Vector3(-1, 0, 0), Vector3(0, 0, 1), Vector3(0, 0, -1)]
-	var names: PackedStringArray = ["+X", "-X", "+Z", "-Z"]
-	for i: int in range(dirs.size()):
-		var d: Vector3 = dirs[i]
-		var hit: Dictionary = _seam_ray(space, origin, origin + d * SEAM_AXIS_LEN)
-		hits[names[i]] = not hit.is_empty()
-	return hits
+			var at: Vector3 = Vector3(corner.x, height, corner.z)
+			var start: Vector3 = at + Vector3(sx * 0.5, 0.0, sz * 0.5)
+			var direction: Vector3 = (at - start).normalized()
+			var hit: Dictionary = _seam_ray(space, start, start + direction * ray_len)
+			if hit.is_empty():
+				_seam_line(false, corner, height, "no hit", "")
+				continue
+			var hit_pos: Vector3 = hit["position"] as Vector3
+			var hit_distance: float = (hit_pos - start).dot(direction)
+			var past: float = hit_distance - to_corner
+			_seam_line(past <= SEAM_PAST_MAX, corner, height, _fmt(past), _seam_collider_path(hit))
 
 
 func _seam_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3) -> Dictionary:
@@ -774,11 +734,16 @@ func _seam_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3) -> 
 	rq.collide_with_bodies = true
 	rq.collide_with_areas = false
 	rq.hit_from_inside = false
+	rq.hit_back_faces = true
+	rq.exclude = Array[RID]()
 	return space.intersect_ray(rq)
 
 
-func _seam_sign(v: int) -> String:
-	return "+" if v > 0 else "-"
+func _seam_collider_path(hit: Dictionary) -> String:
+	var col: Object = hit.get("collider") as Object
+	if col is Node:
+		return String((col as Node).get_path())
+	return ""
 
 
 func _seam_corner_text(c: Vector3) -> String:
@@ -786,8 +751,8 @@ func _seam_corner_text(c: Vector3) -> String:
 	return "(%s,%s,%s)" % [_fmt(c.x), _fmt(c.z), _fmt(c.y)]
 
 
-func _seam_line(ok: bool, corner: Vector3, height: float, quadrant: String, detail: String) -> void:
-	var text: String = "corner=%s height=%s quadrant=%s %s" % [_seam_corner_text(corner), _fmt(height), quadrant, detail]
+func _seam_line(ok: bool, corner: Vector3, height: float, past_txt: String, collider_path: String) -> void:
+	var text: String = "corner=%s height=%s past=%s collider=%s" % [_seam_corner_text(corner), _fmt(height), past_txt, collider_path]
 	if ok:
 		_seam_pass += 1
 		print("SEAM PASS %s" % text)
