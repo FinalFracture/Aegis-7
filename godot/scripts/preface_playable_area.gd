@@ -1790,10 +1790,10 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 # Yaw 90 maps local -Z onto world -X (west wall).
 const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 	{
-		# north wall z 8.76, laundry segment x -3.48..-0.48, clear of pillar at x -0.28..0.28
+		# north wall z 8.76, laundry segment x -3.35..-0.35, 0.15 m gap to #39, clear of pillar at x -0.28..0.28
 		"id": "Prop38_FoldingCounter",
 		"path": "res://assets/models/folding_counter_fold_leaf_3p0.glb",
-		"position": Vector3(-1.98, 0.235, 8.45),
+		"position": Vector3(-1.85, 0.235, 8.45),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FOLDING COUNTER",
@@ -1802,7 +1802,7 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# footprint x -4.70..-3.50, east of the lounge SeamFix wall at -4.75, west of #38 at -3.48
+		# footprint x -4.70..-3.50, east of the lounge SeamFix wall at -4.75, west of #38 at -3.35
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
 		"position": Vector3(-4.10, 0.235, 8.55),
@@ -1826,10 +1826,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# footprint x 1.00..2.90 inside West Storage, clear of the SeamFix walls at x 0.75 and 8.10
+		# footprint x 0.80..2.70 inside West Storage, clear of the SeamFix walls at x 0.75 and 8.10; front zone clear of the floor feature near x 2.97 z 8.15
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(1.95, 0.235, 8.50),
+		"position": Vector3(1.75, 0.235, 8.50),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
