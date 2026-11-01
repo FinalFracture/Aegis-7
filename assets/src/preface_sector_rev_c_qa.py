@@ -8,7 +8,7 @@ sc = trimesh.load(G.GLB); geo = sc.dump(concatenate=False)
 shell = trimesh.util.concatenate([m for m in geo if "Shell" in str(m.metadata.get("name"))])
 glass = [m for m in geo if "Glass" in str(m.metadata.get("name"))]
 lift = trimesh.util.concatenate(trimesh.load(os.path.join(G.ROOT, "godot/assets/models/sprocket_lift.glb")).dump())  # assembled check: lift shaft fills its cut-out
-allm = trimesh.util.concatenate(geo + [lift]); R = trimesh.ray.ray_triangle.RayMeshIntersector(allm)
+allm = trimesh.util.concatenate(geo + ([lift] if G.LIFT_CUTOUTS else [])); R = trimesh.ray.ray_triangle.RayMeshIntersector(allm)
 fails = []
 def hit(o, d):
     l, _, _ = R.intersects_location([o], [d], multiple_hits=False)
@@ -37,7 +37,7 @@ for n, (y0, rs) in G.ROOMS.items():
     for (x0, x1, z0, z1) in rs:
         for x in np.linspace(x0 + .3, x1 - .3, 6):
             for z in np.linspace(z0 + .3, z1 - .3, 6):
-                if 0.1 < x < 2.3 and 0.7 < z < 3.5: continue   # lift shaft, its call panels / riser cut-outs
+                if G.LIFT_CUTOUTS and 0.1 < x < 2.3 and 0.7 < z < 3.5: continue   # lift shaft, its call panels / riser cut-outs
                 t = hit(np.array([x, y0 + 1.0, z]), np.array([0, -1, 0])); fy = y0 + 1.0 - t
                 if abs(fy - y0) > 0.005: fails.append((n, "floor", x, z, fy))
 # 4: door clear widths at 1.0 m above floor

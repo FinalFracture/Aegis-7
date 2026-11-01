@@ -44,9 +44,14 @@ WIN = [("103", (-6.5, -3.5), 0, "S"), ("104", (3.5, 6.5), 0, "S"), ("203", (-6.5
 for n, (a, b), y, k in WIN:
     y0, y1 = (3.0, 7.0) if y is None else (y + 0.9, y + 2.4)
     cut.append(B(a, b, y0, y1, -9.15, -8.85) if k == "S" else B(-14.15, -13.85, y0, y1, a, b))
-cut += [B(0.6, 2.2, -0.15, 6.6, 0.75, 2.4),                 # Sprocket lift shaft (sprocket_lift.glb supplies its walls + 1.0x1.3 doors)
-        B(0.6, 2.2, 3.85, 4.25, 0.75, 2.4),
-        B(0.6, 1.64, 3.85, 4.25, 2.4, 3.4),                  # riser shaft through the L2 slab
+# M-62 (2026-11-01): sprocket_lift.glb / riser_shaft.glb are not placed yet (M-11), so the corridor wall stays SOLID across the
+# shaft front (x 0.6..2.2, both levels) and the shaft/riser slab holes stay closed. Set LIFT_CUTOUTS = True when M-11 lands
+# (then the lift glb supplies the shaft walls + its 1.0 x 1.3 corridor doors, and its front wall must replace ours at z 0.8..1.0).
+LIFT_CUTOUTS = False
+if LIFT_CUTOUTS:
+    cut += [B(0.6, 2.2, -0.15, 6.6, 0.75, 2.4), B(0.6, 2.2, 3.85, 4.25, 0.75, 2.4),
+            B(0.6, 1.64, 3.85, 4.25, 2.4, 3.4)]              # lift shaft + riser through the L2 slab
+cut += [
         B(-1.9, 1.9, 3.85, 4.25, -8.9, -0.8),                # stair core: stair_set_switchback.glb supplies mid + L2 landings
         B(-1.9, 1.9, 8.75, 9.15, -8.9, -4.88)]              # skylight strip (stair_skylight.glb)
 shell = difference([union(solid, engine="manifold"), union(cut, engine="manifold")], engine="manifold")
