@@ -1388,9 +1388,12 @@ func _spawn_centered_mesh(parent: Node3D, verts: PackedVector3Array, norms: Pack
 		built.surface_set_name(0, node_name)
 	mi.mesh = built
 	mi.position = centroid
-	mi.material_override = mat
+	# render_priority lives on Material. Duplicate so strip (-1) and caps (-2) can differ.
+	var use_mat: Material = mat.duplicate() if mat != null else null
+	if use_mat != null:
+		use_mat.render_priority = priority
+	mi.material_override = use_mat
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi.render_priority = priority
 	mi.sorting_offset = sorting_offset
 	parent.add_child(mi)
 
@@ -2091,8 +2094,8 @@ func _spawn_apt201_bench_outline() -> void:
 	var dust_tex: Texture2D = _load_tex("qa03/apt201_bench_dust_outline_decal.png")
 	if dust_tex != null:
 		mat.albedo_texture = dust_tex
+	mat.render_priority = -1
 	deck.material_override = mat
-	deck.render_priority = -1
 	deck.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_props_container.add_child(deck)
 
@@ -3214,7 +3217,6 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 			var mi: MeshInstance3D = curr as MeshInstance3D
 			if mi.mesh != null and mi.mesh.get_surface_count() > 0:
 				var has_opaque_surface: bool = false
-				var prop_glass: bool = false
 				var mesh_nm: String = String(mi.mesh.resource_name).to_lower()
 				for s_idx: int in range(mi.mesh.get_surface_count()):
 					var mat: Material = mi.get_active_material(s_idx)
@@ -3228,7 +3230,7 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 							smat.cull_mode = BaseMaterial3D.CULL_DISABLED
 						var is_glass: bool = _blob_has(blob, ["glass", "translucent", "holo", "lens", "viewport", "transom", "sonic_shield"]) or pname.contains("glass") or pname.contains("window")
 						if is_glass:
-							prop_glass = true
+							smat.render_priority = 0
 							var authored: Color = smat.albedo_color
 							var authored_rough: float = smat.roughness
 							smat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -3272,8 +3274,6 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 						mi.set_surface_override_material(s_idx, smat)
 					else:
 						has_opaque_surface = true
-				if prop_glass:
-					mi.render_priority = 0
 				if has_opaque_surface:
 					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 				else:
@@ -5681,7 +5681,7 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 			n_field.material_override = fmat
 			n_field.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			# [M-18] Door fields draw over the observation window (strip -1 / caps -2).
-			n_field.render_priority = 1
+			fmat.render_priority = 1
 		# One emissive material per emitter part per door, tinted to the field colour by set_door_field().
 		var emit_mats: Dictionary = {}
 		for en: String in FF_EMITTER_ENERGY.keys():
@@ -6651,14 +6651,14 @@ func enable_split_field(door_id: String) -> bool:
 	a.transform = plane.transform
 	a.material_override = mat_a
 	a.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	a.render_priority = 1
+	mat_a.render_priority = 1
 	var b: MeshInstance3D = MeshInstance3D.new()
 	b.name = "FieldPlane_B"
 	b.mesh = _ff_half_mesh(false)
 	b.transform = plane.transform
 	b.material_override = mat_b
 	b.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	b.render_priority = 1
+	mat_b.render_priority = 1
 	parent.add_child(a)
 	parent.add_child(b)
 	plane.visible = false
