@@ -163,7 +163,7 @@ const CORE_PAD_RADIUS := 1.4
 # [t38u] Rotating distant outer starfield cylinder & RFID doors ([t45u] force-field)
 const STARFIELD_CYL_RADIUS := 2200.0
 const STARFIELD_CYL_LENGTH := 4800.0
-const STARFIELD_ROT_SPEED := 0.045     # rad/s (~2.58 deg/s) about the world +X cylinder axis
+const STARFIELD_ROT_SPEED := TAU / 240.0  # rad/s, one revolution per 4 minutes, about the world +X cylinder axis
 const SCAN_ZONE_RANGE := 1.4          # [QA-HUB-01] max 3D distance probe point -> hub ScanZone
 const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward . dir-to-ScanZone
 const DOOR_DISSOLVE_TIME := 0.8
@@ -267,6 +267,7 @@ var _nearest: Dictionary = {}
 
 # Lighting
 var _sun: DirectionalLight3D
+var _sun_base_basis: Basis  # [CYL-02] authored sun basis; _process orbits it with the starfield, not the drum
 var _fill: DirectionalLight3D
 var _task_lights: Array[OmniLight3D] = []
 var _task_base: Array[Dictionary] = []
@@ -349,6 +350,9 @@ func _ready() -> void:
 	if _world_env != null and _world_env.environment != null:
 		var env: Environment = _world_env.environment.duplicate() as Environment
 		env.ssr_enabled = RenderingServer.get_current_rendering_method() == "forward_plus"
+		# [CYL-01] Black space behind the habitat. Ambient stays as authored (ambient_light_source is COLOR).
+		env.background_mode = Environment.BG_COLOR
+		env.background_color = Color(0, 0, 0, 1)
 		_world_env.environment = env
 
 	var all_args: PackedStringArray = OS.get_cmdline_args() + OS.get_cmdline_user_args()
@@ -1071,6 +1075,8 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 		cyl_node.position = Vector3(0.0, -200.0, 0.0)
 		_set_tree_cast_shadow(cyl_node, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 		cyl_pivot.add_child(cyl_node)
+		# Mesh edit only. Pivot pose above is the drum axis; this never rotates CylinderHab7_DrumAxisPivot.
+		_cut_observation_window(cyl_node, cyl_pivot)
 
 	_build_starfield_outer_cylinder(hab_root)
 
@@ -1158,6 +1164,227 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 			plaza_root.add_child(cap)
 
 
+
+
+# Observation window: 36 degree radial wedge, full length, plus glass end caps.
+# The drum pivot is not touched. GLB local +X is the spin axis; the axis sits at local (y = 200, z = 0)
+# because the mesh node is offset by (0, -200, 0). Centroids are measured in that cyl_node frame.
+func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
+	# World centre direction: overhead, 60 deg from +Y toward -Z, so the deck looks up through the wedge.
+	var d_w: Vector3 = Vector3(0.0, cos(deg_to_rad(60.0)), -sin(deg_to_rad(60.0)))
+	# Pivot rotation only. The GLB child is translated, not rotated, so this is the GLB direction.
+	var d: Vector3 = cyl_pivot.global_transform.basis.inverse() * d_w
+	var a0: float = atan2(d.z, d.y)
+	var half_rad: float = deg_to_rad(18.0)
+	var removed_wedge: int = 0
+	var removed_caps: int = 0
+	# Outermost removed cap-triangle x on each end. Authored span if that end has no cap triangles.
+	var cap_x_neg: float = -368.0
+	var cap_x_pos: float = 354.0
+	var found_neg: bool = false
+	var found_pos: bool = false
+
+	var stack: Array[Node] = [cyl_node]
+	var meshes: Array[MeshInstance3D] = []
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is MeshInstance3D:
+			meshes.append(n as MeshInstance3D)
+		for ch: Node in n.get_children():
+			stack.append(ch)
+
+	for mi: MeshInstance3D in meshes:
+		if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
+			continue
+		var src: Mesh = mi.mesh
+		# cyl_node-local = affine_inverse(cyl_node) * mi.global. Includes this instance's own transform.
+		var to_cyl: Transform3D = cyl_node.global_transform.affine_inverse() * mi.global_transform
+		var dst: ArrayMesh = ArrayMesh.new()
+		for si: int in range(src.get_surface_count()):
+			var arrays: Array = src.surface_get_arrays(si)
+			# Active material wins (upgrade overrides). Fall back to the surface material.
+			var mat: Material = mi.get_active_material(si)
+			if mat == null:
+				mat = src.surface_get_material(si)
+			var prim: Mesh.PrimitiveType = src.surface_get_primitive_type(si)
+			var verts_ok: bool = arrays.size() > Mesh.ARRAY_INDEX and arrays[Mesh.ARRAY_VERTEX] is PackedVector3Array
+			# Lines and other non-triangle surfaces stay whole. A triangle surface with no positions is dropped.
+			if prim != Mesh.PRIMITIVE_TRIANGLES:
+				var pass_i: int = dst.get_surface_count()
+				dst.add_surface_from_arrays(prim, arrays)
+				if mat != null:
+					dst.surface_set_material(pass_i, mat)
+				continue
+			if not verts_ok:
+				continue
+			var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			if verts.is_empty():
+				continue
+			# Indexed surfaces use ARRAY_INDEX. Non-indexed vertices are already in triangle order.
+			var index_v: Variant = arrays[Mesh.ARRAY_INDEX]
+			var indices: PackedInt32Array = PackedInt32Array()
+			if index_v is PackedInt32Array and (index_v as PackedInt32Array).size() >= 3:
+				indices = index_v as PackedInt32Array
+			else:
+				indices.resize(verts.size())
+				for vi: int in range(verts.size()):
+					indices[vi] = vi
+			var local_verts: PackedVector3Array = PackedVector3Array()
+			local_verts.resize(verts.size())
+			for vi2: int in range(verts.size()):
+				local_verts[vi2] = to_cyl * verts[vi2]
+			var tri_count: int = indices.size() // 3
+			var kept: PackedInt32Array = PackedInt32Array()
+			kept.resize(tri_count * 3)
+			var kept_n: int = 0
+			var vcount: int = local_verts.size()
+			for t: int in range(tri_count):
+				var i0: int = indices[t * 3]
+				var i1: int = indices[t * 3 + 1]
+				var i2: int = indices[t * 3 + 2]
+				if i0 < 0 or i1 < 0 or i2 < 0 or i0 >= vcount or i1 >= vcount or i2 >= vcount:
+					continue
+				var p0: Vector3 = local_verts[i0]
+				var p1: Vector3 = local_verts[i1]
+				var p2: Vector3 = local_verts[i2]
+				var c: Vector3 = (p0 + p1 + p2) / 3.0
+				var r: float = Vector2(c.y - 200.0, c.z).length()
+				var ang: float = atan2(c.z, c.y - 200.0)
+				# angle_difference wraps, so the wedge stays correct across the +/- PI seam.
+				var drop_wedge: bool = r >= 120.0 and absf(angle_difference(ang, a0)) <= half_rad
+				var fn: Vector3 = (p1 - p0).cross(p2 - p0)
+				var fn_len: float = fn.length()
+				if fn_len > 0.0000001:
+					fn = fn / fn_len
+				else:
+					fn = Vector3.ZERO
+				# End caps face along the spin axis. r >= 20 leaves the tiny hub at the axis.
+				var drop_cap: bool = absf(c.x) >= 330.0 and absf(fn.x) > 0.85 and r >= 20.0
+				if drop_wedge:
+					removed_wedge += 1
+				if drop_cap:
+					removed_caps += 1
+					if c.x < 0.0:
+						if (not found_neg) or c.x < cap_x_neg:
+							cap_x_neg = c.x
+						found_neg = true
+					elif c.x > 0.0:
+						if (not found_pos) or c.x > cap_x_pos:
+							cap_x_pos = c.x
+						found_pos = true
+				if drop_wedge or drop_cap:
+					continue
+				kept[kept_n] = i0
+				kept_n += 1
+				kept[kept_n] = i1
+				kept_n += 1
+				kept[kept_n] = i2
+				kept_n += 1
+			if kept_n <= 0:
+				continue
+			kept.resize(kept_n)
+			# New index into the original vertex buffers. LODs are not copied, so a lower LOD cannot seal the hole.
+			arrays[Mesh.ARRAY_INDEX] = kept
+			var new_si: int = dst.get_surface_count()
+			dst.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+			if mat != null:
+				dst.surface_set_material(new_si, mat)
+		# Overrides were baked onto dst above. Clear them so the rebuilt surfaces show those materials.
+		for oi: int in range(src.get_surface_count()):
+			mi.set_surface_override_material(oi, null)
+		mi.mesh = dst
+
+	print("[CYL-WINDOW] removed_wedge=%d removed_caps=%d a0_deg=%.3f" % [removed_wedge, removed_caps, rad_to_deg(a0)])
+
+	# [CYL-01] Opaque faces get a little emission so the side turned away from the sun is never pure black.
+	for emi: MeshInstance3D in meshes:
+		if emi.mesh == null:
+			continue
+		for s_idx: int in range(emi.mesh.get_surface_count()):
+			var emat: Material = emi.get_active_material(s_idx)
+			if emat is BaseMaterial3D:
+				var bm: BaseMaterial3D = emat as BaseMaterial3D
+				if bm.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:
+					var dup: BaseMaterial3D = bm.duplicate() as BaseMaterial3D
+					if dup == null:
+						continue
+					dup.emission_enabled = true
+					dup.emission = bm.albedo_color * 0.22
+					dup.emission_energy_multiplier = 1.0
+					emi.set_surface_override_material(s_idx, dup)
+
+	# Glass strip just inside the shell, plus a full disc on each end cap. Same mesh, child of the GLB node,
+	# so it stays put with the drum. Values match the viewport_glass role in material_loader.gd (alpha blend).
+	var glass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	glass_mat.resource_name = "Mat_ObservationWindowGlass"
+	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_mat.albedo_color = Color(0.82, 0.92, 0.96, 0.06)
+	glass_mat.metallic = 0.85
+	glass_mat.roughness = 0.06
+	glass_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var wedge_segs: int = 12
+	var strip_r: float = 199.0
+	for seg: int in range(wedge_segs):
+		var ang0: float = a0 - half_rad + (half_rad * 2.0) * float(seg) / float(wedge_segs)
+		var ang1: float = a0 - half_rad + (half_rad * 2.0) * float(seg + 1) / float(wedge_segs)
+		# Radial unit in the (y - 200, z) plane. atan2(z, y - 200) recovers ang.
+		var n0: Vector3 = Vector3(0.0, cos(ang0), sin(ang0))
+		var n1: Vector3 = Vector3(0.0, cos(ang1), sin(ang1))
+		var p_n0: Vector3 = Vector3(-400.0, 200.0 + strip_r * n0.y, strip_r * n0.z)
+		var p_n1: Vector3 = Vector3(-400.0, 200.0 + strip_r * n1.y, strip_r * n1.z)
+		var p_f0: Vector3 = Vector3(400.0, 200.0 + strip_r * n0.y, strip_r * n0.z)
+		var p_f1: Vector3 = Vector3(400.0, 200.0 + strip_r * n1.y, strip_r * n1.z)
+		# Outward winding. Cull is disabled; the normal is only for the glint.
+		st.set_normal(n0)
+		st.add_vertex(p_n0)
+		st.set_normal(n1)
+		st.add_vertex(p_n1)
+		st.set_normal(n0)
+		st.add_vertex(p_f0)
+		st.set_normal(n1)
+		st.add_vertex(p_n1)
+		st.set_normal(n1)
+		st.add_vertex(p_f1)
+		st.set_normal(n0)
+		st.add_vertex(p_f0)
+	var disc_r: float = 200.0
+	var disc_segs: int = 48
+	var cap_xs: Array[float] = [cap_x_neg, cap_x_pos]
+	for cap_i: int in range(cap_xs.size()):
+		var cap_x: float = cap_xs[cap_i]
+		var outward: float = -1.0 if cap_x < 0.0 else 1.0
+		var n_cap: Vector3 = Vector3(outward, 0.0, 0.0)
+		var center: Vector3 = Vector3(cap_x, 200.0, 0.0)
+		for ds: int in range(disc_segs):
+			var t0: float = TAU * float(ds) / float(disc_segs)
+			var t1: float = TAU * float(ds + 1) / float(disc_segs)
+			var rim0: Vector3 = Vector3(cap_x, 200.0 + disc_r * cos(t0), disc_r * sin(t0))
+			var rim1: Vector3 = Vector3(cap_x, 200.0 + disc_r * cos(t1), disc_r * sin(t1))
+			# Increasing angle around +X is CCW when looking along -X. The negative cap swaps the rim.
+			st.set_normal(n_cap)
+			st.add_vertex(center)
+			if outward >= 0.0:
+				st.set_normal(n_cap)
+				st.add_vertex(rim0)
+				st.set_normal(n_cap)
+				st.add_vertex(rim1)
+			else:
+				st.set_normal(n_cap)
+				st.add_vertex(rim1)
+				st.set_normal(n_cap)
+				st.add_vertex(rim0)
+	var glass_mi: MeshInstance3D = MeshInstance3D.new()
+	glass_mi.name = "ObservationWindowGlass"
+	var glass_mesh: ArrayMesh = st.commit()
+	# Strip and both end-cap discs share this one mesh, named with the instance.
+	if glass_mesh != null and glass_mesh.get_surface_count() > 0:
+		glass_mesh.surface_set_name(0, "ObservationWindowGlass")
+	glass_mi.mesh = glass_mesh
+	glass_mi.material_override = glass_mat
+	glass_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	cyl_node.add_child(glass_mi)
 
 
 func _make_signage_skin_material(v_offset: float, v_scale: float) -> StandardMaterial3D:
@@ -1873,6 +2100,8 @@ func _setup_sector_lighting() -> void:
 	_sun = DirectionalLight3D.new()
 	_sun.name = "AtriumGoldenHourSunlight"
 	_sun.rotation_degrees = Vector3(-72.0, -162.0, 0.0)
+	# [CYL-02] Snapshot after the authored rotation. _process spins this about +X with the starfield.
+	_sun_base_basis = _sun.basis
 	_sun.light_color = Color("#FFF4E0")
 	_sun.light_energy = 0.78
 	_sun.shadow_enabled = true
@@ -2762,6 +2991,9 @@ func _process(delta: float) -> void:
 	_time += delta
 	if _starfield_cylinder != null and is_instance_valid(_starfield_cylinder):
 		_starfield_cylinder.rotate_x(STARFIELD_ROT_SPEED * delta)
+		# [CYL-02] The sun rides the backdrop. The habitat drum is not rotated.
+		if is_instance_valid(_sun):
+			_sun.basis = Basis(Vector3.RIGHT, _starfield_cylinder.rotation.x) * _sun_base_basis
 	_ff_tick_active_stalls(delta)
 	_update_rfid_doors(delta)
 	_sync_reticle_to_viewport_center()
@@ -4087,11 +4319,11 @@ func _make_procedural_starfield_texture() -> ImageTexture:
 
 func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7.
-	# Same axis as CylinderHab7_DrumAxisPivot: world +X through (135, 185.5, 0). No valley roll (a full shell).
+	# Same axis as CylinderHab7_DrumAxisPivot: world +X through (135, 187.2, 0). No valley roll (a full shell).
 	# This shell spins about that axis in _process; the habitat drum stays stationary (no spin animation).
 	_starfield_cylinder = Node3D.new()
 	_starfield_cylinder.name = "StarfieldOuterCylinder"
-	_starfield_cylinder.position = Vector3(135.0, 185.5, 0.0)
+	_starfield_cylinder.position = Vector3(135.0, 187.2, 0.0)
 	parent.add_child(_starfield_cylinder)
 
 	var star_tex: ImageTexture = _make_procedural_starfield_texture()
@@ -5940,11 +6172,6 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
 	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
-	# Hide the hab drum: it fills the axial view and hides the stars, so the pixel-diff check would see 0 changed pixels.
-	var drum_pivot: Node3D = hab_world.get_node_or_null("CylinderHab7_DrumAxisPivot") as Node3D if hab_world != null else null
-	var drum_was_visible: bool = drum_pivot.visible if drum_pivot != null else true
-	if drum_pivot != null:
-		drum_pivot.visible = false
 	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
 	await _qa_frames(90)
 	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
@@ -5953,8 +6180,6 @@ func _run_reticle_stars_doors_qa() -> void:
 	if _starfield_cylinder != null:
 		_starfield_cylinder.rotate_x(deg_to_rad(14.0))
 	var img_star2: Image = await _qa_capture("qa_outer_starfield_rotating_2.png")
-	if drum_pivot != null:
-		drum_pivot.visible = drum_was_visible
 	var d_star_rot: float = absf(star_rot1 - star_rot0)
 	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
 	var d_hab_rot: float = hab_xf0.basis.get_rotation_quaternion().angle_to(hab_xf1.basis.get_rotation_quaternion())
@@ -5967,6 +6192,39 @@ func _run_reticle_stars_doors_qa() -> void:
 				if img_star1.get_pixel(px, py).to_abgr32() != img_star2.get_pixel(px, py).to_abgr32():
 					star_diff += 1
 		_qa_t38_check("starfield_pixels_visible_and_moving", star_diff > 15, "changed_sky_sample_pixels=%d" % star_diff)
+
+	# Normal play: on the deck, looking through the observation window. The drum stays visible and does not spin.
+	# _qa_place yaw is body yaw (0 faces -Z: atan2(-dir.x, -dir.z)). Pitch is the camera-pivot X rotation.
+	# _apply_pitch clamps first person to PITCH_MIN_DEG..PITCH_MAX_DEG (-80..75). Eye is the camera pivot (1.62 m).
+	var axis_point: Vector3 = Vector3(0.0, 187.2, 0.0)
+	var win_dw: Vector3 = Vector3(0.0, cos(deg_to_rad(60.0)), -sin(deg_to_rad(60.0)))
+	var window_p: Vector3 = axis_point + win_dw * 200.0
+	var eye: Vector3 = Vector3(0.0, 0.25 + 1.50 + 0.12, -20.0)
+	var aim: Vector3 = window_p - eye
+	if aim.length_squared() > 0.0000001:
+		aim = aim.normalized()
+	var win_yaw: float = rad_to_deg(atan2(-aim.x, -aim.z))
+	var win_pitch: float = rad_to_deg(asin(clampf(aim.y, -1.0, 1.0)))
+	win_pitch = clampf(win_pitch, PITCH_MIN_DEG, PITCH_MAX_DEG)
+	_qa_place(Vector3(0.0, 0.25, -20.0), win_yaw, win_pitch)
+	await _qa_frames(15)
+	var img_win1: Image = await _qa_capture("qa_window_starfield_1.png")
+	await _qa_frames(120)
+	if _starfield_cylinder != null:
+		_starfield_cylinder.rotate_x(deg_to_rad(6.0))
+	var img_win2: Image = await _qa_capture("qa_window_starfield_2.png")
+	if img_win1 != null and img_win2 != null and img_win1.get_width() > 0 and img_win1.get_height() > 0 and img_win2.get_width() > 0 and img_win2.get_height() > 0:
+		var ww: int = mini(img_win1.get_width(), img_win2.get_width())
+		var wh: int = mini(img_win1.get_height(), img_win2.get_height())
+		var win_diff: int = 0
+		# Central band of a 1920x1080 frame (x 560..1360, y 160..760, step 8). Smaller images use the same fractions.
+		for y_ref: int in range(160, 760, 8):
+			var pyw: int = clampi(int(round(float(y_ref) * float(wh) / 1080.0)), 0, wh - 1)
+			for x_ref: int in range(560, 1360, 8):
+				var pxw: int = clampi(int(round(float(x_ref) * float(ww) / 1920.0)), 0, ww - 1)
+				if img_win1.get_pixel(pxw, pyw).to_abgr32() != img_win2.get_pixel(pxw, pyw).to_abgr32():
+					win_diff += 1
+		_qa_t38_check("window_starfield_visible_and_moving", win_diff > 15, "changed_window_pixels=%d" % win_diff)
 
 	# ---------------- 3. [t45u] ALL 6 RFID FORCE-FIELD DOORS ----------------
 	_qa_t38_check("rfid_doors_count_6", _rfid_doors.size() == 6, "door_count=%d" % _rfid_doors.size())
