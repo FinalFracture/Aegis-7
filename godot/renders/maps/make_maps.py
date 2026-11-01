@@ -83,10 +83,12 @@ H=62.83
 blocks=[("B-Fore",0,50,-H,H,"#3a3f4a"),("B1 Preface",50,150,6,H,"#5a3030"),("B2 Housing Row A",50,200,-H,-6,"#4a3e2a"),("B3 Courtyard Homes",150,200,6,H,"#3e4a2a"),
  ("B4 Ring 25 Commons",200,250,-H,H,"#2a3e4a"),("B5 Housing Rows B/C",250,400,-H,H,"#4a3e2a"),("B6 Mid Ring Civic Gate",400,450,-H,H,"#3a3a55"),
  ("B7 Housing Rows D/E",450,600,-H,H,"#4a3e2a"),("B8 Ring 75 Commons",600,650,-H,H,"#2a3e4a"),("B9 Aft Housing",650,800,-H,H,"#4a3e2a")]
-bld=[("P-1",86,114,27,45)]+[(f"H-A{i+1}",55+24*i,75+24*i,-42,-24) for i in range(6)]+[("C-1..4",155,195,10,40),("M-1",210,240,-20,20),("K-1",300,340,-58,-46),("G-1",395,425,-62,-48),("R-1",610,640,-40,-20)]
+HA=[(53,73),(77,97),(103,123),(127,147),(153,171),(175,193)]
+GRID=[(a-50,b-50) for a,b in HA]  # v2 44 m block grid (H-B..F positions inferred from H-A pattern)
+bld=[("P-1",86,114,27,45)]+[(f"H-A{i+1}",a,b,-42,-24) for i,(a,b) in enumerate(HA)]+[("C-1..4",155,195,10,40),("M-1",210,240,-20,20),("K-1",303,343,-44.5,-32.5),("G-1",407,437,-44.5,-30.5),("R-1",610,640,-40,-20)]
 for lab,x0 in (("H-B/C",255),("H-D/E",455),("H-F",655)):
-    for i in range(6):
-        for s in (1,-1): bld.append((lab if i==0 else "",x0+24*i,x0+24*i+20,24*s if s>0 else -42,42 if s>0 else -24))
+    for i,(a,b) in enumerate(GRID):
+        for s in (1,-1): bld.append((lab if i==0 else "",x0-5+a,x0-5+b,24 if s>0 else -42,42 if s>0 else -24))
 for ax,(xa,xb) in zip(axs,((0,400),(400,800))):
     ax.set_aspect("equal")
     for n,x0,x1,z0,z1,c in blocks:
@@ -104,34 +106,41 @@ for ax,(xa,xb) in zip(axs,((0,400),(400,800))):
     for n,x0,x1,z0,z1 in bld:
         ax.add_patch(Rectangle((x0,z0),x1-x0,z1-z0,fc="#d8d8e0" if n!="P-1" else "#ff3030",ec="k",lw=.6,alpha=.95))
         if n: ax.text((x0+x1)/2,(z0+z1)/2,n,ha="center",va="center",fontsize=6.5,color="k",weight="bold",clip_on=True)
-    ax.add_patch(Rectangle((40,58.5),520,2.5,fc="#2f8cff")); ax.add_patch(Rectangle((500,48),40,13,fc="#2f8cff",ec="w",lw=.6))
+    ax.add_patch(Rectangle((40,51.4),490,2.9,fc="#2f8cff",zorder=4)); ax.add_patch(Rectangle((518,45),27,9.3,fc="#2f8cff",ec="w",lw=.6,zorder=4)); ax.add_patch(Rectangle((527,54.3),6,8.5,fc="#2f8cff",alpha=.5,zorder=4))
     for zz,n in ((-H,"Seam S3|4 maglev (to Civic, strip 3)"),(H,"Seam S4|5 maglev (to The Green, strip 5)")):
         ax.plot([0,800],[zz,zz],color="#00e5ff",lw=3); ax.text(xb-2,zz+(3 if zz>0 else -5),n,ha="right",fontsize=8,color="#00e5ff")
     for x in (100,300,500,700):
         for zz in (H,-H):
-            if x==100 and zz>0: ax.add_patch(Rectangle((85,59.3),30,3,fc="#00e5ff",ec="w",lw=.6))
+            if x==100 and zz>0: ax.add_patch(Rectangle((85,57.93),30,3.5,fc="#00e5ff",ec="w",lw=.6,zorder=6))
             else: ax.add_patch(Rectangle((x-15,zz-3 if zz>0 else zz),30,3,fc="none",ec="#00e5ff",lw=1,ls="--"))
     for x in rings:
         for zz in (H,-H): ax.scatter([x],[zz],s=60,c="w",edgecolors="#ff4fd8",zorder=6)
-    for x0 in (86,108): ax.add_patch(Rectangle((x0,54.5),6,4,fc="#ffd84a",ec="k",lw=.5,zorder=6))
+    for x0 in (85,107): ax.add_patch(Rectangle((x0,54.3),7,5,fc="#ffd84a",ec="k",lw=.5,zorder=6))
     ax.add_patch(Rectangle((117.4,45.6),4.2,3.1,fc="#ff9de2",ec="k",zorder=7))
     ax.set_xlim(xa-5,xb+5); ax.set_ylim(-H-14,H+16)
     ax.set_xticks(range(xa,xb+1,50)); ax.set_yticks([-62.83,-45,-6,6,45,62.83]); ax.tick_params(labelsize=7)
     ax.set_ylabel("z arc (m)")
 a0,a1=axs
+a0.text(100,22,"PREFACE — PENDING JARED REVIEW",ha="center",fontsize=7.5,color="#ff6060",weight="bold",zorder=8)
+a0.text(250,52.8,"CANAL — PENDING JARED REVIEW",ha="center",va="center",fontsize=6.5,color="w",weight="bold",zorder=8)
 a0.annotate("Memorial (#29)",(119.5,48.7),xytext=(135,75),fontsize=8,color="#ff9de2",arrowprops=dict(arrowstyle="->",color="#ff9de2"),annotation_clip=False)
-a0.annotate("x100 stop + 2 stair/lift towers (6×4 m)",(100,58),xytext=(30,72),fontsize=8,color="#ffd84a",arrowprops=dict(arrowstyle="->",color="#ffd84a"),annotation_clip=False)
+a0.annotate("x100 stop (cantilevered, deck +5.40) + 2 towers 7×5 m",(100,58),xytext=(30,72),fontsize=8,color="#ffd84a",arrowprops=dict(arrowstyle="->",color="#ffd84a"),annotation_clip=False)
 a0.annotate("Fore Hub",(0,H),xytext=(8,74),fontsize=9,weight="bold",color="#ffd84a",arrowprops=dict(arrowstyle="->",color="#ffd84a"),annotation_clip=False)
 a0.text(40,-72,"Aqueduct supply culvert at x 40 (routing schematic / TBD)",fontsize=7.5,color="#2f8cff")
 a1.annotate("Commons Central (x400, S3|4)",(400,-H),xytext=(410,-74),fontsize=9,weight="bold",color="#ffd84a",arrowprops=dict(arrowstyle="->",color="#ffd84a"),annotation_clip=False)
-a1.annotate("Headwater Basin + culvert to strip 5 (x 540)",(540,61),xytext=(545,76),fontsize=8,color="#2f8cff",arrowprops=dict(arrowstyle="->",color="#2f8cff"),annotation_clip=False)
+a1.annotate("Canal/Headwater Basin + culvert x 530 — PENDING JARED REVIEW",(530,58),xytext=(545,76),fontsize=8,color="#2f8cff",arrowprops=dict(arrowstyle="->",color="#2f8cff"),annotation_clip=False)
 a1.set_xlabel("x axial (m) — Fore Ring 0 → Aft Ring 800")
 a1.plot([700,750],[-73,-73],color="w",lw=4); a1.text(725,-71,"50 m",ha="center",fontsize=8)
 a1.annotate("",xy=(690,-73),xytext=(610,-73),arrowprops=dict(arrowstyle="->",color="w",lw=2)); a1.text(612,-71,"axis → Aft",fontsize=8)
 leg=[Patch(fc="#c9b37a",label="Spine Walk 12 m"),Patch(fc="#9c8c66",label="Promenades 9.5 m / cross walks 6 m"),Patch(fc="#ff4fd8",alpha=.35,label="Ring cross-walk 12 m (under ring line)"),
- Patch(fc="#d8d8e0",ec="k",label="Building footprint (Vance v1)"),Patch(fc="#ff3030",label="Preface P-1"),Patch(fc="#2f8cff",label="Canal (x40–560) + Headwater Basin"),
- Line2D([],[],color="#00e5ff",lw=3,label="Seam maglev (+5.0 m rail)"),Patch(fc="#00e5ff",label="x100 platform (as drafted)"),Patch(fc="none",ec="#00e5ff",ls="--",label="Other local-stop platforms (side/position TBD)"),
+ Patch(fc="#d8d8e0",ec="k",label="Building footprint (v2)"),Patch(fc="#ff3030",label="Preface P-1 (pending Jared review)"),Patch(fc="#2f8cff",label="Canal + Basin (pending Jared review)"),
+ Line2D([],[],color="#00e5ff",lw=3,label="Seam maglev (rail +5.26 m)"),Patch(fc="#00e5ff",label="x100 platform (as drafted)"),Patch(fc="none",ec="#00e5ff",ls="--",label="Other local-stop platforms (side/position TBD)"),
  Line2D([],[],marker="o",ls="",mfc="w",mec="#ff4fd8",ms=8,label="Transfer station"),Patch(fc="#ffd84a",label="Stair/lift tower"),Patch(fc="#ff9de2",label="Memorial")]
 fig.legend(handles=leg,loc="lower center",ncol=6,facecolor="#1a1f29",edgecolor="#555",fontsize=8.5)
-fig.suptitle("Strip 4 — Spin Street Residential — Plan v1 DRAFT (125.66 m × 800 m, unrolled; source design/strip4_plan.md @ee61cb6)\nRook review flags (not yet applied): H-A/cross-walk overlaps, K-1/G-1 over promenade, x100 platform overlaps train, towers fill forecourt",fontsize=12)
-fig.tight_layout(rect=(0,0.07,1,0.95)); fig.savefig(OUT+"strip4_plan.png",facecolor=BG); plt.close(fig)
+fig.suptitle("Strip 4 — Spin Street Residential — Plan v2 DRAFT (125.66 m × 800 m, unrolled; source design/strip4_plan.md @b2f4aad)\nRook blockers resolved in v2. H-B…H-F slots inferred from the v2 44 m grid rule (doc lists row ranges only). Crossings: option A (inset). Preface spot + canal PENDING JARED REVIEW. No building height cap.",fontsize=12)
+ins=fig.add_axes([0.80,0.30,0.19,0.16]); ins.set_facecolor("#1a1f29"); ins.axhline(0,color="#888",lw=1)
+ins.plot([-150,150],[5.26,5.26],color="#00e5ff",lw=2); ins.plot([-150,150],[10.2,10.2],color="#ff4fd8",lw=2)
+ins.text(-145,11,"ring rail +10.2 (deck +10.34)",fontsize=6.5,color="#ff4fd8"); ins.text(-145,6,"seam rail +5.26 (deck +5.40)",fontsize=6.5,color="#00e5ff")
+ins.set_xlim(-150,150); ins.set_ylim(-1,15); ins.tick_params(labelsize=6); ins.set_ylabel("m",fontsize=6)
+ins.set_title("Crossings (Q3 = option A): rings permanently up,\ntwo-level transfers, no grades",fontsize=7.5)
+fig.subplots_adjust(left=0.05,right=0.78,top=0.91,bottom=0.1,hspace=0.25); fig.savefig(OUT+"strip4_plan.png",facecolor=BG); plt.close(fig)
