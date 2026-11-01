@@ -30,7 +30,7 @@ Sizes are rough W × D × H in meters.
 | 11 | ~~Dining table for 4~~ `godot/assets/models/table_pedestal_dining4.glb` | 103, 202 | 2 | 1.6 × 0.9 × 0.75 |
 | 12 | ~~Tea table (low)~~ `godot/assets/models/table_pedestal_tea.glb` | 102, 203 | 2 | 1.2 × 0.8 × 0.45 |
 | 13 | ~~Dining chair/stool~~ `godot/assets/models/dining_chair_swivel.glb` | tables above | 20 | 0.45 × 0.45 × 0.9 |
-| 14 | ~~Tea set (pot + cups)~~ `godot/assets/models/tea_set_rail_caddy.glb` | 102, 203 | 2 | 0.4 × 0.3 × 0.2 |
+| 14 | ~~Tea set (pot + cups)~~ `godot/assets/models/tea_set_rail_caddy.glb` | Maintenance, N wall (code: Tea_Set_Rail_Caddy (1.50, 0.12, 7.89) yaw 180) | 1 | 0.4 × 0.3 × 0.2 |
 
 
 ## D. Living
@@ -59,7 +59,7 @@ Sizes are rough W × D × H in meters.
 | 25 | ~~Tool wall panel, built as the Sprocket-first service wall redirect (`design/assets/service_wall/`)~~ `godot/assets/models/service_wall_rail_shuttle.glb` | 101, 201, Maintenance | 3 | 2.5–3.5 × 0.5 × 2.0 |
 | 26 | ~~Apartment workbench~~ (level blockout `Apartment_Workbench`) MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 201; not modeled now, waits for that building | ~~201~~ lab/workshop building | — | 3.7 × 2.5 nook |
 | 27 | ~~Task lamp (level blockout `Apt201_Workbench_TaskLight`)~~ `godot/assets/models/task_lamp_rail_slider.glb` | 104, 201, 204 | 3 (C.2: on the 104 and 204 window desks; 201 as a side-table/floor-stand lamp beside the reading chair) | 0.2 × 0.2 × 0.5 |
-| 28 | ~~Window desk + data slates~~ `godot/assets/models/window_desk_cantilever_slab.glb` | 104, 204 | 2 | 4.0 × 0.4 × 0.75 |
+| 28 | ~~Window desk + data slates~~ DROPPED (desk GLB not placed; the 104/204 #27 lamps sit at desk-top height on the desk rect, 5.0, -8.7) | — | — | — |
 | 29 | ~~Specimen shelf~~ MOVED TO LAB BUILDING (Jared, Oct 29): removed from 104; Open Rack is a future science/lab-building asset, `godot/assets/models/specimen_rack_open_lab.glb` | ~~104~~ lab building | — | 0.9 × 0.63 × 1.9 |
 | 30 | ~~Telescope~~ `godot/assets/models/telescope_pier_dobsonian.glb` | 104 | 1 | 0.6 × 0.6 × 1.5 |
 | 31 | ~~Emitter repair bench (dismantled field emitter)~~ MOVED TO LAB/WORKSHOP BUILDING (Jared, Oct 29): removed from 204; not modeled now, waits for that building | ~~204~~ lab/workshop building | — | 0.9 × 1.9 × 0.9 |
@@ -69,7 +69,7 @@ Sizes are rough W × D × H in meters.
 | 35 | ~~Toy chest + rail bins + toy kit~~ (Jared combined iter 1 + 3, Oct 29): `godot/assets/models/toy_chest_rail_bins.glb` | 103 | 1 | 1.2 × 0.6 × 0.5 chest; bins on a 0.90 m rail to 1.21 m |
 | 52 | ~~Fold-down wall desk~~ DROPPED in C.2 (Jared: don't shape 201 around the objective; Gage re-points the objective at rebuild) | — | — | — |
 | 53 | ~~Lab crate, labelled for the future lab/workshop (violet D-03 lab glyph, wordless; 204 lid ajar showing emitter parts). Same mesh as exterior #48 crate~~ `godot/assets/models/lab_crate_frame_104.glb` + `lab_crate_frame_204.glb` (Frame Crate) | 104, 204 | 2 | 1.0 × 0.6 × 0.5 / 0.9 × 0.7 × 0.5 |
-| 55 | ~~Lost-and-found rail bins + wordless notice board (C.2a kitbash: #35 rail bins + the exterior #52 board mesh)~~ `godot/assets/models/lost_and_found_rail_bins.glb` (new small board; #52 was dropped) | Laundry N wall X -4.3..-3.0 | 1 | 1.3 × 0.3 × 1.4 |
+| 55 | ~~Lost-and-found rail bins + wordless notice board (C.2a kitbash: #35 rail bins + the exterior #52 board mesh)~~ `godot/assets/models/lost_and_found_rail_bins.glb` (new small board; #52 was dropped) | Maintenance, W side (code: Lost_And_Found_Rail_Bins (1.08, 0.12, 5.35) yaw 90) | 1 | 1.3 × 0.3 × 1.4 |
 | 54 | Removal decal set (dust outline of the lab bench and workbench, shelf ghost + wall anchor holes, planter clamp-bolt marks + water ring) | 104, 201, 204 (emitter bench outline), 103, 202 | 1 set | decals |
 | 36 | ~~Small clutter kit (meal tray, cups, cables, photo frames as decals)~~ `godot/assets/models/clutter_kit_magnet_dock.glb` | 101, 102, 104, 202 | 1 kit | small |
 
@@ -78,7 +78,7 @@ Sizes are rough W × D × H in meters.
 | # | Item | Units | Qty | Size |
 |---|---|---|---|---|
 | 37 | ~~Washer/dryer stack~~ `godot/assets/models/washer_dryer_alloy_reclaim.glb` | Laundry | 4 | 0.8 × 0.8 × 1.9 |
-| 38 | ~~Folding counter (C.2a: +1 run on the N wall, where the lockers were, X -2.6..0.4)~~ `godot/assets/models/folding_counter_fold_leaf_3p5.glb` + `folding_counter_fold_leaf_3p0.glb` (cb9131e) | Laundry | 2 | 0.6 × 3.5 × 0.9 / 3.0 × 0.6 × 0.9 |
+| 38 | ~~Folding counter (C.2a: +1 run on the N wall, where the lockers were, X -2.6..0.4)~~ `folding_counter_fold_leaf_3p0.glb` (cb9131e); 3.5 m run REMOVED (not placed in code) | Laundry N wall (code: Prop38 (-1.64, 0.12, 8.592) yaw 180) | 1 | 3.0 × 0.6 × 0.9 |
 | 39 | ~~Bench~~ `godot/assets/models/laundry_bench_wall_flip_seat.glb` (405d5ad) | Laundry | 1 | 1.2 × 0.4 × 0.45 |
 
 
@@ -88,7 +88,7 @@ Sizes are rough W × D × H in meters.
 | 40 | ~~Sprocket floor pad (level blockout `DockPad`/`DockPad_InductionRing`)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 1.2 × 1.2 × 0.05 |
 | 41 | ~~Coupler arm (wall/ceiling mount)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 0.3 × 1.5 reach |
 | 42 | ~~Substation cabinet (level blockout `Room1B_Substation_*`)~~ `godot/assets/models/substation_wall_ladder_busway.glb` (4638b0e) | Maintenance | 1 | 0.6 × 2.5 × 2.2 |
-| 43 | ~~Spares shelf~~ `godot/assets/models/spares_gravity_dispenser.glb` (abd4bc9) | Maintenance | 1 | 1.9 × 0.5 × 1.8 |
+| 43 | ~~Spares shelf~~ `godot/assets/models/spares_gravity_dispenser.glb` (abd4bc9). Code: (-4.858, 0.12, 5.20) yaw -90, room 101 E wall (face x -4.6). Design rev3: (-5.16, 0.235, 5.20) yaw -90. **MISMATCH**, see M-02 | Room 101 E wall | 1 | 1.9 × 0.5 × 1.8 |
 
 
 ## I. Characters and pickups (placed, already modeled)

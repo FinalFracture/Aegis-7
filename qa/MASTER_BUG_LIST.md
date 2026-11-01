@@ -27,7 +27,7 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 | M-10 | Med | Gage | Ext_47 decal 1002/1003, about (2.0,0.18,-12.1) | Overlapping desire-path decals z-fight. | GEO-04 | Open |
 | M-11 | Med | Gage | sprocket_lift.glb | The sprocket lift (9 clips) is not placed or wired. Rev C scope. | L4-03 | Downgraded High->Med; Open-blocked (Rev C build approval) |
 | M-12 | Med | Gage | service_wall_rail_shuttle.glb | The service wall / pads / coupler arms are not placed or wired. Rev C scope. | L4-04 | Downgraded High->Med; Open-blocked (Rev C build approval) |
-| M-13 | Low | Gage | folding_counter_fold_leaf_3p5.glb | The 3.5 m folding counter run is not placed. | L4-08, L4r2-08 | Open, Low/doc: counter removed with the 204 beat but asset list #38 and the .py still list it (Vance/doc owner) |
+| M-13 | Low | Gage | folding_counter_fold_leaf_3p5.glb | The 3.5 m folding counter run is not placed. | L4-08, L4r2-08 | Resolved (doc): code places only the 3.0 m run (Prop38); 3.5 m removed from asset list #38 and roomlayout .py |
 | M-14 | Med | Gage + Jared | — | No spot for the 4.0 m reading bench. Needs Jared: rebuild, 3.0 m variant, or plaza. | L4-09 | Open-blocked (Jared) |
 | M-15 | Med | Sloane | preface_playable_area.gd:1411 (`dup.emission = albedo*0.22`) | Blanket 22% self-emission on drum materials flattens lighting, ignores textures, and survives emergency lighting. | VIS-04 | Open (r2: 0/10 of 583a3ac applied; emission*0.22 still at PPA:1419) |
 | M-16 | Med | Sloane | `_set_emergency_lighting` ~L2367 | The emergency toggle restores wrong values (fill 0.34 vs authored 0.28, ambient 0.36 vs 0.42) and doesn't dim the luminaires, spots, or emission. | VIS-05 | Open |
@@ -71,7 +71,7 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 | M-52 | Low | Gage | 3 showcase scenes | Reference scripts deleted in 2f35758. | SYS-05 | Open |
 | M-53 | Low | Gage | exit | "Cannot get path of node as it is not in a scene tree" x4 at exit. | SYS-08 | Open |
 | M-54 | Low | Gage | boot validate | interactables 25 -> 19 since cd17628. Patch r2: all 6 RFID doors still exist and work, so the drop is not doors; most likely the props removed in 04bbed0 (201 objective, 204 door beat, lockers). Gage confirm intended. | QA-05 full pass | Open (confirm) |
-| M-55 | Low | Vance / doc owner | residential_asset_list_rev_c.md #14, #55 | Asset list still puts tea sets in 102/203 and bins on the Laundry N wall; code has both in Maintenance. | L4r2-15 | Open (doc) |
+| M-55 | Low | Vance / doc owner | residential_asset_list_rev_c.md #14, #55 | Asset list still puts tea sets in 102/203 and bins on the Laundry N wall; code has both in Maintenance. | L4r2-15 | Resolved (doc): asset list #14/#55 now Maintenance, matching code (tea caddy (1.50,0.12,7.89), bins (1.08,0.12,5.35)) |
 
 ## QA tasks
 | Task | Owner | Summary | Status |

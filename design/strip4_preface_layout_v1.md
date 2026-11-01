@@ -39,7 +39,7 @@ Clearance method: each prop's footprint, plus a 1.2 m front zone (floor +0.05..1
 | 1 | Prop38 folding counter 3.0 | folding_counter_fold_leaf_3p0.glb | Laundry seg., hall N wall | (−1.85, 0.235, 8.45) | 180 | wall | −3.35..−0.35 × 8.15..8.76 | wired; 0.15 m gap to #39, clear of the pillar at −0.28 |
 | 2 | Prop39 flip seat | laundry_bench_wall_flip_seat.glb | Laundry seg., hall N wall | (−4.10, 0.235, 8.55) | 180 | wall | −4.70..−3.50 × 8.35..8.75 | wired |
 | 3 | Prop42 substation | substation_wall_ladder_busway.glb | Hall N wall (east) | (10.68, 0.235, 8.35) | 180 | wall | 9.43..11.93 × 7.95..8.75 | wired |
-| 4 | Prop43 spares dispenser (rev3) | spares_gravity_dispenser.glb | 1A East Lounge, +x wall | (−5.16, 0.235, 5.20) | −90 | wall | −5.41..−4.91 × 4.25..6.15 | front zone to x −6.61 clear. **Not applied yet**: code still has (−8.00, 0.235, 8.50) yaw 180 (8855f8c), which fails the front zone |
+| 4 | Prop43 spares dispenser (rev3) | spares_gravity_dispenser.glb | Room 101 E wall | design (−5.16, 0.235, 5.20); **code (−4.858, 0.12, 5.20)** (04bbed0) | −90 | wall | z 4.25..6.15 | MISMATCH vs design, see M-02 |
 | 5 | Suit storage service combo (102 "suit missing from hook") | suit_storage_service_combo.glb | 1B West Storage, +x wall | (7.82, 0.235, 4.85) | −90 | floor, wall-backed | 7.57..8.07 × 3.60..6.10 | 0 hits; front zone x 6.37..7.57; clear of battery (7.2, 7.1), probe (5.6, 6.0) and door 1B |
 | 6 | Lost-and-found rail bins #55 | lost_and_found_rail_bins.glb | 1B West Storage, −x wall | (1.08, 0.235, 5.35) | 90 | wall (bins y 0.62..1.64) | 0.93..1.23 × 4.70..6.00 | 0 hits. **Moved off the laundry wall** (C.2a wanted X −4.3..−3.0, now Prop39); 1B is the next room east |
 | 7 | Tea set rail caddy | tea_set_rail_caddy.glb | 1B West Storage, N wall | (1.50, 0.235, 7.89) | 180 | floor (see Q P2) | 1.31..1.69 × 7.79..7.99 | 0 hits; front zone z 6.59..7.79 |
@@ -57,7 +57,7 @@ Paths, doors, egress: all front zones stay outside the door zones (1A, 1B, 201, 
 - **C1 (memorial vs Spin Walk E):** the memorial nook x 117.4..121.6 sits inside Spin Walk E (x 117..123). Vance proposal: keep the nook and narrow Spin Walk E to x 121.6..127.6 next to the plaza (z 45..54.3), or shift the walk +4.6 m for all of B1. Needs Jared's call.
 - **C2 (P-1 cross-walk):** already handled by the plan's exemption and the Spin Walk detour. No new change.
 - **C3 (rebuild):** 103/104/203/204 are missing from the GLB, so #9–#12 are provisional and #13 has no spot. Rev C rebuild timing: Gage/Atlas.
-- **P1 (Prop43):** rev3 is not in the code yet. Gage to apply it.
+- **P1 (Prop43):** code (04bbed0) is at (−4.858, 0.12, 5.20) yaw −90 on the Rev C 101 wall, not rev3 (−5.16, 0.235, 5.20). See M-02.
 - **P2 (caddy):** the tea set caddy is 0.2 m tall and probably belongs on a rail or table. Confirm its mount height with Rook; the floor spot is checked clear either way.
 - **P3 (#55 notice board):** `ext_notice_board.glb` is an exterior asset. Not placed here.
 - Canal: deferred. Q5 (length) is still open, and Q2 (preface axial slot) is on hold.
