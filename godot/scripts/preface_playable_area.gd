@@ -1233,7 +1233,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 			local_verts.resize(verts.size())
 			for vi2: int in range(verts.size()):
 				local_verts[vi2] = to_cyl * verts[vi2]
-			var tri_count: int = indices.size() // 3
+			var tri_count: int = indices.size() / 3
 			var kept: PackedInt32Array = PackedInt32Array()
 			kept.resize(tri_count * 3)
 			var kept_n: int = 0
