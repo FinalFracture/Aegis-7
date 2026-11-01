@@ -1826,11 +1826,11 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# footprint x 0.80..2.70 inside West Storage, clear of the SeamFix walls at x 0.75 and 8.10; front zone clear of the floor feature near x 2.97 z 8.15
+		# mounted on the west face (x 8.10) of Rook's West Storage SeamFix wall slab, facing -X; the north wall had no 1.9 m clear run between the SeamFix walls and the floor plate.
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(1.75, 0.235, 8.50),
-		"yaw": 180.0,
+		"position": Vector3(7.84, 0.235, 6.00),
+		"yaw": -90.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
 		"toggle": [],
