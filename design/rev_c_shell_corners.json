@@ -6,6 +6,39 @@
  "max_gap_closed_corners_m": 0.0,
  "n_corners": 68,
  "n_fail": 0,
+ "n_closure": 62,
+ "skipped_convex_tips": [
+  [
+   "103",
+   -10.1,
+   -1.0
+  ],
+  [
+   "104",
+   10.1,
+   -1.0
+  ],
+  [
+   "StairCore",
+   -1.9,
+   -0.8
+  ],
+  [
+   "StairCore",
+   1.9,
+   -0.8
+  ],
+  [
+   "203",
+   -10.1,
+   -1.0
+  ],
+  [
+   "204",
+   10.1,
+   -1.0
+  ]
+ ],
  "corners": [
   {
    "room": "101",
@@ -31,6 +64,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -57,6 +91,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -83,6 +118,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -109,6 +145,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -135,6 +172,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -161,6 +199,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -187,6 +226,7 @@
     0.0,
     0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -213,6 +253,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -239,6 +280,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -265,6 +307,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -291,6 +334,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -317,6 +361,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -343,6 +388,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -369,6 +415,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -395,6 +442,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -421,6 +469,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -447,6 +496,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -473,6 +523,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -499,6 +550,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -525,6 +577,7 @@
     0.0,
     0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -551,6 +604,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -577,6 +631,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -603,7 +658,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "103",
@@ -629,6 +685,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -655,6 +712,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -681,6 +739,7 @@
     0.0,
     0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -707,6 +766,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -733,6 +793,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -759,7 +820,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "104",
@@ -785,6 +847,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -811,6 +874,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -837,6 +901,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -863,6 +928,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -889,6 +955,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -915,6 +982,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -941,6 +1009,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -967,6 +1036,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -993,7 +1063,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "StairCore",
@@ -1019,6 +1090,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1045,7 +1117,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "201",
@@ -1071,6 +1144,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1097,6 +1171,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1123,6 +1198,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1149,6 +1225,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1175,6 +1252,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1201,6 +1279,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1227,6 +1306,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1253,6 +1333,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1279,6 +1360,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1305,6 +1387,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1331,6 +1414,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1357,6 +1441,7 @@
     0.0,
     0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1383,6 +1468,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1409,6 +1495,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1435,7 +1522,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "203",
@@ -1461,6 +1549,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1487,6 +1576,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1513,6 +1603,7 @@
     0.0,
     0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1539,6 +1630,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1565,6 +1657,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1591,7 +1684,8 @@
     -0.0,
     -0.0
    ],
-   "status": "PASS"
+   "kind": "convex-tip/open-by-design (exclude from SEAM_AUDIT)",
+   "status": "SKIP"
   },
   {
    "room": "204",
@@ -1617,6 +1711,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1643,6 +1738,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1669,6 +1765,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1695,6 +1792,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1721,6 +1819,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1747,6 +1846,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   },
   {
@@ -1773,6 +1873,7 @@
     -0.0,
     -0.0
    ],
+   "kind": "closure",
    "status": "PASS"
   }
  ]
