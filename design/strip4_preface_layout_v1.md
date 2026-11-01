@@ -61,3 +61,9 @@ Paths, doors, egress: all front zones stay outside the door zones (1A, 1B, 201, 
 - **P2 (caddy):** the tea set caddy is 0.2 m tall and probably belongs on a rail or table. Confirm its mount height with Rook; the floor spot is checked clear either way.
 - **P3 (#55 notice board):** `ext_notice_board.glb` is an exterior asset. Not placed here.
 - Canal: deferred. Q5 (length) is still open, and Q2 (preface axial slot) is on hold.
+
+## Rev 1.1 (Jared via Atlas, 2026-11-01): supersedes L1, C1 and the cubby question
+- **L1: rotate 180°, no mirror.** Local to strip: `x = 100 − X`, `z = 36 − Z` (yaw on strip = local yaw + 180°). Interiors keep their handedness. The building footprint is unchanged at x 86..114, z 27..45, and the main door stays at (100, 45) facing the plaza.
+- **C1: the memorial moves; both Spin Walks stay put** (W x 77..83, E x 117..123). The rotated old nook (x 78.4..82.6) would sit inside Spin Walk W, so the new spot is on the plaza west of the door: **x 87.0..91.2, z 46.5..49.6** (4.2 × 3.1 m, the same nook size), with the monument facing +z toward the station forecourt. That leaves 4.0 m clear to Spin Walk W, 8.8 m to the door axis and 1.5 m to the building face, and it's clear of the station towers (z ≥ 54.3). Vance proposal on the facing; the bench sits on its south side as in v1.3.
+- **Cubbies (#13):** these wait for the Rev C rebuild.
+- The interior prop table (sector-local) is unchanged.
