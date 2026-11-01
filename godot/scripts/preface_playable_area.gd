@@ -1802,10 +1802,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# bare north-wall segment x -4.90..-3.70 (z 8.76), clear of #38 (x -3.48) and the corner chamfer; moved off the wood-topped counter block in Side_Room_East_Lounge
+		# footprint x -4.70..-3.50, east of the lounge SeamFix wall at -4.75, west of #38 at -3.48
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
-		"position": Vector3(-4.30, 0.235, 8.55),
+		"position": Vector3(-4.10, 0.235, 8.55),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FLIP SEAT",
@@ -1826,10 +1826,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# footprint x 7.38..9.28, east of the 15 mm floor plate x<=7.25 z 7.55..8.15 that sat in its front zone
+		# footprint x 1.00..2.90 inside West Storage, clear of the SeamFix walls at x 0.75 and 8.10
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(8.33, 0.235, 8.50),
+		"position": Vector3(1.95, 0.235, 8.50),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
