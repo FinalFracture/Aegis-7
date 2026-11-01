@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SUPERSEDED 2026-11-01 by preface_sector_rev_c_generator.py (rev C rebuild removed every node this patch targeted). Kept for history; do not run.
 """Rook (2026-10-31): SEAM-01 / SEAM-02 wall-closure patch for godot/assets/models/preface_residential_sector.glb.
 Patch's ray audit (context/playtest_bug_report.md, pass_playthrough_ee61cb6) found:
   SEAM-01  L1 side rooms had NO side walls: Side_Room_East_Lounge (x -12.25 / -4.75) and Side_Room_West_Storage

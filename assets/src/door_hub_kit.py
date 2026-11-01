@@ -151,7 +151,7 @@ class Hub:
         px = cx + w / 2 - 0.009
         self.box("TalkPad", "graph", (0.010, 0.030, 0.002), (px, cy, z + 0.0005))
         for (sw, sh, ox, oy) in ((0.014, 0.002, 0, 0.017), (0.014, 0.002, 0, -0.017), (0.002, 0.034, 0.007, 0), (0.002, 0.034, -0.007, 0)):
-            self.box("IntercomRing", "cyan", (sw, sh, 0.001), (px + ox, cy + oy, z + 0.001))
+            self.box("IntercomRing", "cyan", (sw, sh, 0.003), (px + ox, cy + oy, z + 0.002))  # M-39: front 2 mm proud of TalkPad (no coplanar faces)
 
     def override(self, cx, cy, scale=1.0, z=-0.004):
         """#D95B26 manual field-drop lever behind a hinged smoked cover (hinge at top)."""
@@ -514,10 +514,10 @@ def bulkhead_final():
     h.box("DockPad", "graph", (0.90, 0.012, 0.90), (cx, 0.006, cz), 0.004)
     for k in range(24):
         a = k * math.pi / 12
-        h.box("DockPad_InductionRing", "glow", (0.06, 0.001, 0.016), (cx + math.cos(a) * 0.28, 0.0125, cz + math.sin(a) * 0.28), rz=0)
+        h.box("DockPad_InductionRing", "glow", (0.06, 0.0025, 0.016), (cx + math.cos(a) * 0.28, 0.01225, cz + math.sin(a) * 0.28), rz=0)  # M-21: y 0.0110..0.0135
     for k in range(3):   # guide chevrons pointing back toward the wall (reverse-in)
         for sx in (-1, 1):
-            h.box("DockPad_Chevrons", "pearl", (0.012, 0.001, 0.12), (cx + sx * 0.04, 0.0125, cz + 0.36 - k * 0.07 + 0.0), rz=0)
+            h.box("DockPad_Chevrons", "pearl", (0.012, 0.006, 0.12), (cx + sx * 0.04, 0.0125, cz + 0.36 - k * 0.07 + 0.0), rz=0)  # M-21: y 0.0095..0.0155, faces >=1 mm from ring/pad
     # rotate chevron arms (+/-40 deg about Y) in place
     geoms = h.parts["DockPad_Chevrons"][1]
     for i, (p, n, u, ix) in enumerate(geoms):
