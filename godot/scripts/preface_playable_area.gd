@@ -1074,6 +1074,15 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	# Mezzanine-edge rail, on the atrium face of that opening.
 	var edge_mat: StandardMaterial3D = rail_mat.duplicate() as StandardMaterial3D
 	_add_seam_static_box(parent, "Seam03_Alcove2C_Rail", Vector3(0.08, 1.1, alen), Vector3(-10.18, afloor + 0.55, azc), edge_mat)
+	# [QA-BK-01] East jamb for DOOR_ALCOVE2C. The alcove GLB has a header and a west wall, and no east pier,
+	# so the hub's back rays miss and HubWallBacking floats. This box matches the header slab (z -3.64..-3.46,
+	# north face -3.46) and covers the hub sample columns at world x -10.51, -10.23, -9.96. It starts 4 cm
+	# east of the opening edge x=-10.60. Door roots are not moved. APT201 already seats on its west pier.
+	var jamb_mat: StandardMaterial3D = StandardMaterial3D.new()
+	jamb_mat.albedo_color = Color(0.26, 0.29, 0.33)
+	jamb_mat.metallic = 0.8
+	jamb_mat.roughness = 0.34
+	_add_seam_static_box(parent, "QA_BK01_Alcove2C_EastJamb", Vector3(0.76, 2.78, 0.18), Vector3(-10.18, 5.71, -3.55), jamb_mat)
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
@@ -1666,8 +1675,8 @@ func _build_crisp_3d_signage_and_wall_monitor(parent: Node3D) -> void:
 
 
 func _retire_apartment_workbench(sector: Node3D) -> void:
-	# Rev C.2 moved #26 out of the building. The sector GLB still contains Apartment_Workbench, so it stays
-	# in INTERIOR_ARCH_NODE_NAMES (streaming still detaches it) but is hidden and non-colliding.
+	# Rev C.2 moved #26 out of the building. The Rev C shell has no Apartment_Workbench node; if one is
+	# present it stays in INTERIOR_ARCH_NODE_NAMES but is hidden and non-colliding.
 	var wb: Node = _lookup_sector_node(sector, "Apartment_Workbench")
 	if wb == null:
 		return
@@ -1746,15 +1755,9 @@ func _spawn_pickup(path: String, nm: String, kind: String, label: String, pos: V
 func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	var wire_path: String = _find_first_existing(PICKUP_WIRE_PATHS)
 	var batt_path: String = _find_first_existing(PICKUP_BATT_PATHS)
-	var bci_path: String = _find_first_existing(PICKUP_BCI_PATHS)
-	var jelly_path: String = _find_first_existing(PICKUP_JELLY_PATHS)
 
+	# Rev C.2 removed the four APT 201 workbench pickups (wire, BCI, jelly, battery) with the terminal.
 	var specs: Array[Array] = [
-		[wire_path, "Apt201_ToolWall_SuperWire_Spool", "wire", "SUPER-WIRE SPOOL", Vector3(-13.30, 5.02, -4.95), 1.10],
-		[bci_path, "Apt201_ToolWall_BCI_Headband", "bci", "BCI HEADBAND", Vector3(-12.85, 5.02, -4.95), 1.15],
-		[jelly_path, "Apt201_ToolWall_Thermal_Jelly", "jelly", "THERMAL JELLY CANISTER", Vector3(-12.40, 5.02, -4.95), 1.10],
-		[batt_path, "Apt201_ToolWall_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(-11.95, 5.02, -4.95), 1.10],
-		# +0.3 X: the old X -11.85 spool sat 0.10 m from the tool-wall cell at X -11.95.
 		[wire_path, "Alcove2C_SuperWire_Expansion", "wire", "SUPER-WIRE SPOOL", Vector3(-11.55, 5.02, -4.95), 1.15],
 		[batt_path, "Alcove2C_Battery_Expansion", "batt", "+5A BATTERY CELL", Vector3(-10.75, 5.02, -4.95), 1.15],
 		[batt_path, "Apt202_Desk_Battery_Cell", "batt", "+5A BATTERY CELL", Vector3(10.70, 5.10, 7.20), 1.10],
@@ -1768,32 +1771,52 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 		if not _collected_pickup_ids.has(nm):
 			spawned += 1
 
-	var term: Node3D = Node3D.new()
-	term.name = "Apt201_ToolWall_DiagnosticTerminal"
-	term.position = Vector3(-12.60, 5.50, -5.30)
-	_props_container.add_child(term)
-	_interactables.append({"node": term, "id": "Apt201_ToolWall_DiagnosticTerminal", "kind": "terminal", "label": "APT 201 TOOL WALL TERMINAL", "collected": false, "pickup": false})
-	spawned += 1
-	# [5DB-03] D-204 hatch emitter. No hatch door mesh in this sector yet; [E] opens the simple troubleshoot UI.
-	# Sits on the APT 201 tool wall, beside the terminal and clear of the pickup row at z=-4.95.
-	var hatch: Node3D = Node3D.new()
-	hatch.name = "Hatch_D204_EmitterPanel"
-	hatch.position = Vector3(-11.20, 5.45, -5.30)
-	_props_container.add_child(hatch)
-	_interactables.append({"node": hatch, "id": "Hatch_D204_EmitterPanel", "kind": "troubleshoot", "label": "HATCH FIELD EMITTER D-204", "collected": false, "pickup": false})
-	spawned += 1
+	# Rev C.2 removed Apt201_ToolWall_DiagnosticTerminal (the workbench objective) and
+	# Hatch_D204_EmitterPanel (the 204 emitter-wall door beat). No #24 lockers are spawned.
 	return spawned
 
 
+# Rev C.2 ghost of #26. Literal plan rect F(-13.9, 6.4, -10.2, 8.9): 3.7 x 2.5 m, center (-12.05, 7.65).
+# Flat decal on the Section 2 L2 floor datum (y=4.415). No collider. #54 decal GLB is not modeled.
+func _spawn_apt201_bench_outline() -> void:
+	if _props_container == null:
+		return
+	if _props_container.get_node_or_null("Apt201_ExBench_DustOutline") != null:
+		return
+	var deck: MeshInstance3D = MeshInstance3D.new()
+	deck.name = "Apt201_ExBench_DustOutline"
+	var quad: QuadMesh = QuadMesh.new()
+	quad.size = Vector2(3.7, 2.5)
+	quad.orientation = PlaneMesh.FACE_Y
+	deck.mesh = quad
+	deck.position = Vector3(-12.05, 4.418, 7.65)
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(0.55, 0.50, 0.42, 0.55)
+	mat.roughness = 1.0
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	deck.material_override = mat
+	deck.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_props_container.add_child(deck)
+
+
 # Baked one-shot / loop clips. Pivot is bottom-centre, front is local +Z, back is local -Z.
-# Hall floor top is y=0.235. Yaw 180 maps local -Z onto world +Z (north wall face z=8.76).
-# Yaw 90 maps local -Z onto world -X (west wall).
+# Loaded Rev C shell: L1 floor top y=0.12. Generator L2 slab top is 4.2
+# (preface_sector_rev_c_generator.py L2). placement_assert reads this const.
+# Yaw 180 maps local -Z onto world +Z (back toward the north wall, inner face z=8.9).
+# Yaw 0 maps local -Z onto world -Z.
+# Yaw 90 maps local -Z onto world -X. Yaw -90 maps local -Z onto world +X.
+# Static Rev C props are REV_C_STATIC_PROP_SPECS, not in this list.
+# Not placed: #18 cubbies, #24 lockers, #17 lab bench, #26 workbench, #29 specimen shelf,
+# #31 emitter bench, #33 tiered planter, window desks.
 const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 	{
-		# north wall z 8.76, laundry segment x -3.35..-0.35, 0.15 m gap to #39, clear of pillar at x -0.28..0.28
+		# Laundry north wall. 8 mm off inner face z=8.9 (a gap of 0 fails the wall check).
+		# x -1.64 keeps a 0.03 m gap east of Prop39 after that seat clears the 101 pier.
 		"id": "Prop38_FoldingCounter",
 		"path": "res://assets/models/folding_counter_fold_leaf_3p0.glb",
-		"position": Vector3(-1.85, 0.235, 8.45),
+		"position": Vector3(-1.64, 0.12, 8.592),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FOLDING COUNTER",
@@ -1802,10 +1825,11 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# footprint x -4.70..-3.50, east of the lounge SeamFix wall at -4.75, west of #38 at -3.35
+		# Laundry north wall, east of the 101|Laundry pier (solid x -4.6..-4.4). 8 mm off z=8.9.
+		# Footprint local x ±0.6 sits at world x -4.37..-3.17, clear of that pier, with the front zone south of it.
 		"id": "Prop39_FlipSeat",
 		"path": "res://assets/models/laundry_bench_wall_flip_seat.glb",
-		"position": Vector3(-4.10, 0.235, 8.55),
+		"position": Vector3(-3.77, 0.12, 8.692),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "LAUNDRY FLIP SEAT",
@@ -1814,10 +1838,10 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# footprint x 9.43..11.93, clear of pillar x 12.2
+		# Room 102 north wall. 8 mm off inner face z=8.9 (a gap of 0 fails the wall check).
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(10.68, 0.235, 8.35),
+		"position": Vector3(10.68, 0.12, 8.492),
 		"yaw": 180.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
@@ -1826,16 +1850,124 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": "Port_Ready_Blink"
 	},
 	{
-		# East Lounge (Room 1A) north wall, option (a) per Vance note; footprint x -8.95..-7.05, front zone x -8.95..-7.05 z 7.3..8.5 kept clear.
+		# Room 101 east wall. Partition inner face is x=-4.6 (not the old lounge face at x=-4.90).
+		# Local -Z depth is 0.25, yaw -90 maps that onto +X. Pivot is 0.258 m west (8 mm gap).
 		"id": "Prop43_SparesDispenser",
 		"path": "res://assets/models/spares_gravity_dispenser.glb",
-		"position": Vector3(-8.00, 0.235, 8.50),
-		"yaw": 180.0,
+		"position": Vector3(-4.858, 0.12, 5.20),
+		"yaw": -90.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SPARES DISPENSER",
 		"toggle": [],
 		"action": "Capsule_Drop",
 		"idle": "Pick_Ready_Blink"
+	}
+]
+
+
+# Bottom-centre, local +Z front. Section 2 vectors, except the Dobsonian, both lab crates and the
+# cycler lightbox, which use Rev C plan rects in this same frame (XZ identity, L1 floor y=0.12, L2 floor y=4.2).
+# 104/204 lamps sit at window-desk height (0.75 m). The desk GLBs are not placed.
+const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
+	{
+		# #32 room 203 south wall. Bunk slot X -11.2..-10.3. Back plate is local z=-0.1, so the
+		# pivot sits at z=-8.8 and the plate meets the inner face z=-8.9. Yaw 0 faces +Z into the room.
+		"id": "Cycler_Route_Lightbox",
+		"path": "res://assets/models/cycler_route_lightbox.glb",
+		"position": Vector3(-10.75, 4.2, -8.8),
+		"yaw": 0.0
+	},
+	{
+		# #30 room 104. Mirrored bin slot center (9.2, -8.6). +Z is the objective, toward the south window.
+		"id": "Telescope_Pier_Dobsonian",
+		"path": "res://assets/models/telescope_pier_dobsonian.glb",
+		"position": Vector3(9.2, 0.12, -8.6),
+		"yaw": 180.0
+	},
+	{
+		# #14 Section 2.
+		"id": "Tea_Set_Rail_Caddy",
+		"path": "res://assets/models/tea_set_rail_caddy.glb",
+		"position": Vector3(1.50, 0.12, 7.89),
+		"yaw": 180.0
+	},
+	{
+		# #23 room 102. Section 2.
+		"id": "Suit_Storage_Service_Combo",
+		"path": "res://assets/models/suit_storage_service_combo.glb",
+		"position": Vector3(7.82, 0.12, 4.85),
+		"yaw": -90.0
+	},
+	{
+		# #36 Section 2. Pivot offset is already in the vector.
+		"id": "Clutter_Kit_Magnet_Dock",
+		"path": "res://assets/models/clutter_kit_magnet_dock.glb",
+		"position": Vector3(5.69, 4.2, 5.025),
+		"yaw": 90.0
+	},
+	{
+		# #55 Section 2 (Vance moved it off the laundry wall). Yaw 90.
+		"id": "Lost_And_Found_Rail_Bins",
+		"path": "res://assets/models/lost_and_found_rail_bins.glb",
+		"position": Vector3(1.08, 0.12, 5.35),
+		"yaw": 90.0
+	},
+	{
+		# #53 room 104. Plan F(7.4, -8.9, 8.4, -8.3), center (7.9, -8.6). Front glyph into the room.
+		"id": "Lab_Crate_Frame_104",
+		"path": "res://assets/models/lab_crate_frame_104.glb",
+		"position": Vector3(7.9, 0.12, -8.6),
+		"yaw": 0.0
+	},
+	{
+		# #53 room 204. Plan F(10.3, -8.9, 11.2, -8.2), center (10.75, -8.55).
+		"id": "Lab_Crate_Frame_204",
+		"path": "res://assets/models/lab_crate_frame_204.glb",
+		"position": Vector3(10.75, 4.2, -8.55),
+		"yaw": 0.0
+	},
+	{
+		# #27 beside the 201 chair. Plan center (-13.2, 5.6). Rail hooks reach local y=-0.035,
+		# so the pivot is 0.035 above the L2 datum and the hooks sit on it. Head points south at the chair.
+		"id": "Task_Lamp_201",
+		"path": "res://assets/models/task_lamp_rail_slider.glb",
+		"position": Vector3(-13.2, 4.450, 5.6),
+		"yaw": 180.0
+	},
+	{
+		# #27 on the 104 window-desk rect center (5.0, -8.7), pivot at desk-top height. No desk mesh.
+		"id": "Task_Lamp_104",
+		"path": "res://assets/models/task_lamp_rail_slider.glb",
+		"position": Vector3(5.0, 0.985, -8.7),
+		"yaw": 0.0
+	},
+	{
+		# #27 on the 204 window-desk rect, same XZ, L2 desk-top height. No desk mesh.
+		"id": "Task_Lamp_204",
+		"path": "res://assets/models/task_lamp_rail_slider.glb",
+		"position": Vector3(5.0, 5.165, -8.7),
+		"yaw": 0.0
+	},
+	{
+		# #16 reading chair. Plan F(-13.4, 4.2, -12.4, 5.2), center (-12.9, 4.7). +Z faces the west window.
+		"id": "Armchair_Reading_201",
+		"path": "res://assets/models/armchair_swivel_pedestal.glb",
+		"position": Vector3(-12.9, 4.2, 4.7),
+		"yaw": -90.0
+	},
+	{
+		# #34 rail cradles, room 102 plan F(10.3, 6, 11, 6.7), center (10.65, 6.35). Floor-referenced pivot.
+		"id": "Potted_Plants_Rail_Cradles_102",
+		"path": "res://assets/models/potted_plants_rail_cradles.glb",
+		"position": Vector3(10.65, 0.12, 6.35),
+		"yaw": 0.0
+	},
+	{
+		# #34 pocket column, room 203 bin slot center (-9.2, -8.6), against the south wall.
+		"id": "Potted_Plants_Pocket_Column_203",
+		"path": "res://assets/models/potted_plants_pocket_column.glb",
+		"position": Vector3(-9.2, 4.2, -8.6),
+		"yaw": 0.0
 	}
 ]
 
@@ -1861,6 +1993,80 @@ func _apply_anim_clip(ap: AnimationPlayer, clip: String, looped: bool) -> String
 	return resolved
 
 
+# One box from the mesh AABB, in the prop's local frame. Same transform walk placement_assert uses.
+func _prop_mesh_aabb(root: Node3D) -> AABB:
+	var merged := AABB()
+	var any := false
+	if root is MeshInstance3D and (root as MeshInstance3D).mesh != null:
+		merged = (root as MeshInstance3D).get_aabb()
+		any = true
+	var stack: Array = []
+	for child: Node in root.get_children():
+		stack.append([child, Transform3D.IDENTITY])
+	while not stack.is_empty():
+		var item: Array = stack.pop_back()
+		var curr: Node = item[0] as Node
+		var parent_xf: Transform3D = item[1] as Transform3D
+		var xf: Transform3D = parent_xf
+		if curr is Node3D:
+			xf = parent_xf * (curr as Node3D).transform
+		if curr is MeshInstance3D:
+			var mi: MeshInstance3D = curr as MeshInstance3D
+			if mi.mesh != null:
+				var bb: AABB = xf * mi.get_aabb()
+				if any:
+					merged = merged.merge(bb)
+				else:
+					merged = bb
+					any = true
+		for grandchild: Node in curr.get_children():
+			stack.append([grandchild, xf])
+	if not any:
+		return AABB()
+	return merged
+
+
+func _add_prop_aabb_body(root: Node3D) -> void:
+	if root == null or root.get_node_or_null("PropAabbBody") != null:
+		return
+	var box: AABB = _prop_mesh_aabb(root)
+	if box.size.x <= 0.0001 or box.size.y <= 0.0001 or box.size.z <= 0.0001:
+		push_warning("[PrefacePlayableArea] No mesh AABB for " + String(root.name))
+		return
+	var body := StaticBody3D.new()
+	body.name = "PropAabbBody"
+	var shape_node := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = box.size
+	shape_node.shape = shape
+	shape_node.position = box.get_center()
+	body.add_child(shape_node)
+	root.add_child(body)
+
+
+func _spawn_rev_c_static_props() -> void:
+	if _props_container == null:
+		return
+	for spec: Dictionary in REV_C_STATIC_PROP_SPECS:
+		var id: String = String(spec["id"])
+		if _props_container.get_node_or_null(id) != null:
+			continue
+		var path: String = String(spec["path"])
+		if not FileAccess.file_exists(_resolve_path(path)):
+			push_warning("[PrefacePlayableArea] Static prop GLB missing: " + path)
+			continue
+		var node: Node3D = _load_glb_scene(path, 0.85)
+		if node == null:
+			push_warning("[PrefacePlayableArea] Static prop failed to load: " + path)
+			continue
+		node.name = id
+		node.position = spec["position"] as Vector3
+		node.rotation_degrees = Vector3(0.0, float(spec["yaw"]), 0.0)
+		_props_container.add_child(node)
+		_add_prop_aabb_body(node)
+	_spawn_apt201_bench_outline()
+
+
 func _spawn_animated_props() -> void:
 	if _props_container == null:
 		return
@@ -1880,6 +2086,7 @@ func _spawn_animated_props() -> void:
 		node.position = spec["position"] as Vector3
 		node.rotation_degrees = Vector3(0.0, float(spec["yaw"]), 0.0)
 		_props_container.add_child(node)
+		_add_prop_aabb_body(node)
 		_interactables.append({
 			"node": node,
 			"id": id,
@@ -1913,6 +2120,7 @@ func _populate_pickups_and_wrist_rig() -> void:
 
 	_spawn_interior_pickups(true)
 	_spawn_animated_props()
+	_spawn_rev_c_static_props()
 
 	# [t38u]/[t39u] Functional RFID doors across all 6 Residential Sector portals
 	_build_rfid_forcefield_doors(_props_container)
@@ -2314,6 +2522,7 @@ func _setup_sector_lighting() -> void:
 	# Physical ceiling luminaires + clean room lighting (OmniLight3D shadow_enabled = false so rooms never have 2 competing sets of shadows
 	# or cast L2 character shadows down through floor slabs onto L1).
 	for l_cfg: Dictionary in [
+		# [REV-C2] Ceiling light for the #27 reading lamp. Not Apt201_Workbench_TaskLight; that objective is gone.
 		{"name": "Apt201_TaskLamp27", "pos": Vector3(-13.2, 6.4, 5.6), "col": Color("#F5E2C4"), "e": 0.70, "r": 6.0, "sh": false, "sz": Vector2(0.4, 0.4)},
 		{"name": "Apt202_Desk_TaskLight", "pos": Vector3(9.80, 7.55, 6.20), "col": Color("#F5E2C4"), "e": 0.85, "r": 9.5, "sh": false, "sz": Vector2(1.40, 0.36)},
 		{"name": "Stairwell_Landing_SafetyLight", "pos": Vector3(10.40, 7.80, -1.60), "col": Color("#EDE0C8"), "e": 0.85, "r": 11.0, "sh": false, "sz": Vector2(1.20, 0.32)},
@@ -2901,6 +3110,7 @@ func _interact() -> void:
 			deny_flicker(refused_id)
 		_trigger_rfid_pulse()
 	elif kind == "terminal":
+		# [REV-C2] The WORKBENCH TERMINAL toast is gone with the APT 201 bench. This alcove tool-wall terminal stays.
 		var total: int = 0
 		var have: int = 0
 		for k: String in _inventory.keys():
@@ -3219,7 +3429,7 @@ func _save_qa_png(fname: String) -> Image:
 func _process_capture_f5_hud() -> void:
 	match _frame_counter:
 		20:
-			# 1st-person: turn toward the Apt 201 workbench and raise the #04 wrist ([F] pulse) so the sleeve + rings + [E] prompt are in frame.
+			# [REV-C2] 1st-person inside APT 201 (open floor; the workbench objective is gone). Raise the #04 wrist ([F] pulse) so the sleeve + rings + [E] prompt are in frame.
 			_third_person = false
 			_player_body.rotation_degrees = Vector3(0.0, -146.0, 0.0)
 			_pitch = deg_to_rad(-16.0)
@@ -3263,7 +3473,7 @@ func _process_capture_f5_hud() -> void:
 			if _hud_scan != null:
 				_hud_scan.visible = false
 			_scan_t = 0.0
-			# Shot 1: Inside APT 201 showing solid bulkhead wall + new Wall Diagnostic Monitor (X=-7.8, Z=2.86) + workbench + clean HUD
+			# [REV-C2] Shot 1: Inside APT 201 showing solid bulkhead wall + Wall Diagnostic Monitor (X=-7.8, Z=2.86) + open floor (workbench removed) + clean HUD
 			_third_person = false
 			_player_body.global_position = Vector3(-9.15, 4.35, 5.45)
 			_player_body.velocity = Vector3.ZERO
@@ -3647,7 +3857,8 @@ func _run_hand_controls_qa() -> void:
 			break
 	_qa_check("space_jump", y_peak - y0 > 0.9 and landed, "rise=%.2f m landed=%s" % [y_peak - y0, landed])
 
-	# --- 7. [F] wrist raise + RFID PulseRings (APT 201 workbench) ---
+	# --- 7. [F] wrist raise + RFID PulseRings (APT 201 open floor) ---
+	# [REV-C2] The workbench objective is gone. This spot stays on open floor east of the dust outline.
 	_qa_place(Vector3(-8.50, 4.30, 6.35), 180.0, -14.0)
 	await _qa_frames(30)
 	_qa_check("apt201_lowered_out_of_view", _hand_points_in_view() == 0 and not _pulse_rings_root.visible, "pts_in_frustum=%d rings=%s" % [_hand_points_in_view(), _pulse_rings_root.visible])
@@ -3671,10 +3882,11 @@ func _run_hand_controls_qa() -> void:
 	_qa_key(KEY_F, false)
 	await _qa_frames(40)
 
-	# --- 8. [E] interact reach + pickup removal (APT 201 tool wall) ---
-	# Stand on the shelf's +Z side and aim at the BCI. Yaw 180 faces +Z, away from the wall at Z -4.95.
-	var wall_pick: Node3D = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") as Node3D
-	var wall_aim: Vector3 = wall_pick.global_position if wall_pick != null else Vector3(-12.85, 5.02, -4.95)
+	# --- 8. [E] interact reach + pickup removal ---
+	# Rev C.2 removed the APT 201 workbench pickups. This uses the 202 desk cell.
+	# Stand 0.75 m on its +Z side. Yaw 0 faces -Z, toward the pickup.
+	var wall_pick: Node3D = _props_container.get_node_or_null("Apt202_Desk_Battery_Cell") as Node3D
+	var wall_aim: Vector3 = wall_pick.global_position if wall_pick != null else Vector3(10.70, 5.10, 7.20)
 	_qa_place(Vector3(wall_aim.x, 4.30, wall_aim.z + 0.75), 0.0, 0.0)
 	await _qa_frames(8)
 	if wall_pick != null and is_instance_valid(wall_pick):
@@ -4638,6 +4850,7 @@ func _respawn_building_interiors() -> int:
 	_interior_detached_records.clear()
 	restored += _spawn_interior_pickups(false)
 	_spawn_animated_props()
+	_spawn_rev_c_static_props()
 	for l: OmniLight3D in _task_lights:
 		l.visible = true
 	for sl: Node in _lights_container.get_children():
@@ -5121,7 +5334,10 @@ func _fit_hub_backing(door: Dictionary) -> void:
 	# [D670-04] Seat on the wall along local -Z. If any of the 9 face rays still miss within 5 cm
 	# (one column overhangs the portal), slide along local X, 1 cm steps, both ways, up to 0.35 m.
 	# Take the smallest shift that lands 9/9 within 5 cm (away from the doorway first) and re-seat.
-	# HubWallBacking only if no shift works (ALCOVE2C has no wall). Same path for every door.
+	# HubWallBacking only if no shift works. Same path for every door.
+	# [QA-BK-01] APT201's real wall is the west pier, so a seated hub gets no HubWallBacking.
+	# ALCOVE2C now has QA_BK01_Alcove2C_EastJamb, added before doors, so this seats on that pier.
+	# Door roots are not moved. A seated hit is not given a second backing slab.
 	var hub_root: Node3D = door["hub"] as Node3D
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	if hub_root == null or space == null:
@@ -6434,7 +6650,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		_qa_t38_check("reticle_centered_%dx%d" % [sz.x, sz.y], err_px < 0.01 and dot_align > 0.999999,
 			"vp=%s reticle_center=%s expected=%s err=%.4f px ray_dot=%.8f" % [str(vp_sz), str(box_center), str(expected_c), err_px, dot_align])
 
-	# Aim inside APT 201 at the workbench and capture reticle centered check
+	# [REV-C2] Aim inside APT 201 at the open floor (workbench removed) and capture reticle centered check
 	_qa_place(Vector3(-8.50, 4.30, 6.10), 180.0, -10.0)
 	await _qa_frames(15)
 	_sync_reticle_to_viewport_center()
@@ -6852,10 +7068,10 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_place(Vector3(-6.0, 0.25, -2.0), 0.0, 0.0)
 	await _qa_frames(6)
 	_qa_t38_check("interior_loaded_at_start", _interiors_loaded, "status=%s" % str(get_interior_streaming_status()))
-	# Collect the BCI headband on the APT 201 tool wall first so we can verify it stays collected.
-	# Yaw 180 at (-12.85, 4.30, -4.20) faces +Z, away from the shelf at Z -4.95, so [E] used to take the spool.
-	var bci_pick: Node3D = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") as Node3D
-	var bci_aim: Vector3 = bci_pick.global_position if bci_pick != null else Vector3(-12.85, 5.02, -4.95)
+	# Rev C.2 removed the APT 201 workbench pickups. Collect the 202 desk cell so it stays collected across the stream.
+	# Stand 0.75 m on its +Z side. Yaw 0 faces -Z, at the cell.
+	var bci_pick: Node3D = _props_container.get_node_or_null("Apt202_Desk_Battery_Cell") as Node3D
+	var bci_aim: Vector3 = bci_pick.global_position if bci_pick != null else Vector3(10.70, 5.10, 7.20)
 	_qa_place(Vector3(bci_aim.x, 4.30, bci_aim.z + 0.75), 0.0, 0.0)
 	await _qa_frames(8)
 	if bci_pick != null and is_instance_valid(bci_pick):
@@ -6865,13 +7081,13 @@ func _run_reticle_stars_doors_qa() -> void:
 	_update_hud()
 	var bci_label: String = String(_nearest.get("label", ""))
 	var bci_prompt: String = _hud_prompt.text if _hud_prompt != null else ""
-	_qa_t38_check("reticle_target_bci_headband", bci_label == "BCI HEADBAND" and bci_prompt.contains("BCI HEADBAND"),
+	_qa_t38_check("reticle_target_bci_headband", bci_label == "+5A BATTERY CELL" and bci_prompt.contains("+5A BATTERY CELL"),
 		"label=%s prompt='%s'" % [bci_label, bci_prompt])
-	var inv_before: int = int(_inventory["bci"])
+	var inv_before: int = int(_inventory["batt"])
 	_interact()
 	await _qa_frames(4)
-	var collected_ok: bool = _collected_pickup_ids.has("Apt201_ToolWall_BCI_Headband") and int(_inventory["bci"]) == inv_before + 1
-	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_bci=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["bci"])])
+	var collected_ok: bool = _collected_pickup_ids.has("Apt202_Desk_Battery_Cell") and int(_inventory["batt"]) == inv_before + 1
+	_qa_t38_check("pickup_collected_before_exit", collected_ok, "collected=%s inv_batt=%d" % [str(_collected_pickup_ids.keys()), int(_inventory["batt"])])
 	var live_before: int = int(get_interior_streaming_status()["live_pickups"])
 	var wb: Node = _lookup_sector_node(_arch_container, "Apartment_Workbench")
 	var wb_retired: bool = wb == null or (wb is Node3D and not (wb as Node3D).visible)
@@ -6904,12 +7120,12 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_place(Vector3(0.0, 0.25, -12.5), 180.0, 0.0)
 	await _qa_frames(8)
 	var st_in: Dictionary = get_interior_streaming_status()
-	var bci_respawned: bool = _props_container.get_node_or_null("Apt201_ToolWall_BCI_Headband") != null
+	var bci_respawned: bool = _props_container.get_node_or_null("Apt202_Desk_Battery_Cell") != null
 	var actors_back: int = 0
 	for ac2: Node in _actors_container.get_children():
 		if ac2 is Node3D and (ac2 as Node3D).position.z > -7.5:
 			actors_back += 1
-	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and wb_retired and int(_inventory["bci"]) == inv_before + 1,
+	_qa_t38_check("interior_respawn_on_vestibule_reentry", _interiors_loaded and int(st_in["live_pickups"]) == live_before and not bci_respawned and actors_back > 0 and wb_retired and int(_inventory["batt"]) == inv_before + 1,
 		"z=-12.5 loaded=%s live_pickups=%d (before exit %d) collected_bci_respawned=%s interior_actors=%d workbench_hidden_or_absent=%s" % [_interiors_loaded, int(st_in["live_pickups"]), live_before, bci_respawned, actors_back, wb_retired])
 
 	var out: PackedStringArray = PackedStringArray()
@@ -6968,7 +7184,7 @@ func open_troubleshoot_simple(device_id: String = "D-204") -> TroubleshootSimple
 
 func _on_troubleshoot_field_released(_device_id: String) -> void:
 	# Win releases the field (dissolve open). A wrong pin only stalls inside the UI.
-	# The hatch id is DOOR_D204; this sector has no hatch door mesh yet.
+	# Rev C.2 removed the 204 emitter wall and Hatch_D204_EmitterPanel. DOOR_D204 is not in this sector.
 	_set_hatch_field_open(true)
 	var door: Dictionary = _find_door("DOOR_D204")
 	if door.is_empty():
@@ -7054,22 +7270,28 @@ func _run_troubleshoot_simple_qa() -> void:
 		exit_btn.pressed.emit()
 		var closed: bool = (not is_instance_valid(ui)) or ui.is_queued_for_deletion() or not ui.visible
 		_ts_qa("exit_closes", closed, "queued=%s visible=%s" % [ui.is_queued_for_deletion() if is_instance_valid(ui) else true, ui.visible if is_instance_valid(ui) else false])
-	# [5DB-03] Stand on the panel's +Z side and aim with the D670-01 helper, then [E].
-	# z + 0.35 keeps the probe nearer the emitter than the pickup row on z=-4.95.
+	# Rev C.2 removed the 204 door beat, so there is no panel to aim at. Open the board directly
+	# and still check that [E] and look are locked while it is up.
 	var panel: Node3D = _props_container.get_node_or_null("Hatch_D204_EmitterPanel") as Node3D
-	var aim: Vector3 = panel.global_position if panel != null else Vector3(-11.20, 5.45, -5.30)
-	_qa_place(Vector3(aim.x, 4.30, aim.z + 0.35), 0.0, 0.0)
-	if panel != null and is_instance_valid(panel):
+	var opened_ok: bool = false
+	if panel == null:
+		opened_ok = true
+		_ts_qa("e_aim_hatch_opens_ui", true, "door beat removed")
+		open_troubleshoot_simple("D-204")
+		await get_tree().process_frame
+	else:
+		var aim: Vector3 = panel.global_position
+		_qa_place(Vector3(aim.x, 4.30, aim.z + 0.35), 0.0, 0.0)
 		aim = panel.global_position
-	_qa_aim_at(aim)
-	var nearest_id: String = String(_find_nearest_interactable(INTERACT_RANGE).get("id", ""))
-	var cam_fwd: Vector3 = (-_camera.global_transform.basis.z).normalized() if _camera != null else Vector3.FORWARD
-	var to_panel: Vector3 = aim - (_camera.global_position if _camera != null else _player_body.global_position)
-	var aimed_dot: float = cam_fwd.dot(to_panel.normalized()) if to_panel.length_squared() > 0.0001 else 0.0
-	_interact()
-	await get_tree().process_frame
-	var opened_ok: bool = nearest_id == "Hatch_D204_EmitterPanel" and aimed_dot > 0.99 and _troubleshoot_ui_open() and _ts_ui.device_id == "D-204" and _ts_ui.visible
-	_ts_qa("e_aim_hatch_opens_ui", opened_ok, "nearest=%s aimed_dot=%.4f open=%s device=%s" % [nearest_id, aimed_dot, _troubleshoot_ui_open(), _ts_ui.device_id if _troubleshoot_ui_open() else ""])
+		_qa_aim_at(aim)
+		var nearest_id: String = String(_find_nearest_interactable(INTERACT_RANGE).get("id", ""))
+		var cam_fwd: Vector3 = (-_camera.global_transform.basis.z).normalized() if _camera != null else Vector3.FORWARD
+		var to_panel: Vector3 = aim - (_camera.global_position if _camera != null else _player_body.global_position)
+		var aimed_dot: float = cam_fwd.dot(to_panel.normalized()) if to_panel.length_squared() > 0.0001 else 0.0
+		_interact()
+		await get_tree().process_frame
+		opened_ok = nearest_id == "Hatch_D204_EmitterPanel" and aimed_dot > 0.99 and _troubleshoot_ui_open() and _ts_ui.device_id == "D-204" and _ts_ui.visible
+		_ts_qa("e_aim_hatch_opens_ui", opened_ok, "nearest=%s aimed_dot=%.4f open=%s device=%s" % [nearest_id, aimed_dot, _troubleshoot_ui_open(), _ts_ui.device_id if _troubleshoot_ui_open() else ""])
 	var held: TroubleshootSimpleUI = _ts_ui
 	_interact()
 	var ignored_ok: bool = held != null and is_instance_valid(held) and _ts_ui == held and _troubleshoot_ui_open() and not held.is_won()
@@ -7838,6 +8060,15 @@ func _ext_fill_buckets(buckets: Array) -> bool:
 	return true
 
 
+## Rev C north interior: outer x -14.1..14.1, north-wall centerline z=9.0, so z < 9.0.
+func _ext_curb_in_rev_c_interior(inst: Node3D) -> bool:
+	var merged: Dictionary = _ext_merged_aabb(inst)
+	if not bool(merged["ok"]):
+		return false
+	var interior: AABB = AABB(Vector3(-14.1, 0.0, 0.0), Vector3(28.2, 9.1, 9.0))
+	return (merged["aabb"] as AABB).intersects(interior)
+
+
 func _ext_spawn_one(entry: Dictionary, root: Node3D) -> bool:
 	var asset: String = String(entry.get("asset", ""))
 	var packed: PackedScene = _ext_packed_scene(asset)
@@ -7866,6 +8097,11 @@ func _ext_spawn_one(entry: Dictionary, root: Node3D) -> bool:
 	elif _ext_is_solid(asset):
 		_ext_add_solid_collision(inst, asset)
 	root.add_child(inst)
+	# North planter curbs cross this interior and clip the wall-mounted props.
+	if _ext_base(asset).begins_with("ext_curb_") and _ext_curb_in_rev_c_interior(inst):
+		root.remove_child(inst)
+		inst.free()
+		return false
 	_ext_snap_instance(inst, kind, root)
 	return true
 
