@@ -734,6 +734,9 @@ func _load_seam_corners() -> Array[Dictionary]:
 		if not (item is Dictionary):
 			continue
 		var c: Dictionary = item as Dictionary
+		# Key is lowercase "status". "SKIP" is an open corridor end-wall tip and is not audited.
+		if String(c.get("status", "")) == "SKIP":
+			continue
 		var inside: Variant = c.get("inside_dir_xz", [])
 		var sx: float = 1.0
 		var sz: float = 1.0

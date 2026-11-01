@@ -1148,28 +1148,6 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	jamb_mat.uv1_triplanar = true
 	jamb_mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	_add_seam_static_box(parent, "QA_BK01_Alcove2C_EastJamb", Vector3(0.76, 2.78, 0.18), Vector3(-10.18, 5.71, -3.55), jamb_mat)
-	_add_m61_shell_corner_colliders(parent)
-
-
-## [M-61] Rev C end-wall corners the diagonal seam ray misses. The 0.20 m partition
-## (end walls x -10.1..-9.9 and 9.9..10.1) meets z=-1.0 on an edge, so the runtime
-## trimesh returns no hit. A 0.20 m box on that edge, 5 cm into the room, closes it.
-## L1 floor y=0.12 up to the L2 deck; L2 floor y=4.2 up to the roof soffit y=8.8.
-## Door leaves are not moved. 103/203 door is x=-4.5; 104/204 door is x=4.5.
-func _add_m61_shell_corner_colliders(parent: Node3D) -> void:
-	var l1_h: float = 4.20 - 0.12
-	var l2_h: float = 8.80 - 4.20
-	var l1_y: float = 0.12 + l1_h * 0.5
-	var l2_y: float = 4.20 + l2_h * 0.5
-	# 5 cm into the inside quadrant of (-10.10, -1.00) / (10.10, -1.00). Thickness matches the 0.20 m wall.
-	var spec: Array[Dictionary] = [
-		{"name": "M61_Corner103_L1", "pos": Vector3(-10.05, l1_y, -0.95), "size": Vector3(0.20, l1_h, 0.20)},
-		{"name": "M61_Corner103_L2", "pos": Vector3(-10.05, l2_y, -0.95), "size": Vector3(0.20, l2_h, 0.20)},
-		{"name": "M61_Corner104_L1", "pos": Vector3(10.05, l1_y, -0.95), "size": Vector3(0.20, l1_h, 0.20)},
-		{"name": "M61_Corner104_L2", "pos": Vector3(10.05, l2_y, -0.95), "size": Vector3(0.20, l2_h, 0.20)},
-	]
-	for s: Dictionary in spec:
-		_add_seam_static_box(parent, String(s["name"]), s["size"] as Vector3, s["pos"] as Vector3, null, 0.0)
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
