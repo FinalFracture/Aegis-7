@@ -5927,32 +5927,36 @@ func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
 
 
 func _scan_target_door(origin: Vector3) -> Dictionary:
-	# [QA-HUB-01] An [E] door scan acts on ONE door: the one whose hub ScanZone is nearest, within SCAN_ZONE_RANGE
-	# (3D, so other floors never qualify) and roughly in front of the camera (flattened dot >= SCAN_FACING_DOT).
+	# [QA-HUB-01] An [E] door scan acts on ONE door: the nearest in-range target in front of the camera
+	# (flattened dot >= SCAN_FACING_DOT). Hub side: hub ScanZone within SCAN_ZONE_RANGE (3D, so other floors never qualify).
+	# [EXIT-01] Egress is the non-hub side of the wall, (origin - hub) · hub +Z <= 0. The ScanZone sits
+	# beside the doorway, so range and facing against it fail in front of the opening. That case uses the
+	# doorway centre (door root + (0, 1, 0)) within 2.2 m and the same facing test. Hub side (dot > 0) is unchanged.
 	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3.FORWARD
 	fwd.y = 0.0
 	if fwd.length() < 0.001:
 		return {}
 	fwd = fwd.normalized()
 	var best: Dictionary = {}
-	var best_d: float = SCAN_ZONE_RANGE
+	var best_d: float = INF
 	for door: Dictionary in _rfid_doors:
 		var droot: Node3D = door["root"] as Node3D
 		if droot == null or not is_instance_valid(droot) or not droot.is_inside_tree():
 			continue
 		var target: Vector3 = door["center"] as Vector3
+		var reach: float = SCAN_ZONE_RANGE
+		var hub_n: Node3D = door["hub"] as Node3D
+		if hub_n != null and is_instance_valid(hub_n):
+			if (origin - hub_n.global_position).dot(hub_n.global_transform.basis.z) <= 0.0:
+				target = droot.global_position + Vector3(0.0, 1.0, 0.0)
+				reach = 2.2
 		var d: float = origin.distance_to(target)
-		if d > best_d:
+		if d > reach or d > best_d:
 			continue
 		var flat: Vector3 = target - origin
 		flat.y = 0.0
 		if flat.length() > 0.05 and fwd.dot(flat.normalized()) < SCAN_FACING_DOT:
 			continue
-		# [EXIT-01] Interior egress. RFID hubs mount on the corridor face, so
-		# (origin - hub) · hub +Z <= 0 is the room (non-hub) side. A door always
-		# opens from inside: do not skip that request. Range and facing above
-		# already use door center and still apply. Hub-side scans (dot > 0)
-		# stay eligible as before.
 		best_d = d
 		best = door
 	return best
@@ -6966,20 +6970,20 @@ func _run_qa_player_exit() -> void:
 		print("[EXIT-QA] DONE failures=%d" % failures)
 		get_tree().quit(1)
 		return
-	var dc: Vector3 = door["center"] as Vector3
-	var dir: Vector3 = dc - _player_body.global_position
+	var root_pos: Vector3 = (door["root"] as Node3D).global_position
+	var dir: Vector3 = root_pos - _player_body.global_position
 	_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
 	_qa_key(KEY_W, true)
 	await _qa_idle(2)
 	var walked: int = 0
-	var horiz: float = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(dc.x, dc.z))
+	var horiz: float = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
 	while walked < 240 and horiz > 1.3:
 		if walked % 10 == 0:
-			dir = dc - _player_body.global_position
+			dir = root_pos - _player_body.global_position
 			_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
 		await get_tree().physics_frame
 		walked += 1
-		horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(dc.x, dc.z))
+		horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
 	_qa_key(KEY_W, false)
 	await _qa_idle(2)
 	if horiz <= 1.3:
@@ -6993,7 +6997,7 @@ func _run_qa_player_exit() -> void:
 		print("[EXIT-QA] PASS | press_e | open=true")
 	else:
 		failures += 1
-		print("[EXIT-QA] FAIL | press_e | open=false dist3=%.2f pos=%s" % [_player_probe_point().distance_to(dc), str(_player_body.global_position)])
+		print("[EXIT-QA] FAIL | press_e | open=false dist3=%.2f pos=%s" % [_player_probe_point().distance_to(door["center"] as Vector3), str(_player_body.global_position)])
 	_player_body.rotation_degrees.y = 0.0
 	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3(0.0, 0.0, -1.0)
 	if fwd.z >= 0.0:
@@ -7003,24 +7007,24 @@ func _run_qa_player_exit() -> void:
 	_qa_key(KEY_W, true)
 	await _qa_idle(2)
 	var out_frames: int = 0
-	while out_frames < 180 and _player_body.global_position.z >= dc.z - 1.5:
+	while out_frames < 180 and _player_body.global_position.z >= root_pos.z - 1.0:
 		await get_tree().physics_frame
 		out_frames += 1
 	_qa_key(KEY_W, false)
 	await _qa_idle(2)
 	var end_z: float = _player_body.global_position.z
-	if end_z < dc.z - 1.5:
+	if end_z < root_pos.z - 1.0:
 		print("[EXIT-QA] PASS | face_neg_z | yaw=%.1f fwd_z=%.3f frames=%d z=%.2f" % [_player_body.rotation_degrees.y, fwd.z, out_frames, end_z])
 	else:
 		failures += 1
-		print("[EXIT-QA] FAIL | face_neg_z | yaw=%.1f fwd_z=%.3f frames=%d z=%.2f need<%.2f" % [_player_body.rotation_degrees.y, fwd.z, out_frames, end_z, dc.z - 1.5])
+		print("[EXIT-QA] FAIL | face_neg_z | yaw=%.1f fwd_z=%.3f frames=%d z=%.2f need<%.2f" % [_player_body.rotation_degrees.y, fwd.z, out_frames, end_z, root_pos.z - 1.0])
 	var end_pos: Vector3 = _player_body.global_position
-	var y_delta: float = absf(end_pos.y - dc.y)
-	if end_pos.z < dc.z - 1.0 and y_delta <= 1.0:
-		print("[EXIT-QA] PASS | corridor | pos=%s dc=%s" % [str(end_pos), str(dc)])
+	var y_delta: float = absf(end_pos.y - root_pos.y)
+	if end_pos.z < root_pos.z - 1.0 and y_delta <= 1.0:
+		print("[EXIT-QA] PASS | corridor | pos=%s root=%s" % [str(end_pos), str(root_pos)])
 	else:
 		failures += 1
-		print("[EXIT-QA] FAIL | corridor | pos=%s dc=%s z_need<%.2f y_delta=%.2f" % [str(end_pos), str(dc), dc.z - 1.0, y_delta])
+		print("[EXIT-QA] FAIL | corridor | pos=%s root=%s z_need<%.2f y_delta=%.2f" % [str(end_pos), str(root_pos), root_pos.z - 1.0, y_delta])
 	print("[EXIT-QA] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
