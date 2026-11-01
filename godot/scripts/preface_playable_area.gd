@@ -1058,11 +1058,10 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	# Measured with raycasts against the cylinder mesh: rotation (43, 0, 0) pushes terrain up through the map;
 	# (-43, 0, 0) puts the Valley A floor (circular arc, R ~ 200) under the map, with its valley wall at z ~ -26
 	# (matching the canal edge at -25.8). Surface height is constant along X (axis parallel to the map's long axis).
-	# Raising the axis 2.2 m (y 187.7) makes the inner surface just touch the deck plane: surface max y -0.1 at z 42
-	# (the map's highest point); nadir ~ -7.0 at z -8. A flat 66 m footprint on an R 200 m arc cannot be fully tangent;
-	# the deck touches the surface at its north edge and floats above the valley floor elsewhere.
+	# Axis y 187.2, lowered 0.5 m so the inner surface and glass stay below the deck; surface max y about -0.6.
+	# A flat 66 m footprint on an R 200 m arc cannot be fully tangent; the deck floats above the valley floor.
 	# The 135 m axial offset is along X, and Z = 0 holds the axis over the map centre line.
-	cyl_pivot.position = Vector3(135.0, 187.7, 0.0)
+	cyl_pivot.position = Vector3(135.0, 187.2, 0.0)
 	cyl_pivot.rotation_degrees = Vector3(-43.0, 0.0, 0.0)
 	hab_root.add_child(cyl_pivot)
 
@@ -5941,6 +5940,11 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
 	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
+	# Hide the hab drum: it fills the axial view and hides the stars, so the pixel-diff check would see 0 changed pixels.
+	var drum_pivot: Node3D = hab_world.get_node_or_null("CylinderHab7_DrumAxisPivot") as Node3D if hab_world != null else null
+	var drum_was_visible: bool = drum_pivot.visible if drum_pivot != null else true
+	if drum_pivot != null:
+		drum_pivot.visible = false
 	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
 	await _qa_frames(90)
 	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
@@ -5949,6 +5953,8 @@ func _run_reticle_stars_doors_qa() -> void:
 	if _starfield_cylinder != null:
 		_starfield_cylinder.rotate_x(deg_to_rad(14.0))
 	var img_star2: Image = await _qa_capture("qa_outer_starfield_rotating_2.png")
+	if drum_pivot != null:
+		drum_pivot.visible = drum_was_visible
 	var d_star_rot: float = absf(star_rot1 - star_rot0)
 	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
 	var d_hab_rot: float = hab_xf0.basis.get_rotation_quaternion().angle_to(hab_xf1.basis.get_rotation_quaternion())

@@ -7,8 +7,9 @@ extends SceneTree
 ## Closed force-field door colliders are baked as obstacles, so doorways are cut.
 ## A 0.2 m BakeDoorObstacle on each door plane also extends 0.3 m below the pivot.
 ## Field-gated openings (D-204 hatch, service-field and closed-hatch colliders) get the same
-## obstacle, 0.1 m larger than the opening on each side. The Apt201 slab seam at z 6.20 is a
-## bake-only wall: that slab covers the Room1A spool, so a closed-field path was ending on it.
+## obstacle, 0.1 m larger than the opening on each side. The Apt201 slab has no hatch collider.
+## A thin bake-only wall across it (x -13.91..-5.45, y 4.00..5.50, south face z 6.35) keeps the
+## closed-field path on the spawn side of the Room1A spool.
 ## Baking AABB is x -50..60, y -1..12, z -60..40 (apartments near y 4.25, and the hatch).
 ## Furniture and roof are name/group exclusions of that node's own colliders, not floors.
 ## Polygons with any vertex x > 100 (gravity ring) are dropped after the bake.
@@ -223,9 +224,9 @@ func _add_gated_opening_obstacle(node: Node) -> void:
 	var aabb := _opening_world_aabb(node)
 	if aabb.size.length_squared() <= 0.0001:
 		return
-	# 0.1 m past the opening on each side, and 0.3 m lower so the box bites the floor.
-	aabb.position -= Vector3(0.1, 0.4, 0.1)
-	aabb.size += Vector3(0.2, 0.5, 0.2)
+	# 0.1 m past the opening on each side.
+	aabb.position -= Vector3(0.1, 0.1, 0.1)
+	aabb.size += Vector3(0.2, 0.2, 0.2)
 	var body := StaticBody3D.new()
 	var nm := String(node.name)
 	body.name = "BakeDoorObstacle_" + nm
@@ -250,7 +251,7 @@ func _opening_world_aabb(node: Node) -> AABB:
 		if n is CollisionShape3D:
 			var cs := n as CollisionShape3D
 			var shape: Shape3D = cs.shape
-			if shape is BoxShape3D and cs.global_transform != null:
+			if shape is BoxShape3D:
 				var ext: Vector3 = (shape as BoxShape3D).size * 0.5
 				var xf: Transform3D = cs.global_transform
 				for sx: float in [-1.0, 1.0]:
@@ -262,8 +263,6 @@ func _opening_world_aabb(node: Node) -> AABB:
 								any = true
 							else:
 								found = found.expand(corner)
-		if n != node:
-			pass
 		for ch: Node in n.get_children():
 			stack.append(ch)
 	if not any:
@@ -273,25 +272,26 @@ func _opening_world_aabb(node: Node) -> AABB:
 
 func _block_apt201_slab_seam() -> void:
 	# The leak is not a door. Spawn (-9.35, 4.25, 6.20) and the Room1A spool (-6.15, 0.98, 7.25)
-	# share an XZ footprint: Tech_Apartment_Upper's slab (about x -13.6..-5.4, z 2.7..8.5, top y 4.35)
+	# share an XZ footprint: Tech_Apartment_Upper's slab (x -13.6..-5.4, z 2.7..8.5, top y 4.35)
 	# sits on the mezzanine deck directly above the laundry shelf. With every field link off, the
 	# path stays on that slab and still ends 0.55 m away horizontally, which the QA counts as a reach.
-	# There is no Hatch_D204 collider in the sector (the emitter panel is an empty marker on the
-	# alcove tool wall). A thin bake-only wall across the slab, x -13.95..-5.45 at z 6.20, meets the
-	# west shell and the Apt201 east wall. The reachable mesh stops south of it, more than 1 m from
-	# the spool. Nothing north of the seam is an interactable.
+	# There is no Hatch_D204 collider (the emitter panel is an empty marker on the alcove tool wall).
+	# Thin bake-only wall: x -13.91..-5.45, y 4.00..5.50, z 6.35..6.55. It meets the west shell
+	# (x -13.90) and the Apt201 east wall (inner face x -5.53) and stays out of the gallery.
+	# Spawn is south of the wall, so the closest nav point stays on the door side. Agent radius
+	# 0.25 holds that mesh to about z 6.10, 1.15 m south of the spool. Nothing north of it is an interactable.
 	if _scene == null:
 		return
 	var body := StaticBody3D.new()
 	body.name = "BakeSlabGapObstacle"
 	body.collision_layer = 1
 	body.collision_mask = 1
-	body.position = Vector3(-9.70, 4.75, 6.20)
+	body.position = Vector3(-9.68, 4.75, 6.45)
 	_scene.add_child(body)
 	var cs := CollisionShape3D.new()
 	cs.name = "BakeSlabGapObstacle_Shape"
 	var bs := BoxShape3D.new()
-	bs.size = Vector3(8.50, 1.50, 0.10)
+	bs.size = Vector3(8.46, 1.50, 0.20)
 	cs.shape = bs
 	body.add_child(cs)
 
