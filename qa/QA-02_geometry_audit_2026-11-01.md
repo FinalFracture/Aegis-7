@@ -77,3 +77,10 @@
 ## Notes (not filed)
 - Pickups have no CollisionObject3D. This is treated as by design (distance-based interaction).
 - Prop43 sits in the 0.9 m strip between the East Lounge collider face (z=7.86) and the atrium wall (z=8.76), not inside the lounge footprint. Confirm this matches the intended "East Lounge north wall" placement.
+
+## GEO-10 (Medium, route to Gage): Prop43_SparesDispenser at wrong position
+- Node: InteractivePropsAndPickups/Prop43_SparesDispenser
+- Found on main: about (-8.0, 0.235, 8.5), in the 0.9 m strip between the East Lounge north wall (z=7.86) and the atrium wall (z=8.76).
+- Intended (confirmed by Vance via Atlas): (-5.16, 0.235, 5.20), yaw -90, on the East Lounge east wall at x -4.90. The old spot fails the front-zone check.
+- Commit 11e51da was meant to move it, but main still has the old position, so it may have been reverted.
+- Repro: open the main hab scene and inspect the Prop43 transform.
