@@ -1070,7 +1070,7 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 	_add_playtest_seam_blocks(parent)
 
 
-func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material) -> void:
+func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material, margin: float = -1.0) -> void:
 	var seam: StaticBody3D = StaticBody3D.new()
 	seam.name = nm
 	seam.position = pos
@@ -1079,6 +1079,8 @@ func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3,
 	seam_cs.name = nm + "_Shape"
 	var seam_bs: BoxShape3D = BoxShape3D.new()
 	seam_bs.size = sz
+	if margin >= 0.0:
+		seam_bs.margin = margin
 	seam_cs.shape = seam_bs
 	seam.add_child(seam_cs)
 	if mat != null:
@@ -1146,6 +1148,28 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	jamb_mat.uv1_triplanar = true
 	jamb_mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	_add_seam_static_box(parent, "QA_BK01_Alcove2C_EastJamb", Vector3(0.76, 2.78, 0.18), Vector3(-10.18, 5.71, -3.55), jamb_mat)
+	_add_m61_shell_corner_colliders(parent)
+
+
+## [M-61] Rev C end-wall corners the diagonal seam ray misses. The 0.20 m partition
+## (end walls x -10.1..-9.9 and 9.9..10.1) meets z=-1.0 on an edge, so the runtime
+## trimesh returns no hit. A 0.20 m box on that edge, 5 cm into the room, closes it.
+## L1 floor y=0.12 up to the L2 deck; L2 floor y=4.2 up to the roof soffit y=8.8.
+## Door leaves are not moved. 103/203 door is x=-4.5; 104/204 door is x=4.5.
+func _add_m61_shell_corner_colliders(parent: Node3D) -> void:
+	var l1_h: float = 4.20 - 0.12
+	var l2_h: float = 8.80 - 4.20
+	var l1_y: float = 0.12 + l1_h * 0.5
+	var l2_y: float = 4.20 + l2_h * 0.5
+	# 5 cm into the inside quadrant of (-10.10, -1.00) / (10.10, -1.00). Thickness matches the 0.20 m wall.
+	var spec: Array[Dictionary] = [
+		{"name": "M61_Corner103_L1", "pos": Vector3(-10.05, l1_y, -0.95), "size": Vector3(0.20, l1_h, 0.20)},
+		{"name": "M61_Corner103_L2", "pos": Vector3(-10.05, l2_y, -0.95), "size": Vector3(0.20, l2_h, 0.20)},
+		{"name": "M61_Corner104_L1", "pos": Vector3(10.05, l1_y, -0.95), "size": Vector3(0.20, l1_h, 0.20)},
+		{"name": "M61_Corner104_L2", "pos": Vector3(10.05, l2_y, -0.95), "size": Vector3(0.20, l2_h, 0.20)},
+	]
+	for s: Dictionary in spec:
+		_add_seam_static_box(parent, String(s["name"]), s["size"] as Vector3, s["pos"] as Vector3, null, 0.0)
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
@@ -1165,6 +1189,32 @@ func _add_glass_balustrade_colliders(parent: Node3D) -> void:
 		var cs: CollisionShape3D = CollisionShape3D.new()
 		var bs: BoxShape3D = BoxShape3D.new()
 		bs.size = r["size"] as Vector3
+		cs.shape = bs
+		body.add_child(cs)
+
+
+## [M-58] Invisible 1.1 m edge guards. Floor y=4.2, so the box centre is 4.75.
+## Gallery: a 0.6 m move heading -X from (6, 4.2, 0) leaves the L2 slab. The rail is
+## the west lip of that slab (east face x=5.55), 10 cm clear of a capsule at x=6,
+## and east of DOOR_APT202 (x=3) so the egress waypoints (x<=1.15) do not cross it.
+## NE and W sit outside the Rev C wall line (north outer face z=9.1, west outer face x=-14.1).
+func _add_m58_edge_guards(parent: Node3D) -> void:
+	var runs: Array[Dictionary] = [
+		{"name": "M58_L2GalleryWestEdge", "size": Vector3(0.10, 1.1, 1.70), "pos": Vector3(5.50, 4.75, 0.0)},
+		{"name": "M58_L2NorthEastEdge", "size": Vector3(2.0, 1.1, 0.10), "pos": Vector3(13.0, 4.75, 9.15)},
+		{"name": "M58_L2WestEdge", "size": Vector3(0.10, 1.1, 6.0), "pos": Vector3(-14.15, 4.75, 5.0)},
+	]
+	for r: Dictionary in runs:
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = String(r["name"])
+		body.collision_layer = 1
+		body.collision_mask = 1
+		body.position = r["pos"] as Vector3
+		parent.add_child(body)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		var bs: BoxShape3D = BoxShape3D.new()
+		bs.size = r["size"] as Vector3
+		bs.margin = 0.0
 		cs.shape = bs
 		body.add_child(cs)
 
@@ -2008,6 +2058,7 @@ func _assemble_open_doorless_sector() -> void:
 	if not _batch_render:
 		_add_safety_floor_colliders(_arch_container)
 		_add_glass_balustrade_colliders(_arch_container)
+		_add_m58_edge_guards(_arch_container)
 
 	_build_cylinder_hab7_fullscale_world(_arch_container)
 	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
@@ -8204,7 +8255,9 @@ func _run_qa_egress() -> void:
 		{"label": "(8.9, -15.9)", "xz": Vector2(8.9, -15.9), "door": ""},
 		{"label": "(10.2, -16.3)", "xz": Vector2(10.2, -16.3), "door": ""},
 		{"label": "(12.3, -16.7)", "xz": Vector2(12.3, -16.7), "door": ""},
-		{"label": "(12.8, -16.6)", "xz": Vector2(12.8, -16.6), "door": "", "final": true}
+		# [M-46] Reachable tram point. (12.8, -16.6) stopped 1.24 m short on shelter #15.
+		# Shelter footprint is X 12..18, Z -16.57..-15.27, so (11.0, -16.1) is west of the glass.
+		{"label": "(11.0, 0.30, -16.1)", "xz": Vector2(11.0, -16.1), "door": "", "final": true}
 	]
 	_qa_egress_print_route(wps)
 	if _player_body == null:
@@ -8273,7 +8326,7 @@ func _run_qa_egress() -> void:
 		elif is_final:
 			var end_p: Vector3 = _player_body.global_position
 			var end_h: float = Vector2(end_p.x, end_p.z).distance_to(xz)
-			# Raised platform. Deck is about 0.05. Within 1.5 m of (12.8, -16.6) and y >= 0.25.
+			# Raised platform. Within 1.5 m of (11.0, -16.1) and y >= 0.25 (deck about 0.30).
 			ok = end_h <= 1.5 and end_p.y >= 0.25
 		else:
 			ok = arrived
@@ -8366,6 +8419,41 @@ func _ext_local_visual_aabb(inst: Node3D) -> Dictionary:
 		for ch: Node in curr.get_children():
 			stack.append(ch)
 	return {"ok": any, "aabb": merged}
+
+
+## [M-59] Peaked cap over the car body. Seat tops (world y about 0.66..0.75) and the
+## roof are inside the prism, and the faces rise about 70 deg so they are not floors
+## (floor_max_angle is 50 deg). Inset from the body keeps it off the platform and
+## clear of the boarding point (11.0, 0.30, -16.1).
+func _ext_add_tram_nostand_cap(inst: Node3D) -> void:
+	var merged: Dictionary = _ext_local_visual_aabb(inst)
+	if not bool(merged["ok"]):
+		return
+	var bb: AABB = merged["aabb"] as AABB
+	if bb.size.x < 4.0 or bb.size.z < 1.0 or bb.size.y < 1.5:
+		return
+	var x0: float = bb.position.x + 0.20
+	var x1: float = bb.position.x + bb.size.x - 0.20
+	var z0: float = bb.position.z + 0.20
+	var z1: float = bb.position.z + bb.size.z - 0.20
+	var y0: float = bb.position.y + 0.16
+	var yp: float = bb.position.y + bb.size.y + 0.20
+	var zc: float = (z0 + z1) * 0.5
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "TramRoofNoStand"
+	body.collision_layer = 1
+	body.collision_mask = 1
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = "TramRoofNoStand_Shape"
+	var shape: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+	shape.margin = 0.0
+	shape.points = PackedVector3Array([
+		Vector3(x0, y0, z0), Vector3(x0, y0, z1), Vector3(x0, yp, zc),
+		Vector3(x1, y0, z0), Vector3(x1, y0, z1), Vector3(x1, yp, zc),
+	])
+	cs.shape = shape
+	body.add_child(cs)
+	inst.add_child(body)
 
 
 ## Thin lid on the visual top so a down-ray hits the infill top, not the body under the paver joints.
@@ -8837,6 +8925,8 @@ func _ext_spawn_one(entry: Dictionary, root: Node3D) -> bool:
 		_set_tree_cast_shadow(inst, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 	elif _ext_is_solid(asset):
 		_ext_add_solid_collision(inst, asset)
+	if _ext_base(asset) == "ext_maglev_car_body":
+		_ext_add_tram_nostand_cap(inst)
 	root.add_child(inst)
 	# North planter curbs cross this interior and clip the wall-mounted props.
 	if _ext_base(asset).begins_with("ext_curb_") and _ext_curb_in_rev_c_interior(inst):

@@ -30,8 +30,10 @@ const PAIR_GAP_MIN := 0.02
 const FRONT_DEPTH := 0.60
 const MESH_REPORT_MAX := 5
 const SAT_AXIS_EPS := 1.0e-16
-# Room-shell corners as (x, z, floor_y, sx, sz). sx/sz is the inside quadrant.
-# Samples at floor + 0.8 / 1.6 / 2.4. One ray starts 0.5 m inside on each axis.
+# Fallback only. SEAM_AUDIT loads design/rev_c_shell_corners.json (corner_x/z, level_y,
+# inside_dir_xz, audit_heights_above_floor) and uses this list when that file is missing.
+# (x, z, floor_y, sx, sz). sx/sz is the inside quadrant.
+# Fallback samples at floor + 0.8 / 1.6 / 2.4. One ray starts 0.5 m inside on each axis.
 const SEAM_CORNERS: Array[Dictionary] = [
 	{"x": -12.74, "z": -3.40, "y": 4.32, "sx": 1, "sz": -1},
 	{"x": -12.74, "z": -5.69, "y": 4.32, "sx": 1, "sz": 1},
@@ -704,14 +706,73 @@ func _report(ok: bool, id: String, check: String, detail: String) -> void:
 # Corner-seam audit. Each corner has one inside quadrant (sx, sz). The ray starts
 # 0.5 m inside on x and z and runs toward the corner. Length is 0.5*sqrt(2) + 0.3.
 # past = hit_distance - 0.5*sqrt(2). PASS when a hit is at most 0.010 m past the corner.
+# Corners, floor levels and sample heights come from design/rev_c_shell_corners.json.
+func _seam_corners_json_path() -> String:
+	return ProjectSettings.globalize_path("res://").path_join("../design/rev_c_shell_corners.json")
+
+
+func _load_seam_corners() -> Array[Dictionary]:
+	var path: String = _seam_corners_json_path()
+	if not FileAccess.file_exists(path):
+		print("SEAM_AUDIT source=fallback path=%s" % path)
+		return SEAM_CORNERS
+	var f: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		print("SEAM_AUDIT source=fallback path=%s" % path)
+		return SEAM_CORNERS
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (parsed is Dictionary):
+		print("SEAM_AUDIT source=fallback path=%s reason=parse" % path)
+		return SEAM_CORNERS
+	var raw: Variant = (parsed as Dictionary).get("corners", [])
+	if not (raw is Array) or (raw as Array).is_empty():
+		print("SEAM_AUDIT source=fallback path=%s reason=empty" % path)
+		return SEAM_CORNERS
+	var out: Array[Dictionary] = []
+	for item: Variant in raw as Array:
+		if not (item is Dictionary):
+			continue
+		var c: Dictionary = item as Dictionary
+		var inside: Variant = c.get("inside_dir_xz", [])
+		var sx: float = 1.0
+		var sz: float = 1.0
+		if inside is Array and (inside as Array).size() >= 2:
+			sx = float((inside as Array)[0])
+			sz = float((inside as Array)[1])
+		var heights: Array[float] = []
+		var hraw: Variant = c.get("audit_heights_above_floor", [])
+		if hraw is Array:
+			for h: Variant in hraw as Array:
+				heights.append(float(h))
+		if heights.is_empty():
+			heights = SEAM_HEIGHTS.duplicate()
+		out.append({
+			"x": float(c.get("corner_x", 0.0)),
+			"z": float(c.get("corner_z", 0.0)),
+			"y": float(c.get("level_y", 0.0)),
+			"sx": sx,
+			"sz": sz,
+			"heights": heights,
+		})
+	if out.is_empty():
+		print("SEAM_AUDIT source=fallback path=%s reason=empty" % path)
+		return SEAM_CORNERS
+	print("SEAM_AUDIT source=json corners=%d path=%s" % [out.size(), path])
+	return out
+
+
 func _run_seam_audit(space: PhysicsDirectSpaceState3D) -> void:
 	var to_corner: float = 0.5 * sqrt(2.0)
 	var ray_len: float = to_corner + 0.3
-	for spec: Dictionary in SEAM_CORNERS:
+	for spec: Dictionary in _load_seam_corners():
 		var corner: Vector3 = Vector3(float(spec["x"]), float(spec["y"]), float(spec["z"]))
 		var sx: float = float(spec["sx"])
 		var sz: float = float(spec["sz"])
-		for hoff: float in SEAM_HEIGHTS:
+		var heights: Array = SEAM_HEIGHTS
+		if spec.has("heights") and spec["heights"] is Array and not (spec["heights"] as Array).is_empty():
+			heights = spec["heights"]
+		for hoff: float in heights:
 			var height: float = corner.y + hoff
 			var at: Vector3 = Vector3(corner.x, height, corner.z)
 			var start: Vector3 = at + Vector3(sx * 0.5, 0.0, sz * 0.5)
