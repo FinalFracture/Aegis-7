@@ -651,3 +651,13 @@ SEAM_AUDIT 24 fails: 15 at L2 corners (-12.74,-5.69), (+/-5.35,2.65), (+/-5.35,8
 ### Master list (qa/MASTER_BUG_LIST.md)
 New 17 (M-41..M-57): High 4 (M-41 NAV-05, M-42 bins/tool wall, M-43 floating lamps, M-44 Prop42 in apt 102); Med 6 (M-45, M-48, M-51, M-56, M-57 + M-29 raised); Low 7. Fixed 7: M-01, M-03 (verified), M-20, M-21, M-38, M-39, M-40 (per Rook 94a9f36). Still open 50 (33 old + 17 new). NAV-01/02/03 closed as not-a-bug.
 Screenshots (not committed): /workspace/qa_shots_r/ (nav_DOOR_*_{hub,back}.png, seam_*.png, mezzanine_rail.png).
+
+## QA round 3: Gage fixes, main c7fe8ec (Patch, 2026-11-01 ~11:58-12:45 CST, box, Godot 4.7.2 opengl3/xvfb, fresh clone /tmp/qa_r3)
+Covers 2f991a5, b7f155c, ff057ff, de15497 (full suite run at de15497+3c13c42), then f5f97d4/c7fe8ec (re-run of placement, nav-reach, egress, player-exit, forcefield, doors, corners, grid, props, visuals). Import 0 errors.
+- Suites at de15497: exterior 1010/0, hand 0 fail, troubleshoot 0 fail, forcefield 4/4, egress 0, player-exit 0, reticle-stars-doors 0. At c7fe8ec: placement 26/0, SEAM_AUDIT (JSON, 62 corners) 305/5, egress 0, player-exit 0, forcefield 4/4, **nav-reach 0/19 (regression, M-63)**.
+- Doors (fresh scene, one E, real walk): all 12 sides open; corridor sides cross from 0.7 m (1.8 m starts land past the 1.6 m Rev C corridor, test artifact). M-41 fixed.
+- Props: M-42/43/44/08 fixed; new floats M-64 (bins 0.39 m up, 0.65 m off wall), M-65 (lamp 201 0.215 m), M-66 (wardrobe 0.10 m). Prop43 vs wardrobe 0 overlap (GEO-11 fixed); Prop43 position still off target (M-02).
+- Corners: SEAM_AUDIT 5 fails at L2 h 4.5-7.0 (13.9,1.0), (2.1,-1.0) x2, (-9.9,-0.8), (9.9,0.8); Patch probe 309/310 (202 (0.10,1.00) y 4.5). M-61 open (reduced).
+- Grid sweep: 1,414 floor pts, 974 free, 28 stuck, 14 drop edges (furniture tops only, M-58 fixed), 133 off-nav (M-60). Tram roof fixed; shelter stuck x5 (M-59 open).
+- Visuals (llvmpipe): M-16 emergency dims 11.5 -> 5.1 luma and restores exactly. Interiors near-black (M-68 High); window view blown out (M-69). Sloane spec items present in code.
+- Counts: fixed this round 20, new 6 (M-63..M-66, M-68, M-69), still open ~39. Screenshots (not committed): /workspace/qa_shots_r2/.
