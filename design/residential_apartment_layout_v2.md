@@ -167,3 +167,9 @@ Plans: `residential_roomlayout_rev_c_v3_L1.png` / `_v3_L2.png`. The main `reside
     - the 204 emitter beat, earlier in this file (table row 204) and `residential_apartment_layout_v2_revB.md` 107
 - **Rev C.2a:** the resident lockers (#24) move off-building to a future building (TBD; Rook keeps Bench Niche). The Laundry N wall gets a 3.0 m folding counter extension (#38, X -2.6..0.4) and lost-and-found bins + a notice board (#55, X -4.3..-3.0). The bench stays at X -3.5..-2.3.
 - **Notes for Gage (rebuild):** commit 495e4ce (Rook, "rev C #17/#26/#31 moved…") swept in someone else's uncommitted `context/playtest_bug_report.md` edits. Review that file's diff at the rebuild.
+
+## Rev C.3: room 101 wardrobe moved (GEO-11), Vance 2026-11-01
+- Prop43 spares dispenser (final code spot (-4.858, 0.12, 5.20) yaw -90, footprint x -5.108..-4.608, z 4.25..6.15) took the old 101 wardrobe spot on the east wall (x -5.1..-4.6, z 4.0..7.0); they overlapped by 0.93 m².
+- **New 101 wardrobe (#21):** on the bedroom west wall (inner face x -13.9, per RevC_Shell_L1), between the bath pod and the double bed. Footprint x -13.9..-13.4, z 4.5..7.0 (0.5 × 2.5 m, 2.1 m tall). Centre (-13.65, 0.12, 5.75), yaw +90 (front faces +X). The doc frame is the same as the .gd frame.
+- **Checked clearances:** 1.2 m front zone x -13.4..-12.2 is clear. Bath pod ends at z 3.1 (1.4 m gap), double bed starts at z 7.3 (0.3 m gap). The 0.9 m path at x -11.5 is 0.25 m from the front zone's edge (path edge at -11.95), and the sofa (x ≥ -11.0) is 1.2 m clear. Prop43 plus its front zone (x ≥ -6.31) is 7.1 m away. The unit door (Z +0.8 face, X -6.5) is far away. Trimesh on the sector GLB found only the west-wall shell tris (x ≤ -13.9) inside x -14.6..-11.8, z 4.0..7.4, y 0.25..2.6. Nothing in preface_playable_area.gd sits there at L1 (only the RM 1A zone probe at (-13.2, 0.3, 5.0), which is a point check, not geometry).
+- The old east-wall strip x -5.1..-4.6 now belongs to Prop43 only.

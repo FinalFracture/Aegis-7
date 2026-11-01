@@ -47,7 +47,7 @@ Sizes are rough W × D × H in meters.
 |---|---|---|---|---|
 | 19 | ~~Double bed~~ `godot/assets/models/double_bed_moulded_clamped.glb` | 101, 102, 103, 104, 201, 202, 203, 204 | 8 | 2.0 × 1.6 × 0.6 |
 | 20 | ~~Kids' bunk~~ `godot/assets/models/kids_bunk_wall_clamped.glb` | 103, 202 | 2 | 0.9 × 1.9 × 1.7 |
-| 21 | ~~Wardrobe~~ `godot/assets/models/wardrobe_openbays_rails.glb` | 101, 103, 104, 201, 202, 203, 204 | 7 | 0.5 × 2.5–3.0 × 2.1 |
+| 21 | ~~Wardrobe~~ `godot/assets/models/wardrobe_openbays_rails.glb` | 101, 103, 104, 201, 202, 203, 204 | 7 | 0.5 × 2.5–3.0 × 2.1 | 101 (Rev C.3, GEO-11): centre (-13.65, 0.12, 5.75) yaw +90, footprint x -13.9..-13.4, z 4.5..7.0 (west wall) |
 | 22 | ~~Coat and storage closet~~ `godot/assets/models/coat_closet_mudroom.glb` | 103, 104, 203, 204 | 4 | 3.7 × 0.5 × 2.1 |
 | 23 | ~~Suit hook + storage with pressure suit~~ `godot/assets/models/suit_storage_service_combo.glb` | 102 | 1 | 0.5 × 2.5 × 2.1 |
 | 24 | ~~Resident lockers~~ REMOVED FROM APARTMENT BUILDING (Jared, Oct 29): option 5 Bench Niche kept as a standalone locker run for another building (TBD), not tied to laundry; `godot/assets/models/locker_run_bench_niche.glb` | ~~Laundry~~ other building TBD | — | 4.8 × 0.5 × 2.0 |
@@ -88,7 +88,7 @@ Sizes are rough W × D × H in meters.
 | 40 | ~~Sprocket floor pad (level blockout `DockPad`/`DockPad_InductionRing`)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 1.2 × 1.2 × 0.05 |
 | 41 | ~~Coupler arm (wall/ceiling mount)~~ built into `godot/assets/models/service_wall_rail_shuttle.glb` | Maintenance | 3 | 0.3 × 1.5 reach |
 | 42 | ~~Substation cabinet (level blockout `Room1B_Substation_*`)~~ `godot/assets/models/substation_wall_ladder_busway.glb` (4638b0e) | Maintenance | 1 | 0.6 × 2.5 × 2.2 |
-| 43 | ~~Spares shelf~~ `godot/assets/models/spares_gravity_dispenser.glb` (abd4bc9). Code: (-4.858, 0.12, 5.20) yaw -90, room 101 E wall (face x -4.6). Design rev3: (-5.16, 0.235, 5.20) yaw -90. **MISMATCH**, see M-02 | Room 101 E wall | 1 | 1.9 × 0.5 × 1.8 |
+| 43 | ~~Spares shelf~~ `godot/assets/models/spares_gravity_dispenser.glb` (abd4bc9). Code: (-4.858, 0.12, 5.20) yaw -90, room 101 E wall (face x -4.6). Final: the code spot is accepted (Vance, c6f22b2); rev3 (-5.16, 0.235) is superseded. The 101 wardrobe was moved off this wall (GEO-11) | Room 101 E wall | 1 | 1.9 × 0.5 × 1.8 |
 
 
 ## I. Characters and pickups (placed, already modeled)
