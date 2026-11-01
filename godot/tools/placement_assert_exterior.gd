@@ -9,8 +9,10 @@ const SCENE_PATH := "res://scenes/preface/preface_playable_area.tscn"
 const TIMEOUT_FRAMES := 600
 const FLOOR_BAND := 0.02
 const DECAL_ABOVE := 0.03
-const PEN_MAX := 0.02
+const PEN_MAX := 0.010
 const SNAP_ABOVE := 0.3
+# Match the spawn snap: a corner on the east guardrail (top y 1.245) is not support.
+const SUPPORT_LIFT := 0.40
 const SNAP_DEPTH := 12.0
 const CORNER_INSET := 0.05
 const KIND_GROUND := 0
@@ -174,7 +176,8 @@ func _yaw_delta(a: float, b: float) -> float:
 
 func _check_floor(prop: Node3D, id: String, asset: String, aabb: AABB, space: PhysicsDirectSpaceState3D) -> void:
 	var bottom_y: float = aabb.position.y
-	# Same samples and exclusions as the spawn snap: centre plus four inset bottom corners, max hit y.
+	# Same samples and exclusions as the spawn snap: centre plus four inset corners.
+	# Support is the highest hit still within SUPPORT_LIFT of the centre hit.
 	var hit: Dictionary = _max_surface_y(prop, aabb, _floor_exclude(prop, asset), space)
 	var have_hit: bool = bool(hit["ok"])
 	var hit_y: float = float(hit["y"])
@@ -215,13 +218,13 @@ func _spawn_kind(asset: String) -> int:
 func _floor_exclude(prop: Node, asset: String) -> Array[RID]:
 	# Mirror the spawn snap: ground-like props see only the sector ground; solids see ground and paving,
 	# not other solids; cars keep their magnet; scuffs ignore the car and magnet stacked on the guideway.
-	var exclude: Array[RID] = []
+	# The prop's own bodies are always excluded.
+	var exclude: Array[RID] = _collision_rids(prop)
 	var kind: int = _spawn_kind(asset)
 	if kind == KIND_GROUND:
 		for node: Node in get_nodes_in_group("exterior_placement"):
 			exclude.append_array(_collision_rids(node))
 		return exclude
-	exclude = _collision_rids(prop)
 	if _base(asset) == "ext_track_scuff_guideway":
 		exclude.append_array(_rids_for_bases(["ext_maglev_car_body", "ext_maglev_magnet_module"]))
 	if kind == KIND_DECAL:
@@ -255,19 +258,51 @@ func _max_surface_y(prop: Node3D, aabb: AABB, exclude: Array[RID], space: Physic
 	pts.append(Vector2(x1, z0))
 	pts.append(Vector2(x0, z1))
 	pts.append(Vector2(x1, z1))
-	var best: float = -INF
-	var any: bool = false
-	for p: Vector2 in pts:
+	var hits: Array[float] = []
+	var center_y: float = 0.0
+	var have_center: bool = false
+	for i: int in range(pts.size()):
+		var p: Vector2 = pts[i]
 		var hit: Dictionary = _ray(space, Vector3(p.x, start_y, p.y), Vector3(p.x, end_y, p.y), exclude)
-		if hit.is_empty():
+		if hit.is_empty() or _collider_is_under(prop, hit.get("collider")):
 			continue
 		var hy: float = (hit["position"] as Vector3).y
-		if not any or hy > best:
-			best = hy
+		if i == 0:
+			center_y = hy
+			have_center = true
+		hits.append(hy)
+	return _support_from_hits(hits, center_y, have_center)
+
+
+func _support_from_hits(hits: Array[float], center_y: float, have_center: bool) -> Dictionary:
+	if hits.is_empty():
+		return {"ok": false, "y": 0.0}
+	var anchor: float = center_y if have_center else hits[0]
+	if not have_center:
+		for h: float in hits:
+			anchor = minf(anchor, h)
+	var best: float = -INF
+	var any: bool = false
+	for h2: float in hits:
+		if h2 > anchor + SUPPORT_LIFT:
+			continue
+		if not any or h2 > best:
+			best = h2
 			any = true
 	if not any:
-		return {"ok": false, "y": 0.0}
+		return {"ok": true, "y": anchor}
 	return {"ok": true, "y": best}
+
+
+func _collider_is_under(root_n: Node, collider: Object) -> bool:
+	if not (collider is Node):
+		return false
+	var n: Node = collider as Node
+	while n != null:
+		if n == root_n:
+			return true
+		n = n.get_parent()
+	return false
 
 
 func _magnet_top_for_car(car_aabb: AABB) -> Dictionary:
@@ -320,7 +355,7 @@ func _check_overlaps(solids: Array[Dictionary]) -> void:
 				else:
 					_pass_n += 1
 				continue
-			# Fail only when the overlap is deeper than 0.02 m on every axis.
+			# Fail only when the overlap is deeper than 0.010 m on every axis.
 			if deep:
 				_bad(String(a["id"]), String(a["asset"]), "overlap other=%s id=%s asset=%s pen=%s,%s,%s" % [
 					String(b["node"]), String(b["id"]), String(b["asset"]), _fmt(pen.x), _fmt(pen.y), _fmt(pen.z),
@@ -402,7 +437,29 @@ func _direct_space() -> PhysicsDirectSpaceState3D:
 	return null
 
 
-func _world_aabb_of(root_n: Node3D) -> Dictionary:
+func _name_is_helper(nm: String) -> bool:
+	var n: String = nm.to_lower()
+	if n.contains("collision") or n.contains("collider") or n.contains("helper") or n.contains("proxy") or n.contains("colonly") or n.contains("ucx"):
+		return true
+	return n.ends_with("_col") or n.ends_with("-col") or n.contains("_col_") or n.contains("-col-")
+
+
+func _mesh_is_visual(mi: MeshInstance3D, root_n: Node) -> bool:
+	if mi.mesh == null or not mi.visible:
+		return false
+	var n: Node = mi
+	while n != null:
+		if _name_is_helper(String(n.name)):
+			return false
+		if n != root_n and (n is CollisionObject3D or n is CollisionShape3D):
+			return false
+		if n == root_n:
+			break
+		n = n.get_parent()
+	return true
+
+
+func _union_mesh_aabb(root_n: Node3D, visual_only: bool) -> Dictionary:
 	var merged: AABB = AABB()
 	var any: bool = false
 	var stack: Array[Node] = [root_n]
@@ -410,7 +467,7 @@ func _world_aabb_of(root_n: Node3D) -> Dictionary:
 		var curr: Node = stack.pop_back()
 		if curr is MeshInstance3D:
 			var mi: MeshInstance3D = curr as MeshInstance3D
-			if mi.mesh != null:
+			if mi.mesh != null and (not visual_only or _mesh_is_visual(mi, root_n)):
 				var bb: AABB = mi.global_transform * mi.get_aabb()
 				if any:
 					merged = merged.merge(bb)
@@ -420,6 +477,13 @@ func _world_aabb_of(root_n: Node3D) -> Dictionary:
 		for ch: Node in curr.get_children():
 			stack.append(ch)
 	return {"ok": any, "aabb": merged}
+
+
+func _world_aabb_of(root_n: Node3D) -> Dictionary:
+	var visual: Dictionary = _union_mesh_aabb(root_n, true)
+	if bool(visual["ok"]):
+		return visual
+	return _union_mesh_aabb(root_n, false)
 
 
 func _rids_for_bases(bases: Array) -> Array[RID]:
