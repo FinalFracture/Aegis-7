@@ -1,0 +1,1779 @@
+{
+ "source": "godot/assets/models/preface_residential_sector.glb (Rev C, 94a9f36 geometry)",
+ "datum": "GLB root at identity: L1 floor 0.000, L2 floor 4.200",
+ "method": "ray from 0.25 m inside each corner along the diagonal toward it; gap = distance past the corner to first shell hit",
+ "tolerance_m": 0.01,
+ "max_gap_closed_corners_m": 0.0,
+ "n_corners": 68,
+ "n_fail": 0,
+ "corners": [
+  {
+   "room": "101",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "101",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "101",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -4.6,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "101",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -4.6,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Laundry",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -4.4,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Laundry",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -4.4,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Laundry",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 0.4,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Laundry",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 0.4,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Maintenance",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 0.6,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Maintenance",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 0.6,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Maintenance",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 5.9,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Maintenance",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 5.9,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "102",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 6.1,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "102",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 6.1,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "102",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "102",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -2.1,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -2.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": -13.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": -10.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "103",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": -10.1,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 2.1,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 2.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": 10.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": 10.1,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "104",
+   "rect": 1,
+   "level_y": 0,
+   "corner_x": 13.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L1",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -9.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L1",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -9.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L1",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 9.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L1",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 9.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "StairCore",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -1.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "StairCore",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": -1.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "StairCore",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 1.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "StairCore",
+   "rect": 0,
+   "level_y": 0,
+   "corner_x": 1.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "201",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "201",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "201",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -0.1,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "201",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -0.1,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "202",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 0.1,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "202",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 0.1,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "202",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": 1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "202",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": 8.9,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -2.1,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -2.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": -13.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": -10.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "203",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": -10.1,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 2.1,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 2.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": -8.9,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": 10.1,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": 10.1,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": -1.0,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "204",
+   "rect": 1,
+   "level_y": 4.2,
+   "corner_x": 13.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L2",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -9.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L2",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": -9.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L2",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 9.9,
+   "corner_z": -0.8,
+   "inside_dir_xz": [
+    -1,
+    1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "room": "Corridor_L2",
+   "rect": 0,
+   "level_y": 4.2,
+   "corner_x": 9.9,
+   "corner_z": 0.8,
+   "inside_dir_xz": [
+    -1,
+    -1
+   ],
+   "audit_heights_above_floor": [
+    0.3,
+    1.2,
+    2.0,
+    2.8,
+    3.6
+   ],
+   "gap_m": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "status": "PASS"
+  }
+ ]
+}
