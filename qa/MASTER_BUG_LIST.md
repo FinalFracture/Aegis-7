@@ -1,5 +1,5 @@
 # Cylinder Hab-7: Master Bug List
-Owner: Patch (QA lead). Created 2026-11-01. Base: main 7b46c85 (QA sources audited main 39eba42; Patch passes up to 1a349a3).
+Owner: Patch (QA lead). Created 2026-11-01. **Round 2 update 2026-11-01 ~09:45 CST: Patch full pass on fresh clone of main fec275e (tests started at 0d22cbe; code identical to 1c322a2; later commits are QA docs only).** Round 2 sources: QA-01 r1/r2 (0b14029, fec275e), QA-02 GEO-10 (00914fd), QA-03 r2 (0d22cbe), QA-04 r2 (02af68e; its LAY ids are shown as L4r2-xx), QA-05 full pass (29b6c1a). Original base: main 7b46c85 (QA sources audited main 39eba42; Patch passes up to 1a349a3).
 Sources: QA-02 geometry (cd17628), QA-03 visuals (404cdd7), QA-04 layout/props (b5b551a), QA-05 stability/input (7b46c85), and the open items in context/playtest_bug_report.md.
 Master IDs: `M-xx`, in priority order. "Source IDs" keeps the original IDs. QA-04's LAY-xx are shown as L4-xx because they collide with the old fixed LAY-01/02.
 Status values: Open, Open-blocked (waiting on a decision or approval), Deferred (accepted interim), Downgraded, Task (QA/tooling work).
@@ -7,62 +7,83 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 ## Critical / High
 | Master | Sev | Owner | Location / file | Summary | Source IDs | Status |
 |---|---|---|---|---|---|---|
-| M-01 | High | Gage (Rook if a collision mesh is needed) | preface_playable_area.gd ANIMATED_PROP_SPECS; Prop38/39/42/43 nodes | Interactive props 38/39/42/43 have no CollisionObject3D (re-verified b7ec6bd: 0 colliders each). The player walks through them. | GEO-01 | Open (confirmed) |
-| M-02 | High | Gage | preface_playable_area.gd:1830 (Prop43 still at (-8.00,0.235,8.50) yaw 180) | Prop43 clashes with the wall / built-ins and is not at the Rev 3 spot (-5.16,0.235,5.20) yaw -90. Causes 3 placement_assert failures (clearance, mesh_clearance, front_zone). | L4-01 (QA-04 LAY-01), Prop43 clash (1a349a3 pass) | Open-blocked (placement decision) |
-| M-03 | High | Gage | preface_playable_area.gd (no refs) | The 8 interim props from strip4_preface_layout_v1 #5-#12 are not placed (suit storage, lost+found, tea set, clutter kit, telescope, lab crates 104/204, cycler lightbox). | L4-02 | Open |
+| M-01 | High | Gage (Rook if a collision mesh is needed) | preface_playable_area.gd ANIMATED_PROP_SPECS; Prop38/39/42/43 nodes | Interactive props 38/39/42/43 have no CollisionObject3D (re-verified b7ec6bd: 0 colliders each). The player walks through them. | GEO-01 | **Fixed** (04bbed0 AABB colliders; r2 capsule sweep: all 4 props block before the wall) |
+| M-02 | **Med** | Gage | preface_playable_area.gd:1854 | Prop43 position. Target (Vance via Atlas): (-5.16, 0.235, 5.20) yaw -90 on the East Lounge east wall. **Runtime on main (r2 probe): (-4.858, 0.12, 5.20) yaw -90** (Gage's Rev C 101 east wall, face x -4.6) — NOT the (-8.0,0.235,8.5) GEO-10 reports (that was pre-04bbed0). x off by 0.30 m and y 0.115 m low vs target; footprint z 4.25..6.15 overlaps the Rev C 101 wardrobe rect F(-5.1,4,-4.6,7) (wardrobe not yet placed). placement_assert now 26/0. Gage + Vance: pick one spot under the Rev C grid and update prop43_relocation.md / asset list #43. | L4-01, GEO-10, L4r2-01, L4r2-14 | Open (merged; downgraded High->Med) |
+| M-03 | High | Gage | preface_playable_area.gd (no refs) | The 8 interim props from strip4_preface_layout_v1 #5-#12 are not placed (suit storage, lost+found, tea set, clutter kit, telescope, lab crates 104/204, cycler lightbox). | L4-02 | **Fixed** (L4r2: LAY-02 closed; #13 cubbies deferred by Rev 1.1) |
 | M-04 | High | Gage | preface_playable_area.gd:2289 (`directional_shadow_max_distance = 45.0`), _process sun orbit | The sun lights the interior through the opaque drum hull outside the 45 m shadow range. Only the 36 degree window should admit sunlight. | VIS-02 | Open |
+| M-41 | High | Gage (Rook if mesh) | L2 gallery z~0.95 in front of DOOR_APT201 (-11.20) and DOOR_APT202 (7.80) | A body at the gallery side 1.8 m from either door cannot move at all (0 displacement over 8 s of move_forward); at APT202 it settles at y 4.42 (Patch) / 5.28 (QA-01), i.e. on top of a collider ~0.3-1.2 m above the 4.08 deck. Screenshot shows the camera inside geometry. From 1.1 m (z 1.65) APT201 crosses fine. Likely the new 1c322a2 L2 landing edge rail / Rev C corridor colliders. A player who jumps or slides there gets stuck. | NAV-05 (QA-01 r2), Patch r2 door runs | Open (confirmed, 2 sources) |
+| M-42 | High | Gage | preface_playable_area.gd:1909 | #55 bins footprint (0.93..1.23 x 4.70..6.00) overlaps the Maintenance tool wall rect F(0.6,3.6,1.1,6.4); tea caddy touches pad by 0.01 m. | L4r2-16 | Open |
+| M-43 | High | Gage | preface_playable_area.gd:1938, :1945 | 104/204 lamps float 0.75 m at desk height with no #28 window desk placed. | L4r2-17 | Open |
+| M-44 | High | Gage | Prop42_Substation (10.68, 0.12, 8.49) yaw 180 | On the Rev C grid Prop42 sits inside apartment 102 (X 6..14), not the Maintenance E wall (X 5.3..5.9, Z 1..3.5). | L4r2-05 (was L4-05 in M-29) | Open |
 
 ## Medium
 | Master | Sev | Owner | Location / file | Summary | Source IDs | Status |
 |---|---|---|---|---|---|---|
 | M-05 | Med | Gage | preface_playable_area.gd:3175 (`_sun.basis = ...`) | The orbiting sun lights the deck from below / through floors for about half of each 4-minute cycle. There is no occlusion fade. | VIS-03, LIT-01 | Downgraded High->Med (Patch measured only +15% luminance at +180 degrees, 797fc94) |
 | M-06 | Med | Gage | preface_playable_area.gd `_cut_observation_window` (code-generated cut) | Jagged sawtooth shell fragments along the 36 degree window-slice edges. The cut is generated in code, so this is Gage's, not a Rook mesh. | WIN-01 | Open |
-| M-07 | Med | Gage | renders / perf | 2,617 draw calls (paving and curbs drawn as separate meshes). Needs MultiMesh or merging, and a GPU fps run. No GPU numbers yet (QA-05). | PERF-01, QA-05 perf note | Open; needs GPU run (T-02) |
+| M-07 | Med | Gage | renders / perf | 2,617 draw calls (paving and curbs drawn as separate meshes). Needs MultiMesh or merging, and a GPU fps run. No GPU numbers yet (QA-05). | PERF-01, QA-05 perf note, SYS-07 | Open; SYS-07 merged: 9.5k nodes / 4010 meshes / 1018 unique materials. Needs T-02 |
 | M-08 | Med | Gage | pickups at y 0.98 / 5.02 / 5.10 (see QA-02) | 7 pickups are sunk 0.07-0.095 m into shelves and desks. | GEO-02 | Open |
 | M-09 | Med | Gage | (-13.30,5.02,-4.95), (-12.85,5.02,-4.95) | The Apt 201 tool-wall spool and BCI headband float 0.675 m (past the shelf collider edge at x -12.74). | GEO-03 | Open |
 | M-10 | Med | Gage | Ext_47 decal 1002/1003, about (2.0,0.18,-12.1) | Overlapping desire-path decals z-fight. | GEO-04 | Open |
 | M-11 | Med | Gage | sprocket_lift.glb | The sprocket lift (9 clips) is not placed or wired. Rev C scope. | L4-03 | Downgraded High->Med; Open-blocked (Rev C build approval) |
 | M-12 | Med | Gage | service_wall_rail_shuttle.glb | The service wall / pads / coupler arms are not placed or wired. Rev C scope. | L4-04 | Downgraded High->Med; Open-blocked (Rev C build approval) |
-| M-13 | Med | Gage | folding_counter_fold_leaf_3p5.glb | The 3.5 m folding counter run is not placed. | L4-08 | Open |
+| M-13 | Low | Gage | folding_counter_fold_leaf_3p5.glb | The 3.5 m folding counter run is not placed. | L4-08, L4r2-08 | Open, Low/doc: counter removed with the 204 beat but asset list #38 and the .py still list it (Vance/doc owner) |
 | M-14 | Med | Gage + Jared | — | No spot for the 4.0 m reading bench. Needs Jared: rebuild, 3.0 m variant, or plaza. | L4-09 | Open-blocked (Jared) |
-| M-15 | Med | Sloane | preface_playable_area.gd:1411 (`dup.emission = albedo*0.22`) | Blanket 22% self-emission on drum materials flattens lighting, ignores textures, and survives emergency lighting. | VIS-04 | Open |
+| M-15 | Med | Sloane | preface_playable_area.gd:1411 (`dup.emission = albedo*0.22`) | Blanket 22% self-emission on drum materials flattens lighting, ignores textures, and survives emergency lighting. | VIS-04 | Open (r2: 0/10 of 583a3ac applied; emission*0.22 still at PPA:1419) |
 | M-16 | Med | Sloane | `_set_emergency_lighting` ~L2367 | The emergency toggle restores wrong values (fill 0.34 vs authored 0.28, ambient 0.36 vs 0.42) and doesn't dim the luminaires, spots, or emission. | VIS-05 | Open |
 | M-17 | Med | Sloane | Mat_ObservationWindowGlass ~L1417 | The window glass is invisible (alpha 0.06, metallic 0.85). No tint, Fresnel, or mullions. | VIS-06 | Open |
 | M-18 | Med | Sloane | ObservationWindowGlass mesh ~L1430 | The strip and both cap discs are one double-sided alpha mesh, causing sorting errors against fields and starfield. | VIS-07 | Open |
 | M-19 | Med | Sloane | .tscn Environment (reflected_light_source Sky) vs black BG; ReflectionProbe UPDATE_ONCE | Metals reflect a blue-grey sky that doesn't exist. The probe bakes before the interiors stream in. | VIS-08 | Open |
-| M-20 | Med | Rook | Side_Room_East_Lounge / West_Storage vs *_SeamFix (x -4.75/-12.25/0.75/8.25) | SeamFix boxes are coplanar with the room shells (about 19 m2 each). Z-fight risk. Confirm visually. | GEO-05 | Open |
-| M-21 | Med | Rook | DoorHubBulkhead DockPad_InductionRing vs DockPad_Chevrons, all 6 hubs | Coplanar dock-pad meshes z-fight. | GEO-06 | Open |
+| M-20 | Med | Rook | Side_Room_East_Lounge / West_Storage vs *_SeamFix (x -4.75/-12.25/0.75/8.25) | SeamFix boxes are coplanar with the room shells (about 19 m2 each). Z-fight risk. Confirm visually. | GEO-05 | **Fixed per Rook** (94a9f36 rebuild; not independently re-verified) |
+| M-21 | Med | Rook | DoorHubBulkhead DockPad_InductionRing vs DockPad_Chevrons, all 6 hubs | Coplanar dock-pad meshes z-fight. | GEO-06 | **Fixed per Rook** (94a9f36; not re-verified) |
+| M-45 | Med | Rook + Gage | placement_assert SEAM_AUDIT (15 pass / 24 fail on fec275e) | Rook's 24 Rev C GLB seam failures. 15 = L2 corners (-12.74,-5.69), (+/-5.35, 2.65), (+/-5.35, 8.55) at y 5.12/5.92/6.72: no hit at all (no wall where the audit expects one). 9 = L1 corners (-4.75,7.98), (0.75,8.16) past 0.21 m through RevC_Shell_L1_col, and (8.25,8.16) no hit. The corner table is the pre-Rev C grid, so Gage: re-derive SEAM_AUDIT corners (and the /tmp capsule-sweep perimeters) from the Rev C room rects; Rook: confirm the RevC_Shell_L1/L2 corners close to 0.010 m once audited at the right coordinates. | Rook 24 seam fails (atlas-handoff-v6), SEAM_AUDIT r2 | Open |
+| M-48 | Med | Sloane + Gage | `_spawn_apt201_bench_outline`, Apt201_ExBench_DustOutline (-12.05, 4.418, 7.65) | Solid unshaded tan 3.7x2.5 m quad (alpha 0.55, CULL_DISABLED) 3 mm above the floor: z-fight risk, ignores lighting/emergency. Should be the M-37 #54 Decal. | VIS-12 | Open |
+| M-51 | Med | Gage | godot/assets/**/*.import | All 287 textures imported lossless (compress/mode=0), no VRAM compression; est. ~1.1 GB if resident. | SYS-06 | Open (confirm in T-02) |
+| M-56 | Med | Gage | preface_playable_area.gd:1895 | 102 suit hook + storage at (7.82, 4.85), ~2.0 m from Rev C rect centre (6.35, 6.25). | L4r2-18 | Open |
+| M-57 | Med | Gage | preface_playable_area.gd:1902 | Clutter kit overlaps the 202 sofa rect; placed in 202 only (spec: 101/102/104/202). | L4r2-19 | Open |
 
 ## Low
 | Master | Sev | Owner | Location / file | Summary | Source IDs | Status |
 |---|---|---|---|---|---|---|
 | M-22 | Low | Gage | project.godot:16/92; Environment SSAO/SSR | gl_compatibility is the chosen renderer (D670-07 already gates SSR to forward_plus), so missing SSAO/SSR is a design tradeoff, not a bug. Action: drop or gate the dead SSAO settings, fix config/features ("Forward Plus" label), and fake contact shadows if needed. | VIS-01 | Downgraded High->Low (design) |
-| M-23 | Low | Gage | preface_playable_area.gd:2703 (`KEY_E`, `KEY_F`, toggles) | Interact, RFID pulse and the toggles are hardcoded keys, so they can't be remapped (an `interact` action exists but is unused). Movement does use actions (L2771). SYS-03 cites player_camera.gd:104-188, but no scene uses that script (dead code). INPUT-01 was only partly fixed. | SYS-03, INPUT-01 (partial) | Open |
+| M-23 | Low | Gage | preface_playable_area.gd:2703 (`KEY_E`, `KEY_F`, toggles) | Interact, RFID pulse and the toggles are hardcoded keys, so they can't be remapped (an `interact` action exists but is unused). Movement does use actions (L2771). SYS-03 cites player_camera.gd:104-188, but no scene uses that script (dead code). INPUT-01 was only partly fixed. | SYS-03, INPUT-01 (partial) | Open (QA-05: also PPA:2882/:2279 and E/Tab in player_camera.gd) |
 | M-24 | Low | Gage | nav bake | 40 navmesh islands plus "8 edge errors" (overlapping edges) at load. | NAV-02, GEO-09, SYS-02 | Open |
 | M-25 | Low | Gage | engine exit | RID / ObjectDB / GL leaks at exit. Exit only. | E793-01, SYS-01 (QA-05 rated Med) | Open |
 | M-26 | Low | Gage | --qa-reticle-stars-doors | QA run takes 554 s and keeps getting slower. | E793-02 | Open |
 | M-27 | Low | Gage | preface_playable_area.gd:417 | Headless force-quits after about 4 frames unless a QA flag is set. Needs a --soak flag for stability runs. | SYS-04 | Open (tooling) |
 | M-28 | Low | Gage | `_run_qa_egress`, `_run_qa_player_exit` | Egress test hardening: add Y bands per waypoint (a fall would pass), pass doors only once the player is through, stop on first failure, use input actions. player-exit writes rotation_degrees.y directly. | egress review (1a349a3 pass) | Open (tooling) |
-| M-29 | Low | Gage | Prop42 (10.68,8.35) / Prop39 (-4.10,8.55) / Prop38 (-1.85,8.45) | Interim positions differ from Rev C. Accepted for the preface; move at the Rev C rebuild. | L4-05, L4-06, L4-07 | Deferred |
+| M-29 | Low | Gage | Prop42 (10.68,8.35) / Prop39 (-4.10,8.55) / Prop38 (-1.85,8.45) | Interim positions differ from Rev C. Accepted for the preface; move at the Rev C rebuild. | L4-05..07, L4r2-06, L4r2-07 | Open, **Med** (Prop39 Δ in #55 slot, Prop38 Δx 0.54 m now the frame is identity; Prop42 split out to M-44) |
 | M-30 | Low | Gage | 37 Rev C GLBs | Rev C interiors are unbuilt (no references). | L4-10 | Downgraded Med->Low; Open-blocked (Rev C approval) |
 | M-31 | Low | Gage | Hatch_D204_EmitterPanel (-11.20,5.45,-5.30) | Confirm the troubleshoot panel isn't standing in for the moved emitter bench #31. Also, D-204 is a panel, not a walkable hatch (HATCH-01, ee61cb6). | L4-12, HATCH-01 | Open (confirm) |
 | M-32 | Low | Gage | R_HULL_FLOOR 185.5 vs plan R=200 | The bend radius isn't verified in code. | L4-13 | Open (verify) |
 | M-33 | Low | Sloane | starfield end caps ~L4499 | Stars are stretched and shimmer on the end-cap discs (cap UVs, 6x3 scale). | VIS-09 | Open |
 | M-34 | Low | Sloane | material import loop ~L2440-2460 | All prop glass is forced to one grey-blue, and every surface is CULL_DISABLED. | VIS-10 | Open |
-| M-35 | Low | Sloane | `_add_recreation_grass_slab` ~L1562 | The grass slab is a flat untextured green placeholder. | VIS-11, grass placeholder (797fc94) | Open |
-| M-36 | Low | Sloane | Seam03_Alcove2C_EastRail / Rail | The Alcove 2C rail renders as a flat untextured grey slab. | RAIL-01 | Open |
-| M-37 | Low | Sloane | — | Window cards x8 and removal decals are not modeled. | L4-11 | Open |
-| M-38 | Low | Rook | APT 201 (-13.65,2.65), APT 202 (13.65,2.65); side-room front corners z~2.92 | Outer front corners are 0.05 m short. Side-room SeamFix walls leave about a 0.02 m slot behind the front wall. | SEAM-04 | Open |
-| M-39 | Low | Rook | DoorHubBulkhead TalkPad vs IntercomRing | Coplanar faces (about 3 cm2). | GEO-07 | Open |
-| M-40 | Low | Rook | Open_Portal_Sector_Exit (z -8.76) | Portal face is coplanar with the vestibule shell (about 9.35 m2). | GEO-08 | Open |
+| M-35 | Low | Sloane | `_add_recreation_grass_slab` ~L1562 | The grass slab is a flat untextured green placeholder. | VIS-11, grass placeholder (797fc94), VIS-15 | Open (qa03 grass texture shipped but unreferenced) |
+| M-36 | Low | Sloane | Seam03_Alcove2C_EastRail / Rail | The Alcove 2C rail renders as a flat untextured grey slab. | RAIL-01, VIS-15 | Open (qa03 rail texture shipped but unreferenced) |
+| M-37 | Low | Sloane | — | Window cards x8 and removal decals are not modeled. | L4-11, L4r2-11 | Open (VIS-12 is the wrong stand-in for #54, see M-48) |
+| M-38 | Low | Rook | APT 201 (-13.65,2.65), APT 202 (13.65,2.65); side-room front corners z~2.92 | Outer front corners are 0.05 m short. Side-room SeamFix walls leave about a 0.02 m slot behind the front wall. | SEAM-04 | **Fixed per Rook** (94a9f36). Note: SEAM_AUDIT corners no longer match the Rev C grid, see M-45 |
+| M-39 | Low | Rook | DoorHubBulkhead TalkPad vs IntercomRing | Coplanar faces (about 3 cm2). | GEO-07 | **Fixed per Rook** (94a9f36) |
+| M-40 | Low | Rook | Open_Portal_Sector_Exit (z -8.76) | Portal face is coplanar with the vestibule shell (about 9.35 m2). | GEO-08 | **Fixed per Rook** (94a9f36) |
+| M-46 | Low | Gage (Rook if shelter mesh) | Tram platform / shelter near (12.8, -16.6) | Player can't reach the tram point: --qa-egress final pos (11.56, 0.35, -16.57) = 1.24 m short (QA-01 r2: stalls at (10.26,0.33,-16.97)). Passes the 1.5 m egress criterion. Check platform/shelter back-glass colliders. | NAV-04 | Open (confirmed) |
+| M-47 | Low | Gage (design) | stair junction (~9.7,-5.9), plaza fork (~2.9,-11.5), tram (~12,-16.6) | No directional wayfinding signs; only door header lintels. | NAV-06 | Open |
+| M-49 | Low | Sloane | PPA ~:1080 `jamb_mat` | Door jamb material is untextured flat grey. | VIS-13 | Open |
+| M-50 | Low | Sloane | design/materials/qa03_visual_fix_spec.md | Spec targets Godot 4.3; PPA line refs off by up to ~210. Re-anchor by symbol and re-check caveats for 4.7 Compatibility. | VIS-14 | Open |
+| M-52 | Low | Gage | 3 showcase scenes | Reference scripts deleted in 2f35758. | SYS-05 | Open |
+| M-53 | Low | Gage | exit | "Cannot get path of node as it is not in a scene tree" x4 at exit. | SYS-08 | Open |
+| M-54 | Low | Gage | boot validate | interactables 25 -> 19 since cd17628. Patch r2: all 6 RFID doors still exist and work, so the drop is not doors; most likely the props removed in 04bbed0 (201 objective, 204 door beat, lockers). Gage confirm intended. | QA-05 full pass | Open (confirm) |
+| M-55 | Low | Vance / doc owner | residential_asset_list_rev_c.md #14, #55 | Asset list still puts tea sets in 102/203 and bins on the Laundry N wall; code has both in Maintenance. | L4r2-15 | Open (doc) |
 
 ## QA tasks
 | Task | Owner | Summary | Status |
 |---|---|---|---|
 | T-01 | Patch | Capsule sweep with the real player capsule (r 0.35, h 1.75) on main b7ec6bd: 3,799 test_move pushes outward through 6 room perimeters at 0.05 m steps (door spans excluded). 92 flagged moves: 80 sit within 0.15 m of a corner, where the start pose overlaps the adjacent wall (sweep artifact). The 29 on the Room 2B west wall (x 5.35, z 6.1-7.5) were rechecked: rays at 0.3/1.0/1.7 m hit the wall at x 5.53, and a real move_forward walk stops at x 6.04. **No capsule-passable wall gaps, so no new GEO items.** Prop check confirms M-01: Props 38/39/42/43 have 0 CollisionObject3D, and a ray straight through Prop42 hits nothing. | Done (no gaps) |
-| T-02 | Patch / Jared GPU box | GPU run: --render-all for QA-03 light levels, plus fps for PERF-01 / QA-05. | Open |
+| T-02 | Patch / Jared GPU box | GPU run: --render-all for QA-03 light levels, plus fps for PERF-01 / QA-05. QA-05 checklist (qa/QA-05/2026-11-01-full-pass.md): 1) spawn 1st/3rd person avg/p95/p99 frame time 60 s at 1080p+1440p; 2) draw calls/objects/primitives at spawn, atrium, apartment, corridor+stair (SYS-07); 3) VRAM texture/buffer mem at boot and after all sectors (SYS-06); 4) light cost: flashlight R, emergency N, 4 shadow lights each toggled; 5) RFID pulse F / interact spike; 6) camera presets 1-4/0 hitch; 7) load to first frame + shader-compile hitches; 8) 10-min soak memory + exit leaks (SYS-01); 9) preface_service_call_test baseline. | Open |
+| T-03 | Patch | Round 2 capsule sweep (fec275e): 3,799 tests, 735 free passes, 93 GAP runs, all along the **pre-Rev C** room perimeters the sweep still uses, so not yet attributable to real gaps. Re-run once M-45 supplies Rev C perimeters. Off-route grid sweep (QA-01 gap) still not done. | Open |
 
 ## Merged duplicates
+- GEO-10 = L4r2-01 = L4r2-14 = L4-01 -> M-02 (Prop43)
+- SYS-07 -> M-07; SYS-03 -> M-23; VIS-15 -> M-35/M-36; L4r2-05 -> M-44; L4r2-06/07 -> M-29; L4r2-08 -> M-13; L4r2-03/04 -> M-11/M-12 (unbuilt Rev C scope, not defects); L4r2-10 -> M-30; L4r2-12 -> M-31; L4r2-13 -> M-32
+- Rook 24 Rev C seam fails = SEAM_AUDIT 24 fail -> M-45
 - VIS-03 = LIT-01 -> M-05
 - QA-04 LAY-01 = Prop43 clash -> M-02
 - VIS-11 = grass placeholder -> M-35
@@ -72,5 +93,9 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 - L4-12 + HATCH-01 -> M-31
 - L4-05/06/07 interim offsets -> M-29
 
-## Reserved for QA-01
-(QA-01 findings will be added here and merged into the tables above.)
+## QA-01 (merged)
+- NAV-01 (RM1A/RM1B/SECTOR4_EXIT one-sided): **Not a bug.** Patch r2 fresh scene per door side, one E press each: all 12 door-sides open (FieldCollider disabled=true, prompt "...// CLOSE") and 10/12 cross; the 2 non-crossings are M-41 start points, not the doors. QA-01 r2 agrees (toggle confound in r1).
+- NAV-02 (APT201 rescan locks): **Not a bug.** E toggles by design; prompt reads "// CLOSE" while open. Patch: E1 open, E2 (1.5 s later) still open, E3 closed.
+- NAV-03 (ALCOVE2C from inside): **Not a bug.** Opens and crosses from (-11.5, 4.08, -5.35).
+- NAV-04 -> M-46. NAV-05 -> M-41. NAV-06 -> M-47.
+- D-204 hatch: troubleshoot-simple 12/0 incl. e_aim_hatch_opens_ui; still a panel, not a walkable exit (M-31, pending Jared).

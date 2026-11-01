@@ -633,3 +633,21 @@ Recommend adding Y bands per waypoint.
 - Still open: NAV-02 (40 islands), E793-01 (exit leaks), E793-02 (reticle 554 s, getting worse), Prop43 placement (3 fails, waiting on a decision).
 - Regressions: none. D670-01/04/06/07, 5DB-01/02/03, LAY-01/02, HAND-01, NAV-01/03, CYL-01/02 still pass.
 Screenshots: godot/renders/qa/pass_1a349a3/.
+
+## Full QA round 2, main fec275e (Patch, 2026-11-01 ~08:50-09:50 CST, box, Godot 4.7.2 opengl3/xvfb, fresh GitHub clone /tmp/qa_r)
+Code under test is identical to 1c322a2 (0d22cbe..fec275e are QA docs only). Fresh clone: `godot --headless --import` exit 0.
+### Suites
+placement_assert 26 pass / 0 fail (Prop43 clash gone) + **SEAM_AUDIT 15 pass / 24 fail** (= Rook's 24 Rev C seam fails, M-45); exterior 1010/0; hand-controls 0 fail; troubleshoot-simple 0 fail (incl. e_aim_hatch_opens_ui); forcefield-door 4/4; nav-reach 19/19 (40 islands, M-24 open); --qa-egress 0 fail (final pos (11.56,0.35,-16.57), 1.24 m short of tram point, M-46); --qa-player-exit 0 fail; reticle-stars-doors 0 fail. Exit leaks still present (M-25).
+### Doors, fresh scene per door side (/tmp/qa_r/godot/qa_tmp/nav1.gd: setup place 1.8 m, mouse-look, ONE real E, check, then move_forward through)
+All 12 door-sides opened on one E (open=true, FieldCollider disabled=true, prompt "...// CLOSE"). Crossed: RM1A both, RM1B both, SECTOR4_EXIT both, ALCOVE2C both, APT201 apt side, APT202 apt side. Not crossed: APT201 and APT202 from the gallery at z 0.95 — the body never moves (APT202 settles at y 4.42); from 1.1 m (z 1.65) APT201 crosses. => NAV-01/02/03 not a bug (agrees with QA-01 r2); NAV-05 confirmed as M-41 (High). APT201 triple E: open / open / closed (toggle, by design).
+### Walkthrough
+Spawn -> APT201 -> L2 corridor -> stair -> concourse -> SECTOR4_EXIT -> plaza -> tram via --qa-egress/--qa-player-exit (real key input). All other exits (RM1A, RM1B, ALCOVE2C, APT202) covered by the per-door real-input crossings above. D-204 is a troubleshoot panel, not a walkable exit (M-31). Off-route grid sweep not done (T-03).
+### Seams / capsule sweep
+SEAM_AUDIT 24 fails: 15 at L2 corners (-12.74,-5.69), (+/-5.35,2.65), (+/-5.35,8.55) with no hit; 9 at L1 (-4.75,7.98), (0.75,8.16) leaking 0.21 m through RevC_Shell_L1_col and (8.25,8.16) no hit. The corner table is pre-Rev C, so both the audit and the shells need re-checking (M-45). Capsule sweep 3,799 tests / 735 free passes / 93 GAP runs on stale pre-Rev C perimeters, not attributable yet (T-03).
+### Other checks
+- Prop43 runtime: (-4.858, 0.12, 5.20) yaw -90, not the (-8.0, 0.235, 8.5) in GEO-10 and not the target (-5.16, 0.235, 5.20). M-02 Med.
+- Sloane's spec 583a3ac: 0/10 applied (emission*0.22 at PPA:1419, shadow distance 45 at PPA:2496, 0 refs to qa03/). M-15..19, M-33..37 open.
+- Interactables 25 -> 19: all 6 RFID doors present, so the drop isn't doors (M-54, Gage confirm).
+### Master list (qa/MASTER_BUG_LIST.md)
+New 17 (M-41..M-57): High 4 (M-41 NAV-05, M-42 bins/tool wall, M-43 floating lamps, M-44 Prop42 in apt 102); Med 6 (M-45, M-48, M-51, M-56, M-57 + M-29 raised); Low 7. Fixed 7: M-01, M-03 (verified), M-20, M-21, M-38, M-39, M-40 (per Rook 94a9f36). Still open 50 (33 old + 17 new). NAV-01/02/03 closed as not-a-bug.
+Screenshots (not committed): /workspace/qa_shots_r/ (nav_DOOR_*_{hub,back}.png, seam_*.png, mezzanine_rail.png).
