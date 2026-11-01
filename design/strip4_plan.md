@@ -1,5 +1,5 @@
 # Strip 4 — "Spin Street Residential" (Valley A) — Plan v1
-**Status:** DRAFT v1, 2026-10-31 (Vance). Markdown only: no assets, no code.
+**Status:** DRAFT **v2**, 2026-10-31 (Vance). v2 resolves every blocker and risk in Rook's review (§13), and the resolution log is §14. Where v1 text below conflicts with v2, the v2 text and §14 win. Markdown only: no assets, no code.
 **Sources:** `cylinder_master_plan.md` @124a1bb, `residential_exterior_plan_v1.md` (v1.3), `preface_test_environment_and_wrist_spec.md`, and Rook's curvature numbers (Oct 31).
 
 ## 1. Frame and coordinates
@@ -44,20 +44,25 @@
 |---|---|---|
 | Building (−14..14, −9..9) | x 86..114, z 27..45 | Unchanged. Ground floor plinth bays 2 × 9 m (sag 0.05 m each) |
 | Sector-4 plaza and promenade (Z −9..−18.5) | z 45..54.5 | Unchanged |
-| Ground tram band and rails (Z −18.5..−22.5) | z 54.5..58.5 | **Removed.** It becomes the station forecourt walkway (4 m) |
+| Ground tram band and rails (Z −18.5..−22.5) | z 54.5..58.5 | **Removed.** v2: **canal z 51.4..54.3** (2.5 m water + 2 × 0.2 m coping), then forecourt z 54.3..61.3 |
 | Ground tram shelter (X 12..18, Z −16.9..−15.6) | x 112..118, z 51.6..52.9 | **Removed as a stop.** The lived-in shelter stays as a story prop (rain shelter / sleeper, #48) |
 | Platform kerb, stop totem, cyan tactile kerb | — | Move up to the elevated platform edge (Gage TODO per master plan §4) |
-| Canal edge (Z −26) | z 62.0 | The canal moves to z 58.5..61.0 (§7) |
+| Canal edge (Z −26) | — | v2: the canal moves inboard to z 51.4..54.3, clear of the platform (§7) |
 | Memorial nook v1.3 (X 17.4..21.6, Z −12.7..−9.6) | x 117.4..121.6, z 45.6..48.7 | Unchanged. It faces +z toward the station and canal (the v1.3 180° rotation is still correct) |
 | Spin St W/E (roads) | x 77..83 / 117..123 | Become **6 m walkways (Spin Walk W/E)** with planter islands. The cart bollards stay at the promenade end |
 | Service lane (Z 11.8..15.8) | z 20.2..24.2 | Becomes a 4 m **service walkway** for Sprocket and carts |
 
-- **Elevated stop x = 100 on S4|5:**
-  - The platform runs x 85..115 on the strip-4 side of the guideway (z 59.3..62.3).
-  - The deck is +5.4 m above the floor; the rail top sits about 5.0 m up, inside the 4.6–6.1 m band.
+- **Elevated stop x = 100 on S4|5 (v2):**
+  - The platform runs x 85..115, z **57.93..61.43**. Its edge is at z 61.43 = 62.83 − 1.405, clear of the car envelope z 61.50..64.16 (a 70 mm gap).
+  - It is **cantilevered 3.37 m** off the rib piers (rib edge z 61.3), so there are no piers in the canal and the canal is not underneath.
+  - Deck +5.40 = car floor (rail top **+5.26**).
 - **Access from grade:** two stair and lift towers (§5.2):
-  - **West tower** at x 86..92, z 54.5..58.5, on the forecourt and clear of the plaza approach.
-  - **East tower** at x 108..114, z 54.5..58.5, 3.4 m west of the memorial and clear of its 1.4 m east walk.
+  - Towers are 7 × 5 m.
+  - **West tower** at x 85..92, z 54.3..59.3.
+  - **East tower** at x 107..114, z 54.3..59.3.
+  - Each tower's top landing overlaps the platform deck by 1.37 m, so no bridge is needed.
+  - A 2.0 m forecourt walk passes the towers at z 59.3..61.3.
+  - Memorial clearance: 3.4 m in x (114 → 117.4) and 5.6 m in z (48.7 → 54.3).
 - The old resident desire path (platform → exit ramp) now runs from the stair foot to the exit, which is shorter.
 
 ## 4. Zoning blocks (axial boulevard)
@@ -90,33 +95,42 @@
   - Notable ones: **Fore Hub** (x 0, S4|5) and **Commons Central** (x 400, S3|4).
 
 ### 5.1 Guideway and piers
-- **T-beam guideway:** the rail top is +5.0 m (inside the 4.6–6.1 band) and the beam is 1.2 m deep.
+- **T-beam guideway (v2):** the rail top is **+5.26 m**, measured from the floor, not the rib top. The promoted 0.163 m guideway slab sits on a new 1.2 m T-beam. The beam soffit is 5.26 − 0.163 − 1.2 = **+3.90 m**, and the car roof is +8.50.
 - **Modules** are 10 m precast spans.
 - **Piers:**
   - Every **20 m** on open track (2 modules per span).
   - Every **10 m** under station platforms.
   - Each pier stands on the seam rib (2–3 m raised hull frame), so no walkway is blocked.
-- **Clear height under the beam** is 5.0 − 1.2 = 3.8 m for walkways crossing under (2.5 m minimum is required).
+- **Clear height under the beam** is 3.90 m (2.5 m minimum is required).
+- **Culvert:** it sits mid-span at **x 530**, between piers at 520 and 540. The pier grid is unchanged and no pier stands on the culvert.
 
 ### 5.2 Stations
-- **Platform:** 30 m long, so a 2-car 24 m train fits with 3 m at each end.
+- **Platform:** 30 m long, so the 2-car 24.31 m train fits with 2.85 m at each end. It is a **straight 30 m tangent deck on piers**, and the guideway kinks only outside the platform.
   - Width: 3.5 m local, 5 m at transfers.
-  - Deck +5.4 m. The car floor is about +5.4 m, the gap is 75 mm or less, and the cyan tactile kerb runs along the edge.
+  - Deck +5.40 m = car floor (rail top +5.26 + 0.14). The edge sits 1.405 m from the track centre (70 mm gap), with the cyan tactile kerb along it.
 - **Canopy:** steel and BLEND glass, 3.0 m clear above the deck.
-- **Access tower** (6 × 4 m): a 2-flight stair (2 × 2.7 m rise, 1.2 m wide, ≤ 180 mm risers, half landing) plus a 1.6 × 1.6 m lift. Local stops have 2 towers per platform and transfers have 4. All doors are force-field.
+- **Access tower (v2), 7.0 × 5.0 m:**
+  - Dog-leg stair, 2 flights × 15 risers at 180 mm (2.7 m each), 14 treads × 280 mm = **3.92 m going**.
+  - Landings: 1.2 m half landing and 1.2 m bottom landing.
+  - Width: 2 × 1.2 m flights + 0.1 m well + 0.15 m walls.
+  - Lift shaft 1.9 × 1.9 m including walls. Local stops have 2 towers per platform and transfers have 4. All doors are force-field.
 
-### 5.3 Straight seam lines vs curved ring lines
-- **Seam (axial) lines are straight.** Platforms are straight, with no curvature issue.
-- **Ring lines follow the circumference.**
-  - On the floor-radius arc, a 10 m module turns 10/200 rad = **2.865°** and bows (sagitta) 10² / (8 × 200) = **62 mm**.
-  - At the guideway height the radius is about 195 m, so a module turns 2.94° and bows 64 mm.
-- **Proposal:**
-  - **Open ring track:** straight 10 m modules with **angled joints of 2.87° at each pier**. The 62 mm bow is hidden by the beam fascia, and no curved mesh is needed.
-  - **Ring-line station platforms** (where a station has a ring face): 3 × 10 m **curved platform-edge modules** (R ≈ 195 m), so the gap between a straight 12 m car and the platform stays under 75 mm. A 12 m car on R 195 has a mid-ordinate of about 92 mm, which straight edges would exceed.
-  - **Seam-line platforms stay straight.**
-- **Crossings:** where a ring crosses a seam line, both are elevated, so they must be grade-separated:
-  - Proposed: the seam line stays at +5.0 m and the ring line rises to a **+10.5 m upper level** within ±70 m of each crossing (4% max grade).
-  - This is outside the 4.6–6.1 m band, so it is Q3 below.
+### 5.3 Straight seam lines vs curved ring lines (v2)
+- **All platforms are straight 30 m tangents. There are no curved platform edges.**
+  - Rook's point: the ring curve is vertical, so a curved edge would not help.
+  - On a ring line the floor under the platform ends drops 15² / (2R) ≈ 0.59 m, and pier height absorbs it.
+- **Ring track:** straight modules with mitred joints and a pier-cap joint cover. The cover hides the ~31 mm wedge (1.2 m × tan of half the joint angle).
+  - **If the ring is permanently up (recommended, rail top +10.2, R 189.8):** circumference 1192.6 m = **120 modules × 9.938 m**, 3.00° per joint.
+  - **If the seam dips instead (ring at +5.26, R 194.74):** 1223.6 m = **123 modules × 9.948 m**, 2.927° per joint. This is Rook's 123 × 9.961 recomputed at the +5.26 rail top.
+- **Crossings:** the v1 "+10.5 m within ±70 m at 4%" is **dropped** (impossible: 5.5 m at 4% needs 137.5 m).
+  - The ring rail must clear the seam car roof: 8.50 + 0.30 + 1.2 + 0.163 = **+10.16 m** minimum.
+
+| Option | Geometry | Pros | Cons |
+|---|---|---|---|
+| **A (recommended): ring lines permanently up**, rail top +10.2 | No grades. Ring station decks at +10.34. Two-level transfers: seam +5.40, ring +10.34 | Simplest track. All 50 transfers identical. No ramps interfering between crossings (125.7 m apart along the ring) | 4.1 m above the 4.6–6.1 band. Taller towers (2 × 5.2 m, ~29 risers, lift essential). Heavier visual mass overhead |
+| B: seam line dips under the rings | Ring at +5.26 (soffit +3.90), so the seam car roof must be ≤ +3.60 and the seam rail ≤ +0.36: a **4.9 m dip**. At 4% that is 122.5 m per side + 30 m flat = 275 m > the 200 m ring spacing, so it is infeasible. At **8%**: 61.3 m per side + 30 m = 152.5 m, leaving a 47.5 m flat top between dips. The x 100/300/500/700 local stops stay on that flat top | Ring stays in band | Seam stations at grade cut the ground walkways and rib crossings. Continuous 8% grades. Local-stop flats are only 47.5 m |
+
+  - Q3 for Jared: A vs B.
 
 ## 6. Buildings (footprints and heights)
 Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. "Bays" are plinth bays per rule P1.
@@ -124,12 +138,12 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 | ID | Building | x range | z range | Footprint | Floors / height | Plinth |
 |---|---|---|---|---|---|---|
 | P-1 | **Preface residential (rev C, existing)** | 86..114 | 27..45 | 28 × 18 | 2 / 8.8 m + parapet | 2 bays × 9 m |
-| H-A1..A6 | Housing Row A mid-rise ×6 | 55..195 (20 m each, 4 m gaps) | −42..−24 | 20 × 18 | 4 / 17.6 m | 2 bays × 9 m |
+| H-A1..A6 | Housing Row A mid-rise ×6 (v2 re-grid, clear of the cross walks) | 53..73, 77..97, 103..123, 127..147, 153..171, 175..193 | −42..−24 | 20 (18 for A5/A6) × 18 | 4 / 17.6 m | 2 bays × 9 m + 0.20 m skirt |
 | C-1..C4 | Courtyard homes ×4 | 155..195 | 10..40 | 18 × 30 (U-shape) | 2 / 8.8 m | 3 bays × 10 m |
-| M-1 | Ring 25 market hall | 210..240 | −20..20 | 30 × 40 | 1 / 9 m | 4 bays × 10 m (step 0.06–0.25 m) |
+| M-1 | Ring 25 market hall | 210..240 | −20..20 | 30 × 40 | 1 / 9 m | **v2: 8 × 5 m bays.** Steps 0 / 0.125 / 0.25 / 0.375 m. The outer 0.375 m step is 2 risers of 0.1875 m plus a 4.5 m 1:12 ramp at the doors |
 | H-B/C | Housing Rows B, C ×12 | 255..395 | ±(24..42) | 20 × 18 | 4 / 17.6 m | 2 bays |
-| K-1 | Clinic + school (Civic) | 300..340 | −58..−46 | 40 × 12 | 3 / 13.2 m | 1 bay (12 m) |
-| G-1 | Civic Gate / Commons Central concourse (at grade under the station) | 395..425 | −62..−48 | 30 × 14 | 2 / 9 m | 2 bays × 7 m |
+| K-1 | Clinic + school (Civic) | 303..343 | **−44.5..−32.5** (v2, off the promenade) | 40 × 12 | 3 / 13.2 m | 1 bay (12 m) |
+| G-1 | Civic Gate / Commons Central concourse | **407..437** (v2, clear of the ring walk at 394..406) | **−44.5..−30.5** (v2, off the promenade and rib) | 30 × 14 | 2 / 9 m | 2 bays × 7 m |
 | H-D/E | Housing Rows D, E ×12 | 455..595 | ±(24..42) | 20 × 18 | 4 / 17.6 m | 2 bays |
 | R-1 | Ring 75 rec yard + depot | 610..640 | −40..−20 | 30 × 20 | 1 / 6 m | 2 bays × 10 m |
 | H-F | Aft Housing ×12 | 655..795 | ±(24..42) | 20 × 18 | 4–5 / ≤ 22 m | 2 bays |
@@ -139,15 +153,16 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 
 ## 7. Canal and river headwater link
 - The **Canal Promenade canal** runs axially at z 58.5..61.0 (2.5 m wide, 1.2 m deep, railing and coping #46 on the strip side) from x 40 to x 560.
-- **Headwater Basin** (landmark): at x 500..540, z 48..61, a 40 × 13 m pool with a weir.
-- **Link to strip 5:** at x 540 the water passes under the S4|5 seam rib in a culvert (one of the 2–4 rib crossings, with a gated walkway above). It feeds **the River** in strip 5, per master plan §3: the canal outflow to the Green recirculates to strip 2.
+- **v2 canal:** z 51.4..54.3, from x 40 to **x 530**, with no dead end. Each 6 m cross walk crosses it on a footbridge.
+- **Headwater Basin** (landmark, v2): x 518..545, z 45..54.3, a 27 × 9.3 m pool with a weir. It sits clear of the x 500 platform (x 485..515) and its towers.
+- **Link to strip 5:** at **x 530** (mid-span between piers 520 and 540) the water passes under the S4|5 seam rib in a culvert (one of the 2–4 rib crossings, with a gated walkway above). It feeds **the River** in strip 5, per master plan §3: the canal outflow to the Green recirculates to strip 2.
 - **Supply:** the master plan's Cascade aqueduct along the 3–4 border delivers water at x 40 (Fore end) via a cross-strip channel. That channel runs under the Spine Walk on a 2.5 m culvert bridge at x 40.
 - The canal is flat along x (P2), so the gradient is pumped or wire-weired, not built into the floor.
 
 ## 8. Landmarks
 1. **Preface building and its x = 100 station** (Chapter 1 start, the D-204 hatch, the first tram ride).
 2. **The Memorial (#29 monument)** at x 117.4..121.6, z 45.6..48.7, facing +z. It is the first landmark seen from the platform.
-3. **The Canal Promenade and Headwater Basin** (x 500..540).
+3. **The Canal Promenade and Headwater Basin** (x 518..545).
 4. **Fore Hub** (x 0, S4|5): passenger dock interchange, with the end-cap terrace stairs.
 5. **Commons Central** (x 400, S3|4): Civic ↔ Spin Street, Chapter 1's first trip.
 6. **Ring 25 Market Hall** (M-1).
@@ -156,7 +171,7 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 | Walkway | Width | Notes |
 |---|---|---|
 | Spine Walk (axial, z 0) | 12 m | Main axis; amber poles every 10 m |
-| Canal / Civic Promenades | 9.5 m | Through-walk of at least 2.7 m kept clear (v1.3 QC) |
+| Canal / Civic Promenades | 9.5 m (Canal side v2: z 45..51.4 plus the canal) | Through-walk of at least 2.7 m kept clear (v1.3 QC) |
 | Ring cross-walks (x 0/200/400/600/800) | 12 m | Under the ring guideway, clear height ≥ 3.8 m |
 | Cross Walks (every 50 m) | 6 m | Run along z, so they rise with the curve: 1:12 ramps or steps at each plinth step |
 | Spin Walk W/E (preface) | 6 m | The former Spin Streets |
@@ -167,10 +182,12 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 ## 10. Open questions for Jared
 1. **Q1 Floor radius:** use R 200 everywhere (proposed; preface assets fit within 1–2 mm), or keep 185.5?
 2. **Q2 Preface axial slot:** is x = 100 (one stop from the Fore Hub) right, or should it sit next to Commons Central (x 400)?
-3. **Q3 Ring × seam crossings:** both lines are elevated. Is a +10.5 m ring upper level at crossings (outside 4.6–6.1 m) OK, or should the seam line dip instead?
+3. **Q3 Ring × seam crossings (v2):** choose **A**, ring lines permanently at rail top +10.2 (recommended), or **B**, the seam line dips 4.9 m at 8% (61 m per side) under in-band rings. See §5.3.
 4. **Q4 The old ground tram shelter:** keep it as a lived-in story prop (proposed) or remove it?
 5. **Q5 Canal length:** x 40..560 with the headwater at 540 (proposed), or the full 800 m?
 6. **Q6 Housing height cap:** 22 m (proposed)?
+7. **Q7 Curved walkway kit:** v2 uses the curved floor as the walk surface, so #42 is not revived. OK?
+8. **Q8 Guideway tri budget:** about 7,700 modules ≈ 4.6M tris before instancing. Accept MultiMesh + a 5-module merged LOD beyond 100 m?
 
 ## 11. Handoffs
 - **Gage (at rebuild, via the CLI):**
@@ -267,3 +284,31 @@ Promoted dims used: `ext_maglev_guideway.glb` 10.0 × 3.146 m bed, **0.163 m tal
 - Q-R3: does the M-1 re-bay (8 × 5 m) or pier deck work for the market hall?
 - Q-R4: should the crossing level be resolved by a seam dip or a permanent upper ring level? (Item 9, Q3.)
 - Q-R5: is the #42 revival as a walkway kit needed at all, or does the curved floor serve as the walk surface?
+
+
+## 14. v2 Resolution log (Vance, 2026-10-31)
+| Rook item | Status | Resolution |
+|---|---|---|
+| 1 Plinths | FIXED | M-1 re-bayed to 8 × 5 m (steps 0.125 / 0.25 / 0.375). The 0.375 m step is 2 × 0.1875 risers plus a 4.5 m 1:12 ramp. H-* rows get a 0.20 m skirt. Each bay sits at its highest floor point and is never sunk. |
+| 2 #42 rebend | RESOLVED | No roads, so #42 is not revived. The curved floor is the walk surface (Q7). Flat 2 m tiles sag 2.5 mm and snap fine. |
+| 3 Ring joints | FIXED | Option A: 120 × 9.938 m at 3.00°. Option B: 123 × 9.948 m at 2.927°. A pier-cap joint cover hides the 31 mm mitre wedge. |
+| 4 Curved edges | FIXED | Straight 30 m tangent stations only. Ring-station pier heights absorb the 0.59 m. |
+| 5 Towers / platform | FIXED | Towers 7 × 5 m (15 risers per flight, 3.92 m going), at x 85..92 / 107..114, z 54.3..59.3. Memorial clearance 3.4 m (x) and 5.6 m (z). Platform z 57.93..61.43, edge 1.405 m from the track centre, clear of the car at 61.50. Cantilevered 3.37 m from the rib piers. The canal moves to z 51.4..54.3, so nothing is over the canal. |
+| 6 Rail/deck step | FIXED | Rail top +5.26, so the car floor is +5.40 = deck. Soffit +3.90 (≥ 2.5 m). Roof +8.50. Heights are measured from the floor (Q-R1). |
+| 7 Overlaps | FIXED | K-1 moves to z −44.5..−32.5 (was −58..−46, 9.5 m into the promenade). G-1 moves to x 407..437, z −44.5..−30.5 (was z −62..−48, 0.7 m into the rib). It is now 16.8 m off the rib, well over the 1.5 m minimum. H-A re-gridded: A2 77..97 and A5 153..171 now clear the cross walks at 97..103 and 147..153. The other rows follow the same 44 m block grid. P-1 gets an exemption for the x 100 cross walk, which detours via Spin Walk W/E. |
+| 8 Culvert | FIXED | The culvert is at x 530, mid-span between piers 520 and 540. The canal ends at 530. The basin moves to x 518..545, z 45..54.3, off the x 500 platform. |
+| 9 Ring ramp | FIXED | The ±70 m 4% ramp is dropped. Ring rail minimum is +10.16. Option A, rings permanently up at +10.2, is recommended. Option B, an 8% seam dip of 4.9 m (61.3 m per side), is the alternative. Jared decides (Q3). |
+| 10 Cross-walk ramps | OK | No ramps on the floor itself. 1:12 ramps only at plinths: 0.10 → 1.2 m, 0.20 → 2.4, 0.25 → 3.0, 0.375 → 4.5. |
+| Q-R1..R5 | ANSWERED | R1: from the floor. R2: cantilever. R3: 8 × 5 m bays. R4: A recommended, open to Jared (Q3). R5: no revival (Q7). |
+
+**New assets for Rook** (not modeled yet):
+- Elevated T-beam span: 10 m, plus ring variants of 9.938 m or 9.948 m.
+- Piers: rib-mounted and free-standing, the latter with 0.59 m extra height at the ends of ring stations.
+- Pier cap / mitre joint cover (3.00° or 2.927°).
+- 30 m straight station deck kit, including a 3.37 m cantilever version.
+- 7 × 5 m access tower, plus a two-level variant if option A is chosen.
+- Plinth skirt (0.05–0.5 m).
+- 1:12 ramps (1.2–4.5 m).
+- Canal footbridge (6 m).
+
+All must be under 6,000 tris each, bottom-centre pivot, +Z facing, use the 5-candidate workflow, and be instanced via MultiMesh with a merged LOD beyond 100 m.
