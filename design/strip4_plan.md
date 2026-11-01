@@ -1,5 +1,5 @@
 # Strip 4 — "Spin Street Residential" (Valley A) — Plan v1
-**Status:** DRAFT **v2**, 2026-10-31 (Vance). v2 resolves every blocker and risk in Rook's review (§13), and the resolution log is §14. Where v1 text below conflicts with v2, the v2 text and §14 win. Markdown only: no assets, no code.
+**Status:** DRAFT **v2**, 2026-10-31 (Vance). v2 resolves every blocker and risk in the "Rook review" section, and the resolution log is §12. Where v1 text below conflicts with v2, the v2 text and §12 win. Markdown only: no assets, no code.
 **Sources:** `cylinder_master_plan.md` @124a1bb, `residential_exterior_plan_v1.md` (v1.3), `preface_test_environment_and_wrist_spec.md`, and Rook's curvature numbers (Oct 31).
 
 ## 1. Frame and coordinates
@@ -286,7 +286,7 @@ Promoted dims used: `ext_maglev_guideway.glb` 10.0 × 3.146 m bed, **0.163 m tal
 - Q-R5: is the #42 revival as a walkway kit needed at all, or does the curved floor serve as the walk surface?
 
 
-## 14. v2 Resolution log (Vance, 2026-10-31)
+## 12. v2 Resolution log (Vance, 2026-10-31)
 | Rook item | Status | Resolution |
 |---|---|---|
 | 1 Plinths | FIXED | M-1 re-bayed to 8 × 5 m (steps 0.125 / 0.25 / 0.375). The 0.375 m step is 2 × 0.1875 risers plus a 4.5 m 1:12 ramp. H-* rows get a 0.20 m skirt. Each bay sits at its highest floor point and is never sunk. |
