@@ -201,3 +201,59 @@ Per-prop tints, used only when the glTF has no colour (white):
   - The colour buffer is RGBA8 (LDR, no HDR), so emission above about 1.0 clips and `tonemap_white` / glow thresholds act on clamped values. Keep emission energies at or below the M-15 table and treat glow as subtle. Verify in a render.
   - SSR, SSIL, VoxelGI and SDFGI are not available; there is no debanding.
 - The `ambient_light_source` enum values (Color = 2, Sky = 3) and `reflected_light_source` (BG = 0, Sky = 2) are from the Godot 4 Environment enums.
+
+---
+## Round 3 (2026-11-01): M-68, M-69, M-06
+Checked against main a7c20cd. These are diagnoses from reading the code plus Patch's llvmpipe shots (`/workspace/qa_shots_r2/m16_atrium_normal.png`, mean 11.5; `m17_m18_window_up.png`, mean 190). I didn't run a new render, so all values need a GPU confirmation (T-02).
+
+### M-68 [High]: atrium near-black after M-15
+**Root causes:**
+1. **Omni energies are tuned as if there's no falloff.** In `_setup_sector_lighting()` the 6 task omnis (`Apt201_TaskLamp27` … `Atrium_Midhead_BounceFill`) use energy 0.70–0.90 with `omni_attenuation 1.2`. Godot 4 omni lights fall off with roughly inverse-square distance. The only atrium-wide light, `Atrium_Midhead_BounceFill` at (0, 7.85, -2.2), is about 8.7 m from the QA spot (2, 0.12, -6), which leaves roughly 1% of its energy there. The rest sit inside side rooms.
+2. **The sun can't reach L1.** `AtriumGoldenHourSunlight` (1.4) only enters through the skylight. The L2 slabs shadow the ground-floor corridor, and the orbit `_sun_energy_factor()` fades it further.
+3. **Ambient and fill are too weak for dark albedos.** Ambient is COLOR (0.62,0.68,0.78) × 0.30 from the .tscn and the `_ready()` env override. `AtriumSkyBounceFill` is 0.28 × (0.5–1.0). The zero-wood palette's gunmetal/slate surfaces (albedo ≈ 0.10–0.16) reflect only about 0.02 linear.
+4. **Luminaire emission doesn't light anything.** `_build_ceiling_luminaire()` sets the `LuminaireDiffuser` emission to 0.85. There's no GI on gl_compatibility, so it doesn't light any surfaces; only the matching omni does, and that's case 1.
+5. **Filmic `tonemap_white 4.0` darkens the midtones** in Compatibility's LDR pipeline.
+6. **Compatibility per-object light cap:** `rendering/limits/opengl/max_lights_per_object` (default 8; not set in `project.godot`). Large merged sector meshes take at most 8 omni/spot lights, so extra lights may not show on walls.
+
+**Corrected rig** (Gage, in `_setup_sector_lighting()` and the `_ready()` env override plus .tscn; `_cache_authored_lighting()` and M-16 keep working on these new values):
+
+| Element | Value |
+|---|---|
+| Ambient (`_ready()` + .tscn) | COLOR (0.70, 0.74, 0.80), **energy 0.55** |
+| `AtriumSkyBounceFill` | **0.65**, `#C8DCF0`, no shadow, still ×(0.5+0.5·sun factor). It isn't shadowed, so it reaches L1. |
+| `AtriumGoldenHourSunlight` | 0.9 (see M-69); shadows unchanged |
+| New **atrium ceiling panels** (6), via `_build_ceiling_luminaire()` + OmniLight3D, named `Atrium_CeilingPanel_01..06` | Positions: y 8.40 on a grid of x ∈ {-9, 0, 9} × z ∈ {-5, 4}. Panel 2.2 × 0.45 m, `#EBF0F5`, **energy 4.5, range 14, attenuation 1.0**, no shadow |
+| New **L1 corridor under-slab lights** (4), `L1_Corridor_Light_01..04` | Positions: y 3.60, x ∈ {-9, -3, 3, 9}, z -6.0. Panel 1.4 × 0.36 m, `#F5E2C4`, **energy 2.5, range 8, attenuation 1.0**, no shadow |
+| Existing task omnis (6) | Energies ×4 (0.70→2.8, 0.85→3.4, 0.84→3.4, 0.90→3.6). `Atrium_Midhead_BounceFill` 0.74→3.0. Keep ranges; attenuation 1.2→1.0 |
+| Spots `Apt201_CeilingDownSpot`, `Room1B_CeilingDownSpot` | 0.42 → **3.0**, range 3.5 → **5.5**, angle unchanged, shadows on |
+| `LuminaireDiffuser` emission (all panels) | **1.0** (8-bit clip point), emission = the light colour. Every panel has a matching OmniLight3D at the same position minus 0.15 m in y |
+| `project.godot` | `rendering/limits/opengl/max_lights_per_object = 16` |
+| Tonemap | Filmic, exposure **1.0**, white **2.0** (was 4.0) |
+
+**Target:** atrium/L1 mean ≈ 90–110/255. If a GPU check comes in under 85, raise the ambient to 0.65 first, then the panel energies to 5.5. If it's over 120, lower the fill to 0.5.
+**Emergency (M-16):** the cached ×0.25 / ×0.15 / ×0.10 multipliers now act on these values, so no change is needed. Ambient emergency stays at 0.10.
+
+### M-69 [Med]: window/drum view blown out
+**Root causes:**
+- `AtriumGoldenHourSunlight` is 1.4 on the drum shell's aerospace-white panels (albedo ≈ 0.80–0.85, e.g. `deck.albedo_color (0.8,0.82,0.86)` in `_build_cylinder_hab7_fullscale_world()`). That's >1.0 linear, so it clips in 8-bit.
+- **Glow** (intensity 0.4, `glow_hdr_threshold 1.0`) blooms everything near clip into a white haze.
+- `Mat_ObservationWindowGlass` (alpha 0.14 + rim 0.35) adds a white veil over the whole view.
+- `tonemap_white 4.0` with exposure 1.0 doesn't compress anything, because nothing in LDR exceeds 1.
+
+**Values:**
+
+| Item | Value |
+|---|---|
+| Sun | **0.9**, `#FFF6EA`, factor fade unchanged |
+| Drum shell / deck albedo (`_build_cylinder_hab7_fullscale_world()` materials) | Multiply by **0.72**, e.g. deck (0.58, 0.59, 0.62). Keep it lit, not unshaded. Albedo luma should stay ≤ 0.62. |
+| Glow | **Off** on gl_compatibility (`glow_enabled = false`), or intensity 0.15 with threshold 0.95 if Jared wants some bloom |
+| `Mat_ObservationWindowGlass` | alpha **0.10**, rim **0.15**, rim_tint 0.6. Everything else as M-17. |
+| Emissive cyan strips in the window view | Emission ≤ 1.0 (M-15 table already) |
+| Tonemap | Filmic, exposure 1.0, white **2.0** (shared with M-68) |
+
+**Target:** 110–140/255. The sunlit shell lands at about 0.9 × 0.6 ≈ 0.54 linear, roughly 190 sRGB before filmic and about 150 after. The shadow side comes from ambient 0.55 × 0.6 plus the fill, and black space pulls the frame mean down. Sun-to-shade contrast stays about 3:1, so the sun is still readable.
+
+### M-06: jagged slice edges (from M-69 shot)
+- **Gage (root fix):** `_cut_observation_window()` drops whole shell triangles that cross the 36° slice planes, which leaves the saw-tooth. Clip each crossing triangle exactly against the two slice planes (θ = a0, a0+36°): split it at the plane intersection and keep the inner part, so the cut edge is a clean straight line.
+- **Rook (cosmetic cover):** a frame mesh `ObservationWindowFrame`. It's a 0.6 m wide × 0.3 m deep gunmetal edge trim along both slice edges (800 m long) plus a 1.2 m rim ring per cap, using `door_jamb_gunmetal_*` / `facade_titanium_gunmetal_hull.png`, with metallic 1 and roughness 0.65.
+- Gage places the frame and the M-17 mullions in the same pass. The trim hides any leftover sub-cm jaggies from shadow-acne or precision.
