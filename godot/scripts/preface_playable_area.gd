@@ -116,7 +116,7 @@ const EXT_RENDER_VIEWS: Array[Dictionary] = [
 
 # Player controller tuning
 const SPAWN_POS := Vector3(-9.35, 4.25, 6.20)
-const SPAWN_YAW_DEG := 28.0  # Faces Apt 201's open portal (X = -11.2m, Z = +2.75m)
+const SPAWN_YAW_DEG := 28.0  # Spawn stays. APT 201's door is the Rev C face at (-3.0, 4.2, 0.8).
 const WALK_SPEED := 5.2
 const SPRINT_SPEED := 8.2
 const JUMP_VELOCITY := 4.8
@@ -1011,7 +1011,7 @@ func _add_architectural_shadow_occluders(parent: Node3D) -> void:
 	occ_mat.roughness = 0.9
 	occ_mat.metallic = 0.0
 	for cfg: Dictionary in [
-		{"name": "Occ_L2_NorthGallerySlab", "size": Vector3(27.8, 0.30, 7.8), "pos": Vector3(0.0, 4.02, 5.0)},
+		# M-41: Occ_L2_NorthGallerySlab removed. It covered the Rev C L2 apartments.
 		{"name": "Occ_L2_WestAlcoveSlab", "size": Vector3(6.5, 0.30, 7.9), "pos": Vector3(-10.65, 4.02, -2.65)},
 		{"name": "Occ_L2_EastLandingSlab", "size": Vector3(6.5, 0.30, 3.6), "pos": Vector3(10.65, 4.02, -0.50)},
 		{"name": "Occ_L2_EastStairSoffit", "size": Vector3(2.95, 0.28, 6.95), "pos": Vector3(10.65, 2.05, -5.00), "rot_x": -atan2(4.20, 5.60)},
@@ -1038,10 +1038,8 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 	parent.add_child(body)
 	var boxes: Array[Dictionary] = [
 		{"name": "GroundFloorDeck", "size": Vector3(32.0, 0.4, 24.0), "pos": Vector3(0.0, -0.2, 0.0), "rot_x": 0.0},
-		{"name": "UpperL2NorthDeck", "size": Vector3(28.0, 0.24, 8.0), "pos": Vector3(0.0, 4.08, 5.0), "rot_x": 0.0},
-		# PATH-06 Fixed: Trimmed UpperL2WestWing to Z = -6.60m..+9.00m (no invisible floor south of Z = -6.60m)
-		{"name": "UpperL2WestWing", "size": Vector3(6.5, 0.24, 15.6), "pos": Vector3(-10.65, 4.08, 1.20), "rot_x": 0.0},
-		{"name": "UpperL2EastStairLanding", "size": Vector3(6.3, 0.24, 3.4), "pos": Vector3(10.65, 4.08, -0.5), "rot_x": 0.0},
+		# M-41: UpperL2NorthDeck, UpperL2WestWing and UpperL2EastStairLanding removed.
+		# Those boxes were the pre-Rev C gallery floor (top y=4.20). L2 is the shell trimesh, slab top y=4.2.
 		# PATH-06 Fixed: Missing guardrail colliders on L2 West Wing South Edge, East Upper Landing West Edge & East Staircase West Edge
 		{"name": "L2WestWingSouthGuardrail", "size": Vector3(6.5, 1.25, 0.18), "pos": Vector3(-10.65, 4.82, -6.55), "rot_x": 0.0},
 		{"name": "EastLandingWestGuardrail", "size": Vector3(0.18, 1.25, 3.55), "pos": Vector3(7.55, 4.82, -0.45), "rot_x": 0.0},
@@ -1154,6 +1152,7 @@ func _add_glass_balustrade_colliders(parent: Node3D) -> void:
 	# [REAL-02] Rev C L2 open edge is the south side of the stair landing (drop into the well).
 	# Landing top Y 4.2, edge Z -4.88. Guard plane Z -4.83, X -1.89..0.37, so it stops before
 	# flight 2 (X 0.4..1.9) and does not cross the corridor opening at Z -0.8.
+	# M-41 keeps this rail. It is not one of the gallery decks.
 	var runs: Array[Dictionary] = [
 		{"name": "MezzanineGlassBalustrade_L2Edge", "size": Vector3(2.26, 1.04, 0.06), "pos": Vector3(-0.76, 4.78, -4.83)}
 	]
@@ -2045,6 +2044,54 @@ func _spawn_pickup(path: String, nm: String, kind: String, label: String, pos: V
 	_interactables.append({"node": node, "id": nm, "kind": kind, "label": label, "collected": false, "pickup": true})
 
 
+func _add_support_box(body: StaticBody3D, part_name: String, sz: Vector3, local_pos: Vector3, mat: Material) -> void:
+	var cs := CollisionShape3D.new()
+	cs.name = part_name + "_Shape"
+	var shape := BoxShape3D.new()
+	shape.size = sz
+	shape.margin = 0.0
+	cs.shape = shape
+	cs.position = local_pos
+	body.add_child(cs)
+	var mi := MeshInstance3D.new()
+	mi.name = part_name + "_Mesh"
+	var bm := BoxMesh.new()
+	bm.size = sz
+	mi.mesh = bm
+	mi.position = local_pos
+	mi.material_override = mat
+	body.add_child(mi)
+
+
+## M-08 / GEO-12. Pickup origins are the mesh bottom. The slab top meets that y.
+## A post runs down to the floor so the slab does not float. L1 floor y=0.12, L2 slab top y=4.2.
+func _add_pickup_support(pickup_name: String, pos: Vector3) -> void:
+	if _props_container == null:
+		return
+	var nm := pickup_name + "_Support"
+	if _props_container.get_node_or_null(nm) != null:
+		return
+	var floor_y: float = 0.12 if pos.y < 3.0 else 4.2
+	var slab_t := 0.04
+	var post_top: float = pos.y - slab_t
+	if post_top <= floor_y + 0.001:
+		return
+	var body := StaticBody3D.new()
+	body.name = nm
+	body.position = Vector3(pos.x, 0.0, pos.z)
+	_props_container.add_child(body)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.22, 0.24, 0.27)
+	mat.roughness = 0.55
+	mat.metallic = 0.4
+	var slab_y: float = pos.y - slab_t * 0.5
+	var post_h: float = post_top - floor_y
+	var post_y: float = floor_y + post_h * 0.5
+	# 0.42 m top is wider than the scaled spool/cell and stays off the nearby walls.
+	_add_support_box(body, "Shelf", Vector3(0.42, slab_t, 0.42), Vector3(0.0, slab_y, 0.0), mat)
+	_add_support_box(body, "Post", Vector3(0.12, post_h, 0.12), Vector3(0.0, post_y, 0.0), mat)
+
+
 func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	var wire_path: String = _find_first_existing(PICKUP_WIRE_PATHS)
 	var batt_path: String = _find_first_existing(PICKUP_BATT_PATHS)
@@ -2060,7 +2107,9 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	var spawned: int = 0
 	for s: Array in specs:
 		var nm: String = String(s[1])
-		_spawn_pickup(String(s[0]), nm, String(s[2]), String(s[3]), s[4] as Vector3, float(s[5]), initial_setup)
+		var pos: Vector3 = s[4] as Vector3
+		_spawn_pickup(String(s[0]), nm, String(s[2]), String(s[3]), pos, float(s[5]), initial_setup)
+		_add_pickup_support(nm, pos)
 		if not _collected_pickup_ids.has(nm):
 			spawned += 1
 
@@ -2137,11 +2186,12 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 		"idle": ""
 	},
 	{
-		# Room 102 north wall. 8 mm off inner face z=8.9 (a gap of 0 fails the wall check).
+		# M-44. Maintenance east wall, inner face x=5.9. Mesh depth 0.8 (local Z -0.4..0.4).
+		# Yaw -90 maps local -Z onto world +X, so the back is 8 mm off the wall. Plan z is 1.0..3.5.
 		"id": "Prop42_Substation",
 		"path": "res://assets/models/substation_wall_ladder_busway.glb",
-		"position": Vector3(10.68, 0.12, 8.492),
-		"yaw": 180.0,
+		"position": Vector3(5.492, 0.12, 2.25),
+		"yaw": -90.0,
 		"mount": "wall",
 		"label": "MAINTENANCE SUBSTATION",
 		"toggle": [],
@@ -2166,7 +2216,7 @@ const ANIMATED_PROP_SPECS: Array[Dictionary] = [
 
 # Bottom-centre, local +Z front. Section 2 vectors, except the Dobsonian, both lab crates and the
 # cycler lightbox, which use Rev C plan rects in this same frame (XZ identity, L1 floor y=0.12, L2 floor y=4.2).
-# 104/204 lamps sit at window-desk height (0.75 m). The desk GLBs are not placed.
+# 104/204 lamps sit on the floor. The window-desk GLBs are not placed.
 const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 	{
 		# #32 room 203 south wall. Bunk slot X -11.2..-10.3. Back plate is local z=-0.1, so the
@@ -2205,10 +2255,12 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		"yaw": 90.0
 	},
 	{
-		# #55 Section 2 (Vance moved it off the laundry wall). Yaw 90.
+		# M-42 / #55. Yaw 90 maps the 1.3 m width onto world Z (4.70..6.00) and the 0.3 m depth
+		# onto world X. Centre x=1.40 is footprint x 1.25..1.55, clear of the tool wall (x<=1.1)
+		# and of the tea caddy (z 7.7..8.1).
 		"id": "Lost_And_Found_Rail_Bins",
 		"path": "res://assets/models/lost_and_found_rail_bins.glb",
-		"position": Vector3(1.08, 0.12, 5.35),
+		"position": Vector3(1.40, 0.12, 5.35),
 		"yaw": 90.0
 	},
 	{
@@ -2234,17 +2286,18 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		"yaw": 180.0
 	},
 	{
-		# #27 on the 104 window-desk rect center (5.0, -8.7), pivot at desk-top height. No desk mesh.
+		# M-43 / #27 room 104. No desk under (5.0, -8.7). Lowest mesh is local y=-0.035,
+		# so the pivot is 0.035 above the L1 floor (y=0.12). Yaw 0 points the boom at +Z, into the room.
 		"id": "Task_Lamp_104",
 		"path": "res://assets/models/task_lamp_rail_slider.glb",
-		"position": Vector3(5.0, 0.985, -8.7),
+		"position": Vector3(5.0, 0.155, -8.7),
 		"yaw": 0.0
 	},
 	{
-		# #27 on the 204 window-desk rect, same XZ, L2 desk-top height. No desk mesh.
+		# M-43 / #27 room 204. Same XZ, dropped onto the L2 slab top (y=4.2).
 		"id": "Task_Lamp_204",
 		"path": "res://assets/models/task_lamp_rail_slider.glb",
-		"position": Vector3(5.0, 5.165, -8.7),
+		"position": Vector3(5.0, 4.235, -8.7),
 		"yaw": 0.0
 	},
 	{
@@ -2267,6 +2320,16 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		"path": "res://assets/models/potted_plants_pocket_column.glb",
 		"position": Vector3(-9.2, 4.2, -8.6),
 		"yaw": 0.0
+	},
+	{
+		# GEO-11 / Rev C.3. Room 101 west wall, inner face x=-13.9. Yaw +90 maps local +Z
+		# onto world +X (front) and local -Z onto world -X (back plate on the wall).
+		# Centre of plan rect x -13.9..-13.4, z 4.5..7.0. The mesh is 2.7 m along local X,
+		# so its world-Z extent around this centre is 4.40..7.10. Height 2.1 m.
+		"id": "Wardrobe_101",
+		"path": "res://assets/models/wardrobe_openbays_rails.glb",
+		"position": Vector3(-13.65, 0.12, 5.75),
+		"yaw": 90.0
 	}
 ]
 
@@ -4069,9 +4132,9 @@ func _process_capture_f5_hud() -> void:
 			_apply_view_mode()
 		94:
 			_save_qa_png("apt201_wall_monitor_and_clean_hud.png")
-			# Shot 2: L2 North Mezzanine Gallery showing unobstructed walkway (PATH-01 fixed), Sweep #0812, and crisp APT 202 lintel skin
+			# Shot 2: L2 corridor. The old stand at z=1.95 was the north gallery (M-41). z=0 is inside the corridor.
 			_third_person = false
-			_player_body.global_position = Vector3(-4.20, 4.25, 1.95)
+			_player_body.global_position = Vector3(-4.20, 4.25, 0.0)
 			_player_body.velocity = Vector3.ZERO
 			_player_body.rotation_degrees = Vector3(0.0, -94.0, 0.0)
 			_pitch = deg_to_rad(3.0)
@@ -5632,6 +5695,22 @@ func _clear_rfid_doors(parent: Node3D) -> void:
 	_interactables = keep
 
 
+## M-41. APT 201/202 are pinned to the Rev C corridor faces. The other RFID doors follow
+## the Door_* marker on the loaded shell. Godot can drop an empty glTF node, so each
+## door keeps the generator pose (preface_sector_rev_c_generator.py DOORS).
+func _rfid_door_world_pos(door_id: String, marker_name: String, fallback: Vector3) -> Vector3:
+	if door_id == "DOOR_APT201":
+		return Vector3(-3.0, 4.2, 0.8)
+	if door_id == "DOOR_APT202":
+		return Vector3(3.0, 4.2, 0.8)
+	if marker_name != "" and _arch_container != null:
+		var marker: Node3D = _lookup_sector_node(_arch_container, marker_name) as Node3D
+		if marker != null and is_instance_valid(marker) and marker.is_inside_tree():
+			return marker.global_position
+	push_warning("[PrefacePlayableArea] %s marker %s missing; using %s" % [door_id, marker_name, str(fallback)])
+	return fallback
+
+
 func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 	_clear_rfid_doors(parent)
 	var doors_root: Node3D = Node3D.new()
@@ -5643,21 +5722,23 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 	m_infill.metallic = 0.35
 	m_infill.roughness = 0.38
 
+	# Widths are the Rev C wall cuts (1.5 / 2.0 / 2.6). The frame mesh stays 1.82 x 2.61.
 	var door_specs: Array[Dictionary] = [
-		{"id": "DOOR_APT201", "label": "APT 201 // RFID FORCE-FIELD DOOR", "pos": Vector3(-11.20, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID FORCE-FIELD DOOR", "pos": Vector3(-11.50, 4.32, -3.55), "w": 1.80, "h": 2.45},
-		{"id": "DOOR_APT202", "label": "APT 202 // RFID FORCE-FIELD DOOR", "pos": Vector3(7.80, 4.32, 2.75), "w": 2.00, "h": 2.55},
-		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID FORCE-FIELD DOOR", "pos": Vector3(-8.50, 0.12, 2.85), "w": 2.40, "h": 2.60},
-		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID FORCE-FIELD DOOR", "pos": Vector3(4.50, 0.12, 2.85), "w": 2.20, "h": 2.60},
-		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID FORCE-FIELD DOOR", "pos": Vector3(0.0, 0.12, -8.90), "w": 2.60, "h": 2.80}
+		{"id": "DOOR_APT201", "label": "APT 201 // RFID FORCE-FIELD DOOR", "marker": "Door_201", "fallback": Vector3(-3.0, 4.2, 0.8), "w": 1.50, "h": 2.55},
+		{"id": "DOOR_ALCOVE2C", "label": "ALCOVE 2C // RFID FORCE-FIELD DOOR", "marker": "Door_203", "fallback": Vector3(-4.5, 4.2, -0.8), "w": 1.50, "h": 2.45},
+		{"id": "DOOR_APT202", "label": "APT 202 // RFID FORCE-FIELD DOOR", "marker": "Door_202", "fallback": Vector3(3.0, 4.2, 0.8), "w": 1.50, "h": 2.55},
+		{"id": "DOOR_RM1A", "label": "RM 1A LAUNDRY // RFID FORCE-FIELD DOOR", "marker": "Door_Laundry", "fallback": Vector3(-2.0, 0.0, 0.8), "w": 1.50, "h": 2.60},
+		{"id": "DOOR_RM1B", "label": "RM 1B SUBSTATION // RFID FORCE-FIELD DOOR", "marker": "Door_Maintenance", "fallback": Vector3(3.2, 0.0, 0.8), "w": 2.00, "h": 2.60},
+		{"id": "DOOR_SECTOR4_EXIT", "label": "SECTOR-4 PROMENADE EXIT // RFID FORCE-FIELD DOOR", "marker": "Door_Sector4_Exit", "fallback": Vector3(0.0, 0.0, -9.1), "w": 2.60, "h": 2.80}
 	]
 	for spec: Dictionary in door_specs:
 		var did: String = String(spec["id"])
-		var dpos: Vector3 = spec["pos"] as Vector3
+		var dpos: Vector3 = _rfid_door_world_pos(did, String(spec["marker"]), spec["fallback"] as Vector3)
 		var pw: float = float(spec["w"])
 		var ph: float = float(spec["h"])
-		# Player-facing (atrium) side is world -Z for the 4 room portals, +Z for Sector-4 exit & Alcove 2C.
-		var face_neg_z: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
+		# Model +Z is the hub side. North-wall doors (z > 0) face the corridor, world -Z.
+		# South-wall doors and the Sector-4 exit face +Z.
+		var face_neg_z: bool = did != "DOOR_SECTOR4_EXIT" and dpos.z > 0.0
 		var droot: Node3D = Node3D.new()
 		droot.name = did
 		droot.position = dpos
@@ -7398,8 +7479,13 @@ func _run_reticle_stars_doors_qa() -> void:
 			glow_amber = glow_amber and (gn0 as MeshInstance3D).material_override == lm
 		_qa_t38_check("%s_closed_state" % did.to_lower(), _door_dissolve(door) == 0.0 and fcs != null and not fcs.disabled and lm.emission.is_equal_approx(HUB_AMBER) and glow_amber,
 			"dissolve=%.3f collision_on=%s light=%s" % [_door_dissolve(door), fcs != null and not fcs.disabled, lm.emission.to_html(false)])
-		var from_south: bool = (did != "DOOR_SECTOR4_EXIT" and did != "DOOR_ALCOVE2C")
+		# Same side test as the door mount: north-wall doors are approached from the corridor (smaller z).
+		var from_south: bool = did != "DOOR_SECTOR4_EXIT" and dpos.z > 0.0
 		var start_z: float = (dpos.z - 1.55) if from_south else (dpos.z + 1.55)
+		# Corridor clear is z -0.8..0.8. A 1.55 m offset plus the 0.35 m capsule hits the far wall.
+		# ±0.40 leaves 5 cm between the capsule and the wall face.
+		if absf(dpos.z) <= 1.2:
+			start_z = clampf(start_z, -0.40, 0.40)
 		var yaw_deg: float = 180.0 if from_south else 0.0
 		_qa_place(Vector3(dpos.x, dpos.y + 0.05, start_z), yaw_deg, -4.0)
 		await _qa_frames(12)
@@ -8075,7 +8161,8 @@ func _run_qa_egress() -> void:
 	var failures: int = 0
 	var wps: Array[Dictionary] = [
 		{"label": "(-6.0, 4.5)", "xz": Vector2(-6.0, 4.5), "door": ""},
-		{"label": "(-3.0, 1.8)", "xz": Vector2(-3.0, 1.8), "door": ""},
+		# Closed DOOR_APT201 now sits on this crossing. Open it before walking to z=0.
+		{"label": "(-3.0, 1.8)", "xz": Vector2(-3.0, 1.8), "door": "DOOR_APT201"},
 		{"label": "(-3.0, 0.0)", "xz": Vector2(-3.0, 0.0), "door": ""},
 		{"label": "(1.15, 0.0)", "xz": Vector2(1.15, 0.0), "door": ""},
 		{"label": "(1.15, -2.8)", "xz": Vector2(1.15, -2.8), "door": ""},
