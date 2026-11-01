@@ -605,3 +605,31 @@ Note: origin/main has since moved to 4b07922 "EXIT-01 ...". This pass tested ee6
 - No suite spawns at SPAWN_POS and walks out. Hand QA teleports to (0, 0.25, -15) on the deck. Reticle/door QA uses _qa_place to the hub side and calls E there, or sets door state directly (_set_door_dissolve_immediate / _set_door_open_state). The force-field and nav-reach tests open every door programmatically. Nav links are NavigationServer edges that ignore physics and the hub-side rule. placement_assert checks props, not room shells. My own nav script also opened the doors in code. So nothing exercised "E from inside APT 201".
 - Recommendation: add a --qa-egress test that starts at SPAWN_POS with no _qa_place, drives keys only, and must reach the deck and then the tram. Also a corner-seam ray audit in placement_assert.
 Screenshots: godot/renders/qa/pass_playthrough_ee61cb6/.
+
+## QA pass 1a349a3 (Patch, 2026-11-01 ~00:15-01:30 CST, box, Godot 4.7.2 opengl3/xvfb, fresh GitHub clone /tmp/qa_1a349a3, which also serves as the fresh-clone check)
+Fresh clone imports clean (0 errors). Suites: --qa-egress 18/0 (DONE failures=0), --qa-player-exit 5/0, placement 23 pass / 3 fail (all Prop43_SparesDispenser against the Side_Room_West_Storage wall: clearance, mesh_clearance, front_zone; the "Prop43 on SeamFix wall face" head commit did not clear them) + SEAM_AUDIT 39/0, exterior 1024/0, nav-reach 25/25 (40 islands), hand 36/0, troubleshoot 12/0, forcefield 9/0, reticle-stars-doors 90/0 (554 s), door hubs OK.
+### My real-input playthrough (/tmp play.gd: Input.action_press("move_forward"), mouse-motion yaw, E key; no _qa_place, no position writes)
+Spawn (-9.35, 4.34, 6.20). APT 201 opened from INSIDE at (-11.04, 4.35, 3.83), prompt "[E] RFID SCAN // APT 201 ... OPEN". Then out to (-11.23, 4.23, 1.59), upper walkway W (-7.93, 4.23, 1.55) to E (7.32, 4.23, 1.65), east stair (9.64, 4.22, -1.05) to (9.71, 1.73, -5.61) to (9.41, 0.63, -7.08), ground W (3.5, 0.12, -7.73), SECTOR4_EXIT opened at (0.58, 0.12, -7.71), deck (0.08, 0.17, -9.52) to (2.65, 0.05, -11.36), kerb ramp (8.64, 0.05, -15.69) to (9.91, 0.31, -16.23), platform end (11.72, 0.35, -16.58). That is 1.08 m from (12.8, -16.6) on the raised platform; the tram shelter's back glass stops further travel. PASS (inside the 1.5 m criterion --qa-egress uses). About 130 s total. Screens 00_spawn, e_DOOR_APT201_hub, e_DOOR_SECTOR4_EXIT_hub, blk_platform (end view).
+- EXIT-01 FIXED. INPUT-01 FIXED (input-map actions move the player).
+### Door matrix (/tmp doors.gd: setup placement, then real E and real walking; 60 cases = 6 doors x 2 sides x 0.75/1.1/1.5/1.9 m + 1.5 m at 0.45 lateral angle)
+- 59/60 open with E, prompt shown in all 86 samples, FieldCollider shape disabled=true whenever open, and the walk-through passed in all 24 walk cases (straight 1.1 m and angled 1.5 m) on both sides of every door. The 1 failure is ALCOVE2C back side angled: the setup point was pushed to 2.21 m by geometry, beyond the 2.0 m reach, so it is a test artifact. DOOR-02, DOOR-03 and DOOR-04 FIXED.
+### Seams (/tmp leaks.gd + gap.gd, 0.010 m threshold)
+- SEAM-01 FIXED: side-room side walls now collide (faces x -4.90, 0.90, 8.10). No see-through corner diagonals in any room.
+- SEAM-02 mostly fixed. Alcove 2C front (-12.74, -3.40) now 0.01 m (was 0.16; it measured 0.16 at ee61cb6, so the gap closed between commits rather than being unreproducible). (-12.74, -5.69) 0.01. Atrium corners 0.01. APT 201/202 inner front corners (+/-5.35, 2.65) 0.02 m.
+  Still open, SEAM-04 LOW (Rook): APT 201 (-13.65, 2.65) and APT 202 (13.65, 2.65) outer front corners are 0.05 m short (seam_apt201_front_corner). The side-room SeamFix side walls start 0.18 m behind the front edge (z 2.94 against the front wall's inner face at 2.92), leaving about a 0.02 m slot at (-4.75 / -12.25 / 0.75 / 8.25, 2.92).
+- SEAM-03 FIXED: 1.1 m rails at x -10.30 / -10.18. Walking into the mezzanine edge at (0, 4.22, 1.65) is blocked by MezzanineGlassBalustrade_North (rays hit at 0.3 and 1.0 m, not 1.6 m, so it is 1.0-1.6 m tall). Couldn't walk to the Alcove rail itself (props in the way).
+  RAIL-01 LOW (Rook): the Alcove rail renders as a flat untextured grey slab (seam_alcove2c_east_rail).
+### --qa-egress review
+Real input and physics: W key events, mouse yaw clamped to +/-40 px, E tap. No _qa_place and no position writes. Weaknesses:
+- Waypoints check only XZ, never Y. A fall off the mezzanine would still pass the stair waypoints.
+- A door waypoint passes when door.open is true, not when the player is through. The next waypoint covers that.
+- Failures don't stop the run.
+- Uses raw keycode events, not input actions.
+- --qa-player-exit writes rotation_degrees.y directly (forced yaw), so it isn't pure input.
+Recommend adding Y bands per waypoint.
+### Other
+- Shading and lighting: no regressions seen. WIN-01 and LIT-01 are not rechecked in this push (no cylinder changes); still open.
+- Performance: avg frame 888 ms against 873 ms at 797fc94 (same pose, llvmpipe). 2617 draw calls, 160k primitives, load 322 ms. No regression. PERF-01 still open.
+- Still open: NAV-02 (40 islands), E793-01 (exit leaks), E793-02 (reticle 554 s, getting worse), Prop43 placement (3 fails, waiting on a decision).
+- Regressions: none. D670-01/04/06/07, 5DB-01/02/03, LAY-01/02, HAND-01, NAV-01/03, CYL-01/02 still pass.
+Screenshots: godot/renders/qa/pass_1a349a3/.
