@@ -16,8 +16,8 @@
 | Arc width per strip at the floor | 2π·200/10 = **125.66 m** | Measured on the hull floor. Buildings built at R 185.5 m (the overhaul spec's R_HULL_FLOOR) get 116.6 m. |
 | Sagitta of a full strip (chord 123.6 m) | 9.7 m | A strip is visibly curved, so big decks need plinths or terracing (see Jared [t112u]). |
 | Flat-footprint limit across the curve | ≈12.6 m for a 10 cm gap | Along the axis there is no limit. |
-| Usable axial length | **TBD** | The canon is 800 m. The authored mesh spans about x −368..+354, roughly 722 m, and the end caps eat some of that. The planning assumption is **~700 m usable floor per strip**, with ~50 m end-cap terraces at each end. |
-| Floor area per strip | ~125.7 × 700 ≈ 8.8 ha | The current preface deck (66 m × ~94 m) uses about 7% of one strip. |
+| Usable axial length | **800 m (resolved)** | Jared chose the canonical 800 m. **TODO (Gage):** the authored cylinder mesh spans about x −368..+354 (~722 m) and must be extended to 800 m. |
+| Floor area per strip | ~125.7 × 800 ≈ 10.1 ha | The current preface deck (66 m × ~94 m) uses about 7% of one strip. |
 
 Long, narrow strips (about 5.6:1) mean each map plays as an **axial boulevard**: one spine of walkways and a maglev line, with buildings either side. The spine runs straight along the flat axis, and the cross-section curves up to the strip borders.
 
@@ -26,7 +26,7 @@ Ordering logic: heavy industry sits two or more strips away from residential. Sc
 
 | # | θ centre | Name | Dept | Purpose |
 |---|---|---|---|---|
-| 0 | 0° | **The Long Window** | D-03 / D-02 | A 700 m glazed observation strip: viewing galleries and catwalks over glass. |
+| 0 | 0° | **The Long Window** | D-03 / D-02 | An 800 m glazed observation strip: viewing galleries and catwalks over glass. |
 | 1 | 36° | **Meridian Science Quarter** | D-03 Science | Labs, astrometry, new-tech testing. |
 | 2 | 72° | **Cascade Biosphere** (Valley B) | D-04 Agri | Atmosphere and hydro cycle, the waterfall dam, biodome, TS-4 terraforming beds. |
 | 3 | 108° | **Civic Commons** | D-02 Civic | Government, hospital/medbay, life support, sanitation. |
@@ -70,9 +70,9 @@ Ordering logic: heavy industry sits two or more strips away from residential. Sc
 - **Window strip:** strip 0's seams (18° and 342°) sit at the glass edges, so lines S0|1 and S9|0 **frame the window** along its full length. Riders get a continuous window view, and the guideways double as the structural edge beams of the glazing.
 - **Elevated guideway:** the T-beam guideway runs **15–20 ft (4.6–6.1 m) above the floor** for most of its run (it may dip only at end-cap terraces or where the terrain forces it). **Boarding stations are elevated to match**, with stair and lift access at grade. This keeps the ground clear for walkways, plazas and rib crossings, and the seam ribs (§6) can sit under the guideway.
   - **TODO (Gage, not now):** the existing preface tram, T-beam and shelter sit at grade. They need raising to 4.6–6.1 m with stairs/lift at grade, the cyan tactile kerb moves up to the platform edge, and the curb fillers / kerb ramp (#45) and track-wear decals (#51) need re-placing. The navmesh and HAND/NAV QA must be re-run afterwards.
-- **Five circumferential rings** at 0%, 25%, 50%, 75% and 100% of the usable length: **Fore Ring (0%)** and **Aft Ring (100%)** on the end-cap seams, plus **Ring 25**, **Mid Ring (50%)** and **Ring 75**. Each is a full 360° loop climbing the curve. **All five cross the window on glazed bridges** (the Mid Ring crossing is the Prism Bridge landmark).
+- **Five circumferential rings** at 0%, 25%, 50%, 75% and 100% of the usable length, i.e. **0 / 200 / 400 / 600 / 800 m**: **Fore Ring (0%)** and **Aft Ring (100%)** on the end-cap seams, plus **Ring 25**, **Mid Ring (50%)** and **Ring 75**. Each is a full 360° loop climbing the curve. **All five cross the window on glazed bridges** (the Mid Ring crossing is the Prism Bridge landmark).
 - **Transfer stations:** every ring × seam intersection is a transfer station: **5 × 10 = 50 nodes**.
-- **Station spacing (assumption):** at the ~700 m planning length, rings are **175 m apart**. One intermediate local stop between each pair of rings gives **~87.5 m stop spacing** (about a 1-minute walk between stops). That is 4 local stops per line, **40 local stops**, so **90 stops in total** (50 transfers + 40 locals). At 800 m the ring spacing becomes 200 m and the stop spacing 100 m, with the same counts.
+- **Station spacing (assumption):** at the 800 m length, rings are **200 m apart**. One intermediate local stop between each pair of rings (at 100/300/500/700 m) gives **100 m stop spacing**. That is 4 local stops per line, **40 local stops**, so **90 stops in total** (50 transfers + 40 locals).
 - **Suggested major hubs (8 of the 50):**
   1. **Fore Hub**, Fore Ring × S4|5 (passenger dock, nearest the preface and the Green)
   2. **Aft Hub**, Aft Ring × S8|9 (cargo, starport, freight interchange)
@@ -140,14 +140,14 @@ graph LR
 - ~~Moving Valley A~~: approved. The preface goes to strip 4 (144°), and the backdrop roll is retargeted (Gage TODO).
 - ~~Ring count~~: five rings (0/25/50/75/100%).
 - ~~End caps as maps~~: yes, 12 maps.
-- ~~Station density~~: superseded by seam lines. 50 transfers + 40 locals, ~87.5 m spacing (an assumption; see §4).
+- ~~Station density~~: superseded by seam lines. 50 transfers + 40 locals, 100 m spacing (an assumption; see §4).
+- ~~Usable length~~: the canonical **800 m**; rings at 0/200/400/600/800 m. TODO for Gage: extend the ~722 m cylinder mesh to 800 m.
 - Axial line placement: on the 10 seams, elevated 15–20 ft.
 
 **Still open:**
-1. **Usable length:** the canonical 800 m, or the ~720 m the current mesh spans? The planning assumption is ~700 m of floor.
-2. **Strip order:** OK with Science and Cargo flanking the window, and Farms as the buffer between housing and industry?
-3. **Valley names:** keep "Valley A/B/C" as lore names for strips 4/2/8, or retire them?
-4. **The Green:** should the river run along the axis or as a loop? Should sports fields be gameplay or scenery?
-5. **Window walking:** are catwalks over the glass enough, or should there be a solid floor path?
-6. **Build order:** strip 4 (exists) → 3 → 5 → 0 → the rest. OK?
-7. **Hub picks:** OK with the 8 suggested major hubs in §4?
+1. **Strip order:** OK with Science and Cargo flanking the window, and Farms as the buffer between housing and industry?
+2. **Valley names:** keep "Valley A/B/C" as lore names for strips 4/2/8, or retire them?
+3. **The Green:** should the river run along the axis or as a loop? Should sports fields be gameplay or scenery?
+4. **Window walking:** are catwalks over the glass enough, or should there be a solid floor path?
+5. **Build order:** strip 4 (exists) → 3 → 5 → 0 → the rest. OK?
+6. **Hub picks:** OK with the 8 suggested major hubs in §4?
