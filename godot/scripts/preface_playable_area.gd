@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -164,7 +164,7 @@ const CORE_PAD_RADIUS := 1.4
 const STARFIELD_CYL_RADIUS := 2200.0
 const STARFIELD_CYL_LENGTH := 4800.0
 const STARFIELD_ROT_SPEED := TAU / 240.0  # rad/s, one revolution per 4 minutes, about the world +X cylinder axis
-const SCAN_ZONE_RANGE := 1.4          # [QA-HUB-01] max 3D distance probe point -> hub ScanZone
+const SCAN_ZONE_RANGE := 2.0          # [QA-HUB-01] max horizontal (XZ) metres, player body -> doorway centre at body height
 const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward . dir-to-ScanZone
 const DOOR_DISSOLVE_TIME := 0.8
 
@@ -298,6 +298,8 @@ var _qa_ff_door: bool = false
 var _qa_hub_shot: bool = false
 var _qa_ts: bool = false
 var _qa_exit: bool = false
+var _qa_egress: bool = false
+var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
@@ -378,6 +380,9 @@ func _ready() -> void:
 		elif arg == "--qa-player-exit":
 			_qa_exit = true
 			_qa_hand = true
+		elif arg == "--qa-egress":
+			_qa_egress = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -442,6 +447,8 @@ func _ready() -> void:
 			_run_troubleshoot_simple_qa.call_deferred()
 		elif _qa_exit:
 			_run_qa_player_exit.call_deferred()
+		elif _qa_egress:
+			_run_qa_egress.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -1025,8 +1032,55 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 		cs.position = b["pos"] as Vector3
 		cs.rotation = Vector3(float(b["rot_x"]), 0.0, 0.0)
 		body.add_child(cs)
+	_add_playtest_seam_blocks(parent)
 
 
+func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3, mat: Material) -> void:
+	var seam: StaticBody3D = StaticBody3D.new()
+	seam.name = nm
+	seam.position = pos
+	parent.add_child(seam)
+	var seam_cs: CollisionShape3D = CollisionShape3D.new()
+	seam_cs.name = nm + "_Shape"
+	var seam_bs: BoxShape3D = BoxShape3D.new()
+	seam_bs.size = sz
+	seam_cs.shape = seam_bs
+	seam.add_child(seam_cs)
+	if mat != null:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = nm + "_Mesh"
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = sz
+		mi.mesh = bm
+		mi.material_override = mat
+		seam.add_child(mi)
+
+
+## [SEAM-01] Missing side-wall collision on the L1 lounge and storage shells.
+## [SEAM-03] Alcove 2C east shell was open onto the mezzanine; wall plus a rail on that edge.
+## Safety-floor boxes share one StaticBody, so these are their own StaticBody3D nodes on the same parent.
+func _add_playtest_seam_blocks(parent: Node3D) -> void:
+	var lounge_z: float = 8.0 - 2.8
+	var storage_z: float = 8.2 - 2.8
+	var floor_y: float = 0.12
+	var wall_h: float = 2.7
+	_add_seam_static_box(parent, "Seam01_EastLounge_Wall", Vector3(0.2, wall_h, lounge_z), Vector3(-4.75, floor_y + wall_h * 0.5, (2.8 + 8.0) * 0.5), null)
+	_add_seam_static_box(parent, "Seam01_WestStorage_WallE", Vector3(0.2, wall_h, storage_z), Vector3(8.25, floor_y + wall_h * 0.5, (2.8 + 8.2) * 0.5), null)
+	_add_seam_static_box(parent, "Seam01_WestStorage_WallW", Vector3(0.2, wall_h, storage_z), Vector3(0.75, floor_y + wall_h * 0.5, (2.8 + 8.2) * 0.5), null)
+	var infill: StandardMaterial3D = StandardMaterial3D.new()
+	infill.albedo_color = Color(0.78, 0.80, 0.83)
+	infill.metallic = 0.35
+	infill.roughness = 0.38
+	var az0: float = -5.69
+	var az1: float = -3.94
+	var alen: float = az1 - az0
+	var azc: float = (az0 + az1) * 0.5
+	var afloor: float = 4.32
+	# East wall of the alcove. z stops at -3.94, south of DOOR_ALCOVE2C (x -11.5, z -3.55), so the doorway stays clear.
+	_add_seam_static_box(parent, "Seam03_Alcove2C_EastWall", Vector3(0.2, 2.6, alen), Vector3(-10.30, afloor + 1.3, azc), infill)
+	# The east side is an open mezzanine edge (no existing rail on this run). Thin rail on the mezzanine face of the new wall.
+	var rail_mat: StandardMaterial3D = infill.duplicate() as StandardMaterial3D
+	_add_seam_static_box(parent, "Seam03_Alcove2C_Rail", Vector3(0.08, 1.1, alen), Vector3(-10.18, afloor + 0.55, azc), rail_mat)
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
@@ -2719,16 +2773,11 @@ func _physics_process(delta: float) -> void:
 		if pitch_in != 0.0:
 			_pitch += pitch_in * KEY_LOOK_SPEED * 0.6 * delta
 			_apply_pitch()
-		if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
-			input_dir.y -= 1.0
-		if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
-			input_dir.y += 1.0
-		if Input.is_physical_key_pressed(KEY_A):
-			input_dir.x -= 1.0
-		if Input.is_physical_key_pressed(KEY_D):
-			input_dir.x += 1.0
-		sprint = Input.is_physical_key_pressed(KEY_SHIFT)
-		jump = Input.is_physical_key_pressed(KEY_SPACE)
+		# [INPUT-01] Movement is the Input Map. _qa_key still feeds these actions: it sets physical_keycode,
+		# and project.godot binds W/A/S/D, Shift, and Space on both keycode and physical_keycode.
+		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+		sprint = Input.is_action_pressed("sprint")
+		jump = Input.is_action_pressed("jump")
 
 	# [t34u] Local "up" = world up normally, or toward the cylinder axis inside the spin-gravity ring.
 	var in_ring: bool = _in_gravity_ring(b.global_position)
@@ -2764,6 +2813,10 @@ func _physics_process(delta: float) -> void:
 	b.move_and_slide()
 	for sc_i: int in range(b.get_slide_collision_count()):
 		var scol: KinematicCollision3D = b.get_slide_collision(sc_i)
+		if _qa_egress:
+			var slide_n: Object = scol.get_collider()
+			if slide_n is Node:
+				_qa_last_slide_path = String((slide_n as Node).get_path())
 		if scol.get_collider() is RigidBody3D:
 			(scol.get_collider() as RigidBody3D).apply_central_impulse(-scol.get_normal() * 1.4)
 
@@ -4825,13 +4878,22 @@ func _build_rfid_forcefield_doors(parent: Node3D) -> void:
 		if ph > FF_FRAME_H + 0.005:
 			var ih: float = ph - FF_FRAME_H + 0.03
 			_dbox(droot, "PortalInfill_Top", Vector3(FF_FRAME_HALF_W * 2.0, ih, infill_d), Vector3(0.0, FF_FRAME_H + ih * 0.5, 0.0), m_infill)
-		# Colliders: everything outside the 1.50 x 2.45 m clear opening is solid; the field itself is a toggled box.
+		# Colliders: jambs leave a walkable opening; the field box (unchanged 1.50 m) is the closed-door block.
+		# [DOOR-04] If a jamb's inner face sits inside the spec width w, push it out so the clear width is
+		# at least min(w, 2.6) - 0.1 and at least 1.5 m. Closed FieldCollider size stays FF_OPEN_W.
 		var field_cs: CollisionShape3D = null
 		if not _batch_render:
-			var side_w: float = maxf(half_pw, FF_FRAME_HALF_W) - FF_OPEN_W * 0.5 + 0.03
+			var clear_w: float = maxf(minf(pw, 2.6) - 0.1, 1.5)
+			var inner_half: float = FF_OPEN_W * 0.5
+			if inner_half * 2.0 < pw:
+				inner_half = maxf(inner_half, clear_w * 0.5)
+			var outer_half: float = maxf(half_pw, FF_FRAME_HALF_W) + 0.03
+			if inner_half > outer_half - 0.02:
+				inner_half = maxf(outer_half - 0.02, FF_OPEN_W * 0.5)
+			var side_w: float = maxf(outer_half - inner_half, 0.02)
 			for sx2: float in [-1.0, 1.0]:
 				_ff_static_box(droot, "PortalJambCollider_%s" % ("L" if sx2 < 0.0 else "R"), Vector3(side_w, ph + 0.03, 0.30),
-					Vector3(sx2 * (FF_OPEN_W * 0.5 + side_w * 0.5), (ph + 0.03) * 0.5, 0.0))
+					Vector3(sx2 * (inner_half + side_w * 0.5), (ph + 0.03) * 0.5, 0.0))
 			var top_h: float = maxf(ph, FF_FRAME_H) - FF_OPEN_H + 0.03
 			_ff_static_box(droot, "PortalHeaderCollider", Vector3(maxf(pw, FF_FRAME_HALF_W * 2.0), top_h, 0.30), Vector3(0.0, FF_OPEN_H + top_h * 0.5, 0.0))
 			field_cs = _ff_static_box(droot, "FieldCollider", Vector3(FF_OPEN_W, FF_OPEN_H, 0.20), Vector3(0.0, FF_OPEN_H * 0.5, 0.0))
@@ -5392,27 +5454,84 @@ func _ff_set_cs(cs: CollisionShape3D, enabled: bool) -> void:
 		cs.set_deferred("disabled", not enabled)
 
 
+func _ff_field_key(n: Node) -> String:
+	var nm: String = String(n.name)
+	if nm.ends_with("_Shape"):
+		nm = nm.substr(0, nm.length() - 6)
+	if not nm.begins_with("FieldCollider") and n.get_parent() != null and String(n.get_parent().name).begins_with("FieldCollider"):
+		nm = String(n.get_parent().name)
+	return nm
+
+
+func _ff_is_field_collider_node(n: Node) -> bool:
+	var nm: String = String(n.name)
+	if nm.begins_with("FieldCollider") and (n is CollisionShape3D or n is CollisionObject3D):
+		return true
+	return n is CollisionShape3D and n.get_parent() != null and String(n.get_parent().name).begins_with("FieldCollider")
+
+
+## Closed: the single field stays up, or each split half follows its power. Open: every field collider is off.
+func _ff_field_node_on(door: Dictionary, n: Node, force_on: bool) -> bool:
+	var key: String = _ff_field_key(n)
+	var split: bool = bool(door.get("split", false))
+	var open_state: bool = bool(door.get("open", false))
+	if key.begins_with("FieldCollider_A"):
+		if not split:
+			return false
+		if force_on:
+			return true
+		if open_state:
+			return false
+		return bool(door.get("half_a_on", true))
+	if key.begins_with("FieldCollider_B"):
+		if not split:
+			return false
+		if force_on:
+			return true
+		if open_state:
+			return false
+		return bool(door.get("half_b_on", true))
+	if split:
+		return false
+	return force_on or not open_state
+
+
 func _ff_apply_colliders(door: Dictionary, force_on: bool = false) -> void:
+	var root: Node = door.get("root") as Node
+	if root != null and is_instance_valid(root):
+		var stack: Array[Node] = [root]
+		while not stack.is_empty():
+			var n: Node = stack.pop_back()
+			if _ff_is_field_collider_node(n):
+				var on: bool = _ff_field_node_on(door, n, force_on)
+				if n is CollisionShape3D:
+					_ff_set_cs(n as CollisionShape3D, on)
+				elif n is CollisionObject3D:
+					var layer: int = 1 if on else 0
+					(n as CollisionObject3D).set_deferred("collision_layer", layer)
+					(n as CollisionObject3D).set_deferred("collision_mask", layer)
+			for ch: Node in n.get_children():
+				stack.append(ch)
+	# Dictionary refs, same rule, so a shape stored before it is parented still toggles.
 	var split: bool = bool(door.get("split", false))
 	if not split:
 		var blocking: bool = force_on or not bool(door.get("open", false))
 		_ff_set_cs(door.get("field_collider") as CollisionShape3D, blocking)
-		_sync_door_nav_link(door)
-		return
-	_ff_set_cs(door.get("field_collider") as CollisionShape3D, false)
-	var a_on: bool = true
-	var b_on: bool = true
-	if force_on:
-		a_on = true
-		b_on = true
-	elif bool(door.get("open", false)):
-		a_on = false
-		b_on = false
 	else:
-		a_on = bool(door.get("half_a_on", true))
-		b_on = bool(door.get("half_b_on", true))
-	_ff_set_cs(door.get("col_a") as CollisionShape3D, a_on)
-	_ff_set_cs(door.get("col_b") as CollisionShape3D, b_on)
+		_ff_set_cs(door.get("field_collider") as CollisionShape3D, false)
+		var a_on: bool = true
+		var b_on: bool = true
+		if force_on:
+			a_on = true
+			b_on = true
+		elif bool(door.get("open", false)):
+			a_on = false
+			b_on = false
+		else:
+			a_on = bool(door.get("half_a_on", true))
+			b_on = bool(door.get("half_b_on", true))
+		_ff_set_cs(door.get("col_a") as CollisionShape3D, a_on)
+		_ff_set_cs(door.get("col_b") as CollisionShape3D, b_on)
 	_sync_door_nav_link(door)
 
 
@@ -5927,37 +6046,33 @@ func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
 
 
 func _scan_target_door(origin: Vector3) -> Dictionary:
-	# [QA-HUB-01] An [E] door scan acts on ONE door: the nearest in-range target in front of the camera
-	# (flattened dot >= SCAN_FACING_DOT). Hub side: hub ScanZone within SCAN_ZONE_RANGE (3D, so other floors never qualify).
-	# [EXIT-01] Egress is the non-hub side of the wall, (origin - hub) · hub +Z <= 0. The ScanZone sits
-	# beside the doorway, so range and facing against it fail in front of the opening. That case uses the
-	# doorway centre (door root + (0, 1, 0)) within 2.2 m and the same facing test. Hub side (dot > 0) is unchanged.
+	# [QA-HUB-01] An [E] door scan acts on ONE door: the nearest in-range doorway in front of the camera
+	# (flattened dot >= SCAN_FACING_DOT).
+	# [EXIT-01] Both sides of every RFID door use this same test. The target is the doorway centre at body
+	# height (door root + (0, 1, 0)); the hub ScanZone is not used for range. Horizontal (XZ) distance from
+	# the player body must be <= SCAN_ZONE_RANGE, and abs(dy) <= 1.6 m so another floor never qualifies.
 	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3.FORWARD
 	fwd.y = 0.0
 	if fwd.length() < 0.001:
 		return {}
 	fwd = fwd.normalized()
+	var body: Vector3 = _player_body.global_position if _player_body != null else origin
 	var best: Dictionary = {}
 	var best_d: float = INF
 	for door: Dictionary in _rfid_doors:
 		var droot: Node3D = door["root"] as Node3D
 		if droot == null or not is_instance_valid(droot) or not droot.is_inside_tree():
 			continue
-		var target: Vector3 = door["center"] as Vector3
-		var reach: float = SCAN_ZONE_RANGE
-		var hub_n: Node3D = door["hub"] as Node3D
-		if hub_n != null and is_instance_valid(hub_n):
-			if (origin - hub_n.global_position).dot(hub_n.global_transform.basis.z) <= 0.0:
-				target = droot.global_position + Vector3(0.0, 1.0, 0.0)
-				reach = 2.2
-		var d: float = origin.distance_to(target)
-		if d > reach or d > best_d:
+		var target: Vector3 = droot.global_position + Vector3(0.0, 1.0, 0.0)
+		var horiz: float = Vector2(body.x - target.x, body.z - target.z).length()
+		var dy: float = absf(body.y - target.y)
+		if horiz > SCAN_ZONE_RANGE or dy > 1.6 or horiz > best_d:
 			continue
-		var flat: Vector3 = target - origin
+		var flat: Vector3 = target - body
 		flat.y = 0.0
 		if flat.length() > 0.05 and fwd.dot(flat.normalized()) < SCAN_FACING_DOT:
 			continue
-		best_d = d
+		best_d = horiz
 		best = door
 	return best
 
@@ -7026,6 +7141,145 @@ func _run_qa_player_exit() -> void:
 		failures += 1
 		print("[EXIT-QA] FAIL | corridor | pos=%s root=%s z_need<%.2f y_delta=%.2f" % [str(end_pos), str(root_pos), root_pos.z - 1.0, y_delta])
 	print("[EXIT-QA] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [EGRESS] Spawn at SPAWN_POS and walk to the tram (`-- --qa-egress`)
+# Real controller only: no _qa_place and no position writes after the normal spawn.
+# Steering is mouse yaw; KEY_W is held except while scanning a door.
+# ------------------------------------------------------------------------------
+func _qa_egress_steer(target_xz: Vector2) -> void:
+	# Mouse-look applies yaw -= screen_relative.x * MOUSE_SENS, so +dx turns right.
+	# angle_error is that mouse-x sense: positive when the waypoint is to the right.
+	var fwd: Vector3 = -_player_body.global_transform.basis.z
+	fwd.y = 0.0
+	var to: Vector3 = Vector3(target_xz.x - _player_body.global_position.x, 0.0, target_xz.y - _player_body.global_position.z)
+	if fwd.length() < 0.001 or to.length() < 0.05:
+		return
+	var signed_left: float = fwd.normalized().signed_angle_to(to.normalized(), Vector3.UP)
+	var angle_error: float = -signed_left
+	var dx: float = clampf(angle_error / MOUSE_SENS, -40.0, 40.0)
+	_qa_mouse(Vector2(dx, 0.0))
+
+
+func _qa_egress_door_ready(door: Dictionary) -> bool:
+	if door.is_empty():
+		return false
+	var droot: Node3D = door.get("root") as Node3D
+	if droot == null or not is_instance_valid(droot):
+		return false
+	var target: Vector3 = droot.global_position + Vector3(0.0, 1.0, 0.0)
+	var body: Vector3 = _player_body.global_position
+	var horiz: float = Vector2(body.x - target.x, body.z - target.z).length()
+	if horiz > 2.0 or absf(body.y - target.y) > 1.6:
+		return false
+	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else -_player_body.global_transform.basis.z
+	fwd.y = 0.0
+	var flat: Vector3 = target - body
+	flat.y = 0.0
+	if flat.length() <= 0.05:
+		return true
+	if fwd.length() < 0.001:
+		return false
+	return fwd.normalized().dot(flat.normalized()) >= SCAN_FACING_DOT
+
+
+func _run_qa_egress() -> void:
+	var failures: int = 0
+	var wps: Array[Dictionary] = [
+		{"label": "(-10.5, 4.6)", "xz": Vector2(-10.5, 4.6), "door": ""},
+		{"label": "DOOR_APT201 (-11.2, 3.6)", "xz": Vector2(-11.2, 3.6), "door": "DOOR_APT201"},
+		{"label": "(-11.2, 1.2)", "xz": Vector2(-11.2, 1.2), "door": ""},
+		{"label": "(8.5, 1.0)", "xz": Vector2(8.5, 1.0), "door": ""},
+		{"label": "(10.65, 0.3)", "xz": Vector2(10.65, 0.3), "door": ""},
+		{"label": "(10.65, -2.4)", "xz": Vector2(10.65, -2.4), "door": ""},
+		{"label": "(10.65, -7.6)", "xz": Vector2(10.65, -7.6), "door": ""},
+		{"label": "(2.0, -7.6)", "xz": Vector2(2.0, -7.6), "door": ""},
+		{"label": "DOOR_SECTOR4_EXIT (0.0, -7.8)", "xz": Vector2(0.0, -7.8), "door": "DOOR_SECTOR4_EXIT"},
+		{"label": "(0.0, -10.6)", "xz": Vector2(0.0, -10.6), "door": ""},
+		{"label": "(9.0, -12.5)", "xz": Vector2(9.0, -12.5), "door": ""},
+		{"label": "(9.75, -14.0)", "xz": Vector2(9.75, -14.0), "door": ""},
+		{"label": "(15.0, -16.0)", "xz": Vector2(15.0, -16.0), "door": "", "final": true}
+	]
+	if _player_body == null:
+		for wp0: Dictionary in wps:
+			print("[EGRESS-QA] FAIL | %s | pos=(missing) frames=0" % String(wp0["label"]))
+			print("[EGRESS-QA] last_slide=%s" % _qa_last_slide_path)
+		print("[EGRESS-QA] DONE failures=%d" % wps.size())
+		get_tree().quit(1)
+		return
+	# Normal spawn already placed the body at SPAWN_POS. Wait for it to settle; do not write position.
+	await _qa_frames(30)
+	var holding_w: bool = false
+	for i: int in range(wps.size()):
+		var wp: Dictionary = wps[i]
+		var xz: Vector2 = wp["xz"] as Vector2
+		var door_id: String = String(wp["door"])
+		var is_final: bool = bool(wp.get("final", false))
+		var door: Dictionary = _find_door(door_id) if door_id != "" else {}
+		if not holding_w:
+			_qa_key(KEY_W, true)
+			await _qa_idle(2)
+			holding_w = true
+		var frames: int = 0
+		var arrived: bool = false
+		while frames < 900:
+			var pos: Vector3 = _player_body.global_position
+			var horiz: float = Vector2(pos.x, pos.z).distance_to(xz)
+			var aim: Vector2 = xz
+			if door_id != "" and not door.is_empty():
+				var droot: Node3D = door.get("root") as Node3D
+				if droot != null:
+					aim = Vector2(droot.global_position.x, droot.global_position.z)
+			_qa_egress_steer(aim if door_id != "" else xz)
+			if door_id != "":
+				if _qa_egress_door_ready(door) or horiz < 0.8:
+					arrived = true
+					break
+			elif is_final and horiz <= 1.5 and pos.y >= 0.25:
+				arrived = true
+				break
+			elif horiz < 0.8:
+				arrived = true
+				break
+			await get_tree().physics_frame
+			frames += 1
+		var ok: bool = false
+		if door_id != "":
+			_qa_key(KEY_W, false)
+			await _qa_idle(2)
+			holding_w = false
+			var face_left: int = 900 - frames
+			var faced: int = 0
+			while not _qa_egress_door_ready(door) and faced < face_left:
+				var droot2: Node3D = door.get("root") as Node3D
+				if droot2 != null:
+					_qa_egress_steer(Vector2(droot2.global_position.x, droot2.global_position.z))
+				await get_tree().physics_frame
+				faced += 1
+			frames += faced
+			if _qa_egress_door_ready(door):
+				await _qa_tap(KEY_E)
+				await get_tree().create_timer(1.0).timeout
+				ok = bool(door.get("open", false))
+			else:
+				ok = false
+		elif is_final:
+			var end_p: Vector3 = _player_body.global_position
+			var end_h: float = Vector2(end_p.x, end_p.z).distance_to(xz)
+			ok = end_h <= 1.5 and end_p.y >= 0.25
+		else:
+			ok = arrived
+		var here: Vector3 = _player_body.global_position
+		print("[EGRESS-QA] %s | %s | pos=%s frames=%d" % ["PASS" if ok else "FAIL", String(wp["label"]), str(here), frames])
+		if not ok:
+			failures += 1
+			print("[EGRESS-QA] last_slide=%s" % _qa_last_slide_path)
+	if holding_w:
+		_qa_key(KEY_W, false)
+		await _qa_idle(1)
+	print("[EGRESS-QA] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
 
