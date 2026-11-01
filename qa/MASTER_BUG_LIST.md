@@ -7,7 +7,7 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 ## Critical / High
 | Master | Sev | Owner | Location / file | Summary | Source IDs | Status |
 |---|---|---|---|---|---|---|
-| M-01 | High | Gage (Rook if a collision mesh is needed) | preface_playable_area.gd ANIMATED_PROP_SPECS; Prop38/39/42/43 nodes | Interactive props 38/39/42/43 have no CollisionObject3D. The player walks through them. | GEO-01 | Open |
+| M-01 | High | Gage (Rook if a collision mesh is needed) | preface_playable_area.gd ANIMATED_PROP_SPECS; Prop38/39/42/43 nodes | Interactive props 38/39/42/43 have no CollisionObject3D (re-verified b7ec6bd: 0 colliders each). The player walks through them. | GEO-01 | Open (confirmed) |
 | M-02 | High | Gage | preface_playable_area.gd:1830 (Prop43 still at (-8.00,0.235,8.50) yaw 180) | Prop43 clashes with the wall / built-ins and is not at the Rev 3 spot (-5.16,0.235,5.20) yaw -90. Causes 3 placement_assert failures (clearance, mesh_clearance, front_zone). | L4-01 (QA-04 LAY-01), Prop43 clash (1a349a3 pass) | Open-blocked (placement decision) |
 | M-03 | High | Gage | preface_playable_area.gd (no refs) | The 8 interim props from strip4_preface_layout_v1 #5-#12 are not placed (suit storage, lost+found, tea set, clutter kit, telescope, lab crates 104/204, cycler lightbox). | L4-02 | Open |
 | M-04 | High | Gage | preface_playable_area.gd:2289 (`directional_shadow_max_distance = 45.0`), _process sun orbit | The sun lights the interior through the opaque drum hull outside the 45 m shadow range. Only the 36 degree window should admit sunlight. | VIS-02 | Open |
@@ -55,12 +55,11 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 | M-38 | Low | Rook | APT 201 (-13.65,2.65), APT 202 (13.65,2.65); side-room front corners z~2.92 | Outer front corners are 0.05 m short. Side-room SeamFix walls leave about a 0.02 m slot behind the front wall. | SEAM-04 | Open |
 | M-39 | Low | Rook | DoorHubBulkhead TalkPad vs IntercomRing | Coplanar faces (about 3 cm2). | GEO-07 | Open |
 | M-40 | Low | Rook | Open_Portal_Sector_Exit (z -8.76) | Portal face is coplanar with the vestibule shell (about 9.35 m2). | GEO-08 | Open |
-| M-41 | Low | Gage | DOOR_APT201 open portal | Open portal / door frame gap check (DOOR-04 closed at 1a349a3, so no gap expected). Placeholder for capsule-sweep results. | — | see sweep |
 
 ## QA tasks
 | Task | Owner | Summary | Status |
 |---|---|---|---|
-| T-01 | Patch | Capsule sweep (r=0.35) along every interior wall and corner, to find squeeze-through gaps (QA-02 limit). | In progress |
+| T-01 | Patch | Capsule sweep with the real player capsule (r 0.35, h 1.75) on main b7ec6bd: 3,799 test_move pushes outward through 6 room perimeters at 0.05 m steps (door spans excluded). 92 flagged moves: 80 sit within 0.15 m of a corner, where the start pose overlaps the adjacent wall (sweep artifact). The 29 on the Room 2B west wall (x 5.35, z 6.1-7.5) were rechecked: rays at 0.3/1.0/1.7 m hit the wall at x 5.53, and a real move_forward walk stops at x 6.04. **No capsule-passable wall gaps, so no new GEO items.** Prop check confirms M-01: Props 38/39/42/43 have 0 CollisionObject3D, and a ray straight through Prop42 hits nothing. | Done (no gaps) |
 | T-02 | Patch / Jared GPU box | GPU run: --render-all for QA-03 light levels, plus fps for PERF-01 / QA-05. | Open |
 
 ## Merged duplicates
