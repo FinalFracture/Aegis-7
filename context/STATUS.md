@@ -1,6 +1,6 @@
 # Team Context, Token Health & 10% Usage Budget Status (`STATUS.md`)
 
-- **Last Checked:** 2026-10-30 04:04:29 CDT
+- **Last Checked:** 2026-11-01 00:08:02 CDT
 - **Managed By:** Scribe (`3b011c08-32f8-434e-8285-6cd66198bf29`)
 - **Project:** *Cylinder Hab-7* (O'Neill Cylinder Habitat — Unified Aegis-7 Standard)
 - **Per-Bot Rotation Cap:** **`150,000` estimated tokens** (~`600 KB` raw JSON transcript) | Warning at **`120,000` tokens** (`80%`)
@@ -14,25 +14,25 @@
 
 | Metric | Value | Notes |
 | :--- | :--- | :--- |
-| **Sprint Budget Status** | **WITHIN BUDGET — 27.02 / 42.0 UC Used (15.00 UC / 441,648 tok remaining before pause)** | Hard pause at `42.0 UC` (`+1,237,363` net new tokens) |
-| **Cumulative Project Lifetime Tokens (All 30 Bots)** | **`2,069,980` tok** (`8,085.9 KB` / `4,838` msgs) | Active 8 bots: `0` tok + Retired 22 bots: `2,069,980` tok |
+| **Sprint Budget Status** | **PAUSE WORK IMMEDIATELY — 42.0 UC (42.0% Account Usage / +1,237,363 tok) Sprint Cap Reached!** | Hard pause at `42.0 UC` (`+1,237,363` net new tokens) |
+| **Cumulative Project Lifetime Tokens (All 30 Bots)** | **`2,512,700` tok** (`9,815.2 KB` / `6,693` msgs) | Active 8 bots: `442,720` tok + Retired 22 bots: `2,069,980` tok |
 | **Sprint Baseline (Post-Monday 06:27 CDT Weekly Reset)** | **`1,274,265` tok** | Active 6-bot baseline: `240,106` tok (`2026-10-26 11:17 CDT`) |
-| **Sprint Net New Tokens Burned** | **`+795,715` / `1,237,363` tok** (`64.3%`) | Remaining before pause: **`441,648` tok** |
-| **Sprint Usage Credits (`UC`) Burned** | **`27.02` / `42.02 UC`** | Remaining before pause: **`15.00 UC`** (Warn at `40.5 UC`) |
-| **Estimated Post-Reset Account Usage** | **`~27.02%`** (Target Pause Cap: **`42.0%`**) | Weekly usage reset Mondays at 11:28 UTC / 5:28 AM CST (`1 UC` = `29,447` tok at 25.0% / `28,869` tok at 25.5%) |
+| **Sprint Net New Tokens Burned** | **`+1,238,435` / `1,237,363` tok** (`100.1%`) | Remaining before pause: **`0` tok** |
+| **Sprint Usage Credits (`UC`) Burned** | **`42.06` / `42.02 UC`** | Remaining before pause: **`0.00 UC`** (Warn at `40.5 UC`) |
+| **Estimated Post-Reset Account Usage** | **`~42.06%`** (Target Pause Cap: **`42.0%`**) | Weekly usage reset Mondays at 11:28 UTC / 5:28 AM CST (`1 UC` = `29,447` tok at 25.0% / `28,869` tok at 25.5%) |
 
 ## Live Bot Context & Sprint Allowance Table (`~206,227` tok / `7.00 UC` Allowance per Bot)
 
 | Bot Name | Agent ID | Role | Messages | Raw Transcript | Active Context Tokens | Load vs 150k Rotate Cap | Sprint Delta (`UC` Burned vs `7.00 UC` Share) | Rotation Status | Active Handoff File |
 | :--- | :--- | :--- | ---: | ---: | ---: | ---: | :--- | :--- | :--- |
-| **Atlas** | `f7d262d1-8cde-4c78-8b07-3ab3fd11c960` | Game PM | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/atlas-handoff-v5.md` |
-| **Vance** | `242c8419-7b14-4f27-9cdc-e87328eff983` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/vance-handoff-v3.md` |
-| **Sloane** | `0fc258d4-0dea-4cf3-ab06-338f21756ae6` | Interior, Lighting & Texture Designer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/sloane-handoff-v4.md` |
-| **Rook** | `88cf8abe-1b1e-406c-9123-39e87610c732` | 3D Modeling Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/rook-handoff-v4.md` |
-| **Gage** | `2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38` | Godot 4 Developer | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/gage-handoff-v4.md` |
-| **Quinn** | `0359c20f-c476-48f7-99c2-c49637950351` | Market Research & Gameplay Mechanics Strategist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/quinn-handoff-v3.md` |
-| **Scribe** | `61a860b0-0159-406a-af8c-a969dff4722b` | Context & Handoff Manager | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/scribe-handoff-v6.md` |
-| **Patch** | `ecd78f3d-be8f-43e4-b543-0c912d6d00ea` | QA & Automated Playtester Specialist | 0 | 0.0 KB | ~0 tok | 0.0% | `+0` tok (`0.00` / `3.63 UC`, `0.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/patch-handoff-v2.md` |
+| **Atlas** | `f7d262d1-8cde-4c78-8b07-3ab3fd11c960` | Game PM | 813 | 560.0 KB | ~143,364 tok | 95.6% | `+143,364` tok (`4.87` / `3.63 UC`, `134.1%`) | WARNING (>= 120k tok, Below 150k Cap — Handoff v4 Staged) | `/workspace/game-project/context/atlas-handoff-v5.md` |
+| **Vance** | `242c8419-7b14-4f27-9cdc-e87328eff983` | Sci-Fi Architect, Movie Prop & Set Design Specialist | 37 | 42.5 KB | ~10,891 tok | 7.3% | `+10,891` tok (`0.37` / `3.63 UC`, `10.2%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/vance-handoff-v3.md` |
+| **Sloane** | `0fc258d4-0dea-4cf3-ab06-338f21756ae6` | Interior, Lighting & Texture Designer | 203 | 254.9 KB | ~65,250 tok | 43.5% | `+65,250` tok (`2.22` / `3.63 UC`, `61.0%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/sloane-handoff-v4.md` |
+| **Rook** | `88cf8abe-1b1e-406c-9123-39e87610c732` | 3D Modeling Specialist | 336 | 336.3 KB | ~86,082 tok | 57.4% | `+86,082` tok (`2.92` / `3.63 UC`, `80.5%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/rook-handoff-v4.md` |
+| **Gage** | `2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38` | Godot 4 Developer | 259 | 278.9 KB | ~71,404 tok | 47.6% | `+71,404` tok (`2.42` / `3.63 UC`, `66.8%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/gage-handoff-v4.md` |
+| **Quinn** | `0359c20f-c476-48f7-99c2-c49637950351` | Market Research & Gameplay Mechanics Strategist | 10 | 18.9 KB | ~4,847 tok | 3.2% | `+4,847` tok (`0.16` / `3.63 UC`, `4.5%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/quinn-handoff-v3.md` |
+| **Scribe** | `61a860b0-0159-406a-af8c-a969dff4722b` | Context & Handoff Manager | 8 | 19.9 KB | ~5,087 tok | 3.4% | `+5,087` tok (`0.17` / `3.63 UC`, `4.8%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/scribe-handoff-v6.md` |
+| **Patch** | `ecd78f3d-be8f-43e4-b543-0c912d6d00ea` | QA & Automated Playtester Specialist | 189 | 217.9 KB | ~55,795 tok | 37.2% | `+55,795` tok (`1.89` / `3.63 UC`, `52.2%`) | HEALTHY (Below 120k warn / 150k cap) | `/workspace/game-project/context/patch-handoff-v2.md` |
 
 ## Retired Predecessor Instances Included in Lifetime Project Total (`22` Bots)
 
@@ -134,8 +134,3 @@
 4. Spawn a fresh replacement bot via `CreateAgent` with the original name, the exact same role purpose as its predecessor, and explicit instructions in its profile description to read `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/STATUS.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/VOTE_LOG.md`, `/workspace/game-project/context/<agent>-handoff-v<N>.md`, and its role-specific reference files on its first turn.
 5. Rename the predecessor via `UpdateAgent` to `delete-<name>` so Jared can right-click and delete it in the sidebar.
 6. Update `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/check_context.py`, and `/workspace/game-project/context/STATUS.md`, then message the new bot and notify Atlas.
-
-## Design notes (2026-10-31, Jared)
-- Cylinder is static (never rotates); the space backdrop orbits around it.
-- One 36° radial slice is a full-length observation window.
-- The opposing 36° slice is the future RECREATION AREA (sports fields, walking trails, parks, river). It is NOT designed yet; for now it's a placeholder long curved grass slab.
