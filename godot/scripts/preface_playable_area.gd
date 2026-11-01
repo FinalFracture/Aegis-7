@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -297,6 +297,7 @@ var _qa_t38: bool = false
 var _qa_ff_door: bool = false
 var _qa_hub_shot: bool = false
 var _qa_ts: bool = false
+var _qa_exit: bool = false
 var _qa_nav_reach: bool = false
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
@@ -374,6 +375,9 @@ func _ready() -> void:
 		elif arg == "--qa-forcefield-door":
 			_qa_ff_door = true
 			_qa_hand = true
+		elif arg == "--qa-player-exit":
+			_qa_exit = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -436,6 +440,8 @@ func _ready() -> void:
 			_run_reticle_stars_doors_qa.call_deferred()
 		elif _qa_ts:
 			_run_troubleshoot_simple_qa.call_deferred()
+		elif _qa_exit:
+			_run_qa_player_exit.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -5942,10 +5948,11 @@ func _scan_target_door(origin: Vector3) -> Dictionary:
 		flat.y = 0.0
 		if flat.length() > 0.05 and fwd.dot(flat.normalized()) < SCAN_FACING_DOT:
 			continue
-		# Must be on the hub's side of the wall: (player - hub) . hub outward +Z normal > 0
-		var hub_n: Node3D = door.get("hub") as Node3D
-		if hub_n != null and (origin - hub_n.global_position).dot(hub_n.global_transform.basis.z.normalized()) <= 0.0:
-			continue
+		# [EXIT-01] Interior egress. RFID hubs mount on the corridor face, so
+		# (origin - hub) · hub +Z <= 0 is the room (non-hub) side. A door always
+		# opens from inside: do not skip that request. Range and facing above
+		# already use door center and still apply. Hub-side scans (dot > 0)
+		# stay eligible as before.
 		best_d = d
 		best = door
 	return best
@@ -6928,6 +6935,94 @@ func _run_troubleshoot_simple_qa() -> void:
 	print("[TS-QA] SUMMARY failures=%d e_aim_hatch_opens_ui=%s e_ignored_while_ui_open=%s look_locked_while_open=%s" % [_qa_failures, "PASS" if opened_ok else "FAIL", "PASS" if ignored_ok else "FAIL", "PASS" if look_locked else "FAIL"])
 	print("[TS-QA] DONE failures=", _qa_failures)
 	get_tree().quit(0 if _qa_failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [EXIT-01] Leave APT 201 from inside (`-- --qa-player-exit`)
+# Real controller only: _qa_place for the spawn, then _qa_key / _qa_tap and physics frames.
+# ------------------------------------------------------------------------------
+func _run_qa_player_exit() -> void:
+	var failures: int = 0
+	if _player_body == null:
+		print("[EXIT-QA] FAIL | spawn | player body missing")
+		print("[EXIT-QA] FAIL | walk_to_door | player body missing")
+		print("[EXIT-QA] FAIL | press_e | player body missing")
+		print("[EXIT-QA] FAIL | face_neg_z | player body missing")
+		print("[EXIT-QA] FAIL | corridor | player body missing")
+		print("[EXIT-QA] DONE failures=5")
+		get_tree().quit(1)
+		return
+	_qa_place(SPAWN_POS, 0.0, -4.0)
+	await _qa_frames(20)
+	var start_pos: Vector3 = _player_body.global_position
+	print("[EXIT-QA] PASS | spawn | start=%s" % str(start_pos))
+	var door: Dictionary = _find_door("DOOR_APT201")
+	if door.is_empty():
+		failures += 4
+		print("[EXIT-QA] FAIL | walk_to_door | DOOR_APT201 missing")
+		print("[EXIT-QA] FAIL | press_e | DOOR_APT201 missing")
+		print("[EXIT-QA] FAIL | face_neg_z | DOOR_APT201 missing")
+		print("[EXIT-QA] FAIL | corridor | DOOR_APT201 missing")
+		print("[EXIT-QA] DONE failures=%d" % failures)
+		get_tree().quit(1)
+		return
+	var dc: Vector3 = door["center"] as Vector3
+	var dir: Vector3 = dc - _player_body.global_position
+	_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	var walked: int = 0
+	var horiz: float = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(dc.x, dc.z))
+	while walked < 240 and horiz > 1.3:
+		if walked % 10 == 0:
+			dir = dc - _player_body.global_position
+			_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+		await get_tree().physics_frame
+		walked += 1
+		horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(dc.x, dc.z))
+	_qa_key(KEY_W, false)
+	await _qa_idle(2)
+	if horiz <= 1.3:
+		print("[EXIT-QA] PASS | walk_to_door | horiz=%.2f m frames=%d pos=%s" % [horiz, walked, str(_player_body.global_position)])
+	else:
+		failures += 1
+		print("[EXIT-QA] FAIL | walk_to_door | horiz=%.2f m frames=%d pos=%s" % [horiz, walked, str(_player_body.global_position)])
+	await _qa_tap(KEY_E)
+	await get_tree().create_timer(1.2).timeout
+	if bool(door["open"]):
+		print("[EXIT-QA] PASS | press_e | open=true")
+	else:
+		failures += 1
+		print("[EXIT-QA] FAIL | press_e | open=false dist3=%.2f pos=%s" % [_player_probe_point().distance_to(dc), str(_player_body.global_position)])
+	_player_body.rotation_degrees.y = 0.0
+	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3(0.0, 0.0, -1.0)
+	if fwd.z >= 0.0:
+		_player_body.rotation_degrees.y = 180.0
+		if _camera != null:
+			fwd = -_camera.global_transform.basis.z
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	var out_frames: int = 0
+	while out_frames < 180 and _player_body.global_position.z >= dc.z - 1.5:
+		await get_tree().physics_frame
+		out_frames += 1
+	_qa_key(KEY_W, false)
+	await _qa_idle(2)
+	var end_z: float = _player_body.global_position.z
+	if end_z < dc.z - 1.5:
+		print("[EXIT-QA] PASS | face_neg_z | yaw=%.1f fwd_z=%.3f frames=%d z=%.2f" % [_player_body.rotation_degrees.y, fwd.z, out_frames, end_z])
+	else:
+		failures += 1
+		print("[EXIT-QA] FAIL | face_neg_z | yaw=%.1f fwd_z=%.3f frames=%d z=%.2f need<%.2f" % [_player_body.rotation_degrees.y, fwd.z, out_frames, end_z, dc.z - 1.5])
+	var end_pos: Vector3 = _player_body.global_position
+	var y_delta: float = absf(end_pos.y - dc.y)
+	if end_pos.z < dc.z - 1.0 and y_delta <= 1.0:
+		print("[EXIT-QA] PASS | corridor | pos=%s dc=%s" % [str(end_pos), str(dc)])
+	else:
+		failures += 1
+		print("[EXIT-QA] FAIL | corridor | pos=%s dc=%s z_need<%.2f y_delta=%.2f" % [str(end_pos), str(dc), dc.z - 1.0, y_delta])
+	print("[EXIT-QA] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
 
 
 # ------------------------------------------------------------------------------
