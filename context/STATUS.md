@@ -134,3 +134,8 @@
 4. Spawn a fresh replacement bot via `CreateAgent` with the original name, the exact same role purpose as its predecessor, and explicit instructions in its profile description to read `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/STATUS.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/VOTE_LOG.md`, `/workspace/game-project/context/<agent>-handoff-v<N>.md`, and its role-specific reference files on its first turn.
 5. Rename the predecessor via `UpdateAgent` to `delete-<name>` so Jared can right-click and delete it in the sidebar.
 6. Update `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/check_context.py`, and `/workspace/game-project/context/STATUS.md`, then message the new bot and notify Atlas.
+
+## Design notes (2026-10-31, Jared)
+- Cylinder is static (never rotates); the space backdrop orbits around it.
+- One 36° radial slice is a full-length observation window.
+- The opposing 36° slice is the future RECREATION AREA (sports fields, walking trails, parks, river). It is NOT designed yet; for now it's a placeholder long curved grass slab.
