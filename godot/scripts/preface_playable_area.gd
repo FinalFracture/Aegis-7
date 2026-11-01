@@ -1056,31 +1056,24 @@ func _add_seam_static_box(parent: Node3D, nm: String, sz: Vector3, pos: Vector3,
 		seam.add_child(mi)
 
 
-## [SEAM-01] Missing side-wall collision on the L1 lounge and storage shells.
-## [SEAM-03] Alcove 2C east shell was open onto the mezzanine; wall plus a rail on that edge.
+## [SEAM-03] Alcove 2C's east opening is a 1.1 m guardrail, not a wall. The mezzanine edge keeps its rail.
+## Rook's *_SeamFix meshes already supply the side-wall trimesh colliders (SEAM-01).
 ## Safety-floor boxes share one StaticBody, so these are their own StaticBody3D nodes on the same parent.
 func _add_playtest_seam_blocks(parent: Node3D) -> void:
-	var lounge_z: float = 8.0 - 2.8
-	var storage_z: float = 8.2 - 2.8
-	var floor_y: float = 0.12
-	var wall_h: float = 2.7
-	_add_seam_static_box(parent, "Seam01_EastLounge_Wall", Vector3(0.2, wall_h, lounge_z), Vector3(-4.75, floor_y + wall_h * 0.5, (2.8 + 8.0) * 0.5), null)
-	_add_seam_static_box(parent, "Seam01_WestStorage_WallE", Vector3(0.2, wall_h, storage_z), Vector3(8.25, floor_y + wall_h * 0.5, (2.8 + 8.2) * 0.5), null)
-	_add_seam_static_box(parent, "Seam01_WestStorage_WallW", Vector3(0.2, wall_h, storage_z), Vector3(0.75, floor_y + wall_h * 0.5, (2.8 + 8.2) * 0.5), null)
-	var infill: StandardMaterial3D = StandardMaterial3D.new()
-	infill.albedo_color = Color(0.78, 0.80, 0.83)
-	infill.metallic = 0.35
-	infill.roughness = 0.38
+	var rail_mat: StandardMaterial3D = StandardMaterial3D.new()
+	rail_mat.albedo_color = Color(0.78, 0.80, 0.83)
+	rail_mat.metallic = 0.35
+	rail_mat.roughness = 0.38
 	var az0: float = -5.69
 	var az1: float = -3.94
 	var alen: float = az1 - az0
 	var azc: float = (az0 + az1) * 0.5
 	var afloor: float = 4.32
-	# East wall of the alcove. z stops at -3.94, south of DOOR_ALCOVE2C (x -11.5, z -3.55), so the doorway stays clear.
-	_add_seam_static_box(parent, "Seam03_Alcove2C_EastWall", Vector3(0.2, 2.6, alen), Vector3(-10.30, afloor + 1.3, azc), infill)
-	# The east side is an open mezzanine edge (no existing rail on this run). Thin rail on the mezzanine face of the new wall.
-	var rail_mat: StandardMaterial3D = infill.duplicate() as StandardMaterial3D
-	_add_seam_static_box(parent, "Seam03_Alcove2C_Rail", Vector3(0.08, 1.1, alen), Vector3(-10.18, afloor + 0.55, azc), rail_mat)
+	# East opening of the alcove. z stops at -3.94, south of DOOR_ALCOVE2C (x -11.5, z -3.55), so the doorway stays clear.
+	_add_seam_static_box(parent, "Seam03_Alcove2C_EastRail", Vector3(0.08, 1.1, alen), Vector3(-10.30, afloor + 0.55, azc), rail_mat)
+	# Mezzanine-edge rail, on the atrium face of that opening.
+	var edge_mat: StandardMaterial3D = rail_mat.duplicate() as StandardMaterial3D
+	_add_seam_static_box(parent, "Seam03_Alcove2C_Rail", Vector3(0.08, 1.1, alen), Vector3(-10.18, afloor + 0.55, azc), edge_mat)
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
@@ -6047,10 +6040,12 @@ func set_door_field(door_id: String, opacity: float, color: Color) -> bool:
 
 func _scan_target_door(origin: Vector3) -> Dictionary:
 	# [QA-HUB-01] An [E] door scan acts on ONE door: the nearest in-range doorway in front of the camera
-	# (flattened dot >= SCAN_FACING_DOT).
-	# [EXIT-01] Both sides of every RFID door use this same test. The target is the doorway centre at body
-	# height (door root + (0, 1, 0)); the hub ScanZone is not used for range. Horizontal (XZ) distance from
-	# the player body must be <= SCAN_ZONE_RANGE, and abs(dy) <= 1.6 m so another floor never qualifies.
+	# (flattened dot >= SCAN_FACING_DOT). Facing the doorway centre OR the hub ScanZone (door["center"])
+	# counts. Each target uses the same horizontal range, SCAN_ZONE_RANGE.
+	# [EXIT-01] Both sides of every RFID door use the doorway-centre test. That centre is door root + (0, 1, 0).
+	# Horizontal (XZ) distance from the player body must be <= SCAN_ZONE_RANGE, and abs(dy) <= 1.6 m so
+	# another floor never qualifies. The ScanZone alternate is only the hub side of the doorway: the dock
+	# pad looks at the hub, and the far side of the wall (qa_hub_01_far_side_of_wall_noop) stays a no-op.
 	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3.FORWARD
 	fwd.y = 0.0
 	if fwd.length() < 0.001:
@@ -6068,13 +6063,47 @@ func _scan_target_door(origin: Vector3) -> Dictionary:
 		var dy: float = absf(body.y - target.y)
 		if horiz > SCAN_ZONE_RANGE or dy > 1.6 or horiz > best_d:
 			continue
-		var flat: Vector3 = target - body
-		flat.y = 0.0
-		if flat.length() > 0.05 and fwd.dot(flat.normalized()) < SCAN_FACING_DOT:
+		if not _scan_faces_door_or_hub(fwd, body, target, droot, door):
 			continue
 		best_d = horiz
 		best = door
 	return best
+
+
+func _scan_faces_point(fwd: Vector3, body: Vector3, point: Vector3) -> bool:
+	var horiz: float = Vector2(body.x - point.x, body.z - point.z).length()
+	if horiz > SCAN_ZONE_RANGE:
+		return false
+	var flat: Vector3 = point - body
+	flat.y = 0.0
+	if flat.length() <= 0.05:
+		return true
+	return fwd.dot(flat.normalized()) >= SCAN_FACING_DOT
+
+
+func _scan_faces_door_or_hub(fwd: Vector3, body: Vector3, doorway: Vector3, droot: Node3D, door: Dictionary) -> bool:
+	if _scan_faces_point(fwd, body, doorway):
+		return true
+	var hub_v: Variant = door.get("center", null)
+	if not (hub_v is Vector3):
+		return false
+	var hub: Vector3 = hub_v as Vector3
+	if not _scan_faces_point(fwd, body, hub):
+		return false
+	return _scan_on_hub_side(body, droot, hub)
+
+
+## True when the body is on the same side of the door plane as the hub ScanZone (local +Z, basis.z).
+func _scan_on_hub_side(body: Vector3, droot: Node3D, hub: Vector3) -> bool:
+	var n: Vector3 = droot.global_transform.basis.z
+	n.y = 0.0
+	if n.length_squared() < 0.0000001:
+		return true
+	n = n.normalized()
+	var origin: Vector3 = droot.global_position
+	var player_side: float = (body.x - origin.x) * n.x + (body.z - origin.z) * n.z
+	var hub_side: float = (hub.x - origin.x) * n.x + (hub.z - origin.z) * n.z
+	return player_side * hub_side > 0.0
 
 
 func _scan_rfid_doors(origin: Vector3) -> Array[String]:
@@ -7185,23 +7214,36 @@ func _qa_egress_door_ready(door: Dictionary) -> bool:
 	return fwd.normalized().dot(flat.normalized()) >= SCAN_FACING_DOT
 
 
+func _qa_egress_print_route(wps: Array[Dictionary]) -> void:
+	var parts: PackedStringArray = PackedStringArray()
+	for wp: Dictionary in wps:
+		parts.append(String(wp["label"]))
+	print("[EGRESS-QA] route=%s" % "; ".join(parts))
+
+
 func _run_qa_egress() -> void:
 	var failures: int = 0
 	var wps: Array[Dictionary] = [
 		{"label": "(-10.5, 4.6)", "xz": Vector2(-10.5, 4.6), "door": ""},
 		{"label": "DOOR_APT201 (-11.2, 3.6)", "xz": Vector2(-11.2, 3.6), "door": "DOOR_APT201"},
-		{"label": "(-11.2, 1.2)", "xz": Vector2(-11.2, 1.2), "door": ""},
-		{"label": "(8.5, 1.0)", "xz": Vector2(8.5, 1.0), "door": ""},
-		{"label": "(10.65, 0.3)", "xz": Vector2(10.65, 0.3), "door": ""},
-		{"label": "(10.65, -2.4)", "xz": Vector2(10.65, -2.4), "door": ""},
-		{"label": "(10.65, -7.6)", "xz": Vector2(10.65, -7.6), "door": ""},
-		{"label": "(2.0, -7.6)", "xz": Vector2(2.0, -7.6), "door": ""},
-		{"label": "DOOR_SECTOR4_EXIT (0.0, -7.8)", "xz": Vector2(0.0, -7.8), "door": "DOOR_SECTOR4_EXIT"},
-		{"label": "(0.0, -10.6)", "xz": Vector2(0.0, -10.6), "door": ""},
-		{"label": "(9.0, -12.5)", "xz": Vector2(9.0, -12.5), "door": ""},
-		{"label": "(9.75, -14.0)", "xz": Vector2(9.75, -14.0), "door": ""},
+		{"label": "(-11.2, 1.3)", "xz": Vector2(-11.2, 1.3), "door": ""},
+		{"label": "(-7.6, 1.55)", "xz": Vector2(-7.6, 1.55), "door": ""},
+		{"label": "(7.65, 1.6)", "xz": Vector2(7.65, 1.6), "door": ""},
+		{"label": "(9.85, -1.3)", "xz": Vector2(9.85, -1.3), "door": ""},
+		{"label": "(10.4, -2.1)", "xz": Vector2(10.4, -2.1), "door": ""},
+		{"label": "(9.7, -5.9)", "xz": Vector2(9.7, -5.9), "door": ""},
+		{"label": "(9.3, -7.4)", "xz": Vector2(9.3, -7.4), "door": ""},
+		{"label": "(3.2, -7.8)", "xz": Vector2(3.2, -7.8), "door": ""},
+		{"label": "DOOR_SECTOR4_EXIT (0.0, -7.9)", "xz": Vector2(0.0, -7.9), "door": "DOOR_SECTOR4_EXIT"},
+		{"label": "(0.0, -9.8)", "xz": Vector2(0.0, -9.8), "door": ""},
+		{"label": "(1.6, -10.5)", "xz": Vector2(1.6, -10.5), "door": ""},
+		{"label": "(2.9, -11.5)", "xz": Vector2(2.9, -11.5), "door": ""},
+		{"label": "(8.9, -15.9)", "xz": Vector2(8.9, -15.9), "door": ""},
+		{"label": "(10.2, -16.3)", "xz": Vector2(10.2, -16.3), "door": ""},
+		{"label": "(12.3, -16.7)", "xz": Vector2(12.3, -16.7), "door": ""},
 		{"label": "(15.0, -16.0)", "xz": Vector2(15.0, -16.0), "door": "", "final": true}
 	]
+	_qa_egress_print_route(wps)
 	if _player_body == null:
 		for wp0: Dictionary in wps:
 			print("[EGRESS-QA] FAIL | %s | pos=(missing) frames=0" % String(wp0["label"]))
@@ -7237,7 +7279,7 @@ func _run_qa_egress() -> void:
 				if _qa_egress_door_ready(door) or horiz < 0.8:
 					arrived = true
 					break
-			elif is_final and horiz <= 1.5 and pos.y >= 0.25:
+			elif is_final and horiz <= 1.5 and pos.y >= 0.15:
 				arrived = true
 				break
 			elif horiz < 0.8:
@@ -7268,7 +7310,8 @@ func _run_qa_egress() -> void:
 		elif is_final:
 			var end_p: Vector3 = _player_body.global_position
 			var end_h: float = Vector2(end_p.x, end_p.z).distance_to(xz)
-			ok = end_h <= 1.5 and end_p.y >= 0.25
+			# Platform body origin sits near y 0.18. Within 1.5 m of (15.0, -16.0) and y >= 0.15.
+			ok = end_h <= 1.5 and end_p.y >= 0.15
 		else:
 			ok = arrived
 		var here: Vector3 = _player_body.global_position

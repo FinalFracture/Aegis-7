@@ -3,8 +3,9 @@ extends SceneTree
 ##   xvfb-run -a godot --path godot --rendering-driver opengl3 -s res://tools/placement_assert.gd -- --qa-placement
 ## Windows (windowed): Godot_v4.7.2-stable_win64_console.exe --path godot -s res://tools/placement_assert.gd -- --qa-placement
 ## --qa-placement loads the scene without the hand QA, keeps the player inside, and disables interior streaming. Do NOT use --qa-hand-controls (it walks the player out and the props despawn).
-## Exit 0 all pass, 1 any failed check, 2 a prop node is missing, 3 still running after 600 frames.
+## Exit 0 all pass, 1 any failed prop check or seam audit, 2 a prop node is missing, 3 still running after 600 frames.
 ## mesh_clearance and front_zone are checks in that same pass. The summary counts them.
+## The corner-seam audit is a separate SEAM_AUDIT line and does not change the prop pass/fail counts.
 
 const SCENE_PATH := "res://scenes/preface/preface_playable_area.tscn"
 const SETTLE_FRAMES := 60
@@ -29,6 +30,27 @@ const PAIR_GAP_MIN := 0.02
 const FRONT_DEPTH := 0.60
 const MESH_REPORT_MAX := 5
 const SAT_AXIS_EPS := 1.0e-16
+# Room-shell corners as (x, floor_y, z). Samples at floor + 0.8 / 1.6 / 2.4.
+const SEAM_CORNERS: Array[Vector3] = [
+	Vector3(-12.74, 4.32, -3.40),
+	Vector3(-12.74, 4.32, -5.69),
+	Vector3(-5.35, 4.32, 2.65),
+	Vector3(-5.35, 4.32, 8.55),
+	Vector3(5.35, 4.32, 2.65),
+	Vector3(5.35, 4.32, 8.55),
+	Vector3(-14.04, 0.12, -9.00),
+	Vector3(14.04, 0.12, -9.00),
+	Vector3(-14.04, 0.12, 9.04),
+	Vector3(14.04, 0.12, 9.04),
+	Vector3(-4.75, 0.12, 7.98),
+	Vector3(8.25, 0.12, 8.16),
+	Vector3(0.75, 0.12, 8.16),
+]
+const SEAM_HEIGHTS: Array[float] = [0.8, 1.6, 2.4]
+const SEAM_DIAG_START := 0.6
+const SEAM_DIAG_LEN := 1.2
+const SEAM_AXIS_LEN := 0.3
+const SEAM_MIN_HITS := 3
 
 const FALLBACK_SPECS: Array[Dictionary] = [
 	{"id": "Prop38_FoldingCounter", "mount": "wall"},
@@ -43,6 +65,8 @@ var _done: bool = false
 var _pass_n: int = 0
 var _fail_n: int = 0
 var _missing_n: int = 0
+var _seam_pass: int = 0
+var _seam_fail: int = 0
 # World-space triangles, keyed by gathered-mesh index. Filled only after an AABB overlap.
 var _face_cache: Dictionary = {}
 
@@ -142,12 +166,14 @@ func _run_checks() -> void:
 				_check_front_zone(prop, aabb, meshes, space, exclude)
 		placed.append({"id": id, "ok": true, "world": world_bb})
 	_check_pairs(placed)
+	_run_seam_audit(space)
 	var code: int = 0
 	if _missing_n > 0:
 		code = 2
-	elif _fail_n > 0:
+	elif _fail_n > 0 or _seam_fail > 0:
 		code = 1
 	print("PLACEMENT_ASSERT: %d pass, %d fail" % [_pass_n, _fail_n])
+	print("SEAM_AUDIT: %d pass, %d fail" % [_seam_pass, _seam_fail])
 	quit(code)
 
 
@@ -675,6 +701,99 @@ func _report(ok: bool, id: String, check: String, detail: String) -> void:
 	else:
 		_fail_n += 1
 		print("FAIL %s %s %s" % [id, check, detail])
+
+
+# Corner-seam audit. Each diagonal starts 0.6 m off the corner (that quadrant) and runs 1.2 m
+# toward the corner and past it. A convex corner blocks 3 of the 4 diagonals. A notch is a miss
+# in a quadrant whose two adjacent 0.3 m axis rays both hit. gap = max(0, 0.6 - distance along
+# the ray); that is not an XZ distance and not 0.6*sqrt(2).
+func _run_seam_audit(space: PhysicsDirectSpaceState3D) -> void:
+	var quadrants: Array[Vector2i] = [Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
+	for corner: Vector3 in SEAM_CORNERS:
+		for hoff: float in SEAM_HEIGHTS:
+			var height: float = corner.y + hoff
+			var origin: Vector3 = Vector3(corner.x, height, corner.z)
+			var axis_hits: Dictionary = _seam_axis_hits(space, origin)
+			var rows: Array[Dictionary] = []
+			var hit_n: int = 0
+			for q: Vector2i in quadrants:
+				var sx: int = q.x
+				var sz: int = q.y
+				# Start in this quadrant. Travel toward the corner and 0.6 m beyond it.
+				var travel: Vector3 = Vector3(-float(sx), 0.0, -float(sz)).normalized()
+				var start: Vector3 = origin - travel * SEAM_DIAG_START
+				var end_p: Vector3 = start + travel * SEAM_DIAG_LEN
+				var hit: Dictionary = _seam_ray(space, start, end_p)
+				var got: bool = not hit.is_empty()
+				var gap: float = -1.0
+				if got:
+					var along: float = ((hit["position"] as Vector3) - start).dot(travel)
+					gap = maxf(0.0, SEAM_DIAG_START - along)
+					hit_n += 1
+				var ax: String = "%sX" % _seam_sign(sx)
+				var az: String = "%sZ" % _seam_sign(sz)
+				rows.append({
+					"quadrant": "%s%s" % [ax, az],
+					"hit": got,
+					"gap": gap,
+					"both": bool(axis_hits.get(ax, false)) and bool(axis_hits.get(az, false)),
+				})
+			for row: Dictionary in rows:
+				var got_hit: bool = bool(row["hit"])
+				var both: bool = bool(row["both"])
+				var notch: bool = (not got_hit) and both
+				var too_few: bool = (not got_hit) and hit_n < SEAM_MIN_HITS
+				var ok: bool = (not notch) and (not too_few)
+				var gap_txt: String = "none"
+				if got_hit:
+					gap_txt = _fmt(float(row["gap"]))
+				var detail: String = "gap=%s" % gap_txt
+				if notch:
+					detail += " notch=1"
+				elif too_few:
+					detail += " hits=%d/4" % hit_n
+				_seam_line(ok, corner, height, String(row["quadrant"]), detail)
+
+
+func _seam_axis_hits(space: PhysicsDirectSpaceState3D, origin: Vector3) -> Dictionary:
+	var hits: Dictionary = {}
+	var dirs: Array[Vector3] = [Vector3(1, 0, 0), Vector3(-1, 0, 0), Vector3(0, 0, 1), Vector3(0, 0, -1)]
+	var names: PackedStringArray = ["+X", "-X", "+Z", "-Z"]
+	for i: int in range(dirs.size()):
+		var d: Vector3 = dirs[i]
+		var hit: Dictionary = _seam_ray(space, origin, origin + d * SEAM_AXIS_LEN)
+		hits[names[i]] = not hit.is_empty()
+	return hits
+
+
+func _seam_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3) -> Dictionary:
+	if space == null:
+		return {}
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to)
+	rq.collision_mask = 0xFFFFFFFF
+	rq.collide_with_bodies = true
+	rq.collide_with_areas = false
+	rq.hit_from_inside = false
+	return space.intersect_ray(rq)
+
+
+func _seam_sign(v: int) -> String:
+	return "+" if v > 0 else "-"
+
+
+func _seam_corner_text(c: Vector3) -> String:
+	# (x, z, floor_y) as given for the shell corner.
+	return "(%s,%s,%s)" % [_fmt(c.x), _fmt(c.z), _fmt(c.y)]
+
+
+func _seam_line(ok: bool, corner: Vector3, height: float, quadrant: String, detail: String) -> void:
+	var text: String = "corner=%s height=%s quadrant=%s %s" % [_seam_corner_text(corner), _fmt(height), quadrant, detail]
+	if ok:
+		_seam_pass += 1
+		print("SEAM PASS %s" % text)
+	else:
+		_seam_fail += 1
+		print("SEAM FAIL %s" % text)
 
 
 func _fmt(v: float) -> String:
