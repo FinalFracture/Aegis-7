@@ -1086,12 +1086,11 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
-	# [REAL-02] Mezzanine_Glass_Balustrade has no collider of its own: one thin StaticBody3D per glass run,
-	# matching the glb panes (y 4.405..5.465). North run x[-7.6,7.6] @ z 1.25; west run z[-6.4,1.2] @ x -7.55.
-	# Neither run crosses the east stair (x >= 9.16) or any doorway (doors at z 2.75 / x -11.5).
+	# [REAL-02] Rev C L2 open edge is the south side of the stair landing (drop into the well).
+	# Landing top Y 4.2, edge Z -4.88. Guard plane Z -4.83, X -1.89..0.37, so it stops before
+	# flight 2 (X 0.4..1.9) and does not cross the corridor opening at Z -0.8.
 	var runs: Array[Dictionary] = [
-		{"name": "MezzanineGlassBalustrade_North", "size": Vector3(15.2, 1.06, 0.06), "pos": Vector3(0.0, 4.935, 1.25)},
-		{"name": "MezzanineGlassBalustrade_West", "size": Vector3(0.06, 1.06, 7.6), "pos": Vector3(-7.55, 4.935, -2.6)}
+		{"name": "MezzanineGlassBalustrade_L2Edge", "size": Vector3(2.26, 1.04, 0.06), "pos": Vector3(-0.76, 4.78, -4.83)}
 	]
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
@@ -6839,16 +6838,13 @@ func _run_reticle_stars_doors_qa() -> void:
 		zone_ok = zone_ok and ok_z
 		zone_desc.append("%s->'%s'" % [str(zc[0]), zn])
 	_qa_t38_check("real_03_room_zone_labels_interior_only", zone_ok, " | ".join(zone_desc))
-	# [REAL-02] rays across the mezzanine glass hit its own colliders
+	# [REAL-02] rays across the L2 landing-edge rail hit its collider (glass layer only).
 	var space_g: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var g_hits: PackedStringArray = PackedStringArray()
 	var g_ok: bool = true
-	# Rays across each run (3 points per run, y 4.5 / 4.9 / 5.4) masked to the glass layer: every one must hit the run.
 	var g_rays: Array[Array] = []
-	for gx: float in [-6.0, 0.0, 6.0]:
-		g_rays.append([Vector3(gx, 4.5 + absf(gx) * 0.075, 0.7), Vector3(gx, 4.5 + absf(gx) * 0.075, 1.8), "MezzanineGlassBalustrade_North"])
-	for gz: float in [-5.5, -2.6, 0.6]:
-		g_rays.append([Vector3(-7.0, 4.9, gz), Vector3(-8.1, 4.9, gz), "MezzanineGlassBalustrade_West"])
+	for gx: float in [-1.5, -0.76, 0.1]:
+		g_rays.append([Vector3(gx, 4.8, -5.2), Vector3(gx, 4.8, -4.4), "MezzanineGlassBalustrade_L2Edge"])
 	for gr: Array in g_rays:
 		var rqg: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(gr[0] as Vector3, gr[1] as Vector3, GLASS_QA_LAYER_BIT)
 		rqg.exclude = [_player_body.get_rid()]
@@ -7446,16 +7442,21 @@ func _qa_egress_print_route(wps: Array[Dictionary]) -> void:
 func _run_qa_egress() -> void:
 	var failures: int = 0
 	var wps: Array[Dictionary] = [
-		{"label": "(-10.5, 4.6)", "xz": Vector2(-10.5, 4.6), "door": ""},
-		{"label": "DOOR_APT201 (-11.2, 3.6)", "xz": Vector2(-11.2, 3.6), "door": "DOOR_APT201"},
-		{"label": "(-11.2, 1.3)", "xz": Vector2(-11.2, 1.3), "door": ""},
-		{"label": "(-7.6, 1.55)", "xz": Vector2(-7.6, 1.55), "door": ""},
-		{"label": "(7.65, 1.6)", "xz": Vector2(7.65, 1.6), "door": ""},
-		{"label": "(9.85, -1.3)", "xz": Vector2(9.85, -1.3), "door": ""},
-		{"label": "(10.4, -2.1)", "xz": Vector2(10.4, -2.1), "door": ""},
-		{"label": "(9.7, -5.9)", "xz": Vector2(9.7, -5.9), "door": ""},
-		{"label": "(9.3, -7.4)", "xz": Vector2(9.3, -7.4), "door": ""},
-		{"label": "(3.2, -7.8)", "xz": Vector2(3.2, -7.8), "door": ""},
+		{"label": "(-6.0, 4.5)", "xz": Vector2(-6.0, 4.5), "door": ""},
+		{"label": "(-3.0, 1.8)", "xz": Vector2(-3.0, 1.8), "door": ""},
+		{"label": "(-3.0, 0.0)", "xz": Vector2(-3.0, 0.0), "door": ""},
+		{"label": "(1.15, 0.0)", "xz": Vector2(1.15, 0.0), "door": ""},
+		{"label": "(1.15, -2.8)", "xz": Vector2(1.15, -2.8), "door": ""},
+		{"label": "(1.15, -4.88)", "xz": Vector2(1.15, -4.88), "door": ""},
+		{"label": "(1.15, -6.14)", "xz": Vector2(1.15, -6.14), "door": ""},
+		{"label": "(1.15, -7.4)", "xz": Vector2(1.15, -7.4), "door": ""},
+		{"label": "(1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": ""},
+		{"label": "(-1.15, -8.15)", "xz": Vector2(-1.15, -8.15), "door": ""},
+		{"label": "(-1.15, -5.3)", "xz": Vector2(-1.15, -5.3), "door": ""},
+		{"label": "(-1.15, -3.2)", "xz": Vector2(-1.15, -3.2), "door": ""},
+		{"label": "(-1.15, -2.0)", "xz": Vector2(-1.15, -2.0), "door": ""},
+		{"label": "(1.15, -2.0)", "xz": Vector2(1.15, -2.0), "door": ""},
+		{"label": "(1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": ""},
 		{"label": "DOOR_SECTOR4_EXIT (0.0, -7.9)", "xz": Vector2(0.0, -7.9), "door": "DOOR_SECTOR4_EXIT"},
 		{"label": "(0.0, -9.8)", "xz": Vector2(0.0, -9.8), "door": ""},
 		{"label": "(1.6, -10.5)", "xz": Vector2(1.6, -10.5), "door": ""},
