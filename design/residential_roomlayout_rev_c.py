@@ -31,7 +31,7 @@ def SW(bed2,bunk,bin_,window,sofa,table):  # south-west unit template (103/203),
     return [f for f in it if f[4] is not None]
 SWP=[[(-4.5,-0.8),(-4.5,-7.8)],[(-4.5,-3.9),(-11.6,-3.9),(-11.6,-6.6)]]
 L1=([F(-13.9,0.9,-11.7,3.1,"bath pod\nshower WC sink","bath"),F(-11.4,0.9,-8,1.5,"kitchen counter","kit"),
-     F(-10.5,3,-9.3,3.8,"table","live"),F(-11,5,-8.5,5.9,"sofa","live"),F(-5.1,4,-4.6,7,"ward-\nrobe","sto"),
+     F(-10.5,3,-9.3,3.8,"table","live"),F(-11,5,-8.5,5.9,"sofa","live"),F(-13.9,4.5,-13.4,7.0,"ward-\nrobe","sto"),
      F(-13.9,7.3,-11.9,8.9,"double bed","bed"),F(-8,8.3,-5.5,8.9,"tool wall + work mat","work"),
      # Laundry
      F(-4.4,2.6,-3.6,3.4,"W/D","mach"),F(-4.4,3.5,-3.6,4.3,"W/D","mach"),F(-4.4,4.4,-3.6,5.2,"W/D","mach"),F(-4.4,5.3,-3.6,6.1,"W/D","mach"),
