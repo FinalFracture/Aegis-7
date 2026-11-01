@@ -1,5 +1,5 @@
 # Strip 4 — "Spin Street Residential" (Valley A) — Plan v1
-**Status:** DRAFT **v2.1**, 2026-10-31 (Vance). v2.1 adds Jared's answers (relayed by Atlas, 2026-10-31): Q1, Q3, Q4 and Q6 are resolved, Q2 and Q5 are on hold, and Q7 and Q8 are open. Unresolved dimensions marked "Vance proposal" are my assumptions, not constraints. v2 resolves every blocker and risk in the "Rook review" section, and the resolution log is §12. Where v1 text below conflicts with v2, the v2 text and §12 win. Markdown only: no assets, no code.
+**Status:** DRAFT **v2.2**, 2026-10-31 (Vance). v2.2 applies Jared's network change (relayed by Atlas, 2026-10-31): end-cap rings only, and strip 4 is served by S4|5 only. See §14. Earlier: v2.1, v2.1 adds Jared's answers (relayed by Atlas, 2026-10-31): Q1, Q3, Q4 and Q6 are resolved, Q2 and Q5 are on hold, and Q7 and Q8 are open. Unresolved dimensions marked "Vance proposal" are my assumptions, not constraints. v2 resolves every blocker and risk in the "Rook review" section, and the resolution log is §12. Where v1 text below conflicts with v2, the v2 text and §12 win. Markdown only: no assets, no code.
 **Sources:** `cylinder_master_plan.md` @124a1bb, `residential_exterior_plan_v1.md` (v1.3), `preface_test_environment_and_wrist_spec.md`, and Rook's curvature numbers (Oct 31).
 
 ## 1. Frame and coordinates
@@ -8,7 +8,7 @@
   - **x = axial length**, 0 m at the Fore Ring up to 800 m at the Aft Ring.
   - **z = arc distance** from the strip centreline. z = −62.83 is S3|4 and z = +62.83 is S4|5. The strip is 125.66 m wide.
   - Down is local −y.
-- Rings sit at x = 0 / 200 / 400 / 600 / 800 (the Fore Ring, Ring 25, the Mid Ring, Ring 75 and the Aft Ring).
+- **v2.2 (2026-10-31):** rings sit only at x = 0 (Fore Ring) and x = 800 (Aft Ring). The inner rings at 200/400/600 are removed. Seam S3|4 is still a physical rib but carries **no maglev line**.
 - **No roads.** Every surface is a walkway, plaza, stair, green or canal. The Spin Streets and the service lane in the v1.3 exterior plan become walkways (see §4).
 
 ### 1.1 Floor radius: decision
@@ -69,10 +69,10 @@
 - **Spine Walk:** a 12 m walkway at z −6..6 for the full 0..800 m. It is the main pedestrian axis and is lit by amber poles every 10 m.
 - **Edge Promenades:**
   - **Canal Promenade:** 9.5 m at z 45..54.5 on the S4|5 side.
-  - **Civic Promenade:** 9.5 m at z −54.5..−45 on the S3|4 side.
+  - **Civic Promenade:** 9.5 m at z −54.5..−45 on the S3|4 side. **v2.2, Vance proposal:** with no guideway above, it becomes the open **Rib Walk** promenade. Gated rib crossings to strip 3 (master plan §6) sit at x 200 and x 400.
 - **Cross Walks:**
   - 6 m walkways along z at every 50 m in x.
-  - The ring cross-walks (x 0/200/400/600/800) are 12 m wide, under the ring guideway.
+  - The ring cross-walks at x 0 and 800 are 12 m wide, under the end-cap ring guideway. **v2.2, Vance proposal:** x 200/400/600 stay as 12 m open **Commons Walks** (no guideway; freed for market stalls and trees).
 - **Blocks:** each block is 44 m (x) between cross walks and is subdivided into the plots below.
 
 | Block | x range | z range | Use |
@@ -81,18 +81,20 @@
 | B1 Preface (existing) | 50..150 | 6..62.8 | Preface building, plaza, memorial, x 100 station |
 | B2 Housing Row A | 50..200 | −62.8..−6 | Mid-rise housing, galley courts |
 | B3 Courtyard Homes | 150..200 | 6..62.8 | Low-rise courtyard blocks, hydro co-op 2 |
-| B4 Ring 25 Commons | 200..250 | −62.8..62.8 | Market plaza at the ring crossing |
+| B4 Commons 200 | 200..250 | −62.8..62.8 | Market plaza (v2.2: no ring, kept as a Vance proposal) |
 | B5 Housing Rows B/C | 250..400 | both sides | Mid-rise housing, schools/clinic (Civic side) |
-| B6 Mid Ring Civic Gate | 400..450 | −62.8..62.8 | Commons Central forecourt (S3|4) |
+| B6 Civic Gate | 400..450 | −62.8..62.8 | v2.2, Vance proposal: gated rib crossing to strip 3 (Commons Central removed) |
 | B7 Housing Rows D/E | 450..600 | both sides | Housing, the Headwater Basin on the S4|5 side |
-| B8 Ring 75 Commons | 600..650 | −62.8..62.8 | Rec yard, depot |
+| B8 Commons 600 | 600..650 | −62.8..62.8 | Rec yard, depot (no ring) |
 | B9 Aft Housing | 650..800 | both sides | Housing, aft end-cap stairs |
 
 ## 5. Maglev, stations, piers
-- **Seam lines S3|4 and S4|5** are axial and straight (along x), on the seam ribs at z = ±62.83. Each guideway is shared with the neighbour strip.
-- **Local stops** are at x = 100, 300, 500 and 700 on each line, 8 in strip 4.
-- **Transfer stations** are where each line meets the 5 rings, 10 shared with strips 3 and 5:
-  - Notable ones: **Fore Hub** (x 0, S4|5) and **Commons Central** (x 400, S3|4).
+- **v2.2 (2026-10-31):** strip 4 is served by **seam line S4|5 only** (z +62.83), which is shared with strip 5. **S3|4 has no guideway and no stations.**
+- **Local stops** are every 100 m on S4|5 at x = 100, 200, 300, 400, 500, 600 and 700: 7 stops, all elevated with 2 towers each.
+- **Transfer stations:** two, both two-level (option A):
+  - **Fore Hub** (x 0, Fore Ring × S4|5)
+  - **Aft Ring × S4|5** (x 800, minor transfer)
+- The x 500 platform (485..515) is clear of the basin (518..545). The x 200/400/600 platforms (x ±15) are clear of the culvert (x 530).
 
 ### 5.1 Guideway and piers
 - **T-beam guideway (v2):** the rail top is **+5.26 m**, measured from the floor, not the rib top. The promoted 0.163 m guideway slab sits on a new 1.2 m T-beam. The beam soffit is 5.26 − 0.163 − 1.2 = **+3.90 m**, and the car roof is +8.50.
@@ -138,12 +140,12 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 | P-1 | **Preface residential (rev C, existing)** | 86..114 | 27..45 | 28 × 18 | 2 / 8.8 m + parapet | 2 bays × 9 m |
 | H-A1..A6 | Housing Row A mid-rise ×6 (v2 re-grid, clear of the cross walks) | 53..73, 77..97, 103..123, 127..147, 153..171, 175..193 | −42..−24 | 20 (18 for A5/A6) × 18 | 4 / 17.6 m (Vance proposal) | 2 bays × 9 m + 0.20 m skirt |
 | C-1..C4 | Courtyard homes ×4 | 155..195 | 10..40 | 18 × 30 (U-shape) | 2 / 8.8 m (Vance proposal) | 3 bays × 10 m |
-| M-1 | Ring 25 market hall | 210..240 | −20..20 | 30 × 40 | 1 / 9 m (Vance proposal) | **v2: 8 × 5 m bays.** Steps 0 / 0.125 / 0.25 / 0.375 m. The outer 0.375 m step is 2 risers of 0.1875 m plus a 4.5 m 1:12 ramp at the doors |
+| M-1 | Market hall (x 200 Commons; Vance proposal) | 210..240 | −20..20 | 30 × 40 | 1 / 9 m (Vance proposal) | **v2: 8 × 5 m bays.** Steps 0 / 0.125 / 0.25 / 0.375 m. The outer 0.375 m step is 2 risers of 0.1875 m plus a 4.5 m 1:12 ramp at the doors |
 | H-B/C | Housing Rows B, C ×12 | 255..395 | ±(24..42) | 20 × 18 | 4 / 17.6 m (Vance proposal) | 2 bays |
 | K-1 | Clinic + school (Civic) | 303..343 | **−44.5..−32.5** (v2, off the promenade) | 40 × 12 | 3 / 13.2 m (Vance proposal) | 1 bay (12 m) |
-| G-1 | Civic Gate / Commons Central concourse | **407..437** (v2, clear of the ring walk at 394..406) | **−44.5..−30.5** (v2, off the promenade and rib) | 30 × 14 | 2 / 9 m (Vance proposal) | 2 bays × 7 m |
+| G-1 | Civic Gate concourse (v2.2, Vance proposal: rib-crossing gate to strip 3, no station) | **407..437** (v2, clear of the ring walk at 394..406) | **−44.5..−30.5** (v2, off the promenade and rib) | 30 × 14 | 2 / 9 m (Vance proposal) | 2 bays × 7 m |
 | H-D/E | Housing Rows D, E ×12 | 455..595 | ±(24..42) | 20 × 18 | 4 / 17.6 m (Vance proposal) | 2 bays |
-| R-1 | Ring 75 rec yard + depot | 610..640 | −40..−20 | 30 × 20 | 1 / 6 m (Vance proposal) | 2 bays × 10 m |
+| R-1 | Rec yard + depot (x 600 Commons) | 610..640 | −40..−20 | 30 × 20 | 1 / 6 m (Vance proposal) | 2 bays × 10 m |
 | H-F | Aft Housing ×12 | 655..795 | ±(24..42) | 20 × 18 | 4–5 floors (Vance proposal) | 2 bays |
 
 - All doors are force-field (rev C door spec, Bulkhead Hub). Every building has 2 exits, one onto a promenade or the Spine and one onto a service walkway.
@@ -162,15 +164,16 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 2. **The Memorial (#29 monument)** at x 117.4..121.6, z 45.6..48.7, facing +z. It is the first landmark seen from the platform.
 3. **The Canal Promenade and Headwater Basin** (x 518..545).
 4. **Fore Hub** (x 0, S4|5): passenger dock interchange, with the end-cap terrace stairs.
-5. **Commons Central** (x 400, S3|4): Civic ↔ Spin Street, Chapter 1's first trip.
-6. **Ring 25 Market Hall** (M-1).
+5. ~~Commons Central~~ (removed v2.2; there is no line on S3|4). The Civic Gate rib crossing at x 400 is a Vance proposal. Chapter 1's first trip is now x 100 → Fore Hub, or along S4|5.
+6. **Market Hall** (M-1, x 200 Commons).
 
 ## 9. Walkway grid (widths)
 | Walkway | Width | Notes |
 |---|---|---|
 | Spine Walk (axial, z 0) | 12 m | Main axis; amber poles every 10 m |
 | Canal / Civic Promenades | 9.5 m (Canal side v2: z 45..51.4 plus the canal) | Through-walk of at least 2.7 m kept clear (v1.3 QC) |
-| Ring cross-walks (x 0/200/400/600/800) | 12 m | Under the ring guideway, clear height ≥ 3.8 m |
+| Ring cross-walks (x 0/800) | 12 m | Under the end-cap ring guideway |
+| Commons Walks (x 200/400/600) | 12 m | Vance proposal (v2.2); open sky, no guideway |
 | Cross Walks (every 50 m) | 6 m | Run along z, so they rise with the curve: 1:12 ramps or steps at each plinth step |
 | Spin Walk W/E (preface) | 6 m | The former Spin Streets |
 | Service walkways | 4 m | Sprocket and carts; bollard gaps 0.9–1.5 m at junctions |
@@ -185,7 +188,7 @@ Coordinates are x (length, m) by z (arc, m). Heights are above the local floor. 
 5. **Q5 Canal length (x 40..530): ON HOLD** until Jared reviews the redrawn map.
 6. ~~Q6 Housing height cap~~ **RESOLVED 2026-10-31:** no cap.
 7. **Q7 Curved walkway kit: OPEN.** v2 uses the curved floor as the walk surface, so #42 is not revived. OK?
-8. **Q8 Guideway tri budget: OPEN.** About 7,700 modules ≈ 4.6M tris before instancing. Accept MultiMesh + a 5-module merged LOD beyond 100 m?
+8. **Q8 Guideway tri budget: OPEN (v2.2 numbers).** Whole cylinder: 5 seam lines × 80 = 400 modules + 2 end-cap rings × 120 = 240, so **640 modules × ~600 tris ≈ 384k tris** before instancing (was 7,700 ≈ 4.6M). Strip 4 alone: S4|5 at 80 modules + 2 × 12 ring-arc modules = 104 ≈ 62k. Accept MultiMesh + a 5-module merged LOD beyond 100 m?
 
 ## 11. Handoffs
 - **Gage (at rebuild, via the CLI):**
@@ -313,3 +316,21 @@ All must be under 6,000 tris each, bottom-centre pivot, +Z facing, use the 5-can
 
 ## 13. v2.1 change log (2026-10-31)
 - Q1: R 200 m everywhere. Q3: option A, with no fixed maglev height band and option B removed. Q4: the shelter is replaced by the elevated station. Q6: no height cap, and every building height is labelled "Vance proposal". Q2 and Q5 are on hold pending the redrawn map. Q7 and Q8 are open.
+
+## 14. v2.2 change log (2026-10-31, Jared via Atlas)
+- **Inner rings removed:** the rings at x 200/400/600 are gone. Only the end-cap rings at 0 and 800 remain, and option A two-level crossings exist only there.
+- **S3|4 line removed:** its guideway and stations are gone, including Commons Central. **S4|5** is strip 4's only line.
+- **Stations on S4|5:**
+  - Fore Hub (x 0, transfer)
+  - Locals at x 100, 200, 300, 400, 500, 600 and 700
+  - Aft transfer (x 800)
+  - 9 platforms in total. The access-tower count drops to 7 × 2 + 2 × 4 = 22 towers.
+- **Freed space (Vance proposals):** the Civic Promenade becomes the Rib Walk; x 200/400/600 become open 12 m Commons Walks; G-1 becomes the Civic Gate rib crossing to strip 3.
+- **Asset list (Rook, unchanged types):**
+  - T-beam span: 10 m for seams, 9.938 m for rings.
+  - Piers and pier caps.
+  - Station deck kit: 9 platforms in strip 4.
+  - 22 access towers: 18 standard plus 2 two-level transfer variants (counted as 4 standard).
+  - The ring variants are needed only at the end caps.
+- **Q8:** about 384k tris for the whole cylinder, about 62k for strip 4. **Q2 and Q5 stay ON HOLD.**
+- **Map out of date:** `godot/renders/maps/strip4_plan.png` (9fdb361) predates v2.2. It still shows S3|4 and the inner rings.

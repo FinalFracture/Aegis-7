@@ -1,6 +1,6 @@
 # Cylinder Hab-7 — Master Plan: 10 Radial Strips (planning only)
 
-**Status:** draft v2, 2026-10-31 (Atlas for Jared [t118u], revised for [t119u]: seam lines, elevated guideway, 5 rings, end-cap maps, preface move approved). This doc covers districts, maglev routes and landmarks only. No assets and no code.
+**Status:** draft v3, 2026-10-31 (v3: 5 lines on every other seam, end-cap rings only, per Jared via Atlas). v2 was (Atlas for Jared [t118u], revised for [t119u]: seam lines, elevated guideway, 5 rings, end-cap maps, preface move approved). This doc covers districts, maglev routes and landmarks only. No assets and no code.
 **Sources:** `story_and_narrative_bible.md`, `cylinder_interior_overhaul_spec.md`, `city_district_zoning_and_emblems_spec.md` (D-01..D-04), `residential_exterior_plan_v1.md`, `godot/scripts/preface_playable_area.gd`, and context/STATUS.md design notes.
 
 ## 1. Fixed facts
@@ -38,7 +38,7 @@ Ordering logic: heavy industry sits two or more strips away from residential. Sc
 | 9 | 324° | **Signal & Cargo Yards** | D-01 Engineering | Comms array, cargo/rail hub, plumbing mains, the meteor-defence control. |
 
 ### Strip details
-**0 · The Long Window.** *Mood:* hushed, dark, cathedral-like; the light comes from outside and slides as the sky orbits. *Landmarks:* (1) the Keel Catwalk, an axial truss walkway over the glass with the stars below your feet; (2) the Prism Bridge, where the mid-drum maglev crosses on a glazed truss; (3) the Shutter Ribs, armoured louvres that close for a flare (a Chapter 1 hook). *Gameplay:* a vista hub, navigation landmark and flare-event set. There is almost no ground, so walking is on catwalks only. *Adjacency:* flanked by Science (observation) and Engineering (window structure and shutters).
+**0 · The Long Window.** *Mood:* hushed, dark, cathedral-like; the light comes from outside and slides as the sky orbits. *Landmarks:* (1) the Keel Catwalk, an axial truss walkway over the glass with the stars below your feet; (2) the Prism Bridge, where the mid-drum maglev crosses on a glazed truss (v3 2026-10-31: the Mid Ring is removed, so its role is open); (3) the Shutter Ribs, armoured louvres that close for a flare (a Chapter 1 hook). *Gameplay:* a vista hub, navigation landmark and flare-event set. There is almost no ground, so walking is on catwalks only. *Adjacency:* flanked by Science (observation) and Engineering (window structure and shutters).
 
 **1 · Meridian Science Quarter.** *Mood:* clean, violet-indigo accents, quiet labs and telescope domes leaning toward the glass. *Landmarks:* the Astrometry Observatory (bldg_08 lineage) at the window edge; the Zero-G Materials Lab (bldg_18) lift to the spine; the Coriolis test range (the [t34u] spin-ring lineage). *Gameplay:* puzzle labs and tech unlocks. *Adjacency:* window on one side for sightlines, Biosphere on the other for shared experiments; no heavy industry next door.
 
@@ -65,53 +65,44 @@ Ordering logic: heavy industry sits two or more strips away from residential. Sc
 - It is far from industry, which keeps the quiet opening mood.
 - Canon placed the preface in Valley A at 180°. Strip 5 now takes 180°, so Valley A shifts to 144°. Gage's current backdrop roll (−43°) will need retargeting so the deck sits under strip 4's arc. That is a one-number change. **Approved [t119u]:** Valley A and the preface move to strip 4 (144°). Gage's backdrop roll is retargeted from −43° to strip 4's arc (TODO for Gage).
 
-## 4. Maglev network (v2, per Jared [t119u])
-- **Axial lines run on the seams.** Each of the 10 strip boundaries (θ = 18° + 36·k°) carries one axial maglev line, **10 lines in total**, each shared by the two strips it divides. Lines are named by their seam: S0|1, S1|2 … S9|0. There are no per-strip centre lines and no Green edge loop any more, so every strip interior is free for districts, and the Green's fields stay unbroken.
-- **Window strip:** strip 0's seams (18° and 342°) sit at the glass edges, so lines S0|1 and S9|0 **frame the window** along its full length. Riders get a continuous window view, and the guideways double as the structural edge beams of the glazing.
-- **Elevated guideway:** the T-beam guideway runs **15–20 ft (4.6–6.1 m) above the floor** for most of its run (it may dip only at end-cap terraces or where the terrain forces it). **Boarding stations are elevated to match**, with stair and lift access at grade. This keeps the ground clear for walkways, plazas and rib crossings, and the seam ribs (§6) can sit under the guideway.
-  - **TODO (Gage, not now):** the existing preface tram, T-beam and shelter sit at grade. They need raising to 4.6–6.1 m with stairs/lift at grade, the cyan tactile kerb moves up to the platform edge, and the curb fillers / kerb ramp (#45) and track-wear decals (#51) need re-placing. The navmesh and HAND/NAV QA must be re-run afterwards.
-- **Five circumferential rings** at 0%, 25%, 50%, 75% and 100% of the usable length, i.e. **0 / 200 / 400 / 600 / 800 m**: **Fore Ring (0%)** and **Aft Ring (100%)** on the end-cap seams, plus **Ring 25**, **Mid Ring (50%)** and **Ring 75**. Each is a full 360° loop climbing the curve. **All five cross the window on glazed bridges** (the Mid Ring crossing is the Prism Bridge landmark).
-- **Transfer stations:** every ring × seam intersection is a transfer station: **5 × 10 = 50 nodes**.
-- **Station spacing (assumption):** at the 800 m length, rings are **200 m apart**. One intermediate local stop between each pair of rings (at 100/300/500/700 m) gives **100 m stop spacing**. That is 4 local stops per line, **40 local stops**, so **90 stops in total** (50 transfers + 40 locals).
-- **Suggested major hubs (8 of the 50):**
+## 4. Maglev network (v3, 2026-10-31, per Jared via Atlas; supersedes v2)
+- **Axial lines run on every other seam: 5 lines in total, S0|1, S2|3, S4|5, S6|7 and S8|9.** Each is shared by the two strips it divides, so every strip is served by exactly one line:
+  - S0|1 serves strips 0 and 1.
+  - S2|3 serves strips 2 and 3.
+  - S4|5 serves strips 4 and 5.
+  - S6|7 serves strips 6 and 7.
+  - S8|9 serves strips 8 and 9.
+  - Seams S1|2, S3|4, S5|6, S7|8 and S9|0 keep their physical ribs (§6) but carry no line.
+- **Window strip:** S0|1 frames the 18° glass edge, and its guideway is the edge beam on that side. The S9|0 edge has no line, so its glazing edge beam is structural only (a Vance note; Atlas/Jared to confirm the look).
+- **Elevated guideway:** the T-beam guideway runs elevated, and its height may rise or fall as needed (Jared, 2026-10-31; there is no fixed band). Boarding stations are elevated to match, with stair and lift access at grade.
+  - **TODO (Gage, not now):** raise the preface tram per `strip4_plan.md` v2.2 (rail top +5.26, deck +5.40).
+- **Two circumferential rings only (2026-10-31):** the **Fore Ring (0 m)** and the **Aft Ring (800 m)**, on the end-cap seams. Ring 25, the Mid Ring and Ring 75 are removed, and with them the Prism Bridge maglev crossing (§3 strip 0 landmark 2 needs a new role; open). Both rings cross the window on glazed bridges.
+- **Crossings:** option A, two-level (ring rail top +10.2 over the seam line), **only at the end caps**.
+- **Transfer stations:** ring × line = **2 × 5 = 10 nodes**, all at the end caps.
+- **Local stops:** every 100 m on each line, at x 100..700, so 7 per line and **35 local stops**. That makes **45 stops in total** (10 transfers + 35 locals).
+- **Hubs:**
   1. **Fore Hub**, Fore Ring × S4|5 (passenger dock, nearest the preface and the Green)
   2. **Aft Hub**, Aft Ring × S8|9 (cargo, starport, freight interchange)
-  3. **Prism West**, Mid Ring × S0|1, and 4. **Prism East**, Mid Ring × S9|0 (window bridgeheads, Science / Signal)
-  5. **Commons Central**, Mid Ring × S3|4 (Civic ↔ Spin Street, Chapter 1's first trip)
-  6. **Green Central**, Mid Ring × S5|6 (Recreation ↔ Lantern Row market)
-  7. **Cascade Junction**, Ring 25 × S2|3 (Biosphere ↔ Civic, water and life-support staff)
-  8. **Foundry Junction**, Ring 75 × S7|8 (Farms ↔ Foundry, workforce)
-  The other 42 are minor transfer platforms.
-- **Freight:** a separate freight track runs parallel to S7|8 and S8|9 to the Aft Hub. Passengers never share it.
+  - The other 8 transfers are minor: Fore/Aft × S0|1, S2|3 and S6|7, plus Aft × S4|5 and Fore × S8|9.
+  - Prism West/East, Commons Central, Green Central, Cascade Junction and Foundry Junction are **removed**.
+- **Freight:** a separate freight track runs parallel to **S8|9 only** to the Aft Hub (S7|8 has no line now). Passengers never share it.
 - **Service:** one direction per track at walking-scale speeds (≤ 60 km/h inside the drum).
+- **Guideway quantity:** 400 seam modules + 240 ring modules ≈ 640 × ~600 tris ≈ 384k before instancing.
 
 ```mermaid
 graph LR
-  FH((Fore Hub<br/>passenger dock)) --- R0[Fore Ring 0% - end-cap seam]
-  AH((Aft Hub<br/>cargo + starport)) --- R4[Aft Ring 100% - end-cap seam]
-  R1[Ring 25%]
-  R2[Mid Ring 50%<br/>Prism Bridge]
-  R3[Ring 75%]
-  subgraph Seam lines elevated 4.6-6.1 m
+  FH((Fore Hub<br/>passenger dock)) --- R0[Fore Ring 0 m]
+  AH((Aft Hub<br/>cargo + starport)) --- R4[Aft Ring 800 m]
+  subgraph Seam lines elevated, every other seam
     S01[S0-1 window edge]
-    S12[S1-2]
     S23[S2-3]
-    S34[S3-4]
     S45[S4-5]
-    S56[S5-6]
     S67[S6-7]
-    S78[S7-8 + freight]
     S89[S8-9 + freight]
-    S90[S9-0 window edge]
   end
-  R0 --- S01 & S12 & S23 & S34 & S45 & S56 & S67 & S78 & S89 & S90
-  R1 --- S01 & S12 & S23 & S34 & S45 & S56 & S67 & S78 & S89 & S90
-  R2 --- S01 & S12 & S23 & S34 & S45 & S56 & S67 & S78 & S89 & S90
-  R3 --- S01 & S12 & S23 & S34 & S45 & S56 & S67 & S78 & S89 & S90
-  R4 --- S01 & S12 & S23 & S34 & S45 & S56 & S67 & S78 & S89 & S90
-  W0[Strip 0 Window<br/>glazed ring bridges x5] -. framed by .- S01
-  W0 -. framed by .- S90
-  S78 == freight ==> AH
+  R0 --- S01 & S23 & S45 & S67 & S89
+  R4 --- S01 & S23 & S45 & S67 & S89
+  W0[Strip 0 Window<br/>glazed ring bridges x2] -. framed by .- S01
   S89 == freight ==> AH
   FH -. spine lift / funicular .- SP((Axial Spine<br/>zero-G))
   AH -. spine lift .- SP
@@ -138,10 +129,10 @@ graph LR
 ## 7. Open questions for Jared
 **Resolved [t119u]:**
 - ~~Moving Valley A~~: approved. The preface goes to strip 4 (144°), and the backdrop roll is retargeted (Gage TODO).
-- ~~Ring count~~: five rings (0/25/50/75/100%).
+- ~~Ring count~~: ~~five rings~~ → **two end-cap rings (0/800 m), 2026-10-31.**
 - ~~End caps as maps~~: yes, 12 maps.
-- ~~Station density~~: superseded by seam lines. 50 transfers + 40 locals, 100 m spacing (an assumption; see §4).
-- ~~Usable length~~: the canonical **800 m**; rings at 0/200/400/600/800 m. TODO for Gage: extend the ~722 m cylinder mesh to 800 m.
+- ~~Station density~~: **v3, 2026-10-31:** 5 lines, 10 transfers + 35 locals = 45 stops, 100 m spacing (see §4).
+- ~~Usable length~~: the canonical **800 m**; rings at 0/800 m (inner rings removed 2026-10-31). TODO for Gage: extend the ~722 m cylinder mesh to 800 m.
 - Axial line placement: on the 10 seams, elevated 15–20 ft.
 
 **Still open:**
@@ -151,3 +142,14 @@ graph LR
 4. **Window walking:** are catwalks over the glass enough, or should there be a solid floor path?
 5. **Build order:** strip 4 (exists) → 3 → 5 → 0 → the rest. OK?
 6. **Hub picks:** OK with the 8 suggested major hubs in §4?
+
+
+## Change log
+- **2026-10-31 (v3, Jared via Atlas):**
+  - Inner rings at 200/400/600 m removed; only the Fore/Aft end-cap rings remain.
+  - Axial lines only on S0|1, S2|3, S4|5, S6|7 and S8|9 (5 lines).
+  - 10 end-cap transfers (option A, two-level) + 35 locals = 45 stops.
+  - Hubs: Fore Hub (S4|5) and Aft Hub (S8|9) only.
+  - Freight on S8|9 only.
+  - Maglev height is no longer a fixed band.
+  - Open items: the Prism Bridge's role, and the S9|0 window edge beam.
