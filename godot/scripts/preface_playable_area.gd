@@ -1178,6 +1178,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 	var half_rad: float = deg_to_rad(18.0)
 	var removed_wedge: int = 0
 	var removed_caps: int = 0
+	var removed_map: int = 0
 	# Outermost removed cap-triangle x on each end. Authored span if that end has no cap triangles.
 	var cap_x_neg: float = -368.0
 	var cap_x_pos: float = 354.0
@@ -1260,6 +1261,16 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 					fn = Vector3.ZERO
 				# End caps face along the spin axis. r >= 20 leaves the tiny hub at the axis.
 				var drop_cap: bool = absf(c.x) >= 330.0 and absf(fn.x) > 0.85 and r >= 20.0
+				# Drum skin through the playable map is a flat ceiling over the deck and hides the window.
+				# local_verts are cyl_node-local; world = cyl_node.global_transform * local_vertex.
+				var w0: Vector3 = cyl_node.global_transform * p0
+				var w1: Vector3 = cyl_node.global_transform * p1
+				var w2: Vector3 = cyl_node.global_transform * p2
+				var drop_map: bool = (
+					(w0.x >= -60.0 and w0.x <= 60.0 and w0.y >= -1.0 and w0.y <= 40.0 and w0.z >= -45.0 and w0.z <= 45.0)
+					or (w1.x >= -60.0 and w1.x <= 60.0 and w1.y >= -1.0 and w1.y <= 40.0 and w1.z >= -45.0 and w1.z <= 45.0)
+					or (w2.x >= -60.0 and w2.x <= 60.0 and w2.y >= -1.0 and w2.y <= 40.0 and w2.z >= -45.0 and w2.z <= 45.0)
+				)
 				if drop_wedge:
 					removed_wedge += 1
 				if drop_cap:
@@ -1272,7 +1283,9 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 						if (not found_pos) or c.x > cap_x_pos:
 							cap_x_pos = c.x
 						found_pos = true
-				if drop_wedge or drop_cap:
+				if drop_map:
+					removed_map += 1
+				if drop_wedge or drop_cap or drop_map:
 					continue
 				kept[kept_n] = i0
 				kept_n += 1
@@ -1294,7 +1307,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 			mi.set_surface_override_material(oi, null)
 		mi.mesh = dst
 
-	print("[CYL-WINDOW] removed_wedge=%d removed_caps=%d a0_deg=%.3f" % [removed_wedge, removed_caps, rad_to_deg(a0)])
+	print("[CYL-WINDOW] removed_wedge=%d removed_caps=%d removed_map=%d a0_deg=%.3f" % [removed_wedge, removed_caps, removed_map, rad_to_deg(a0)])
 
 	# [CYL-01] Opaque faces get a little emission so the side turned away from the sun is never pure black.
 	for emi: MeshInstance3D in meshes:
