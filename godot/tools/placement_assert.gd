@@ -735,7 +735,6 @@ func _seam_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3) -> 
 	rq.collide_with_areas = false
 	rq.hit_from_inside = false
 	rq.hit_back_faces = true
-	rq.exclude = Array[RID]()
 	return space.intersect_ray(rq)
 
 
