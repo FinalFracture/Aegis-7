@@ -661,3 +661,13 @@ Covers 2f991a5, b7f155c, ff057ff, de15497 (full suite run at de15497+3c13c42), t
 - Grid sweep: 1,414 floor pts, 974 free, 28 stuck, 14 drop edges (furniture tops only, M-58 fixed), 133 off-nav (M-60). Tram roof fixed; shelter stuck x5 (M-59 open).
 - Visuals (llvmpipe): M-16 emergency dims 11.5 -> 5.1 luma and restores exactly. Interiors near-black (M-68 High); window view blown out (M-69). Sloane spec items present in code.
 - Counts: fixed this round 20, new 6 (M-63..M-66, M-68, M-69), still open ~39. Screenshots (not committed): /workspace/qa_shots_r2/.
+
+## QA round 4, main 9ecfdef (Patch, 2026-11-02 ~07:00-08:00 CST, box, Godot 4.7.2 opengl3/xvfb, fresh clone /tmp/qa_r4, import 0 errors)
+No Gage, Rook or Sloane code commits since 9ecfdef (873d9be: corner table only, GLB unchanged since 0205e56; f7651a2: Sloane M-37 assets only).
+- Suites: placement 26/0, **SEAM_AUDIT 336/0**, exterior 1010/0, hand-controls 0 fail, troubleshoot-simple 0 fail, forcefield 4/4, egress 0, player-exit 0, reticle-stars-doors 0, nav-reach 0/19 (M-63, Low).
+- Doors (fresh scene per side, one E, real walk, 0.9 m): 12/12 open and cross.
+- M-61 fixed (336/0 SEAM_AUDIT and probe). M-62 fixed (wall-opening sweep: 22 runs >= 0.7 m, all explained; corridor N opening 2.7..3.7 inside the 2.2..4.2 door). M-50 closed. M-37 assets landed, awaiting Gage. M-69 blocked (luma 190.8).
+- **M-70 stairs:** no stair geometry in the Rev C GLB stair core; no rayable stair collider at x 1.15; egress slides down (~37°), but a 25 s real-input climb from (1.15, 0.25, -7.2) never leaves y 0.00 and walks under the L2 slab. Old east ramp collider buried under the 204 slab.
+- M-02 Prop43 unchanged (-4.858, 0.12, 5.20). M-59: 22 stuck, shelter x5. M-07 proxy: 2,340 draw calls / 153k prims / 941 MiB (llvmpipe). M-23 still hardcoded keys. Props M-64/65/66 unchanged.
+- New qa/REPEAT_FAILURES.md: M-02, M-61 (now fixed), M-23, M-63.
+- Counts: fixed 3 (M-61, M-62, M-50), new 0, still open ~36. Screenshots (not committed): /workspace/qa_shots_r4/.
