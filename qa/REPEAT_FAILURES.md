@@ -1,7 +1,7 @@
 # Repeat failures (Patch, 2026-11-02)
 Bugs that failed re-test two or more times, or came back after being marked fixed, from `git log` and the history of `qa/MASTER_BUG_LIST.md` / `context/playtest_bug_report.md`. Only entries the history supports. M-06 (never claimed fixed) and M-69 (blocked: lighting look on hold per Jared) are excluded.
 
-## M-02 — Prop43 spares dispenser position (open)
+## M-02 — Prop43 spares dispenser position (resolved 2026-11-02 by fixing the spec)
 | Commit | Attempt | Result at re-test |
 |---|---|---|
 | f80c0de, 4f5d639 | clear Rook SeamFix walls; nudge for pair gap/front zone | still clashing |
@@ -9,7 +9,7 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | 8b32d42, d58ccab, a4526df, 8855f8c, 11e51da | East Lounge north wall, rev2, option (a) x -8.00, rev3 east wall | GEO-10 (00914fd) found it at (-8.0, 0.235, 8.5), not rev3 |
 | 04bbed0 | Rev C 101 east wall (-4.858, 0.12, 5.20) | QA-04 r2 LAY-14 / QA-02 GEO-11: overlaps the planned 101 wardrobe; Patch r2..r4: Δx +0.30 m, Δy -0.115 m vs rev3 target (-5.16, 0.235, 5.20) |
 | 6c6c4f6, 4e9849a, cea80bc, ff057ff | wardrobe moved to the west wall (GEO-11) | wardrobe overlap fixed; position still off target at 9ecfdef |
-**Likely cause:** the target moved with each wall rebuild (SeamFix walls, then the Rev C grid) and the design doc (rev3 on the old lounge face x -4.90) was never re-derived for the Rev C partition face x -4.6, so code and design disagree by design. Needs one authoritative Rev C spot from Vance, then Gage.
+**Likely cause:** the target moved with each wall rebuild (SeamFix walls, then the Rev C grid) and the design doc (rev3 on the old lounge face x -4.90) was never re-derived for the Rev C partition face x -4.6, so code and design disagree by design. **Resolution:** the 'misplacement' was a spec that kept moving. Vance locked a wall-relative rule in 0b4aa94 (x = x_wall -4.600 - 0.258, y = floor top, z 5.20, yaw -90), which matches the code already on main since 04bbed0. Patch verified on 0b4aa94: position = rule, floor contact 0.000 m, no overlaps; wardrobe on the west wall (GEO-11 closed).
 
 ## M-61 (with SEAM-02 / M-38 / M-45) — room-shell corner seams (fixed at 9ecfdef)
 | Commit | Attempt | Result at re-test |
