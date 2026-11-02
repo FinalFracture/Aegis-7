@@ -257,3 +257,51 @@ Checked against main a7c20cd. These are diagnoses from reading the code plus Pat
 - **Gage (root fix):** `_cut_observation_window()` drops whole shell triangles that cross the 36° slice planes, which leaves the saw-tooth. Clip each crossing triangle exactly against the two slice planes (θ = a0, a0+36°): split it at the plane intersection and keep the inner part, so the cut edge is a clean straight line.
 - **Rook (cosmetic cover):** a frame mesh `ObservationWindowFrame`. It's a 0.6 m wide × 0.3 m deep gunmetal edge trim along both slice edges (800 m long) plus a 1.2 m rim ring per cap, using `door_jamb_gunmetal_*` / `facade_titanium_gunmetal_hull.png`, with metallic 1 and roughness 0.65.
 - Gage places the frame and the M-17 mullions in the same pass. The trim hides any leftover sub-cm jaggies from shadow-acne or precision.
+
+---
+## M-37 delivered (2026-11-02): window cards #6 ×8 + removal decals #54
+Preview: `design/materials/m37_window_cards_decals_preview_sheet.png`. Generator: box-only `/workspace/sl_tools/m37.py`. The lighting look is unchanged: the cards are self-lit stand-ins and don't add any lights.
+
+### Window cards (`godot/assets/textures/window_cards/`)
+- **Files:** `window_card_<unit>_albedo_emission.png`, 2048×1024 RGB, one per unit: 101, 102, 103, 104, 201, 202, 203, 204.
+- **Look:** iter_01 flat card with the iter_05 blinds look baked in, gunmetal mullions and frame, and an OLED amber `#FF9500` wall clock plus status strip. No noise, so well under 1.2% micro-noise.
+- **Per-unit content** (from the window-card README profiles):
+
+| Unit | Content |
+|---|---|
+| 101 | Dim, bunk |
+| 102 | Knocked-over plant, empty suit hook |
+| 103 | Family, toys |
+| 104 | Red solar glyph, desk terminal |
+| 201 | Lights off; the clock reads `--:--` |
+| 202 | Drawing, toys |
+| 203 | Route model |
+| 204 | Bench |
+
+**Gage apply** (a new helper, e.g. `_place_window_cards()`, called after the sector loads in `_ready()` / `_assemble_open_doorless_sector()`):
+- **Node:** one MeshInstance3D per unit, named `WindowCard_<unit>`, with a QuadMesh 3.0 × 1.5 m.
+- **Placement:** bottom-centre on each apartment's exterior window, 0.15 m inside the glass, facing out (+normal toward the street/atrium). Use the window positions of each unit in the sector GLB (layout v2 rev C).
+- **Material:** StandardMaterial3D with:
+  - `shading_mode = UNSHADED`, `albedo_texture` = the unit's PNG, `albedo_color = white`
+  - `transparency = DISABLED`, `cull_mode = BACK`, `texture_filter = LINEAR_WITH_MIPMAPS_ANISOTROPIC`
+  - shadow casting off
+- **Emergency (M-16):** add each card to the cached list and set `albedo_color` to (0.12, 0.12, 0.12) when emergency mode is on, restoring white on exit. These materials are unshaded, so this is a colour multiplier, not an emission energy.
+
+### Removal decals #54 (`godot/assets/textures/removal_decals/`, 1024² RGBA, BLEND quads; 4.7 Compatibility has no Decal nodes)
+
+| File | Unit / surface | Quad size | Notes |
+|---|---|---|---|
+| `decal_104_lab_bench_dust_outline.png` | 104, floor under the removed lab bench | 2.6 × 1.4 m | Dust ridge + 4 leg marks |
+| `decal_204_emitter_bench_outline.png` | 204, floor under the removed emitter bench | 2.2 × 1.2 m | Dust ridge + faint centre scorch |
+| `decal_103_shelf_ghost_anchor_holes.png` | 103, wall where the shelf hung | 2.0 × 2.0 m | Grime around a clean silhouette, shelf lines, 6 anchor holes |
+| `decal_202_planter_clamp_water_ring.png` | 202, floor under the removed planter | 1.2 × 1.2 m | Water ring + 4 clamp-bolt marks |
+| `qa03/apt201_bench_dust_outline_decal.png` (M-48) | 201, `Apt201_ExBench_DustOutline` | 3.7 × 2.5 m | Already specced in M-48 |
+
+**Gage apply:** a helper `_spawn_removal_decals()` modelled on `_spawn_apt201_bench_outline()`, with one QuadMesh MeshInstance3D per row, named `<Unit>_RemovalDecal_<name>`.
+- **Floor decals:** `orientation = FACE_Y`, raised 6 mm.
+- **Wall decal:** `FACE_Z`, 4 mm off the wall.
+- **Material (same as M-48):**
+  - `transparency = ALPHA`, `albedo_texture` = the PNG, albedo white
+  - **lit** (not unshaded, so it follows emergency and dark interiors), `roughness 1.0`, `metallic 0`
+  - `cull_mode = BACK`, `depth_draw_mode = DISABLED`, `render_priority = -1`, no shadows
+- **Placement:** the exact positions are the removed props' footprints in layout v2 rev C (`design/residential_asset_list_rev_c.md` #54). Gage reads them from the sector GLB node origins of the removed props.
