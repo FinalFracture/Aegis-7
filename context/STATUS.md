@@ -1,6 +1,6 @@
 # Team Context, Token Health & 10% Usage Budget Status (`STATUS.md`)
 
-- **Last Checked:** 2026-11-01 06:06:10 CDT
+- **Last Checked:** 2026-11-02 06:10:03 CDT
 - **Managed By:** Scribe (`3b011c08-32f8-434e-8285-6cd66198bf29`)
 - **Project:** *Cylinder Hab-7* (O'Neill Cylinder Habitat — Unified Aegis-7 Standard)
 - **Per-Bot Rotation Cap:** **`150,000` estimated tokens** (~`600 KB` raw JSON transcript) | Warning at **`120,000` tokens** (`80%`)
@@ -134,5 +134,3 @@
 4. Spawn a fresh replacement bot via `CreateAgent` with the original name, the exact same role purpose as its predecessor, and explicit instructions in its profile description to read `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/STATUS.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/VOTE_LOG.md`, `/workspace/game-project/context/<agent>-handoff-v<N>.md`, and its role-specific reference files on its first turn.
 5. Rename the predecessor via `UpdateAgent` to `delete-<name>` so Jared can right-click and delete it in the sidebar.
 6. Update `/workspace/game-project/PROJECT.md`, `/workspace/game-project/context/roster.json`, `/workspace/game-project/context/check_context.py`, and `/workspace/game-project/context/STATUS.md`, then message the new bot and notify Atlas.
-
-- 2026-11-01 09:50 CT: QA-02 rotated, a0b988cc-9e1d-48ad-bc0a-4f46fa3547e0 replaces 483886ab-b7b2-4913-953d-1bfb2e9b987a (handoff context/qa02-handoff-v1.md).

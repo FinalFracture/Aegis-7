@@ -19,3 +19,9 @@ Measured the lounge GLB: the north wall run is broken by built-in furniture at x
 - Code on main (04bbed0): `Vector3(-4.858, 0.12, 5.20)`, yaw -90, room 101 east wall (Rev C partition face x -4.6).
 - Design rev3: `(-5.16, 0.235, 5.20)`, yaw -90.
 - MISMATCH: x 0.30 m, y 0.115 m (code follows the Rev C wall/floor). Tracked in M-02; footprint may overlap the unplaced 101 wardrobe rect.
+
+## LOCKED (Rev C, 2026-11-02): authoritative, wall-relative
+- **Reference:** room 101 east wall inner face, **x_wall = -4.600**; room floor top **y_floor = 0.120**.
+- **Position:** x = x_wall - 0.258 = **-4.858**, y = y_floor = **0.120**, z = **5.20**. **Yaw -90** (back to the wall, front facing -X).
+- **Footprint:** x -5.116..-4.600, z 4.25..6.15. Front zone to x -6.32, which stays clear (the 101 wardrobe is on the west wall per C.3).
+- **Rule:** if a future rebuild moves the wall or floor, recompute only x = x_wall - 0.258 and y = y_floor. z and yaw never change.
