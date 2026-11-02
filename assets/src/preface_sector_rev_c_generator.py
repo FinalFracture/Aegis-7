@@ -124,7 +124,7 @@ def build():
     for n, (y, rs) in ROOMS.items():
         x0, x1, z0, z1 = rs[0]; sc.graph.update(frame_to=f"Unit_{n}", frame_from="PrefaceResidentialSector_Root", matrix=trimesh.transformations.translation_matrix(((x0 + x1) / 2, y, (z0 + z1) / 2)))
     for n, k, c, w, y in DOORS:
-        z = {"N": 0.8, "S": -0.8, "X": -9.1, "R": 9.1}[k]
+        z = {"N": 0.9, "S": -0.9, "X": -9.0, "R": 9.0}[k]   # GEO-13 / QA-BK-01: door root on the wall CENTRELINE (frame centred in the 0.20 m wall), not the corridor face
         sc.graph.update(frame_to=f"Door_{n}", frame_from="PrefaceResidentialSector_Root", matrix=trimesh.transformations.translation_matrix((c, y, z)))
     sc.graph.update(frame_to="Spawn_201_Suggested", frame_from="PrefaceResidentialSector_Root", matrix=trimesh.transformations.translation_matrix((-9.35, L2, 6.2)))
     sc.export(GLB); wrap_root(); return sc
