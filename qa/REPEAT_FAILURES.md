@@ -36,3 +36,11 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | 7b21a19, cd3b12b | bake keeps interiors | 24/25, then 25/25; 19/19 through fec275e |
 | ff057ff (M-41 decks removed, doors moved to Rev C) | — | **came back:** Patch r3 0/19; r4 9ecfdef 0/19 |
 **Likely cause:** the navmesh and NavLinks are baked/placed from geometry and door coordinates that keep changing (Rev C grid, M-41), and nothing rebakes them, so every layout change silently breaks reachability. Downgraded to Low by Jared (only the player navigates).
+
+## M-46 (NAV-04) — tram platform end point / deck trap (reopened 2026-11-02)
+| Commit | Attempt | Result at re-test |
+|---|---|---|
+| (none, ee61cb6..fec275e) | — | Patch 1a349a3: stops 1.08 m short of (12.8, -16.6); Patch r2 fec275e: 1.24 m short; QA-01 r2: stalls at (10.26, 0.33, -16.97) |
+| f5f97d4 | "M-46 tram waypoint": egress final waypoint moved to (11.0, 0.30, -16.1) | Patch r3 c7fe8ec marked Fixed because --qa-egress passed |
+| — | — | **Came back:** QA-01 sweep 5e3c137 NAV-04 trapped at (9.98-10.48, 0.33, -16.89..-17.00), escape 0/4; Patch real-input repro on the same code: trapped at (10.20, 0.33, -16.97), floor contacts only (ExtCollision, n +Y), escape 0/4 |
+**Likely cause:** the fix changed the test, not the geometry. Moving the egress waypoint made --qa-egress pass while the platform floor shape (ExtCollision ExtShape_1, likely an edge/seam catch in the deck) still traps the capsule; QA accepted a suite pass instead of a free walk at the original spot. Fix the platform collider and re-test with a real-input walk and an escape check.
