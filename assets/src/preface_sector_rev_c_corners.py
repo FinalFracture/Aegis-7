@@ -39,5 +39,21 @@ res = {"source": "godot/assets/models/preface_residential_sector.glb (Rev C, M-6
        "method": "SEAM_AUDIT method: origin 0.5 m inside on x and z, ray toward the corner, past = hit - 0.5*sqrt(2); dense check every 0.1 m over the full wall height with +-1 mm aim jitter. Corners carry a 20 mm 45-deg chamfer (hit lands before the corner, past < 0)",
        "tolerance_m": 0.010, "max_gap_closed_corners_m": worst,
        "n_corners": len(out), "n_fail": sum(c["status"] == "FAIL" for c in out), "n_closure": sum(c["status"] != "SKIP" for c in out), "skipped_convex_tips": [(c["room"], c["corner_x"], c["corner_z"]) for c in out if c["status"] == "SKIP"], "corners": out}
+# M-61 r3: runtime physics can miss a ray that lands exactly on a triangle edge. Record the smallest distance from any
+# SEAM_AUDIT hit point to an edge of the triangle it hit (0 = edge hit = fragile). Require >= 0.1 mm.
+def _edge_margin():
+    m = 9.0
+    for c in out:
+        if c["status"] == "SKIP": continue
+        sx_, sz_ = c["inside_dir_xz"]
+        for h in c["audit_heights_above_floor"]:
+            at = np.array([c["corner_x"], c["level_y"] + h, c["corner_z"]]); st = at + np.array([sx_ * .5, 0, sz_ * .5]); dd = (at - st) / np.linalg.norm(at - st)
+            l, _, ti = R.intersects_location([st], [dd], multiple_hits=False)
+            if not len(l): return 0.0
+            a, b, c3 = shell.triangles[ti[0]]
+            for u, v in ((a, b), (b, c3), (c3, a)):
+                t_ = np.clip(np.dot(l[0] - u, v - u) / np.dot(v - u, v - u), 0, 1); m = min(m, float(np.linalg.norm(l[0] - (u + t_ * (v - u)))))
+    return m
+res["min_hit_edge_margin_m"] = round(_edge_margin(), 6); assert res["min_hit_edge_margin_m"] >= 1e-4, res["min_hit_edge_margin_m"]
 json.dump(res, open(os.path.join(G.ROOT, "design/rev_c_shell_corners.json"), "w"), indent=1)
-print(res["n_corners"], "corners,", res["n_closure"], "closure, fail", res["n_fail"], "max gap", worst, "skipped", res["skipped_convex_tips"])
+print("edge margin", res["min_hit_edge_margin_m"], res["n_corners"], "corners,", res["n_closure"], "closure, fail", res["n_fail"], "max gap", worst, "skipped", res["skipped_convex_tips"])

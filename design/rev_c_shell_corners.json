@@ -2068,5 +2068,6 @@
    "kind": "closure",
    "status": "PASS"
   }
- ]
+ ],
+ "min_hit_edge_margin_m": 0.000167
 }
