@@ -8803,9 +8803,127 @@ func _ext_spawn_kind(asset: String) -> int:
 
 func _ext_mark_spawned(spawned: int) -> void:
 	set_meta("exterior_spawned", true)
+	var ext_root: Node3D = get_node_or_null("ExteriorPlacements_v1_3") as Node3D
+	if ext_root != null:
+		_ext_batch_multimesh(ext_root)
 	print("[EXT] spawned=%d" % spawned)
 	print("[GEO-17] ext shapes clipped at shell z -8.90: %d" % _ext_shell_clipped)
 	exterior_spawned.emit()
+
+
+## [M-07] One MultiMesh per repeated exterior mesh. Source MeshInstance3D nodes stay (hidden)
+## so collision, metas, and ExtCollision are unchanged.
+func _ext_batch_multimesh(root: Node3D) -> void:
+	var candidates: Array[MeshInstance3D] = []
+	var placed: Array[Node] = []
+	for child: Node in root.get_children():
+		placed.append(child)
+	for child: Node in placed:
+		if not child.is_in_group("exterior_placement"):
+			continue
+		if not child.has_meta("ext_asset"):
+			continue
+		var asset: String = String(child.get_meta("ext_asset"))
+		if _ext_base(asset) == "ext_maglev_car_body" or _ext_spawn_kind(asset) == EXT_KIND_DECAL:
+			continue
+		for n: Node in child.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if mi == null or not mi.visible or mi.mesh == null or not mi.skeleton.is_empty():
+				continue
+			candidates.append(mi)
+	var mesh_counts: Dictionary = {}
+	for mi: MeshInstance3D in candidates:
+		var mid: int = mi.mesh.get_instance_id()
+		mesh_counts[mid] = int(mesh_counts.get(mid, 0)) + 1
+	# Key: mesh resource, material_override, cast_shadow, active material of each surface.
+	var groups: Dictionary = {}
+	for mi2: MeshInstance3D in candidates:
+		if int(mesh_counts.get(mi2.mesh.get_instance_id(), 0)) < 8:
+			continue
+		var mo: Material = mi2.material_override
+		var mo_id: int = mo.get_instance_id() if mo != null else 0
+		var surf_ids: String = ""
+		var sc_key: int = mi2.mesh.get_surface_count()
+		for s: int in range(sc_key):
+			var am: Material = mi2.get_active_material(s)
+			var am_id: int = am.get_instance_id() if am != null else 0
+			if s > 0:
+				surf_ids += ","
+			surf_ids += str(am_id)
+		var key: String = "%d|%d|%d|%s" % [mi2.mesh.get_instance_id(), mo_id, int(mi2.cast_shadow), surf_ids]
+		if not groups.has(key):
+			groups[key] = []
+		(groups[key] as Array).append(mi2)
+	var group_n: int = 0
+	var inst_n: int = 0
+	for key_v: Variant in groups.keys():
+		var members: Array = groups[key_v] as Array
+		if members.size() < 8:
+			continue
+		var first: MeshInstance3D = members[0] as MeshInstance3D
+		if first == null or first.mesh == null:
+			continue
+		var use_mesh: Mesh = first.mesh
+		var surf_count: int = use_mesh.get_surface_count()
+		var had_surface_override: bool = false
+		for s_ov: int in range(surf_count):
+			if first.get_surface_override_material(s_ov) != null:
+				had_surface_override = true
+				break
+		if had_surface_override:
+			var dup: Mesh = use_mesh.duplicate() as Mesh
+			if dup != null and dup.get_surface_count() == surf_count:
+				for s_set: int in range(surf_count):
+					var ov: Material = first.get_surface_override_material(s_set)
+					if ov != null:
+						dup.surface_set_material(s_set, ov)
+				use_mesh = dup
+			else:
+				var built: ArrayMesh = ArrayMesh.new()
+				for s_set2: int in range(surf_count):
+					built.add_surface_from_arrays(use_mesh.surface_get_primitive_type(s_set2), use_mesh.surface_get_arrays(s_set2))
+					var ov2: Material = first.get_surface_override_material(s_set2)
+					var keep: Material = ov2 if ov2 != null else use_mesh.surface_get_material(s_set2)
+					if keep != null:
+						built.surface_set_material(s_set2, keep)
+				use_mesh = built
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = use_mesh
+		mm.instance_count = members.size()
+		for i: int in range(members.size()):
+			var member: MeshInstance3D = members[i] as MeshInstance3D
+			mm.set_instance_transform(i, root.global_transform.affine_inverse() * member.global_transform)
+		var mesh_label: String = first.mesh.resource_name
+		if mesh_label == "":
+			mesh_label = first.name
+		var cleaned: String = ""
+		for ci: int in range(mesh_label.length()):
+			var ch: String = mesh_label.substr(ci, 1)
+			var ok_ch: bool = (ch >= "a" and ch <= "z") or (ch >= "A" and ch <= "Z") or (ch >= "0" and ch <= "9") or ch == "_" or ch == "-"
+			cleaned += ch if ok_ch else "_"
+		if cleaned == "":
+			cleaned = "mesh"
+		if cleaned.length() > 48:
+			cleaned = cleaned.substr(0, 48)
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "ExtMM_%d_%s" % [group_n, cleaned]
+		mmi.multimesh = mm
+		mmi.material_override = first.material_override
+		mmi.cast_shadow = first.cast_shadow
+		mmi.gi_mode = first.gi_mode
+		mmi.layers = first.layers
+		mmi.visibility_range_end = first.visibility_range_end
+		mmi.visibility_range_end_margin = first.visibility_range_end_margin
+		mmi.visibility_range_fade_mode = first.visibility_range_fade_mode
+		root.add_child(mmi)
+		for item: Variant in members:
+			var hide_mi: MeshInstance3D = item as MeshInstance3D
+			if hide_mi != null:
+				hide_mi.visible = false
+		inst_n += members.size()
+		group_n += 1
+	print("[M-07] ext multimesh groups=%d instances=%d" % [group_n, inst_n])
 
 
 func _ext_has_collision_relation(mi: Node) -> bool:
