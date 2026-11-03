@@ -10,6 +10,8 @@ from matplotlib.patches import Rectangle, Circle, Patch
 from matplotlib.lines import Line2D
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Map renders go to godot/renders/maps/ (not next to this script).
+MAPS_OUT = os.path.join(HERE, "..", "godot", "renders", "maps")
 PAPER, INK = "#f7f5f0", "#1c1915"
 CYAN, MAGENTA, ORANGE = "#0098B8", "#E0148C", "#FF8C00"
 VIOLET, BLUE = "#7C3AED", "#2B7FDB"
@@ -279,7 +281,8 @@ def draw_strip4():
 
     _legend(leg)
     _scale_and_compass(fig, ax)
-    path = os.path.join(HERE, "strip4_plan.png")
+    os.makedirs(MAPS_OUT, exist_ok=True)
+    path = os.path.join(MAPS_OUT, "strip4_plan.png")
     fig.savefig(path, dpi=200)
     plt.close(fig)
     return path
@@ -453,7 +456,8 @@ def draw_unrolled():
     ax2.grid(False)
 
     _unrolled_legend(leg)
-    path = os.path.join(HERE, "cylinder_unrolled.png")
+    os.makedirs(MAPS_OUT, exist_ok=True)
+    path = os.path.join(MAPS_OUT, "cylinder_unrolled.png")
     fig.savefig(path, dpi=200)
     plt.close(fig)
     return path
