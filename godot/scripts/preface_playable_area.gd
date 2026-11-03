@@ -1053,14 +1053,7 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 		{"name": "PromenadeEastGuardrail", "size": Vector3(0.24, 1.25, 36.0), "pos": Vector3(18.0, 0.62, -27.0), "rot_x": 0.0},
 		{"name": "PromenadeSouthGuardrail", "size": Vector3(36.0, 1.25, 0.24), "pos": Vector3(0.0, 0.62, -45.0), "rot_x": 0.0}
 	]
-	# East Stair-Ramp Connector: smooth sloped box from (Y 4.20, Z -2.20) down to (Y 0.00, Z -7.80) at X = 10.65m
-	var run: float = 5.60
-	var rise: float = 4.20
-	var slope_len: float = sqrt(run * run + rise * rise)
-	var ang: float = -atan2(rise, run)
-	var up_local: Vector3 = Vector3(0.0, cos(ang), sin(ang))
-	var top_center: Vector3 = Vector3(10.65, 2.10 + 0.12, -5.00)
-	boxes.append({"name": "EastStairRampConnector", "size": Vector3(2.95, 0.20, slope_len + 0.30), "pos": top_center - up_local * 0.10, "rot_x": ang})
+	# M-70: 37 deg EastStairRampConnector (x 10.65) removed; Rev C stair_set_switchback.glb colliders replace it.
 	for b: Dictionary in boxes:
 		var cs: CollisionShape3D = CollisionShape3D.new()
 		cs.name = String(b["name"])
