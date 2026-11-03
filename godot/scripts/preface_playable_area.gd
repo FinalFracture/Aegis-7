@@ -3494,6 +3494,8 @@ func _set_tree_cast_shadow(root: Node3D, mode: GeometryInstance3D.ShadowCastingS
 			st.append(ch)
 
 
+# [VIS-20] Name tokens that mark glass-mounting hardware, never glass itself.
+const GLASS_HARDWARE_KEYS: Array[String] = ["clamp", "bracket", "spigot", "hinge", "bolt", "fixing"]
 func _blob_has(blob: String, keys: Array) -> bool:
 	for key in keys:
 		if blob.contains(String(key)):
@@ -3574,7 +3576,8 @@ func _upgrade_sector_materials(root: Node3D, emission_mult: float = 0.65) -> voi
 						# [M-34] Keep the glTF cull. DISABLED only for thin single-plane parts.
 						if _blob_has(blob, ["foliage", "leaf", "card", "decal", "cloth", "transom", "holo", "field"]):
 							smat.cull_mode = BaseMaterial3D.CULL_DISABLED
-						var is_glass: bool = _blob_has(blob, ["glass", "translucent", "holo", "lens", "viewport", "transom", "sonic_shield"]) or pname.contains("glass") or pname.contains("window")
+						# [VIS-20] Glass hardware (e.g. *_Clamps on a glass guard) contains "glass" but is opaque metal.
+						var is_glass: bool = (_blob_has(blob, ["glass", "translucent", "holo", "lens", "viewport", "transom", "sonic_shield"]) or pname.contains("glass") or pname.contains("window")) and not _blob_has(blob, GLASS_HARDWARE_KEYS)
 						if is_glass:
 							smat.render_priority = 0
 							var authored: Color = smat.albedo_color
