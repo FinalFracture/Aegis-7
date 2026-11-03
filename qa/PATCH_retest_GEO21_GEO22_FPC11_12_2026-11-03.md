@@ -61,3 +61,15 @@ Capsule r 0.35 h 1.75. Casts start >0.4 m back from faces.
 ## Bugs
 No new bugs and no second failures, so qa/REPEAT_FAILURES.md is unchanged.
 Low observation for Gage/Rook: 4 one-sided stair colonly shapes (see GEO-21).
+
+## Retest of 6dda73f (GEO-21b, stair colonly two-sided) — PASS
+Fresh clone of main at 6dda73f, Godot 4.7.2, `--headless --import` first, xvfb.
+- Frame-60 runtime count: **3,079 ConcavePolygonShape3D, 0 one-sided.** Flight1_Ramp, Flight2_Ramp, L2_Landing and Flight1_Understair_Closure colonly are all backface_collision=true. Mid_Landing is a BoxShape3D.
+- Capsule (r0.35 h1.75) starting inside the Flight1 ramp/closure, rising 4 m (CharacterBody3D move_and_collide):
+  - (-1.15, 1.5, -6.8): hits Flight1_Understair_Closure after 0.36 m, n (0,-0.87,-0.50).
+  - (-1.15, 0.9, -5.0): hits Flight1_Ramp after 0.12 m.
+  - (-1.15, 0.9, -6.5), (-1.55, 0.95, -6.8), (-0.8, 0.9, -6.2): first contact is ExtGroundBody (two-sided ground) within 0.2 m.
+  - So the rise-through is closed (before: 4.0/2.2/2.0 m with no hit). Note: `PhysicsDirectSpaceState3D.cast_motion` still reports a free 4 m from two inside starts because it skips shapes it starts overlapping; that's engine behaviour, not a collider defect.
+- Stairs, CharacterBody3D capsule (floor_max_angle 50°, snap 0.4, 3 m/s), 3 lanes: **up 3/3** (mid y 3.46, L2 y 5.08), **down 3/3** (L1 y 1.00).
+- `--qa-egress`: **23/23 PASS, `DONE failures=0`**, exit 0.
+- The Low observation is closed. No new bugs and no second failures; REPEAT_FAILURES unchanged.
