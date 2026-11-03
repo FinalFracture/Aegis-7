@@ -3854,6 +3854,34 @@ func _qa05_ease_fp_camera(delta: float) -> void:
 	_camera_pivot.position = pos
 
 
+## [SYS-23] Rise of a walkable step top just ahead of the capsule, or -1.0 if none. Rays use the
+## body's own mask and skip the player. The reach is STEP_HEIGHT + 0.10 so the 0.40 m edges QA
+## already climbs (the capsule rode up them) keep working.
+func _step_rise_ahead(b: CharacterBody3D, dir: Vector3, up_dir: Vector3, walk_cos: float, contact: Vector3) -> float:
+	var space: PhysicsDirectSpaceState3D = b.get_world_3d().direct_space_state
+	var reach: float = STEP_HEIGHT + 0.10
+	var base: Vector3 = b.global_position + up_dir * 0.12
+	var q0: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(base + up_dir * 0.30, base - up_dir * 0.30, b.collision_mask, [b.get_rid()])
+	var h0: Dictionary = space.intersect_ray(q0)
+	if h0.is_empty():
+		return -1.0
+	var ground_up: float = (h0["position"] as Vector3).dot(up_dir)
+	# Sample just past the wall contact (at feet height), then further in for chamfered edges
+	# (curbs); the first walkable hit is the step top.
+	var c_flat: Vector3 = contact - up_dir * (contact - base).dot(up_dir)
+	for off: float in [0.05, 0.15, 0.25]:
+		var ahead: Vector3 = c_flat + dir * off
+		var q1: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ahead + up_dir * reach, ahead - up_dir * 0.05, b.collision_mask, [b.get_rid()])
+		var h1: Dictionary = space.intersect_ray(q1)
+		if h1.is_empty():
+			continue
+		if (h1["normal"] as Vector3).dot(up_dir) < walk_cos - 0.001:
+			continue
+		var rise: float = (h1["position"] as Vector3).dot(up_dir) - ground_up
+		if rise > reach - 0.005:
+			return -1.0
+		return rise
+	return -1.0
 func _physics_process(delta: float) -> void:
 	# Stall flicker has to tick on physics frames: --qa-forcefield-door awaits physics_frame,
 	# and a physics catch-up burst can run those frames before the next idle _process.
@@ -3951,13 +3979,14 @@ func _physics_process(delta: float) -> void:
 		# [SYS-21] Step on any face too steep to walk (floor_max_angle 50 deg), not only normal.y < 0.5.
 		var walk_cos: float = cos(b.floor_max_angle)
 		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < walk_cos - 0.001:
-			var up: Vector3 = up_dir * STEP_HEIGHT
-			# [SYS-22] Only step if walkable ground sits under the step-top within STEP_HEIGHT;
-			# a true wall (landing wall, planter side) leaves no floor there.
-			var top_xf: Transform3D = b.global_transform.translated(up + motion)
-			var down_hit: KinematicCollision3D = KinematicCollision3D.new()
-			var ground_ok: bool = b.test_move(top_xf, -up_dir * (STEP_HEIGHT - 0.01), down_hit) and down_hit.get_normal().dot(up_dir) >= walk_cos - 0.001
-			if ground_ok and not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
+			# [SYS-22/23/24] Find the step top with rays: one under the body (current ground) and one
+			# just ahead of the capsule, where the top is flat (the capsule's down-probe used to land on the
+			# edge corner, refuse for a tick and zero the speed). Raise by the measured rise, not STEP_HEIGHT,
+			# so the body lands on the top instead of sinking back down the edge (camera dip).
+			# A true wall leaves no walkable top within reach, so it never steps.
+			var rise_step: float = _step_rise_ahead(b, dir, up_dir, walk_cos, hit.get_position())
+			var up: Vector3 = up_dir * (rise_step + 0.004)
+			if rise_step > 0.02 and not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
 				step_pre_up = (b.global_position).dot(up_dir)
 				b.global_position += up
 
@@ -3966,7 +3995,7 @@ func _physics_process(delta: float) -> void:
 	b.move_and_slide()
 	# [SYS-18] Ease the camera by the rise actually gained after the slide settles, not STEP_HEIGHT.
 	if not is_nan(step_pre_up):
-		var rise: float = clampf(b.global_position.dot(up_dir) - step_pre_up, 0.0, STEP_HEIGHT)
+		var rise: float = clampf(b.global_position.dot(up_dir) - step_pre_up, 0.0, STEP_HEIGHT + 0.10)
 		_step_ease_offset = minf(_step_ease_offset + rise, 0.4)
 	# [QA-05] Hard landing dip from the pre-slide up-velocity. No continuous bob.
 	if not was_on_floor and b.is_on_floor():
