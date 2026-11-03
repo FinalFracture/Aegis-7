@@ -40,7 +40,7 @@
 ## 3. Zones (base plan, shared by all options) — Vance proposal unless marked
 | Zone | x | z | Area | Notes |
 |---|---|---|---|---|
-| F — Fore Gateway Plaza | 0..60 | −62.8..62.8 | ~0.75 ha | Fore Hub forecourt, ring cross-walk (12 m, doc) at x 0, wayfinding |
+| F — Fore Gateway Plaza | 0..60 | −62.8..62.8 | ~0.75 ha | Fore Hub forecourt, ring cross-walk (12 m, doc) at x 0, wayfinding. **In C5 (Rev 2.4 tower) this zone becomes the tower's West Arrival Terrace (x 0..48, +4.0 HD) plus the Rim edges (Vance proposal)** |
 | S4 — S4\|5 Station Edge band | 0..800 | −56..−50 | 0.48 ha | 4 m forecourts *(doc)* + 2 m buffer off the rib; tower feet at each stop |
 | P — Rim Promenade (S4\|5 side) | 0..800 | −50..−40.5 | 0.76 ha | 9.5 m *(doc width)*; pairs with strip 4's Canal Promenade across the rib |
 | SP — Spine Walk | 0..800 | −6..6 | 0.96 ha | 12 m *(doc width)*, axial, amber poles every 10 m (strip 4 precedent) |
@@ -96,7 +96,7 @@ All new assets: Aegis-7 Standard (<6,000 tris, bottom-centre pivot, +Z facing, B
 - **End caps:** Fore Hub (x 0) is the main arrival from the passenger dock; Aft transfer (x 800) is minor *(doc)*.
 
 ## 8. Five candidate layouts (Jared to pick)
-All share §3 edges, §4 circulation and §7 ties. The program block (x 60..740, z −40..50) differs.
+All share §3 edges, §4 circulation and §7 ties. The program block (x 60..740, z −40..50) differs. C5 is the exception: the tower complex starts at the Fore cap (x 0), see C5.
 
 ### C1 — Park-Centric "Long Meadow"
 Rolling lawns and groves the full length, River meanders z −30..+30 from x 530 to 740 and back along z +25 to x 300; Dome at x 400 (central, under the Window); Arena small at x 650.
@@ -144,15 +144,24 @@ S5|6 ------- Rim Trail ---------------------------------
 + Most NPC/mission hooks; ties to Lantern Row. − Feels like another town, weakens "brightest open strip"; most new buildings.
 
 ### C5 — Mixed Terraces "Green Steps" (**recommended**)
-Three bands: Fore third (x 60..280) parks + Dome; middle third (x 258..568) **the Multi-Sport Tower complex** (`design/strip5_tennis_tower_v1.md`, Rev 2.3: building x 306..458, z −40..39, 152 × 79 m, Glass Box top +26.3) with the **West Arrival Plaza** (x 258..306) and **East Plaza** (x 458..488) as raised terraces at +4.0 HD, reached by 1:20 Spine ramps (x 178..258, 488..568); the Spine Walk loops the building (S arm = Rim Promenade, N arm z 39..50); x 300 and x 400 Station Walks link the S4|5 stops. **The C5 Arena block is deferred (Jared will revisit)**; the rest of the Long Field third stays open lawn/fields. Aft third (x 568..740) River with pools/weirs. Terraced plinth tiers step up toward both ribs to absorb the curve.
+Three bands (**updated for tower Rev 2.4**, Jared approved the Fore-cap move):
+- **Fore third (x 0..310): the Multi-Sport Tower complex** (`design/strip5_tennis_tower_v1.md` Rev 2.4).
+  - The **West Arrival Terrace** (x 0..48, z −24..24, +4.0 HD) is fed by the Fore cap Spine portal and the Fore Hub Station Walk (x 0..12).
+  - The building is **x 48..200**, z −40..39, 152 × 79 m, Glass Box top +26.3.
+  - The **East Plaza** terrace is x 200..230, and the **1:20 E Spine ramp** (x 230..310) comes down to grade.
+  - The Spine Walk loops the building (S arm = Rim Promenade, N arm z 39..50). The x 100 and x 200 Station Walks link the stops, and the cross walks are at x 50 / 150.
+  - Lawns sit either side of the ramp.
+- **Middle third (x 310..520): parks + groves, with the Dome (bldg_05) at ~x 380..430, z −30..0** (Vance proposal: central, under the Window). It ends at x 520, leaving a 10 m buffer before the River inlet.
+- **Aft third (x 530..740): the River with pools and weirs**, unchanged on its documented x 530 inlet. The N side (x 520..740, z 15..45) is lawn held for the **deferred C5 Arena (Jared will revisit)**.
+- Terraced plinth tiers step up toward both ribs to absorb the curve.
 ```
-S4|5 [F]=st===st=300=st=400=st====st====st====st===[A]
-     | PARK + DOME |W PLZ|  SPORTS TOWER  |E PLZ| lawn |~~RIVER/POOLS~~|
-     |== SPINE ===/ramp+-- loop S arm ----+ramp\== SPINE ============== |
-     | groves/lawns|     +-- loop N arm ----+     | lawn | ~ weirs ~     |
+S4|5 [F]=st=100=st=200=st====st====st====st====st===[A]
+     |W TER| SPORTS TOWER |E PLZ|lawn| PARK + DOME  |~~RIVER/POOLS~~|
+     |cap  +- loop S arm -+ramp\== SPINE ===================== |
+     |portal+- loop N arm -+     |lawn| groves      | lawn (Arena) |
 S5|6 ------- Rim Trail (full loop) ---------------------
 ```
-+ Covers all four master-plan landmarks (River, Long Field, Rim Trail, parks); reuses both locked rec buildings; River placed where the doc puts the inlet; the Spine now ends at a destination building. − Each band is smaller than in the pure options; the tower and terraces take ~2.1 ha of the middle third.
++ Covers all four master-plan landmarks (River, Long Field, Rim Trail, parks); reuses both locked rec buildings; River placed where the doc puts the inlet; the tower greets arrivals at the Fore Hub (Rev 2.4), and the parks + Dome sit in the middle third under the Window. − Each band is smaller than in the pure options; the tower and terraces take ~2.1 ha of the Fore third; the Fore cap Spine portal level (+4.0 HD wanted) needs a tie to the Fore Cap map.
 
 **Recommendation (Vance proposal): C5 Mixed Terraces.** It is the only option that hits every documented landmark, keeps the open sky-land mood, and sits the River on its documented x 530 inlet.
 
