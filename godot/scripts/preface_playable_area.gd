@@ -2855,7 +2855,7 @@ func _update_first_person_arm(delta: float) -> void:
 		_rfid_pulse_timer = maxf(_rfid_pulse_timer - delta, 0.0)
 	if _interact_reach_timer > 0.0:
 		_interact_reach_timer = maxf(_interact_reach_timer - delta, 0.0)
-	var f_held: bool = _preset_active < 0 and not _capture_hud and Input.is_physical_key_pressed(KEY_F)
+	var f_held: bool = _preset_active < 0 and not _capture_hud and Input.is_action_pressed("rfid_pulse")
 	var target_raise: float = 1.0 if (f_held or _rfid_pulse_timer > 0.0 or _interact_reach_timer > 0.0) else 0.0
 	_arm_raise_blend = move_toward(_arm_raise_blend, target_raise, delta * ARM_RAISE_SPEED)
 
@@ -3765,17 +3765,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		var ke: InputEventKey = event as InputEventKey
 		if not ke.pressed or ke.echo:
 			return
+		# [M-23] E / F / Tab (and V) come from the InputMap actions, not hardcoded keys.
+		if event.is_action_pressed("toggle_view"):
+			_toggle_view()
+			return
+		if event.is_action_pressed("interact"):
+			_interact()
+			return
+		if event.is_action_pressed("rfid_pulse"):
+			_trigger_rfid_pulse()
+			return
 		match ke.physical_keycode:
 			KEY_ESCAPE:
 				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			KEY_G:
 				_toggle_gravity_ring_test()
-			KEY_V, KEY_TAB:
-				_toggle_view()
-			KEY_E:
-				_interact()
-			KEY_F:
-				_trigger_rfid_pulse()
 			KEY_R:
 				_toggle_flashlight()
 			KEY_N:

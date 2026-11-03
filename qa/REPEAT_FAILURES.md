@@ -51,3 +51,10 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | (earlier) | egress waypoint moved to (11.0, -16.1) west of the shelter | QA-01: player still trapped, 2 of 4 exits, stops 1.10 m short |
 | (this commit) | ext trimesh colliders made two-sided (backface_collision) | Gage real-input probe: platform end (11.81, -16.74) 3/3 exits PASS, snag (7.62, -17.95) 3/3 exits PASS; --qa-egress re-run pending Patch |
 **Likely cause:** one-sided ConcavePolygonShape3D trimeshes on exterior props (tram platform kerb/shelter, paving/curb seams). The capsule slid past a face edge and sat on floor contacts only with no way to depenetrate, so every direction read as blocked. Earlier fixes moved the test target instead of the collider.
+
+## M-23 - E / F / Tab hardcoded keys (repeat failure, fix pending re-test)
+| Commit | Attempt | Result at re-test |
+|---|---|---|
+| (earlier) | INPUT-01 moved WASD/Shift/Space to the InputMap | E, F, Tab/V still matched on physical_keycode in _input |
+| (this commit) | E/F/Tab/V go through `interact` / `rfid_pulse` / `toggle_view` actions (event.is_action_pressed); Tab added to `toggle_view`; held-F arm raise uses Input.is_action_pressed | Gage real key events: Tab PASS, V PASS, E opens DOOR_APT201 PASS; F dispatch not state-checked (no pulse state var); --qa-egress 0 failures |
+**Likely cause:** the movement fix only covered polled movement actions; the one-shot keys lived in a separate physical_keycode match and were never migrated.
