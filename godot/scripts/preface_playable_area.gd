@@ -2066,6 +2066,7 @@ func _spawn_rev_c_stair_core(parent: Node3D) -> void:
 			root_for_fallback = node
 	var tally: Dictionary = _stair_tally_col_bodies(parent)
 	var fallback_n: int = _stair_fallback_walk_surfaces(root_for_fallback)
+	_geo19_trim_mid_landing(root_for_fallback)
 	var ramps: int = int(tally["ramps"])
 	var guards: int = int(tally["guards"])
 	if fallback_n > 0:
@@ -2222,6 +2223,44 @@ func _stair_add_ramp(parent: Node3D, nm: String, x0: float, x1: float, za: float
 	cs.shape = shape
 	cs.position = Vector3(0.0, -0.10, 0.0)
 	body.add_child(cs)
+
+
+## [GEO-19] The mid landing collider (z -8.9..-7.4) ran 0.05 m into the Sector-4 exit portal
+## header and jambs (z -9.15..-8.85). The landing is an axis-aligned slab, so its trimesh is
+## swapped for a box with the same extents, and the north edge stops at the portal face.
+## The visible landing mesh is unchanged.
+const GEO19_PORTAL_FACE_Z := -8.85
+
+
+func _geo19_trim_mid_landing(root: Node3D) -> void:
+	if root == null:
+		return
+	var body: StaticBody3D = root.find_child("Mid_Landing-colonly", true, false) as StaticBody3D
+	if body == null:
+		return
+	for ch: Node in body.get_children():
+		var cs: CollisionShape3D = ch as CollisionShape3D
+		if cs == null or not (cs.shape is ConcavePolygonShape3D):
+			continue
+		var xf: Transform3D = cs.global_transform
+		var ab: AABB = AABB()
+		var first: bool = true
+		for v: Vector3 in (cs.shape as ConcavePolygonShape3D).get_faces():
+			var p: Vector3 = xf * v
+			if first:
+				ab = AABB(p, Vector3.ZERO)
+				first = false
+			else:
+				ab = ab.expand(p)
+		if first or ab.position.z >= GEO19_PORTAL_FACE_Z:
+			continue
+		var z0: float = GEO19_PORTAL_FACE_Z
+		var z1: float = ab.end.z
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = Vector3(ab.size.x, ab.size.y, z1 - z0)
+		cs.shape = box
+		var c: Vector3 = ab.get_center()
+		cs.global_transform = Transform3D(Basis(), Vector3(c.x, c.y, (z0 + z1) * 0.5))
 
 
 func _stair_fallback_walk_surfaces(parent: Node3D) -> int:
