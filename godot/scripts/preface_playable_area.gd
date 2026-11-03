@@ -9332,6 +9332,9 @@ func _ext_magnet_top_for_car(car_aabb: AABB, ext_root: Node) -> Dictionary:
 	return {"ok": true, "y": best_y}
 
 
+const EXT_MAGLEV_GAP := 0.015 # m, magnet module underside to guideway top (spec 0.015 +/- 0.005)
+
+
 func _ext_snap_instance(inst: Node3D, kind: int, ext_root: Node) -> void:
 	var merged: Dictionary = _ext_merged_aabb(inst)
 	var asset: String = String(inst.get_meta("ext_asset", ""))
@@ -9350,6 +9353,9 @@ func _ext_snap_instance(inst: Node3D, kind: int, ext_root: Node) -> void:
 		push_warning("[EXT] no ground under id=%s asset=%s" % [str(eid), asset])
 		return
 	var lift: float = EXT_DECAL_LIFT if kind == EXT_KIND_DECAL else 0.0
+	# [MAGLEV] Magnet modules hover EXT_MAGLEV_GAP over the guideway; the car body rests on the module top.
+	if _ext_base(asset) == "ext_maglev_magnet_module":
+		lift = EXT_MAGLEV_GAP
 	var target: float = float(hit["y"]) + lift
 	if kind == EXT_KIND_DECAL and target < float(hit["y"]):
 		target = float(hit["y"])
