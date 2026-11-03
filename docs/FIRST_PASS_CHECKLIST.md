@@ -9,6 +9,7 @@ Python 3 standard library only. Run from the repo root:
 python tools/first_pass_check.py <scene or path>            # static checks + optional headless Godot probe
 python tools/first_pass_check.py <scene or path> --no-godot # static checks only (no engine)
 python tools/first_pass_check.py <scene or path> --strict   # WARN counts as FAIL
+python tools/first_pass_check.py <scene or path> --verbose  # print every detail line (default: first 8, then "... and N more")
 ```
 - A `.tscn` target is expanded to everything it references (scripts, scenes, GLBs, textures); a directory target checks every file under it. Repo hygiene always runs repo-wide.
 - Read-only. The Godot probe is written to a system temp dir and deleted afterwards, and only runs on a single `.tscn` in a project that has already been imported (it never triggers an import). Set `GODOT_BIN` if `godot` is not on PATH.

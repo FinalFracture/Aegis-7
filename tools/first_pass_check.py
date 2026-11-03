@@ -39,6 +39,8 @@ CONFIG = {
     "accent_hue_tol_deg": 8.0,            # colours this close to amber hue must be exact
     "godot_timeout_s": 120,
     "debug_name_allow_re": r"(?i)^(CylinderSpinGravityTestRing)$",   # names allowed despite debug words
+    "walkable_min_area_m2": 0.25,   # FPC-12: smaller steep faces are decorative, a capsule crosses them
+    "walkable_slope_allow_re": r"(?i)(ThresholdChevrons)",  # FPC-12: allowlisted decorative colliders
     "radial_up_re": r"(?i)(spin|gravity_?ring|GravityTestRing)",     # spin-gravity floors: up is radial, skip world-up slope checks
     "one_sided_scope_re": r"(?i)(exterior|shell|hull|thin|facade|roof|skin|ext_)",  # FPC-10
     "res_guard_re": r"(FileAccess\.file_exists|ResourceLoader\.exists|DirAccess\.dir_exists|_resolve_path|_find_first_existing|file_exists|\.exists\()",
@@ -714,7 +716,9 @@ func _walk(n, bodies, meshes):
 	if n is StaticBody3D: bodies.append(n)
 	if n is MeshInstance3D: meshes.append(n)
 	for c in n.get_children(): _walk(c, bodies, meshes)
-func _emit(st, name, msg): print("FPC|%s|%s|%s" % [st, name, msg])
+func _emit(st, name, msg, items = []):
+	# items are passed whole; Python applies the --verbose / "N more" limit
+	print("FPC|%s|%s|%s|%s" % [st, name, msg, "\u001f".join(PackedStringArray(items))])
 func _check_trimesh(bodies):
 	# FPC-10: only exterior / thin shells must be two-sided
 	var bad = 0; var ex = []
@@ -724,8 +728,8 @@ func _check_trimesh(bodies):
 			if c is CollisionShape3D and c.shape is ConcavePolygonShape3D and not c.shape.backface_collision:
 				if rx.search(str(c.get_path())) == null: continue
 				bad += 1
-				if ex.size() < 5: ex.append(str(c.get_path()))
-	_emit("WARN" if bad else "PASS", "godot.trimesh_two_sided", "%d one-sided exterior/thin-shell trimesh colliders %s" % [bad, ex])
+				ex.append(str(c.get_path()))
+	_emit("WARN" if bad else "PASS", "godot.trimesh_two_sided", "%d one-sided exterior/thin-shell trimesh colliders" % bad, ex)
 func _shape_hash(sh):
 	# FPC-01: identity of the shape geometry, not just its class
 	if sh is ConcavePolygonShape3D: return "tri:%d" % hash(sh.get_faces())
@@ -745,14 +749,16 @@ func _check_dup_colliders(bodies):
 				var k = _shape_hash(c.shape) + "@" + _xf_key(c.global_transform)
 				if seen.has(k):
 					dup += 1
-					if ex.size() < 5: ex.append(str(c.get_path()) + " == " + seen[k])
+					ex.append(str(c.get_path()) + " == " + seen[k])
 				else: seen[k] = str(c.get_path())
-	_emit("FAIL" if dup else "PASS", "godot.duplicate_static_colliders", "%d identical shape+transform duplicates %s" % [dup, ex])
+	_emit("FAIL" if dup else "PASS", "godot.duplicate_static_colliders", "%d identical shape+transform duplicates" % dup, ex)
 func _check_slopes(bodies):
 	# FPC-02: per collider, judge its main walk face (largest-area upward face group), not every upward facet.
 	var steep = 0; var stair = 0; var sx = []; var wx = []; var radial = 0
 	var smax = C.stair_collider_max_deg; var wmax = C.walkable_max_deg
 	var rr = RegEx.new(); rr.compile(C.radial_up_re)
+	var ra = RegEx.new(); ra.compile(C.walkable_slope_allow_re)
+	var allowed = 0
 	for b in bodies:
 		var is_stair = str(b.get_path()).to_lower().contains("stair")
 		for c in b.get_children():
@@ -762,6 +768,7 @@ func _check_slopes(bodies):
 				continue
 			var xf = c.global_transform
 			var walk_deg = -1.0
+			var walk_area = 0.0
 			if c.shape is ConcavePolygonShape3D or c.shape is ConvexPolygonShape3D:
 				var faces = c.shape.get_faces() if c.shape is ConcavePolygonShape3D else PackedVector3Array()
 				if faces.size() == 0: continue
@@ -776,22 +783,30 @@ func _check_slopes(bodies):
 					bins[deg] = bins.get(deg, 0.0) + area
 				var best = 0.0
 				for d in bins:
-					if bins[d] > best: best = bins[d]; walk_deg = float(d)
+					if bins[d] > best:
+						best = bins[d]
+						walk_deg = float(d)
+				walk_area = best
 			elif c.shape is BoxShape3D:
 				var up = xf.basis.y.normalized()
 				walk_deg = rad_to_deg(acos(clamp(abs(up.dot(Vector3.UP)), 0, 1)))
+				var sc = xf.basis.get_scale()
+				walk_area = c.shape.size.x * sc.x * c.shape.size.z * sc.z
 			else:
 				continue
 			if walk_deg < 1.0 or walk_deg > 70.0: continue
 			var label = "%s %.0fdeg" % [c.get_path(), walk_deg]
 			if is_stair and walk_deg > smax:
 				stair += 1
-				if sx.size() < 5: sx.append(label)
+				sx.append(label)
 			elif walk_deg > wmax:
+				if walk_area < C.walkable_min_area_m2 or ra.search(str(c.get_path())) != null:
+					allowed += 1
+					continue
 				steep += 1
-				if wx.size() < 5: wx.append(label)
-	_emit("WARN" if steep else "PASS", "godot.walkable_slope", "%d colliders whose main walk face is %.0f-70 deg %s" % [steep, wmax, wx])
-	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair colliders whose main walk face is steeper than %.0f deg %s (%d spin-gravity shapes skipped)" % [stair, smax, sx, radial])
+				wx.append(label)
+	_emit("WARN" if steep else "PASS", "godot.walkable_slope", "%d colliders whose main walk face is %.0f-70 deg (min area %.2f m2, %d allowlisted)" % [steep, wmax, C.walkable_min_area_m2, allowed], wx)
+	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair colliders whose main walk face is steeper than %.0f deg (%d spin-gravity shapes skipped)" % [stair, smax, radial], sx)
 func _check_meshes(meshes):
 	var noup = 0; var nomat = 0; var heavy = 0; var ex = []
 	for m in meshes:
@@ -801,14 +816,14 @@ func _check_meshes(meshes):
 			var mat = m.get_active_material(s)
 			if mat == null:
 				nomat += 1
-				if ex.size() < 5: ex.append(str(m.get_path()))
+				ex.append(str(m.get_path()))
 			var arr = m.mesh.surface_get_arrays(s) if m.mesh is ArrayMesh else []
 			if arr.size() > 0:
 				if arr[Mesh.ARRAY_TEX_UV] == null and mat is BaseMaterial3D and mat.albedo_texture != null: noup += 1
 				var idx = arr[Mesh.ARRAY_INDEX]
 				tris += (idx.size() if idx != null else arr[Mesh.ARRAY_VERTEX].size()) / 3
 		if tris > C.prop_tri_max and not str(m.get_path()).to_lower().contains("shell"): heavy += 1
-	_emit("WARN" if nomat else "PASS", "godot.surfaces_have_material", "%d surfaces with no material %s" % [nomat, ex])
+	_emit("WARN" if nomat else "PASS", "godot.surfaces_have_material", "%d surfaces with no material" % nomat, ex)
 	_emit("WARN" if noup else "PASS", "godot.textured_without_uv", "%d" % noup)
 	_emit("WARN" if heavy else "PASS", "godot.prop_triangles", "%d mesh instances > %d tris" % [heavy, C.prop_tri_max])
 '''
@@ -867,13 +882,14 @@ def run_godot(target, proj, no_godot):
         got = False
         for ln in out.splitlines():
             if ln.startswith("FPC|"):
-                parts = ln.split("|", 3)
+                parts = ln.split("|", 4)
                 if parts[1] == "DONE":
                     parts = ln.split("|")
                     rec("PASS", "godot.probe", f"ran on {res}: {parts[2]} static bodies, {parts[3]} meshes")
                     got = True
-                elif len(parts) == 4:
-                    rec(parts[1], parts[2], parts[3])
+                elif len(parts) >= 4:
+                    items = [x for x in parts[4].split("\x1f") if x] if len(parts) > 4 else []
+                    rec(parts[1], parts[2], parts[3], items)
         if not got:
             errs = [l for l in out.splitlines() if "ERROR" in l or "error" in l][:5]
             rec("WARN", "godot.probe", "probe did not finish", errs)
