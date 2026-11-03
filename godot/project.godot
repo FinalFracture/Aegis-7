@@ -98,3 +98,11 @@ lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 lights_and_shadows/positional_shadow/atlas_size=4096
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=3
 environment/defaults/default_clear_color=Color(0.08, 0.09, 0.11, 1)
+
+[physics]
+
+common/physics_interpolation=true
+
+[aegis]
+
+input/mouse_sensitivity=0.0024

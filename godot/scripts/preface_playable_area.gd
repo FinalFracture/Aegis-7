@@ -125,6 +125,15 @@ const SPRINT_SPEED := 8.2
 const JUMP_VELOCITY := 4.8
 const GRAVITY := 9.8
 const STEP_HEIGHT := 0.32
+# [QA-05] Accel / friction, coyote + jump buffer, step-up camera ease, landing dip. No head bob.
+const GROUND_ACCEL := 45.0
+const GROUND_FRICTION := 35.0
+const AIR_ACCEL := 8.0
+const JUMP_BUFFER_S := 0.10
+const COYOTE_S := 0.10
+const STEP_EASE_S := 0.10
+const LAND_DIP_M := 0.05
+const LAND_DIP_MIN_FALL := 3.0 # m/s
 const MOUSE_SENS := 0.0024
 const KEY_LOOK_SPEED := 2.2
 const INTERACT_RANGE := 2.8
@@ -260,6 +269,14 @@ var _spring_arm: SpringArm3D
 var _third_person: bool = false
 var _preset_active: int = -1
 var _pitch: float = -0.08
+# [QA-05] Mouse scale, jump buffer / coyote, and FP-camera step ease + landing dip.
+var _mouse_sens: float = MOUSE_SENS
+var _jump_buffer_t: float = 0.0
+var _coyote_t: float = 0.0
+var _step_ease_offset: float = 0.0
+var _land_dip: float = 0.0
+var _fp_cam_base_pos: Vector3 = Vector3.ZERO
+var _fp_cam_base_set: bool = false
 var _rostov_anim: String = ""
 
 # Interactables & inventory
@@ -373,6 +390,11 @@ var _scan_t: float = 0.0
 
 
 func _ready() -> void:
+	# [QA-05] Project setting, then user://settings.cfg [input] mouse_sensitivity if present.
+	_mouse_sens = float(ProjectSettings.get_setting("aegis/input/mouse_sensitivity", MOUSE_SENS))
+	var sens_cfg := ConfigFile.new()
+	if sens_cfg.load("user://settings.cfg") == OK and sens_cfg.has_section_key("input", "mouse_sensitivity"):
+		_mouse_sens = float(sens_cfg.get_value("input", "mouse_sensitivity"))
 	_camera = get_node_or_null("SceneCamera") as Camera3D
 	_arch_container = _ensure_child("SectorArchitecture")
 	_props_container = _ensure_child("InteractivePropsAndPickups")
@@ -3618,6 +3640,9 @@ func _setup_player_controller() -> void:
 	_camera_pivot = Node3D.new()
 	_camera_pivot.name = "CameraPivot"
 	_camera_pivot.position = Vector3(0.0, 1.50 + 0.12, 0.0)
+	# [QA-05] Rest pose of the FP camera mount. Step ease / landing dip assign Y from this.
+	_fp_cam_base_pos = _camera_pivot.position
+	_fp_cam_base_set = true
 	_player_body.add_child(_camera_pivot)
 
 	_spring_arm = SpringArm3D.new()
@@ -3757,8 +3782,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED or _qa_hand) and _preset_active < 0:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
 		# screen_relative is unscaled by canvas_items stretch; relative was scaled by base_res/window_res (x1.44 in a 1331 px window), which made look speed window-size dependent (Patch Windows hand QA 18/20).
-		_player_body.rotate_object_local(Vector3.UP, -mm.screen_relative.x * MOUSE_SENS)
-		_pitch -= mm.screen_relative.y * MOUSE_SENS
+		# [QA-05] Pitch sign stays as authored (no invert-Y). Scale is _mouse_sens.
+		_player_body.rotate_object_local(Vector3.UP, -mm.screen_relative.x * _mouse_sens)
+		_pitch -= mm.screen_relative.y * _mouse_sens
 		_apply_pitch()
 		return
 	if event is InputEventKey:
@@ -3808,6 +3834,26 @@ func _apply_pitch() -> void:
 		_camera_pivot.rotation = Vector3(_pitch, 0.0, 0.0)
 
 
+# [QA-05] Ease step-up and landing dip back to 0, then assign a negative local Y on the
+# FP camera pivot (it holds the FP camera). SpringArm rewrites the camera node's transform,
+# so the offset stays on the pivot. Rest pose is stored once and assigned, never stacked.
+# Third person and a detached showcase camera keep the rest pose. No walk bob.
+func _qa05_ease_fp_camera(delta: float) -> void:
+	_step_ease_offset = move_toward(_step_ease_offset, 0.0, (STEP_HEIGHT / STEP_EASE_S) * delta)
+	_land_dip = move_toward(_land_dip, 0.0, (LAND_DIP_M / 0.18) * delta)
+	if _camera_pivot == null:
+		return
+	if not _fp_cam_base_set:
+		_fp_cam_base_pos = _camera_pivot.position
+		_fp_cam_base_set = true
+	var y_off: float = 0.0
+	if not _third_person and (_camera == null or not _camera.top_level):
+		y_off = -(_step_ease_offset + _land_dip)
+	var pos: Vector3 = _fp_cam_base_pos
+	pos.y += y_off
+	_camera_pivot.position = pos
+
+
 func _physics_process(delta: float) -> void:
 	# Stall flicker has to tick on physics frames: --qa-forcefield-door awaits physics_frame,
 	# and a physics catch-up burst can run those frames before the next idle _process.
@@ -3818,12 +3864,18 @@ func _physics_process(delta: float) -> void:
 		return
 	var b: CharacterBody3D = _player_body
 	if not _player_transit.is_empty():
+		# [QA-05] Buffer and coyote still drain while a core transit owns the body.
+		_jump_buffer_t = maxf(_jump_buffer_t - delta, 0.0)
+		_coyote_t = maxf(_coyote_t - delta, 0.0)
+		_qa05_ease_fp_camera(delta)
 		_update_first_person_arm(delta)
 		return
 	var controls: bool = _preset_active < 0 and not _capture_hud and not _troubleshoot_ui_open()
 
 	var input_dir: Vector2 = Vector2.ZERO
 	var sprint: bool = false
+	# [QA-05] Held `jump` stays sampled and must not start a jump.
+	@warning_ignore("unused_variable")
 	var jump: bool = false
 	if controls:
 		# Keyboard look: Q / Left = turn left, Right = turn right, PageUp / PageDown = look up / down.
@@ -3862,12 +3914,30 @@ func _physics_process(delta: float) -> void:
 		dir = dir.normalized()
 	var speed: float = SPRINT_SPEED if sprint else WALK_SPEED
 
+	# [QA-05] Accelerate toward the wish velocity. A fresh jump press fills the buffer; holding does not repeat.
 	var v_up: float = b.velocity.dot(up_dir)
 	if not b.is_on_floor():
 		v_up = (b.velocity + g_vec * delta).dot(up_dir)
-	elif jump:
+	if controls and Input.is_action_just_pressed("jump"):
+		_jump_buffer_t = JUMP_BUFFER_S
+	_jump_buffer_t = maxf(_jump_buffer_t - delta, 0.0)
+	_coyote_t = maxf(_coyote_t - delta, 0.0)
+	if b.is_on_floor():
+		_coyote_t = COYOTE_S
+	if _jump_buffer_t > 0.0 and _coyote_t > 0.0:
 		v_up = JUMP_VELOCITY
-	b.velocity = dir * speed + up_dir * v_up
+		_jump_buffer_t = 0.0
+		_coyote_t = 0.0
+	var h: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
+	var target: Vector3 = dir * speed
+	if b.is_on_floor():
+		if dir != Vector3.ZERO:
+			h = h.move_toward(target, GROUND_ACCEL * delta)
+		else:
+			h = h.move_toward(Vector3.ZERO, GROUND_FRICTION * delta)
+	elif dir != Vector3.ZERO:
+		h = h.move_toward(target, AIR_ACCEL * delta)
+	b.velocity = h + up_dir * v_up
 
 	# Smooth step-up over small ledges (thresholds, treads, slab lips) — only for wall-like hits,
 	# so gently curving floors (cylinder ring) never trigger a bogus step.
@@ -3878,8 +3948,17 @@ func _physics_process(delta: float) -> void:
 			var up: Vector3 = up_dir * STEP_HEIGHT
 			if not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
 				b.global_position += up
+				# [QA-05] Interpolation stays on. The FP camera eases this teleport.
+				_step_ease_offset = minf(_step_ease_offset + STEP_HEIGHT, 0.4)
 
+	var was_on_floor: bool = b.is_on_floor()
+	var up_vel_before: float = v_up
 	b.move_and_slide()
+	# [QA-05] Hard landing dip from the pre-slide up-velocity. No continuous bob.
+	if not was_on_floor and b.is_on_floor():
+		var fall_speed: float = -up_vel_before
+		if fall_speed >= LAND_DIP_MIN_FALL:
+			_land_dip = LAND_DIP_M * clampf(fall_speed / 8.0, 0.4, 1.0)
 	for sc_i: int in range(b.get_slide_collision_count()):
 		var scol: KinematicCollision3D = b.get_slide_collision(sc_i)
 		if _qa_egress:
@@ -3892,6 +3971,7 @@ func _physics_process(delta: float) -> void:
 	if not in_ring and b.global_position.y < -8.0:
 		_respawn()
 	_update_interior_streaming(b.global_position)
+	_qa05_ease_fp_camera(delta)
 	_update_first_person_arm(delta)
 
 	var hvel: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
@@ -8353,7 +8433,7 @@ func _run_qa_player_exit() -> void:
 # Steering is mouse yaw; KEY_W is held except while scanning a door.
 # ------------------------------------------------------------------------------
 func _qa_egress_steer(target_xz: Vector2) -> void:
-	# Mouse-look applies yaw -= screen_relative.x * MOUSE_SENS, so +dx turns right.
+	# [QA-05] Mouse-look applies yaw -= screen_relative.x * _mouse_sens, so +dx turns right.
 	# angle_error is that mouse-x sense: positive when the waypoint is to the right.
 	var fwd: Vector3 = -_player_body.global_transform.basis.z
 	fwd.y = 0.0
@@ -8362,7 +8442,7 @@ func _qa_egress_steer(target_xz: Vector2) -> void:
 		return
 	var signed_left: float = fwd.normalized().signed_angle_to(to.normalized(), Vector3.UP)
 	var angle_error: float = -signed_left
-	var dx: float = clampf(angle_error / MOUSE_SENS, -40.0, 40.0)
+	var dx: float = clampf(angle_error / _mouse_sens, -40.0, 40.0)
 	_qa_mouse(Vector2(dx, 0.0))
 
 
