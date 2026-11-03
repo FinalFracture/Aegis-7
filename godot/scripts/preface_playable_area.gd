@@ -132,7 +132,7 @@ const AIR_ACCEL := 8.0
 const JUMP_BUFFER_S := 0.10
 const COYOTE_S := 0.10
 const STEP_EASE_S := 0.10
-const LAND_DIP_M := 0.05
+const LAND_DIP_M := 0.15 # [SYS-20] ~0.07 m visible dip at a typical ~4.4 m/s landing (scaled by fall/8, minus first-tick recovery)
 const LAND_DIP_MIN_FALL := 3.0 # m/s
 const MOUSE_SENS := 0.0024
 const KEY_LOOK_SPEED := 2.2
@@ -271,8 +271,8 @@ var _preset_active: int = -1
 var _pitch: float = -0.08
 # [QA-05] Mouse scale, jump buffer / coyote, and FP-camera step ease + landing dip.
 var _mouse_sens: float = MOUSE_SENS
-var _jump_buffer_t: float = 0.0
-var _coyote_t: float = 0.0
+var _jump_buffer_t: float = -1.0
+var _coyote_t: float = -1.0
 var _step_ease_offset: float = 0.0
 var _land_dip: float = 0.0
 var _fp_cam_base_pos: Vector3 = Vector3.ZERO
@@ -3865,8 +3865,8 @@ func _physics_process(delta: float) -> void:
 	var b: CharacterBody3D = _player_body
 	if not _player_transit.is_empty():
 		# [QA-05] Buffer and coyote still drain while a core transit owns the body.
-		_jump_buffer_t = maxf(_jump_buffer_t - delta, 0.0)
-		_coyote_t = maxf(_coyote_t - delta, 0.0)
+		_jump_buffer_t = maxf(_jump_buffer_t - delta, -1.0)
+		_coyote_t = maxf(_coyote_t - delta, -1.0)
 		_qa05_ease_fp_camera(delta)
 		_update_first_person_arm(delta)
 		return
@@ -3918,16 +3918,18 @@ func _physics_process(delta: float) -> void:
 	var v_up: float = b.velocity.dot(up_dir)
 	if not b.is_on_floor():
 		v_up = (b.velocity + g_vec * delta).dot(up_dir)
+	# [SYS-19] Check first, count down after, so both windows are the full 0.10 s.
+	# Timers rest at -1.0 (inactive); a timer counts while >= -0.0001.
 	if controls and Input.is_action_just_pressed("jump"):
 		_jump_buffer_t = JUMP_BUFFER_S
-	_jump_buffer_t = maxf(_jump_buffer_t - delta, 0.0)
-	_coyote_t = maxf(_coyote_t - delta, 0.0)
 	if b.is_on_floor():
 		_coyote_t = COYOTE_S
-	if _jump_buffer_t > 0.0 and _coyote_t > 0.0:
+	if _jump_buffer_t >= -0.0001 and _coyote_t >= -0.0001:
 		v_up = JUMP_VELOCITY
-		_jump_buffer_t = 0.0
-		_coyote_t = 0.0
+		_jump_buffer_t = -1.0
+		_coyote_t = -1.0
+	_jump_buffer_t = maxf(_jump_buffer_t - delta, -1.0)
+	_coyote_t = maxf(_coyote_t - delta, -1.0)
 	var h: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
 	var target: Vector3 = dir * speed
 	if b.is_on_floor():
@@ -3941,19 +3943,23 @@ func _physics_process(delta: float) -> void:
 
 	# Smooth step-up over small ledges (thresholds, treads, slab lips) — only for wall-like hits,
 	# so gently curving floors (cylinder ring) never trigger a bogus step.
+	var step_pre_up: float = NAN
 	if b.is_on_floor() and dir != Vector3.ZERO:
 		var motion: Vector3 = dir * speed * delta
 		var hit: KinematicCollision3D = KinematicCollision3D.new()
 		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < 0.5:
 			var up: Vector3 = up_dir * STEP_HEIGHT
 			if not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
+				step_pre_up = (b.global_position).dot(up_dir)
 				b.global_position += up
-				# [QA-05] Interpolation stays on. The FP camera eases this teleport.
-				_step_ease_offset = minf(_step_ease_offset + STEP_HEIGHT, 0.4)
 
 	var was_on_floor: bool = b.is_on_floor()
 	var up_vel_before: float = v_up
 	b.move_and_slide()
+	# [SYS-18] Ease the camera by the rise actually gained after the slide settles, not STEP_HEIGHT.
+	if not is_nan(step_pre_up):
+		var rise: float = clampf(b.global_position.dot(up_dir) - step_pre_up, 0.0, STEP_HEIGHT)
+		_step_ease_offset = minf(_step_ease_offset + rise, 0.4)
 	# [QA-05] Hard landing dip from the pre-slide up-velocity. No continuous bob.
 	if not was_on_floor and b.is_on_floor():
 		var fall_speed: float = -up_vel_before
