@@ -4,13 +4,24 @@ Sources: lessons from Gage, Rook, Vance and Sloane, plus recurring classes in `q
 Format: **Check** (with threshold), then *Why*. Thresholds are defaults; the checker reads them from its config section.
 
 ## How to run the checker
-`tools/first_pass_check.py` is **coming soon**. Planned usage:
+Python 3 standard library only. Run from the repo root:
 ```
-python tools/first_pass_check.py <scene or path>            # headless Godot + static checks
+python tools/first_pass_check.py <scene or path>            # static checks + optional headless Godot probe
 python tools/first_pass_check.py <scene or path> --no-godot # static checks only (no engine)
 python tools/first_pass_check.py <scene or path> --strict   # WARN counts as FAIL
 ```
-It is read-only by default, prints PASS / WARN / FAIL per check, and **exits nonzero on any FAIL**. Until it lands, work through this list by hand.
+- A `.tscn` target is expanded to everything it references (scripts, scenes, GLBs, textures); a directory target checks every file under it. Repo hygiene always runs repo-wide.
+- Read-only. The Godot probe is written to a system temp dir and deleted afterwards, and only runs on a single `.tscn` in a project that has already been imported (it never triggers an import). Set `GODOT_BIN` if `godot` is not on PATH.
+- Prints `PASS` / `WARN` / `FAIL` per check and a summary. Exit 0 = clean, 1 = any FAIL (or any WARN with `--strict`), 2 = bad usage.
+- All thresholds live in the `CONFIG` block at the top of the script (wall-mount gap ≤ 10 mm, prop backs 0–50 mm, stair colliders ≤ 35°, walkable < 45°, ramps ≤ 1:12, no wood albedo, accents #FF9500 / #282E38, and the rest).
+
+**Automated (static):** tracked renders/logs/`.godot`/bak junk, tracked-but-ignored files, required `.gitignore` entries, untracked output folders, oversized and duplicate (by hash) files, orphan `.import` sidecars, `git status` clean; missing `ext_resource`/`res://` paths (incl. deleted scripts still referenced); duplicate CollisionShape transforms under one body; `KEY_*`/keycode use outside the InputMap in live code (QA helper functions excluded); keys bound to two actions; frame-count timing in test/QA code; debug/test/temp/tmp/placeholder names; name-based `glass` matches with no hardware exclusion; Decal nodes and `Decal.new()`; renderer is gl_compatibility and no SSAO/SSR/SDFGI settings left on; materials in `.tscn`/`.tres`/GLB (magenta, default white/grey, albedo > 0.9 untextured, opaque with alpha < 1, emission > 1.5, wood, glass-named hardware, metallic on non-metal names, off-palette amber); textures (power-of-two, ≤ 4096 px, ORM/albedo size match, `compress/mode=0`, unused); GLB props > 6,000 triangles and textured meshes without UVs.
+
+**Automated (headless Godot probe):** one-sided trimesh colliders, duplicate static colliders, walkable slopes 45–70°, stair colliders > 35°, surfaces with no material, textured surfaces without UVs, meshes over the triangle budget.
+
+**Stubs (WARN "not implemented", still manual):** floor contact ±0.005 m, sub-part overlap ≤ 0.010 m, collider intrusion into door/portal openings, capsule escape grid, wall-mount/prop-back gaps, ramp 1:12 ratio, draw calls at fixed poses (use the game's `--qa-drawcalls` mode).
+
+**Not automated (judgement or process):** z-fighting/coplanar faces and decal offsets, layout-revision and spec matching, clearances and swing arcs, building-code egress capacity and travel distance, lighting look and light leaks, texture tiling/noise, real-input walks and sabotage tests, and the section 13 process rules (small commits, never force-push, PID-only kills, repeat-failure logging).
 
 ## 1. Repo hygiene
 - **Check:** `git status` is clean at the end of the session; the diff holds only the files the task needs.
