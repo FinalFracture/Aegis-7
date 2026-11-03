@@ -55,7 +55,7 @@ def build():
     for x, y0, z, c in posts:   # posts from socket top to guard top, two glass clamps each
         yf = nose1(z) if (x == XG1 and z > S.ZL) else nose2(z) if (x == XG2 and z > S.ZL) else y0 - .005
         p.add("Guard_Posts", "alloy", box(c[0] - .015, c[0] + .015, y0 + (.006 if x == XG2 and z > S.ZL else 0), yf + GH - .04, c[2] - .015, c[2] + .015))
-        for h in (.3, .85): p.add("Glass_Clamps", "alloy", box(c[0] - .022, c[0] + .022, yf + h - .03, yf + h + .03, c[2] - .022, c[2] + .022))
+        for h in (.3, .85): p.add("Guard_Panel_Clamps", "alloy", box(c[0] - .022, c[0] + .022, yf + h - .03, yf + h + .03, c[2] - .022, c[2] + .022))
     # ---- handrails, top of rail at 0.9 over the nosing line / landing ----
     def rail(pts, part):
         for a, b in zip(pts[:-1], pts[1:]): p.add(part, "alloy", rod(a, b, RR, 8))

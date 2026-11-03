@@ -26,6 +26,9 @@ SETS = {"Stair_Slate": (ATL["albedo"], ATL["orm"], ATL["normal"], [1, 1, 1, 1], 
         "Stair_Glass": (T + "residential_atrium_glass_translucent.png", None, None, [0.72, 0.8, 0.86, 0.25], 0.0, 0.08, ("tile", 1.0))}
 MAP = {"Slate": "Stair_Slate", "WhiteComposite": "Stair_WhiteComposite", "Gunmetal": "Stair_Gunmetal", "BrushedAlloy": "Stair_BrushedAlloy", "Glass": "Stair_Glass"}
 UNDER = "Stair_Underside_PaintedConcrete"
+# VIS-20: preface_playable_area.gd _upgrade_sector_materials treats any node/mesh/material name containing "glass" as
+# glass (BLEND, metallic 0, alpha clamped 0.14..0.40), so the alloy clamps must not carry "glass" in their names.
+RENAME = {"Glass_Clamps": "Guard_Panel_Clamps"}
 CT = {5126: np.float32, 5125: np.uint32, 5123: np.uint16, 5121: np.uint8}; NC = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}
 def read(J, BIN, ai):
     a = J["accessors"][ai]; v = J["bufferViews"][a["bufferView"]]; o = v.get("byteOffset", 0) + a.get("byteOffset", 0)
@@ -87,6 +90,27 @@ def skin(path, under_meshes=()):
     assert tri0 == tri1, (tri0, tri1)
     write(path, J, BIN, f"tris {tri0} -> {tri1}"); [print(" ", k, v) for k, v in report.items()]
 def write(path, J, BIN, msg):
+    for coll in (J["nodes"], J["meshes"]):
+        for o in coll:
+            if o.get("name") in RENAME: o["name"] = RENAME[o["name"]]
+    used = sorted({p["material"] for m in J["meshes"] for p in m["primitives"] if "material" in p})   # drop orphan materials
+    remap = {o: n for n, o in enumerate(used)}; J["materials"] = [J["materials"][o] for o in used]
+    for m in J["meshes"]:
+        for p in m["primitives"]:
+            if "material" in p: p["material"] = remap[p["material"]]
+    ut = sorted({t["index"] for m in J["materials"] for t in [m.get("normalTexture"), m.get("occlusionTexture"), m.get("emissiveTexture"),
+                 m.get("pbrMetallicRoughness", {}).get("baseColorTexture"), m.get("pbrMetallicRoughness", {}).get("metallicRoughnessTexture")] if t})
+    ui = sorted({J["textures"][t]["source"] for t in ut}); tr = {o: n for n, o in enumerate(ut)}; ir = {o: n for n, o in enumerate(ui)}
+    J["textures"] = [dict(J["textures"][o], source=ir[J["textures"][o]["source"]]) for o in ut]; J["images"] = [J["images"][o] for o in ui]
+    for m in J["materials"]:
+        for t in [m.get("normalTexture"), m.get("occlusionTexture"), m.get("emissiveTexture"),
+                  m.get("pbrMetallicRoughness", {}).get("baseColorTexture"), m.get("pbrMetallicRoughness", {}).get("metallicRoughnessTexture")]:
+            if t: t["index"] = tr[t["index"]]
+    for m in J["materials"]:   # VIS-20 guard: only glass may blend; nothing non-glass may be named glass
+        assert (m.get("alphaMode") == "BLEND") == (m["name"] == "Stair_Glass") or not m["name"].startswith("Stair_"), m["name"]
+    for o in J["nodes"] + J["meshes"]:
+        nm = o.get("name", "").lower()
+        if "glass" in nm: assert nm.startswith("guard_glass"), o["name"]
     while len(BIN) % 4: BIN.append(0)
     J["buffers"][0]["byteLength"] = len(BIN)
     js = json.dumps(J, separators=(",", ":")).encode(); js += b" " * ((4 - len(js) % 4) % 4)
