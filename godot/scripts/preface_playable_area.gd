@@ -1156,9 +1156,10 @@ func _add_glass_balustrade_colliders(parent: Node3D) -> void:
 	# Landing top Y 4.2, edge Z -4.88. Guard plane Z -4.83, X -1.89..0.37, so it stops before
 	# flight 2 (X 0.4..1.9) and does not cross the corridor opening at Z -0.8.
 	# M-41 keeps this rail. It is not one of the gallery decks.
-	var runs: Array[Dictionary] = [
-		{"name": "MezzanineGlassBalustrade_L2Edge", "size": Vector3(2.26, 1.04, 0.06), "pos": Vector3(-0.76, 4.78, -4.83)}
-	]
+	# [GEO-20] The old MezzanineGlassBalustrade_L2Edge box (x -1.89..0.37, y 4.26..5.30, z -4.86..-4.80)
+	# duplicated the Rev C stair guard glass hulls Guard_Glass_13..17 on the same line
+	# (x -1.89..0.37, y 4.26..5.255, z -4.836..-4.824). Removed; the guard glass is the collider now.
+	var runs: Array[Dictionary] = []
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
 		body.name = String(r["name"])
@@ -7947,14 +7948,15 @@ func _run_reticle_stars_doors_qa() -> void:
 	var g_ok: bool = true
 	var g_rays: Array[Array] = []
 	for gx: float in [-1.5, -0.76, 0.1]:
-		g_rays.append([Vector3(gx, 4.8, -5.2), Vector3(gx, 4.8, -4.4), "MezzanineGlassBalustrade_L2Edge"])
+		g_rays.append([Vector3(gx, 4.8, -5.2), Vector3(gx, 4.8, -4.4), "Guard_Glass_1"])
 	for gr: Array in g_rays:
-		var rqg: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(gr[0] as Vector3, gr[1] as Vector3, GLASS_QA_LAYER_BIT)
+		# [GEO-20] The L2 edge rail is now the stair guard glass (world layer 1).
+		var rqg: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(gr[0] as Vector3, gr[1] as Vector3, 1)
 		rqg.exclude = [_player_body.get_rid()]
 		var hg: Dictionary = space_g.intersect_ray(rqg)
 		var hname: String = String((hg["collider"] as Node).name) if not hg.is_empty() else "none"
-		g_ok = g_ok and hname == String(gr[2])
-		g_hits.append("%s@%s hit=%s" % [String(gr[2]).trim_prefix("MezzanineGlassBalustrade_"), str(gr[0]), hname])
+		g_ok = g_ok and hname.begins_with(String(gr[2]))
+		g_hits.append("L2Edge@%s hit=%s" % [str(gr[0]), hname])
 	_qa_t38_check("real_02_glass_balustrade_collider_hit", g_ok, ", ".join(g_hits))
 
 	# [QA-HUB-01] single-target scan: RM1B only (APT202 upstairs untouched), facing away / out of range = no-op
