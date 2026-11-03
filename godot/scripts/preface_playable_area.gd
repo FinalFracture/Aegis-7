@@ -13,6 +13,9 @@ const SECTOR_GLB_PATHS := [
 	"res://assets/models/preface_residential_sector.glb",
 	"res://assets/models/environments/preface_residential_two_story_block.glb"
 ]
+# Rev C stair core (M-70). Same building-plan origin as the sector GLB, so both mount at identity.
+const STAIR_SET_GLB := "res://assets/models/stair_set_switchback.glb"
+const STAIR_GUARD_GLB := "res://assets/models/stair_guard_handrail.glb"
 const CYLINDER_MAP_PATHS := [
 	"res://assets/models/env_cylinder_hab7_fullscale_map.glb",
 	"res://assets/models/environments/env_cylinder_hab7_fullscale_map.glb"
@@ -2032,6 +2035,7 @@ func _assemble_open_doorless_sector() -> void:
 				print("[PrefacePlayableArea] Trimesh colliders: ", n_col)
 	else:
 		push_warning("[PrefacePlayableArea] Sector GLB not found in SECTOR_GLB_PATHS")
+	_spawn_rev_c_stair_core(_arch_container)
 	_add_architectural_shadow_occluders(_arch_container)
 	if not _batch_render:
 		_add_safety_floor_colliders(_arch_container)
@@ -2042,6 +2046,210 @@ func _assemble_open_doorless_sector() -> void:
 	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
 	if not _batch_render:
 		_build_cylinder_gravity_ring(_arch_container)
+
+
+# Rev C switchback (M-70). Both GLBs use the sector's building-plan origin.
+func _spawn_rev_c_stair_core(parent: Node3D) -> void:
+	var specs: Array[Dictionary] = [
+		{"path": STAIR_SET_GLB, "name": "StairSetSwitchback"},
+		{"path": STAIR_GUARD_GLB, "name": "StairGuardHandrail"},
+	]
+	var root_for_fallback: Node3D = parent
+	for spec: Dictionary in specs:
+		var node: Node3D = _load_glb_scene(String(spec["path"]), 0.65)
+		if node == null:
+			push_warning("[M-70] missing %s" % String(spec["path"]))
+			continue
+		node.name = String(spec["name"])
+		node.transform = Transform3D.IDENTITY
+		parent.add_child(node)
+		_stair_build_col_shapes(node)
+		if String(spec["name"]) == "StairSetSwitchback":
+			root_for_fallback = node
+	var tally: Dictionary = _stair_tally_col_bodies(parent)
+	var fallback_n: int = _stair_fallback_walk_surfaces(root_for_fallback)
+	var ramps: int = int(tally["ramps"])
+	var guards: int = int(tally["guards"])
+	if fallback_n > 0:
+		push_warning("[M-70] stair walk surfaces fallback=%d" % fallback_n)
+	if guards < 18:
+		push_warning("[M-70] guard hulls %d/18" % guards)
+	print("[M-70] stair core loaded ramps=%d guards=%d fallback_ramps=%d" % [ramps, guards, fallback_n])
+
+
+func _stair_is_col_mesh(mi: MeshInstance3D) -> bool:
+	# Visible treads (Flight1_Cast, Treads_Slate, Nosing_Emergency, Mid_Landing,
+	# L2_Landing, Guard_Glass) are not col meshes and must not get a trimesh.
+	var nm: String = String(mi.name).to_lower()
+	if nm.contains("colonly") or nm.contains("convcol") or nm.ends_with("_col"):
+		return true
+	if mi.mesh == null:
+		return false
+	var rn: String = String(mi.mesh.resource_name).to_lower()
+	if not rn.ends_with("_col"):
+		return false
+	return nm.contains("flight") or nm.contains("ramp") or nm.contains("landing") or nm.contains("guard_glass")
+
+
+func _stair_build_col_shapes(root: Node3D) -> void:
+	var stack: Array[Node] = [root]
+	var meshes: Array[MeshInstance3D] = []
+	while not stack.is_empty():
+		var curr: Node = stack.pop_back()
+		if curr is MeshInstance3D:
+			meshes.append(curr as MeshInstance3D)
+		for ch: Node in curr.get_children():
+			stack.append(ch)
+	for mi: MeshInstance3D in meshes:
+		if not is_instance_valid(mi) or not _stair_is_col_mesh(mi):
+			continue
+		var nm: String = String(mi.name)
+		var low: String = nm.to_lower()
+		var holder: Node = mi.get_parent()
+		var already: bool = holder is StaticBody3D or holder is CollisionShape3D
+		if not already:
+			for ch: Node in mi.get_children():
+				if ch is StaticBody3D or ch is CollisionShape3D:
+					already = true
+					break
+		mi.visible = false
+		if already or holder == null:
+			continue
+		var faces: PackedVector3Array = PackedVector3Array()
+		if mi.mesh != null:
+			faces = mi.mesh.get_faces()
+		var xf: Transform3D = mi.transform
+		mi.name = nm + "_Vis"
+		if faces.size() < 3:
+			continue
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = nm
+		body.collision_layer = 1
+		body.collision_mask = 1
+		body.transform = xf
+		holder.add_child(body)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = nm + "_Shape"
+		if low.contains("convcol"):
+			var convex: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+			convex.points = faces
+			convex.margin = 0.0
+			cs.shape = convex
+		else:
+			var concave: ConcavePolygonShape3D = ConcavePolygonShape3D.new()
+			concave.data = faces
+			concave.margin = 0.0
+			cs.shape = concave
+		body.add_child(cs)
+
+
+func _stair_walk_stem_match(low: String, stem: String) -> bool:
+	if low.ends_with("_shape") or low.ends_with("_vis"):
+		return false
+	return low == stem + "-colonly" or low == stem + "_col" or low.begins_with(stem + "-col")
+
+
+func _stair_tally_col_bodies(root: Node) -> Dictionary:
+	var ramps: int = 0
+	var guards: int = 0
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if c is StaticBody3D or c is CollisionShape3D:
+			var low: String = String(c.name).to_lower()
+			if low.begins_with("guard_glass_") and (low.contains("convcol") or low.ends_with("_col")) and not low.ends_with("_shape") and not low.ends_with("_vis"):
+				guards += 1
+			elif _stair_walk_stem_match(low, "flight1_ramp") or _stair_walk_stem_match(low, "flight2_ramp") or _stair_walk_stem_match(low, "mid_landing") or _stair_walk_stem_match(low, "l2_landing"):
+				ramps += 1
+		for ch: Node in c.get_children():
+			stack.append(ch)
+	return {"ramps": ramps, "guards": guards}
+
+
+func _stair_has_named_col(root: Node, token: String) -> bool:
+	var stem: String = token.split("-")[0].to_lower()
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		if (c is StaticBody3D or c is CollisionShape3D) and _stair_walk_stem_match(String(c.name).to_lower(), stem):
+			return true
+		for ch: Node in c.get_children():
+			stack.append(ch)
+	return false
+
+
+func _stair_add_box(parent: Node3D, nm: String, x0: float, x1: float, y0: float, y1: float, z0: float, z1: float) -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = nm
+	body.collision_layer = 1
+	body.collision_mask = 1
+	parent.add_child(body)
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = nm + "_Shape"
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = Vector3(absf(x1 - x0), absf(y1 - y0), absf(z1 - z0))
+	shape.margin = 0.0
+	cs.shape = shape
+	cs.position = Vector3((x0 + x1) * 0.5, (y0 + y1) * 0.5, (z0 + z1) * 0.5)
+	body.add_child(cs)
+
+
+# Top face is the segment (za, ya) -> (zb, yb). Same construction as
+# stair_core_colliders_rev_c.slab_between: drop the box by TH/2, then
+# Basis(RIGHT, -ang) with ang = atan2(dy, dz).
+# Flight 2 check (ang > 0, rises toward +Z): local +Z maps to (0, sin(ang), cos(ang))
+# and local +Y maps to (0, cos(ang), -sin(ang)), so the normal stays upward.
+func _stair_add_ramp(parent: Node3D, nm: String, x0: float, x1: float, za: float, ya: float, zb: float, yb: float) -> void:
+	if zb < za:
+		var swap_z: float = za
+		var swap_y: float = ya
+		za = zb
+		ya = yb
+		zb = swap_z
+		yb = swap_y
+	var ang: float = atan2(yb - ya, zb - za)
+	var length: float = Vector2(zb - za, yb - ya).length()
+	var mid: Vector3 = Vector3((x0 + x1) * 0.5, (ya + yb) * 0.5, (za + zb) * 0.5)
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = nm
+	body.collision_layer = 1
+	body.collision_mask = 1
+	body.transform = Transform3D(Basis(Vector3.RIGHT, -ang), mid)
+	parent.add_child(body)
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = nm + "_Shape"
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = Vector3(absf(x1 - x0), 0.20, length)
+	shape.margin = 0.0
+	cs.shape = shape
+	cs.position = Vector3(0.0, -0.10, 0.0)
+	body.add_child(cs)
+
+
+func _stair_fallback_walk_surfaces(parent: Node3D) -> int:
+	var rise: float = 4.2
+	var r: float = rise / 26.0
+	var tread: float = 0.28
+	var yl: float = 16.0 * r
+	var zs: float = -8.9
+	var zn: float = -0.8
+	var zl: float = zs + 1.5
+	var z1b: float = zl + 15.0 * tread
+	var z2t: float = zl + 9.0 * tread
+	var added: int = 0
+	if not _stair_has_named_col(parent, "Flight1_Ramp-colonly"):
+		_stair_add_ramp(parent, "Flight1_Ramp-colonly", -1.9, -0.4, z1b + tread, 0.0, zl, yl)
+		added += 1
+	if not _stair_has_named_col(parent, "Flight2_Ramp-colonly"):
+		_stair_add_ramp(parent, "Flight2_Ramp-colonly", 0.4, 1.9, zl - tread, yl, z2t, rise)
+		added += 1
+	if not _stair_has_named_col(parent, "Mid_Landing-colonly"):
+		_stair_add_box(parent, "Mid_Landing-colonly", -1.9, 1.9, yl - 0.25, yl, zs, zl)
+		added += 1
+	if not _stair_has_named_col(parent, "L2_Landing-colonly"):
+		_stair_add_box(parent, "L2_Landing-colonly", -1.9, 1.9, rise - 0.30, rise, z2t, zn)
+		added += 1
+	return added
 
 
 # ------------------------------------------------------------------------------
