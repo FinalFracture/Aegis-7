@@ -7768,10 +7768,13 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
 	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
+	var star_t0: float = _time
 	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
 	await _qa_frames(90)
 	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
 	var star_rot1: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
+	var star_elapsed: float = _time - star_t0  # real accumulated _process delta over the wait
+	var star_expected: float = STARFIELD_ROT_SPEED * star_elapsed
 	# Advance starfield rotation by an extra visual arc so the two screenshots clearly show star rotation
 	if _starfield_cylinder != null:
 		_starfield_cylinder.rotate_x(deg_to_rad(14.0))
@@ -7779,8 +7782,8 @@ func _run_reticle_stars_doors_qa() -> void:
 	var d_star_rot: float = absf(star_rot1 - star_rot0)
 	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
 	var d_hab_rot: float = hab_xf0.basis.get_rotation_quaternion().angle_to(hab_xf1.basis.get_rotation_quaternion())
-	_qa_t38_check("starfield_rotates_while_vessel_stationary", d_star_rot > 0.04 and d_hab_pos < 0.0001 and d_hab_rot < 0.0001,
-		"star_drot=%.4f rad (%.2f deg) hab_dpos=%.6f hab_drot=%.6f" % [d_star_rot, rad_to_deg(d_star_rot), d_hab_pos, d_hab_rot])
+	_qa_t38_check("starfield_rotates_while_vessel_stationary", star_expected > 0.0 and absf(d_star_rot - star_expected) <= 0.10 * star_expected and d_hab_pos < 0.0001 and d_hab_rot < 0.0001,
+		"star_drot=%.4f rad (%.2f deg) expected=%.4f rad over %.3f s hab_dpos=%.6f hab_drot=%.6f" % [d_star_rot, rad_to_deg(d_star_rot), star_expected, star_elapsed, d_hab_pos, d_hab_rot])
 	if img_star1 != null and img_star2 != null:
 		var star_diff: int = 0
 		for py: int in range(60, 420, 8):
