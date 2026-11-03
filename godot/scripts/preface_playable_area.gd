@@ -2602,12 +2602,14 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 	{
 		# GEO-11 / Rev C.3. Room 101 west wall, inner face x=-13.9. Yaw +90 maps local +Z
 		# onto world +X (front) and local -Z onto world -X (back plate on the wall).
-		# Centre of plan rect x -13.9..-13.4, z 4.5..7.0. The mesh is 2.7 m along local X,
-		# so its world-Z extent around this centre is 4.40..7.10. Height 2.1 m.
+		# Centre of plan rect x -13.9..-13.4, z 4.5..7.0. The GLB mesh is 2.7 m along local X
+		# (world Z after yaw). It is not trimmed: it is squashed on that one axis with scale.x 0.925926
+		# (2.5 / 2.7) so it spans world z 4.50..7.00. Shelves and rails along it are compressed
+		# by the same 7.4%. Height 2.1 m and depth unchanged (scale y and z = 1).
 		"id": "Wardrobe_101",
 		"path": "res://assets/models/wardrobe_openbays_rails.glb",
 		"position": Vector3(-13.65, 0.02, 5.75), # [M-66/LAY-23] mesh bottom is +0.10 over the pivot; rests on the L1 floor 0.12
-		"scale": Vector3(0.925926, 1.0, 1.0), # Trim to the 2.5 m plan rect (z 4.5..7.0): mesh is 2.7 m along local X. Y untouched, so it stays on the floor.
+		"scale": Vector3(0.925926, 1.0, 1.0), # Squash (not trim) local X 2.7 m -> 2.5 m to fit the plan rect z 4.5..7.0. Y untouched, so it stays on the floor.
 		"yaw": 90.0
 	}
 ]
