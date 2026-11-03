@@ -2083,6 +2083,7 @@ func _spawn_rev_c_stair_core(parent: Node3D) -> void:
 	var tally: Dictionary = _stair_tally_col_bodies(parent)
 	var fallback_n: int = _stair_fallback_walk_surfaces(root_for_fallback)
 	_geo19_trim_mid_landing(root_for_fallback)
+	_stair_two_sided_colonly(parent)
 	var ramps: int = int(tally["ramps"])
 	var guards: int = int(tally["guards"])
 	if fallback_n > 0:
@@ -2090,6 +2091,17 @@ func _spawn_rev_c_stair_core(parent: Node3D) -> void:
 	if guards < 18:
 		push_warning("[M-70] guard hulls %d/18" % guards)
 	print("[M-70] stair core loaded ramps=%d guards=%d fallback_ramps=%d" % [ramps, guards, fallback_n])
+
+
+## [GEO-21b] Stair walk/closure colonly trimeshes are two-sided (Guard_Glass convex hulls untouched).
+const STAIR_TWO_SIDED_COLONLY: Array[String] = ["Flight1_Ramp-colonly", "Flight2_Ramp-colonly", "Mid_Landing-colonly", "L2_Landing-colonly", "Flight1_Understair_Closure-colonly"]
+func _stair_two_sided_colonly(parent: Node) -> void:
+	for nm: String in STAIR_TWO_SIDED_COLONLY:
+		for body: Node in parent.find_children(nm, "", true, false):
+			for cs: Node in body.find_children("*", "CollisionShape3D", true, false):
+				var shape: ConcavePolygonShape3D = (cs as CollisionShape3D).shape as ConcavePolygonShape3D
+				if shape != null:
+					shape.backface_collision = true
 
 
 func _stair_is_col_mesh(mi: MeshInstance3D) -> bool:
