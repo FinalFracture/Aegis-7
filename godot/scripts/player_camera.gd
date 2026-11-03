@@ -100,26 +100,26 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event: InputEventKey = event as InputEventKey
 		if key_event.pressed and not key_event.echo:
-			match key_event.keycode:
-				KEY_TAB, KEY_C:
-					toggle_mode()
-				KEY_1:
-					apply_preset(0)
-				KEY_2:
-					apply_preset(1)
-				KEY_3:
-					apply_preset(2)
-				KEY_4:
-					apply_preset(3)
-				KEY_5:
-					apply_preset(4)
-				KEY_F12:
-					_start_manual_capture()
-				KEY_ESCAPE:
-					if Input.get_mouse_mode() == Input.MouseMode.MOUSE_MODE_CAPTURED:
-						Input.set_mouse_mode(Input.MouseMode.MOUSE_MODE_VISIBLE)
-					else:
-						Input.set_mouse_mode(Input.MouseMode.MOUSE_MODE_CAPTURED)
+			# [SYS-17] Keys come from InputMap actions (project.godot), not hardcoded keycodes.
+			if event.is_action_pressed("cam_toggle_mode"):
+				toggle_mode()
+			elif event.is_action_pressed("preset_1"):
+				apply_preset(0)
+			elif event.is_action_pressed("preset_2"):
+				apply_preset(1)
+			elif event.is_action_pressed("preset_3"):
+				apply_preset(2)
+			elif event.is_action_pressed("preset_4"):
+				apply_preset(3)
+			elif event.is_action_pressed("preset_5"):
+				apply_preset(4)
+			elif event.is_action_pressed("cam_capture"):
+				_start_manual_capture()
+			elif event.is_action_pressed("release_mouse"):
+				if Input.get_mouse_mode() == Input.MouseMode.MOUSE_MODE_CAPTURED:
+					Input.set_mouse_mode(Input.MouseMode.MOUSE_MODE_VISIBLE)
+				else:
+					Input.set_mouse_mode(Input.MouseMode.MOUSE_MODE_CAPTURED)
 
 	if event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
@@ -162,13 +162,13 @@ func _process(delta: float) -> void:
 		return
 
 	var input_dir: Vector2 = Vector2.ZERO
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+	if Input.is_action_pressed("move_forward"):
 		input_dir.y -= 1.0
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+	if Input.is_action_pressed("move_back"):
 		input_dir.y += 1.0
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+	if Input.is_action_pressed("move_left"):
 		input_dir.x -= 1.0
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+	if Input.is_action_pressed("move_right"):
 		input_dir.x += 1.0
 
 	if current_mode == Mode.FIRST_PERSON:
@@ -183,9 +183,9 @@ func _process(delta: float) -> void:
 			var move_vec: Vector3 = (right * input_dir.x - forward * input_dir.y) * move_speed * delta
 			global_position += move_vec
 
-		if Input.is_key_pressed(KEY_E) or Input.is_key_pressed(KEY_SPACE):
+		if Input.is_action_pressed("cam_up"):
 			global_position.y += move_speed * 0.6 * delta
-		if Input.is_key_pressed(KEY_Q) or Input.is_key_pressed(KEY_SHIFT):
+		if Input.is_action_pressed("cam_down"):
 			global_position.y -= move_speed * 0.6 * delta
 
 		global_position.x = clampf(global_position.x, BOUNDS_X.x, BOUNDS_X.y)

@@ -3801,28 +3801,28 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("rfid_pulse"):
 			_trigger_rfid_pulse()
 			return
-		match ke.physical_keycode:
-			KEY_ESCAPE:
-				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			KEY_G:
-				_toggle_gravity_ring_test()
-			KEY_R:
-				_toggle_flashlight()
-			KEY_N:
-				_set_emergency_lighting(not _emergency)
-			KEY_1:
-				_activate_preset(0)
-			KEY_2:
-				_activate_preset(1)
-			KEY_3:
-				_activate_preset(2)
-			KEY_4:
-				_activate_preset(3)
-			KEY_0:
-				_return_to_player()
-				_show_toast("ACTIVE PLAYER CONTROL", 1.5)
-			_:
-				return
+		# [SYS-16] Debug/system keys come from InputMap actions (project.godot), not hardcoded keys.
+		if event.is_action_pressed("release_mouse"):
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		elif event.is_action_pressed("toggle_gravity_ring"):
+			_toggle_gravity_ring_test()
+		elif event.is_action_pressed("toggle_flashlight"):
+			_toggle_flashlight()
+		elif event.is_action_pressed("toggle_lighting"):
+			_set_emergency_lighting(not _emergency)
+		elif event.is_action_pressed("preset_1"):
+			_activate_preset(0)
+		elif event.is_action_pressed("preset_2"):
+			_activate_preset(1)
+		elif event.is_action_pressed("preset_3"):
+			_activate_preset(2)
+		elif event.is_action_pressed("preset_4"):
+			_activate_preset(3)
+		elif event.is_action_pressed("return_to_player"):
+			_return_to_player()
+			_show_toast("ACTIVE PLAYER CONTROL", 1.5)
+		else:
+			return
 		get_viewport().set_input_as_handled()
 
 
@@ -3880,16 +3880,17 @@ func _physics_process(delta: float) -> void:
 	if controls:
 		# Keyboard look: Q / Left = turn left, Right = turn right, PageUp / PageDown = look up / down.
 		var yaw_in: float = 0.0
-		if Input.is_physical_key_pressed(KEY_Q) or Input.is_physical_key_pressed(KEY_LEFT):
+		# [SYS-16] Keyboard look from InputMap: look_left (Q, Left), look_right (Right).
+		if Input.is_action_pressed("look_left"):
 			yaw_in += 1.0
-		if Input.is_physical_key_pressed(KEY_RIGHT):
+		if Input.is_action_pressed("look_right"):
 			yaw_in -= 1.0
 		if yaw_in != 0.0:
 			b.rotate_object_local(Vector3.UP, yaw_in * KEY_LOOK_SPEED * delta)
 		var pitch_in: float = 0.0
-		if Input.is_physical_key_pressed(KEY_PAGEUP):
+		if Input.is_action_pressed("look_up"):
 			pitch_in += 1.0
-		if Input.is_physical_key_pressed(KEY_PAGEDOWN):
+		if Input.is_action_pressed("look_down"):
 			pitch_in -= 1.0
 		if pitch_in != 0.0:
 			_pitch += pitch_in * KEY_LOOK_SPEED * 0.6 * delta
