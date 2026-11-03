@@ -1119,31 +1119,7 @@ func _add_playtest_seam_blocks(parent: Node3D) -> void:
 	# Mezzanine-edge rail, on the atrium face of that opening.
 	var edge_mat: StandardMaterial3D = rail_mat.duplicate() as StandardMaterial3D
 	_add_seam_static_box(parent, "Seam03_Alcove2C_Rail", Vector3(0.08, 1.1, alen), Vector3(-10.18, afloor + 0.55, azc), edge_mat)
-	# [QA-BK-01] East jamb for DOOR_ALCOVE2C. The alcove GLB has a header and a west wall, and no east pier,
-	# so the hub's back rays miss and HubWallBacking floats. This box matches the header slab (z -3.64..-3.46,
-	# north face -3.46) and covers the hub sample columns at world x -10.51, -10.23, -9.96. It starts 4 cm
-	# east of the opening edge x=-10.60. Door roots are not moved. APT201 already seats on its west pier.
-	# [M-49] Gunmetal jamb. ORM: R ao, G roughness ~0.65, B metallic. Box size and position are unchanged.
-	var jamb_mat: StandardMaterial3D = StandardMaterial3D.new()
-	jamb_mat.albedo_color = Color(1, 1, 1, 1)
-	jamb_mat.metallic = 1.0
-	jamb_mat.roughness = 1.0
-	var jamb_alb: Texture2D = _load_tex("qa03/door_jamb_gunmetal_albedo.png")
-	var jamb_orm: Texture2D = _load_tex("qa03/door_jamb_gunmetal_orm.png")
-	if jamb_alb != null:
-		jamb_mat.albedo_texture = jamb_alb
-	else:
-		jamb_mat.albedo_color = Color("#282E38")
-	if jamb_orm != null:
-		jamb_mat.metallic_texture = jamb_orm
-		jamb_mat.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
-		jamb_mat.roughness_texture = jamb_orm
-		jamb_mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
-	else:
-		jamb_mat.roughness = 0.65
-	jamb_mat.uv1_triplanar = true
-	jamb_mat.uv1_scale = Vector3(2.0, 2.0, 2.0)
-	_add_seam_static_box(parent, "QA_BK01_Alcove2C_EastJamb", Vector3(0.76, 2.78, 0.18), Vector3(-10.18, 5.71, -3.55), jamb_mat)
+	# M-70: QA_BK01_Alcove2C_EastJamb removed (Rook: not part of Rev C).
 
 
 func _add_glass_balustrade_colliders(parent: Node3D) -> void:
@@ -6279,7 +6255,7 @@ func _fit_hub_backing(door: Dictionary) -> void:
 	# Take the smallest shift that lands 9/9 within 5 cm (away from the doorway first) and re-seat.
 	# HubWallBacking only if no shift works. Same path for every door.
 	# [QA-BK-01] APT201's real wall is the west pier, so a seated hub gets no HubWallBacking.
-	# ALCOVE2C now has QA_BK01_Alcove2C_EastJamb, added before doors, so this seats on that pier.
+	# ALCOVE2C has no east jamb since M-70; it uses the normal seat/HubWallBacking path.
 	# Door roots are not moved. A seated hit is not given a second backing slab.
 	var hub_root: Node3D = door["hub"] as Node3D
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
