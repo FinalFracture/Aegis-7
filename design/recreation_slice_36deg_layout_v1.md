@@ -144,15 +144,15 @@ S5|6 ------- Rim Trail ---------------------------------
 + Most NPC/mission hooks; ties to Lantern Row. − Feels like another town, weakens "brightest open strip"; most new buildings.
 
 ### C5 — Mixed Terraces "Green Steps" (**recommended**)
-Three bands: Fore third (x 60..280) parks + Dome; middle third (x 280..520) Long Field sports + Arena near the x 500 stop; Aft third (x 520..740) River with pools/weirs. Terraced plinth tiers step up toward both ribs to absorb the curve.
+Three bands: Fore third (x 60..280) parks + Dome; middle third (x 258..568) **the Multi-Sport Tower complex** (`design/strip5_tennis_tower_v1.md`, Rev 2.3: building x 306..458, z −40..39, 152 × 79 m, Glass Box top +26.3) with the **West Arrival Plaza** (x 258..306) and **East Plaza** (x 458..488) as raised terraces at +4.0 HD, reached by 1:20 Spine ramps (x 178..258, 488..568); the Spine Walk loops the building (S arm = Rim Promenade, N arm z 39..50); x 300 and x 400 Station Walks link the S4|5 stops. **The C5 Arena block is deferred (Jared will revisit)**; the rest of the Long Field third stays open lawn/fields. Aft third (x 568..740) River with pools/weirs. Terraced plinth tiers step up toward both ribs to absorb the curve.
 ```
-S4|5 [F]=st===st====st====st====st====st====st===[A]
-     | PARK + DOME   | LONG FIELD  |ARENA| ~~RIVER/POOLS~~ |
-     |======== SPINE ==============================  |
-     | groves/lawns  | courts      |     | ~ weirs ~ lawns |
+S4|5 [F]=st===st=300=st=400=st====st====st====st===[A]
+     | PARK + DOME |W PLZ|  SPORTS TOWER  |E PLZ| lawn |~~RIVER/POOLS~~|
+     |== SPINE ===/ramp+-- loop S arm ----+ramp\== SPINE ============== |
+     | groves/lawns|     +-- loop N arm ----+     | lawn | ~ weirs ~     |
 S5|6 ------- Rim Trail (full loop) ---------------------
 ```
-+ Covers all four master-plan landmarks (River, Long Field, Rim Trail, parks); reuses both locked rec buildings; River placed where the doc puts the inlet. − Each band is smaller than in the pure options.
++ Covers all four master-plan landmarks (River, Long Field, Rim Trail, parks); reuses both locked rec buildings; River placed where the doc puts the inlet; the Spine now ends at a destination building. − Each band is smaller than in the pure options; the tower and terraces take ~2.1 ha of the middle third.
 
 **Recommendation (Vance proposal): C5 Mixed Terraces.** It is the only option that hits every documented landmark, keeps the open sky-land mood, and sits the River on its documented x 530 inlet.
 
