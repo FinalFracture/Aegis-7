@@ -9191,7 +9191,23 @@ func _ext_spawn_one(entry: Dictionary, root: Node3D) -> bool:
 		inst.free()
 		return false
 	_ext_snap_instance(inst, kind, root)
+	_ext_apply_visibility_range(inst, kind)
 	return true
+
+
+func _ext_apply_visibility_range(inst: Node3D, kind: int) -> void:
+	# [M-07] Cull small exterior props by distance. Ground, guideway and the tram car stay visible.
+	# Fade disabled so materials/lighting are unchanged; only far draw calls are skipped.
+	if kind == EXT_KIND_GROUND or kind == EXT_KIND_CAR:
+		return
+	var end_m: float = 25.0 if kind == EXT_KIND_DECAL else 40.0
+	for n: Node in inst.find_children("*", "GeometryInstance3D", true, false):
+		var gi: GeometryInstance3D = n as GeometryInstance3D
+		if gi.visibility_range_end > 0.0:
+			continue
+		gi.visibility_range_end = end_m
+		gi.visibility_range_end_margin = 4.0
+		gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
 
 
 func _ext_deck_slab() -> MeshInstance3D:
