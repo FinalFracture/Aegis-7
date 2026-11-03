@@ -2567,6 +2567,7 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		"id": "Wardrobe_101",
 		"path": "res://assets/models/wardrobe_openbays_rails.glb",
 		"position": Vector3(-13.65, 0.02, 5.75), # [M-66/LAY-23] mesh bottom is +0.10 over the pivot; rests on the L1 floor 0.12
+		"scale": Vector3(0.925926, 1.0, 1.0), # Trim to the 2.5 m plan rect (z 4.5..7.0): mesh is 2.7 m along local X. Y untouched, so it stays on the floor.
 		"yaw": 90.0
 	}
 ]
@@ -2662,6 +2663,8 @@ func _spawn_rev_c_static_props() -> void:
 		node.name = id
 		node.position = spec["position"] as Vector3
 		node.rotation_degrees = Vector3(0.0, float(spec["yaw"]), 0.0)
+		# Optional per-spec scale (local axes). Default 1.
+		node.scale = spec.get("scale", Vector3.ONE) as Vector3
 		_props_container.add_child(node)
 		_add_prop_aabb_body(node)
 	_spawn_apt201_bench_outline()
