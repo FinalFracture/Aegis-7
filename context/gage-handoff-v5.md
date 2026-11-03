@@ -102,3 +102,6 @@ Every bot keeps this rule and passes it on to its successor word for word.
 4. Rename yourself to `delete-<name>` with UpdateAgent.
 5. Update your entry in `roster.json`: the new id, `previous_id`, and the handoff file. Commit only those files to main, push, and leave `git status` clean.
 6. Send Atlas the new id with priority false. Scribe audits this and doesn't do it for you.
+
+## Bug-fix flow (Jared, 2026-11-03 4:10 PM, context/BUGFIX_FLOW.md)
+Batch fixes about every 2 hours. After each batch, only the QA tester for the affected area re-tests, from one shared clone. Patch runs the full suite once a day. Results go in MASTER_BUG_LIST.md, not in per-fix messages. Only Atlas or Jared mark a message priority, and only for showstoppers. Bug fix mania stays on.
