@@ -24,7 +24,20 @@ def stair_colliders():
     return {"Flight1_Ramp-colonly": slab_between(*S.F1, Z1b + T, 0.0, ZL, YL),            # floor at Z -2.92 -> mid-landing edge
             "Flight2_Ramp-colonly": slab_between(*S.F2, ZL - T, YL, Z2t, S.RISE),        # mid-landing -> L2 landing edge Z -4.88
             "Mid_Landing-colonly": trimesh.creation.box(bounds=[[-1.9, YL - 0.25, S.ZS], [1.9, YL, ZL]]),
-            "L2_Landing-colonly": trimesh.creation.box(bounds=[[-1.9, S.RISE - 0.30, Z2t], [1.9, S.RISE, S.ZN]])}
+            "L2_Landing-colonly": trimesh.creation.box(bounds=[[-1.9, S.RISE - 0.30, Z2t], [1.9, S.RISE, S.ZN]]),
+            "Flight1_Understair_Closure-colonly": understair_closure()}
+def understair_closure():
+    """GEO-22: flight 1 is cast solid to the floor (visual), but only its thin ramp collided, so a capsule could walk into
+    the cast mass and head-strike the ramp underside (y 1.82 @ Z -6.48). Solid prism filling x F1, floor -> ramp underside,
+    capped at the mid-landing collider soffit (YL-0.25); i.e. every point of flight 1 footprint with clear height < 2.1 m
+    (in fact all of it, max underside 2.335) is closed. Touches but does not overlap the ramp / mid-landing colliders."""
+    R, T, YL, ZL, Z1b = S.R, S.T, S.YL, S.ZL, S.Z1b
+    za, zb = Z1b + T, ZL; slope = YL / (za - zb); ang = np.arctan(slope); dv = TH / np.cos(ang)
+    z0 = za - dv / slope                       # where the ramp underside meets the floor
+    ycap = YL - 0.25; zc = za - (ycap + dv) / slope
+    prof = [(z0, 0.0), (zb, 0.0), (zb, ycap), (zc, ycap)]
+    pts = [(x, y, z) for x in S.F1 for z, y in prof]
+    return trimesh.convex.convex_hull(np.array(pts))
 def guard_colliders():   # Guard_Glass = 18 panels, each a 12-tri 12 mm slab, emitted in order -> one hull per 12 faces
     g = trimesh.load(GUARD).geometry["Guard_Glass"]; assert len(g.faces) % 12 == 0
     out = {}
