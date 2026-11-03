@@ -38,6 +38,14 @@ CONFIG = {
     "oversized_file_mb": 50.0,
     "accent_hue_tol_deg": 8.0,            # colours this close to amber hue must be exact
     "godot_timeout_s": 120,
+    "debug_name_allow_re": r"(?i)^(CylinderSpinGravityTestRing)$",   # names allowed despite debug words
+    "radial_up_re": r"(?i)(spin|gravity_?ring|GravityTestRing)",     # spin-gravity floors: up is radial, skip world-up slope checks
+    "one_sided_scope_re": r"(?i)(exterior|shell|hull|thin|facade|roof|skin|ext_)",  # FPC-10
+    "res_guard_re": r"(FileAccess\.file_exists|ResourceLoader\.exists|DirAccess\.dir_exists|_resolve_path|_find_first_existing|file_exists|\.exists\()",
+    "res_output_re": r"(?i)(renders?|shots?|output|exports?|cache)(/|$)",
+    "texture_scan_suffix_re": r"(?i)_(albedo|basecolor|color|diffuse|normal|nrm|orm|arm|roughness|rough|metallic|metal|ao|height|disp|emission|emissive)\.\w+$",
+    "import_required_ext": [".png", ".jpg", ".jpeg", ".webp", ".svg", ".glb", ".gltf", ".wav", ".ogg", ".mp3", ".ttf", ".otf", ".exr", ".hdr"],
+    "uid_required_ext": [".gd", ".gdshader"],
     "godot_bin_candidates": ["godot", "godot4", "Godot_v4.7-stable_win64_console.exe"],
     # names
     "debug_name_words": ["debug", "test", "temp", "tmp", "placeholder"],  # matched as whole name tokens
@@ -55,10 +63,13 @@ CONFIG = {
 # ============================================================================
 
 RESULTS = []  # (status, check, message)
+VERBOSE = False
 TEXT_EXT = (".tscn", ".tres", ".gd", ".godot", ".import", ".gdshader", ".cfg")
 
 
 def rec(status, check, msg="", details=None, limit=8):
+    if VERBOSE:
+        limit = 10 ** 9
     RESULTS.append((status, check, msg))
     line = f"[{status}] {check}" + (f": {msg}" if msg else "")
     print(line)
@@ -66,7 +77,7 @@ def rec(status, check, msg="", details=None, limit=8):
         for d in details[:limit]:
             print(f"        - {d}")
         if len(details) > limit:
-            print(f"        ... and {len(details) - limit} more")
+            print(f"        ... and {len(details) - limit} more (use --verbose for all)")
 
 
 def name_tokens(n):
@@ -76,6 +87,8 @@ def name_tokens(n):
 
 
 def is_debug_name(n):
+    if re.search(CONFIG["debug_name_allow_re"], n or ""):
+        return False
     return any(t in CONFIG["debug_name_words"] for t in name_tokens(n))
 
 
@@ -176,6 +189,17 @@ def check_repo(root, strict_scope_files):
     out_like = [u for u in unt if re.search(r"(?i)(render|shot|log|cache|tmp|temp|out)", u)]
     rec("WARN" if out_like else "PASS", "repo.untracked_outputs_ignored",
         f"{len(out_like)} untracked output-like paths not in .gitignore" if out_like else "none", out_like)
+    tset = set(tracked)
+    noimp = [t for t in tracked if t.startswith("godot/") or os.path.exists(os.path.join(root, "project.godot"))]
+    noimp = [t for t in noimp if os.path.splitext(t)[1].lower() in CONFIG["import_required_ext"]
+             and t + ".import" not in tset and not re.search(r"(^|/)(\.godot|renders?)/", t)]
+    proj_dirs = [os.path.dirname(t) for t in tracked if t.endswith("project.godot")]
+    in_proj = lambda t: any(t.startswith(d + "/") or d == "" for d in proj_dirs)
+    noimp = [t for t in noimp if in_proj(t)]
+    nouid = [t for t in tracked if in_proj(t) and os.path.splitext(t)[1] in CONFIG["uid_required_ext"] and t + ".uid" not in tset]
+    rec("WARN" if noimp or nouid else "PASS", "repo.missing_import_uid",
+        f"{len(noimp)} assets without a tracked .import, {len(nouid)} scripts without a tracked .uid (an import will dirty the tree)"
+        if noimp or nouid else "every asset has .import and every script .uid", noimp + nouid)
     big, sizes = [], {}
     for t in tracked:
         p = os.path.join(root, t)
@@ -242,7 +266,7 @@ def hex_rgb(h):
     return [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
 
 
-def material_checks(label, name, albedo, has_tex, transparency, emission, metallic, tex_paths, issues):
+def material_checks(label, name, albedo, has_tex, transparency, emission, metallic, tex_paths, issues, bright_level="WARN"):
     """Shared material rules for .tscn/.tres StandardMaterial3D and GLB materials."""
     nm = name or ""
     if albedo is not None:
@@ -253,7 +277,7 @@ def material_checks(label, name, albedo, has_tex, transparency, emission, metall
             elif abs(r - g) < 0.02 and abs(g - b) < 0.02 and r in (1.0,) or (abs(r - 0.8) < 0.01 and abs(g - 0.8) < 0.01 and abs(b - 0.8) < 0.01):
                 issues["WARN"].append(f"{label}: default white/grey albedo with no texture")
             if max(r, g, b) > CONFIG["albedo_bright_max"]:
-                issues["WARN"].append(f"{label}: albedo {max(r,g,b):.2f} > {CONFIG['albedo_bright_max']} with no texture")
+                issues[bright_level].append(f"{label}: albedo {max(r,g,b):.2f} > {CONFIG['albedo_bright_max']} with no texture")
         if albedo[3] < 1.0 and not transparency:
             issues["FAIL"].append(f"{label}: opaque material with alpha {albedo[3]:.2f}")
         h, s, v = hue(albedo)
@@ -306,13 +330,13 @@ def check_scenes(files, proj):
                 em = float(p["emission_energy_multiplier"]) if p.get("emission_enabled") == "true" and "emission_energy_multiplier" in p else None
                 met = float(p["metallic"]) if "metallic" in p else None
                 name = p.get("resource_name", "").strip('"') or a.get("id", "")
-                material_checks(f"{r}:{name}", name, alb, has_tex, tr, em, met, [], mat_issues)
+                material_checks(f"{r}:{name}", name, alb, has_tex, tr, em, met, [], mat_issues, bright_level="FAIL")
         for (parent, xf, _), names in shapes_by_parent.items():
             if len(names) > 1:
                 dup_shapes.append(f"{r}: under '{parent}': {', '.join(names)} share a transform")
     rec("FAIL" if missing else "PASS", "refs.ext_resources", f"{len(missing)} missing" if missing else f"{len(scenes)} scene/resource files resolve", missing)
     rec("FAIL" if dup_shapes else "PASS", "colliders.duplicate_shape_transforms", f"{len(dup_shapes)}" if dup_shapes else "none", dup_shapes)
-    rec("WARN" if dbg else "PASS", "names.debug_nodes", f"{len(dbg)}" if dbg else "none in .tscn", dbg)
+    rec("FAIL" if dbg else "PASS", "names.debug_nodes", f"{len(dbg)} leftover debug/test/temp nodes (allowlist: CONFIG debug_name_allow_re)" if dbg else "none in .tscn", dbg)
     rec("FAIL" if decals else "PASS", "compat.no_decal_nodes", f"{len(decals)}" if decals else "none in .tscn", decals)
     for s in ("FAIL", "WARN"):
         pass
@@ -328,7 +352,7 @@ def check_scripts(files, proj):
         rec("PASS", "gd.scripts", "no .gd in scope")
         return
     exc = re.compile(CONFIG["keycode_exclude_re"])
-    key_hits, frame_hits, missing_refs, dbg_names, decal_new = [], [], [], [], []
+    key_hits, frame_hits, missing_refs, dbg_names, decal_new, guarded_refs = [], [], [], [], [], []
     key_re = re.compile(r"\b(KEY_[A-Z0-9_]+|physical_keycode|keycode)\b")
     frame_re = re.compile(r"(?i)\b(frame[s_]*(count|counter|_n|_left|_wait|s_waited)?\b.*(>=|>|==|<|<=)\s*\d+|for\s+\w+\s+in\s+range\(\s*\d{2,}\s*\)\s*:\s*\n?\s*await\s+get_tree\(\)\.(process|physics)_frame|get_frames_drawn\(\)|Engine\.get_(physics|process)_frames\(\))")
     test_ctx = re.compile(r"(?i)(qa|test|probe|assert|_check|verify)")
@@ -340,6 +364,7 @@ def check_scripts(files, proj):
         consts = set(re.findall(r"^\s*(?:const|var)\s+(KEY_[A-Z0-9_]+)", txt, re.M))
         func = ""
         qa_func = re.compile(CONFIG["qa_func_re"])
+        cur_const, in_array, in_array_end, res_items = None, False, False, []
         for i, ln in enumerate(lines, 1):
             code = ln.split("#", 1)[0]
             fm = re.match(r"\s*(?:static\s+)?func\s+(\w+)", code)
@@ -352,10 +377,26 @@ def check_scripts(files, proj):
                 ctx = " ".join(lines[max(0, i - 15):i + 5])
                 if test_ctx.search(ctx):
                     frame_hits.append(f"{r}:{i}: {code.strip()[:100]}")
+            cm = re.match(r"\s*(?:const|var)\s+(\w+)\s*(?::\s*\w+(?:\[\w+\])?)?\s*:?=\s*(\[)?", code)
+            if cm and not code.startswith(("\t", " ")):
+                cur_const = cm.group(1)
+                in_array = bool(cm.group(2)) and "]" not in code[cm.end():]
+                in_array_end = False
+            elif in_array and "]" in code:
+                in_array_end = True
+            else:
+                in_array_end = False
             for m in re.finditer(r'"(res://[^"]+)"', code):
-                p = res_to_path(m.group(1), proj) if proj else None
-                if p and "%" not in m.group(1) and "{" not in m.group(1) and not p.endswith("/") and not os.path.exists(p):
-                    missing_refs.append(f"{r}:{i}: {m.group(1)}")
+                lit = m.group(1)
+                p = res_to_path(lit, proj) if proj else None
+                if not p or "%" in lit or "{" in lit or lit.endswith("/") or not os.path.splitext(lit)[1] \
+                        or re.search(CONFIG["res_output_re"], lit):
+                    continue  # format strings, directories and output folders are not asset refs
+                ok = os.path.exists(os.path.normpath(p))
+                owner = cur_const if (in_array or (cm and not code.startswith(("\t", " ")))) else None
+                res_items.append((r, i, lit, ok, owner, bool(in_array or (cm and cm.group(2)))))
+            if in_array and in_array_end:
+                in_array = False
             m = re.search(r'\.name\s*=\s*"([^"]+)"', code)
             if m and is_debug_name(m.group(1)) and live:
                 dbg_names.append(f"{r}:{i}: '{m.group(1)}'")
@@ -368,11 +409,33 @@ def check_scripts(files, proj):
                     continue
                 if not re.search(CONFIG["glass_hardware_re"], window):
                     dbg_names.append(f"{r}:{i}: name-based 'glass' match without a hardware exclusion")
+        # resolve res:// literals: arrays are fallback candidate lists (need >= 1 existing entry);
+        # single constants/literals are guarded when a guard call (file_exists etc.) uses them.
+        guard_re = re.compile(CONFIG["res_guard_re"])
+        guard_lines = [l for l in lines if guard_re.search(l)]
+        arrays = {}
+        for (rr, ii, lit, ok, owner, arr) in res_items:
+            if arr and owner:
+                arrays.setdefault(owner, []).append((ii, lit, ok))
+        for name, items in arrays.items():
+            if not any(ok for _, _, ok in items):
+                missing_refs.append(f"{r}:{items[0][0]}: {name}: none of {len(items)} candidate paths exist")
+        for (rr, ii, lit, ok, owner, arr) in res_items:
+            if ok or arr:
+                continue
+            # guarded only when a guard call names this exact literal or the constant holding it
+            guarded = any(lit in l for l in guard_lines) or bool(owner and any(re.search(r"\b%s\b" % re.escape(owner), l) for l in guard_lines))
+            if guarded:
+                guarded_refs.append(f"{r}:{ii}: {lit}")
+            else:
+                missing_refs.append(f"{r}:{ii}: {lit} (unguarded)")
     rec("FAIL" if key_hits else "PASS", "input.no_hardcoded_keys",
         f"{len(key_hits)} KEY_*/keycode uses outside the InputMap in live code" if key_hits else f"{len(gds)} scripts clean", key_hits)
     rec("WARN" if frame_hits else "PASS", "tests.no_frame_count_timing",
         f"{len(frame_hits)} frame-count timings in test/QA code (use elapsed time)" if frame_hits else "none", frame_hits)
-    rec("WARN" if missing_refs else "PASS", "refs.gd_res_paths", f"{len(missing_refs)} res:// literals not on disk (FAIL if not guarded by ResourceLoader.exists)" if missing_refs else "all literal res:// paths resolve", missing_refs)
+    rec("FAIL" if missing_refs else "PASS", "refs.gd_res_paths",
+        f"{len(missing_refs)} unguarded missing res:// paths" if missing_refs else
+        f"all res:// paths resolve or are guarded ({len(guarded_refs)} guarded misses)", missing_refs)
     rec("WARN" if dbg_names else "PASS", "names.debug_or_glass_match_in_gd", f"{len(dbg_names)}" if dbg_names else "none", dbg_names)
     rec("FAIL" if decal_new else "PASS", "compat.no_decal_new", f"{len(decal_new)} Decal.new() calls" if decal_new else "none", decal_new)
 
@@ -460,6 +523,45 @@ def check_textures(files, proj):
                 elif fn.endswith(".gltf"):
                     corpus.append(read_text(os.path.join(dp, fn)))
     corpus = "\n".join(corpus)
+    # GLB-extracted textures: <glb_stem>_*.png next to a .glb, or named in a GLB's images / .glb.import
+    glb_stems, glb_refs = {}, set()
+    scan_root = proj or os.path.dirname(imgs[0])
+    for dp, dns, fns in os.walk(os.path.dirname(scan_root) if proj else scan_root):
+        dns[:] = [d for d in dns if d not in (".godot", ".git", "renders")]
+        for fn in fns:
+            if fn.lower().endswith(".glb"):
+                glb_stems.setdefault(dp, []).append(os.path.splitext(fn)[0])
+                j = glb_json(os.path.join(dp, fn)) or {}
+                for im in j.get("images", []):
+                    for k in ("uri", "name"):
+                        if im.get(k):
+                            glb_refs.add(os.path.splitext(os.path.basename(im[k]))[0])
+            elif fn.endswith(".glb.import"):
+                for m in re.finditer(r'([\w\-. ]+)\.(png|jpg|jpeg|webp)', read_text(os.path.join(dp, fn))):
+                    glb_refs.add(m.group(1))
+
+    def glb_extracted(im):
+        stem = os.path.splitext(os.path.basename(im))[0]
+        if stem in glb_refs:
+            return True
+        return any(stem.startswith(g + "_") for g in glb_stems.get(os.path.dirname(im), []))
+    # directories that material_loader-style code scans at runtime (res:// dir literals + a dir listing call)
+    scan_dirs = []
+    if proj:
+        for dp, dns, fns in os.walk(proj):
+            dns[:] = [d for d in dns if d not in (".godot", "renders")]
+            for fn in fns:
+                if fn.endswith(".gd"):
+                    t = read_text(os.path.join(dp, fn))
+                    if re.search(r"DirAccess\.(open|get_files_at)|list_dir_begin", t):
+                        for m in re.finditer(r'"(res://[^"%{]*)"', t):
+                            if not os.path.splitext(m.group(1))[1]:
+                                rp = res_to_path(m.group(1).rstrip("/") or "res://", proj) if len(m.group(1)) > 6 else None
+                                d = os.path.normpath(rp) if rp else None
+                                if d and os.path.isdir(d):
+                                    scan_dirs.append(d)
+    scan_suffix = re.compile(CONFIG["texture_scan_suffix_re"])
+    glb_uncomp = 0
     for im in imgs:
         r = rel(im, proj) if proj else im
         sz = image_size(im)
@@ -471,11 +573,16 @@ def check_textures(files, proj):
             if max(w, h) > mx:
                 huge.append(f"{r} {w}x{h}")
         imp = read_text(im + ".import")
+        is_glb = glb_extracted(im)
         if imp and re.search(r"^compress/mode=0", imp, re.M) and "/ui/" not in r and "icon" not in r:
-            uncomp.append(r)
+            if is_glb:
+                glb_uncomp += 1  # compression comes from the GLB import settings
+            else:
+                uncomp.append(r)
         base = os.path.basename(im)
         stem = os.path.splitext(base)[0]
-        if corpus and base not in corpus and stem not in corpus and not re.search(r"(?i)icon", base):
+        scanned = any(os.path.abspath(im).startswith(d + os.sep) for d in scan_dirs) and scan_suffix.search(base)
+        if corpus and not is_glb and not scanned and base not in corpus and stem not in corpus and not re.search(r"(?i)icon", base):
             unused.append(r)
     # ORM vs albedo size
     for im, sz in sizes.items():
@@ -489,8 +596,8 @@ def check_textures(files, proj):
     rec("WARN" if npot else "PASS", "textures.power_of_two", f"{len(npot)} of {len(imgs)} not power-of-two" if npot else f"{len(imgs)} ok", npot)
     rec("FAIL" if huge else "PASS", "textures.max_size", f"{len(huge)} > {mx}px" if huge else f"all <= {mx}px", huge)
     rec("WARN" if mism else "PASS", "textures.orm_albedo_size", f"{len(mism)} mismatches" if mism else "ok", mism)
-    rec("WARN" if uncomp else "PASS", "textures.vram_compressed", f"{len(uncomp)} lossless (compress/mode=0)" if uncomp else "ok", uncomp)
-    rec("WARN" if unused else "PASS", "textures.unused", f"{len(unused)} not referenced by name anywhere (may be GLB-embedded or code-built paths)" if unused else "all referenced", unused)
+    rec("WARN" if uncomp else "PASS", "textures.vram_compressed", f"{len(uncomp)} standalone textures lossless (compress/mode=0); {glb_uncomp} GLB-extracted excluded" if uncomp else f"ok ({glb_uncomp} GLB-extracted excluded)", uncomp)
+    rec("WARN" if unused else "PASS", "textures.unused", f"{len(unused)} not referenced by name, GLB import or a scanned texture folder" if unused else "all referenced", unused)
 
 
 # --------------------------------------------------------------- GLB --------
@@ -609,60 +716,82 @@ func _walk(n, bodies, meshes):
 	for c in n.get_children(): _walk(c, bodies, meshes)
 func _emit(st, name, msg): print("FPC|%s|%s|%s" % [st, name, msg])
 func _check_trimesh(bodies):
+	# FPC-10: only exterior / thin shells must be two-sided
 	var bad = 0; var ex = []
+	var rx = RegEx.new(); rx.compile(C.one_sided_scope_re)
 	for b in bodies:
 		for c in b.get_children():
 			if c is CollisionShape3D and c.shape is ConcavePolygonShape3D and not c.shape.backface_collision:
+				if rx.search(str(c.get_path())) == null: continue
 				bad += 1
-				if ex.size() < 5: ex.append(str(b.get_path()))
-	_emit("WARN" if bad else "PASS", "godot.trimesh_two_sided", "%d one-sided trimesh colliders %s" % [bad, ex])
+				if ex.size() < 5: ex.append(str(c.get_path()))
+	_emit("WARN" if bad else "PASS", "godot.trimesh_two_sided", "%d one-sided exterior/thin-shell trimesh colliders %s" % [bad, ex])
+func _shape_hash(sh):
+	# FPC-01: identity of the shape geometry, not just its class
+	if sh is ConcavePolygonShape3D: return "tri:%d" % hash(sh.get_faces())
+	if sh is ConvexPolygonShape3D: return "cvx:%d" % hash(sh.points)
+	if sh is BoxShape3D: return "box:%s" % str(sh.size)
+	if sh is SphereShape3D: return "sph:%.4f" % sh.radius
+	if sh is CapsuleShape3D or sh is CylinderShape3D: return "%s:%.4f:%.4f" % [sh.get_class(), sh.radius, sh.height]
+	return "%s:%d" % [sh.get_class(), sh.get_instance_id()]
+func _xf_key(t):
+	var b = t.basis
+	return "%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f|%.3f,%.3f,%.3f" % [b.x.x, b.x.y, b.x.z, b.y.x, b.y.y, b.y.z, b.z.x, b.z.y, b.z.z, t.origin.x, t.origin.y, t.origin.z]
 func _check_dup_colliders(bodies):
 	var seen = {}; var dup = 0; var ex = []
 	for b in bodies:
 		for c in b.get_children():
 			if c is CollisionShape3D and c.shape and not c.disabled:
-				var t = c.global_transform
-				var k = "%s|%.3f,%.3f,%.3f|%s" % [c.shape.get_class(), t.origin.x, t.origin.y, t.origin.z, str(c.shape.get("size") if c.shape.get("size") != null else "")]
+				var k = _shape_hash(c.shape) + "@" + _xf_key(c.global_transform)
 				if seen.has(k):
 					dup += 1
 					if ex.size() < 5: ex.append(str(c.get_path()) + " == " + seen[k])
 				else: seen[k] = str(c.get_path())
-	_emit("FAIL" if dup else "PASS", "godot.duplicate_static_colliders", "%d duplicates %s" % [dup, ex])
+	_emit("FAIL" if dup else "PASS", "godot.duplicate_static_colliders", "%d identical shape+transform duplicates %s" % [dup, ex])
 func _check_slopes(bodies):
-	var steep = 0; var stair = 0; var ex = []
-	var wmax = cos(deg_to_rad(C.walkable_max_deg)); var smax = deg_to_rad(C.stair_collider_max_deg)
+	# FPC-02: per collider, judge its main walk face (largest-area upward face group), not every upward facet.
+	var steep = 0; var stair = 0; var sx = []; var wx = []; var radial = 0
+	var smax = C.stair_collider_max_deg; var wmax = C.walkable_max_deg
+	var rr = RegEx.new(); rr.compile(C.radial_up_re)
 	for b in bodies:
-		var is_stair = str(b.name).to_lower().contains("stair") or str(b.get_parent().name).to_lower().contains("stair")
+		var is_stair = str(b.get_path()).to_lower().contains("stair")
 		for c in b.get_children():
-			if not (c is CollisionShape3D) or c.shape == null: continue
-			var faces = PackedVector3Array()
-			if c.shape is ConcavePolygonShape3D: faces = c.shape.get_faces()
-			elif c.shape is BoxShape3D: 
-				var up = (c.global_transform.basis.y).normalized()
-				var ang = acos(clamp(up.dot(Vector3.UP), -1, 1))
-				if ang > deg_to_rad(1) and ang < deg_to_rad(80):
-					if is_stair and ang > smax:
-						stair += 1
-					elif ang > acos(wmax):
-						steep += 1
-					if ang > smax and ex.size() < 5:
-						ex.append("%s %.1fdeg" % [c.get_path(), rad_to_deg(ang)])
+			if not (c is CollisionShape3D) or c.shape == null or c.disabled: continue
+			if rr.search(str(c.get_path())) != null:
+				radial += 1
 				continue
 			var xf = c.global_transform
-			for i in range(0, faces.size(), 3):
-				var n = (xf * faces[i+1] - xf * faces[i]).cross(xf * faces[i+2] - xf * faces[i])
-				if n.length() < 1e-6: continue
-				n = n.normalized(); if n.y < 0: continue
-				var ang = acos(clamp(n.y, -1, 1))
-				# a sloped face between walkable and wall: 'sliding' range
-				if is_stair and ang > smax and ang < deg_to_rad(70):
-					stair += 1
-					if ex.size() < 5: ex.append("%s %.1fdeg" % [c.get_path(), rad_to_deg(ang)])
-				elif ang > acos(wmax) and ang < deg_to_rad(70):
-					steep += 1
-					if ex.size() < 5: ex.append("%s %.1fdeg" % [c.get_path(), rad_to_deg(ang)])
-	_emit("WARN" if steep else "PASS", "godot.walkable_slope", "%d collider faces/boxes between %.0f and 70 deg" % [steep, C.walkable_max_deg])
-	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair collider faces/boxes steeper than %.0f deg %s" % [stair, C.stair_collider_max_deg, ex])
+			var walk_deg = -1.0
+			if c.shape is ConcavePolygonShape3D or c.shape is ConvexPolygonShape3D:
+				var faces = c.shape.get_faces() if c.shape is ConcavePolygonShape3D else PackedVector3Array()
+				if faces.size() == 0: continue
+				var bins = {}
+				for i in range(0, faces.size(), 3):
+					var n = (xf * faces[i+1] - xf * faces[i]).cross(xf * faces[i+2] - xf * faces[i])
+					var area = n.length() * 0.5
+					if area < 1e-6: continue
+					n = n.normalized()
+					if n.y <= 0.05: continue
+					var deg = int(round(rad_to_deg(acos(clamp(n.y, -1, 1)))))
+					bins[deg] = bins.get(deg, 0.0) + area
+				var best = 0.0
+				for d in bins:
+					if bins[d] > best: best = bins[d]; walk_deg = float(d)
+			elif c.shape is BoxShape3D:
+				var up = xf.basis.y.normalized()
+				walk_deg = rad_to_deg(acos(clamp(abs(up.dot(Vector3.UP)), 0, 1)))
+			else:
+				continue
+			if walk_deg < 1.0 or walk_deg > 70.0: continue
+			var label = "%s %.0fdeg" % [c.get_path(), walk_deg]
+			if is_stair and walk_deg > smax:
+				stair += 1
+				if sx.size() < 5: sx.append(label)
+			elif walk_deg > wmax:
+				steep += 1
+				if wx.size() < 5: wx.append(label)
+	_emit("WARN" if steep else "PASS", "godot.walkable_slope", "%d colliders whose main walk face is %.0f-70 deg %s" % [steep, wmax, wx])
+	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair colliders whose main walk face is steeper than %.0f deg %s (%d spin-gravity shapes skipped)" % [stair, smax, sx, radial])
 func _check_meshes(meshes):
 	var noup = 0; var nomat = 0; var heavy = 0; var ex = []
 	for m in meshes:
@@ -706,8 +835,7 @@ def find_godot():
 def run_godot(target, proj, no_godot):
     stub_msg = lambda: [rec("WARN", n, "not implemented (stub): " + d.format(**CONFIG)) for n, d in GODOT_STUBS]
     if no_godot:
-        rec("WARN", "godot.probe", "skipped (--no-godot): collider slopes, duplicates, trimesh sides, mesh budgets not checked")
-        stub_msg()
+        print("[INFO] godot.probe: skipped (--no-godot); engine checks not run")
         return
     gb = find_godot()
     if not gb or not proj or not target.endswith(".tscn"):
@@ -760,7 +888,10 @@ def main():
     ap.add_argument("target", help=".tscn scene, file, or directory")
     ap.add_argument("--no-godot", action="store_true", help="static checks only")
     ap.add_argument("--strict", action="store_true", help="WARN counts as FAIL")
+    ap.add_argument("--verbose", action="store_true", help="print every detail line (no truncation)")
     a = ap.parse_args()
+    global VERBOSE
+    VERBOSE = a.verbose
     target = os.path.abspath(a.target)
     if not os.path.exists(target):
         print(f"error: {a.target} does not exist", file=sys.stderr)
