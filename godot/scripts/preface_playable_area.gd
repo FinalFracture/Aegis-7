@@ -2015,6 +2015,20 @@ func _retire_apartment_workbench(sector: Node3D) -> void:
 		for ch: Node in c.get_children():
 			stack.append(ch)
 
+## [GEO-21] RevC shell colliders (L1, L2, roof) come in from the GLB as one-sided trimeshes.
+func _geo21_two_sided_shell_colliders(sector: Node) -> void:
+	for cs: Node in sector.find_children("*", "CollisionShape3D", true, false):
+		var p: Node = cs.get_parent()
+		var under_shell: bool = false
+		while p != null and p != sector:
+			if String(p.name).begins_with("RevC_Shell"):
+				under_shell = true
+				break
+			p = p.get_parent()
+		var shape: ConcavePolygonShape3D = (cs as CollisionShape3D).shape as ConcavePolygonShape3D
+		if under_shell and shape != null:
+			shape.backface_collision = true
+
 
 func _assemble_open_doorless_sector() -> void:
 	for ch: Node in _arch_container.get_children():
@@ -2032,6 +2046,7 @@ func _assemble_open_doorless_sector() -> void:
 			var n_col: int = _add_sector_trimesh_collisions(sector_node)
 			if _validate_only:
 				print("[PrefacePlayableArea] Trimesh colliders: ", n_col)
+			_geo21_two_sided_shell_colliders(sector_node)  # after the trimesh build that creates RevC_Shell_*_col
 	else:
 		push_warning("[PrefacePlayableArea] Sector GLB not found in SECTOR_GLB_PATHS")
 	_spawn_rev_c_stair_core(_arch_container)
@@ -8904,6 +8919,7 @@ func _ext_clip_shell_lip(cs: CollisionShape3D, inst_world: Transform3D) -> bool:
 		return true
 	var clipped: ConcavePolygonShape3D = ConcavePolygonShape3D.new()
 	clipped.margin = 0.0
+	clipped.backface_collision = true  # [GEO-21] keep M-46 two-sided on clipped shapes
 	clipped.data = kept
 	cs.shape = clipped
 	return false
@@ -9159,6 +9175,7 @@ func _ext_add_ground_colliders() -> int:
 		if shape == null:
 			continue
 		shape.margin = 0.0
+		shape.backface_collision = true  # [GEO-21] two-sided like other ext trimeshes
 		var body: StaticBody3D = StaticBody3D.new()
 		body.name = "ExtGroundCol"
 		body.add_to_group("ext_ground_col")
