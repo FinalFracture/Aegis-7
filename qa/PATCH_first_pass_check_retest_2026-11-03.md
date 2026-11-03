@@ -56,3 +56,75 @@ Every case is detected, but 3 of them WARN and so exit 0 without `--strict`.
 | FPC-10 | Low | `godot.trimesh_two_sided` WARN 49 is plausible, but it should limit itself to exterior/thin shells (Gage's rule 4) rather than every one-sided concave shape. |
 
 Probe hygiene: the clone is clean after the run; the import cache and the untracked `.import`/`.uid` files were removed. Scratch under /tmp is deleted.
+
+---
+
+# Round 2: re-test at 4d22a4f (2026-11-03, 2:11 PM CT)
+
+Fresh clone `/tmp/fpc_r2_patch` at 4d22a4f (only tools/first_pass_check.py changed). Test only; no .py/.gd/.tscn edited. Godot 4.7.2 under xvfb.
+
+## Verdict
+**PASS.** All ten r1 bugs (FPC-01..10) are fixed and verified. The main scene with Godot on now gives **0 FAIL, exit 0**. All 6 sabotage cases exit 1 and the clean control exits 0. One new low bug (FPC-11). Gage's 3a/3b findings are explained below. 3a is a real collider gap in game code, not a checker bug.
+
+## Runs (r1 -> r2)
+| Run | r1 P/W/F, exit | r2 P/W/F, exit | r2 time |
+|---|---|---|---|
+| main scene `--no-godot` | 18/16/0, 0 | **20/7/0, 0** | 0.28 s |
+| `godot/ --no-godot` | 17/20/1, 1 | **19/11/1, 1** (only the real 2 deleted-script refs) | 0.30 s |
+| main `--no-godot --strict` | 18/16/0, 1 | 20/7/0, 1 | 0.15 s |
+| `godot/ --strict` | 17/20/1, 1 | 19/11/1, 1 | 0.29 s |
+| bad path | exit 2 | exit 2 | <0.1 s |
+| `--headless --import` | 0 | 0 | ~13 s |
+| main scene, Godot pass | 19/20/2, 1 | **23/19/0, 0** | 5 s |
+
+The 19 WARNs with Godot on are 7 stubs (expected), trimesh_two_sided 45 (real, see 3a), walkable_slope 1 (see 3b), textured_without_uv 1, and the repo/design WARNs.
+
+## Sabotage (throwaway copy `/tmp/fpc_r2_patch_sab`, never committed)
+| Case | Check | r1 | r2 |
+|---|---|---|---|
+| clean control | - | exit 0 | **exit 0**, no file-specific findings |
+| `KEY_F9` literal | input.no_hardcoded_keys | FAIL, 1 | FAIL, 1 ✅ |
+| duplicated CollisionShape3D | colliders.duplicate_shape_transforms | FAIL, 1 | FAIL, 1 ✅ |
+| `debug_box` node | names.debug_nodes | WARN, 0 | **FAIL, 1** ✅ |
+| missing res:// ext_resource | refs.ext_resources | FAIL, 1 | FAIL, 1 ✅ |
+| unguarded missing res:// in .gd | refs.gd_res_paths | WARN, 0 | **FAIL, 1** ✅ |
+| albedo 1.0, no texture | materials.tscn_tres | WARN, 0 | **FAIL, 1** ✅ |
+| `.log`, force-tracked | repo.no_tracked_junk + repo.tracked_but_ignored | FAIL, 1 | FAIL, 1 ✅ |
+| `.log` untracked (gitignored) | - (by design) | 0 | 0 |
+| untracked `*render*` file | repo.untracked_outputs_ignored | WARN | WARN ✅ |
+
+## FPC fix verification
+| ID | Status | Evidence |
+|---|---|---|
+| FPC-01 | Fixed | duplicate_static_colliders 2101 -> 0 |
+| FPC-02 | Fixed | stair_slope 0 (main walk face; 74 spin-gravity shapes skipped) |
+| FPC-03 | Fixed | gd_res_paths PASS on main (1 guarded miss); the unguarded sabotage FAILs |
+| FPC-04 | Fixed | debug node and white albedo now FAIL |
+| FPC-05 | Fixed | textures.unused 269 -> 9, all plausibly real orphans (4 removal_decals, biome canopy, johnny5 lens, 2 ui panels, O'Neill vista) |
+| FPC-06 | Fixed | repo.missing_import_uid: 15 .import + 1 .uid (matches r1 observation) |
+| FPC-07 | Fixed (static) | `--verbose` prints full lists, e.g. all 9 unused textures. See FPC-11. |
+| FPC-08 | Fixed | `--no-godot` no longer prints stubs (main WARN 16 -> 7) |
+| FPC-09 | Fixed | 41 standalone lossless; 246 GLB-extracted excluded |
+| FPC-10 | Fixed | scoped to exterior/thin shells: 49 -> 45 |
+
+## Gage's findings
+**3a. 45 one-sided trimesh colliders: REAL at runtime, not a checker artifact.** A windowed run (xvfb, opengl3) of the main scene read `backface_collision` on every ConcavePolygonShape3D under a StaticBody in scope. Both frame 1 and frame 60 showed **45 one-sided / 3029 two-sided**, so nothing set later fixes them. The M-46 line (be4159e, `preface_playable_area.gd` ~8948) only covers the unclipped `_ext_add_solid_collision` fill path. The 45 fall into three groups:
+- 39 `ExteriorPlacements_v1_3/Ext_41_ext_curb_*` and `Ext_44_ext_paving_promenade_533..537` `ExtCollision` shapes. These are the per-instance **clipped** shapes from GEO-17/M-73 (z = -8.90 clip), which create a new `ConcavePolygonShape3D` without copying `backface_collision`.
+- 3 `Sector4_Promenade_ExteriorPlaza/.../ExtGroundCol/ExtGroundShape`, from `_ext_add_ground_colliders()` (~line 9158), which never sets it.
+- 3 `RevC_Shell_L1/L2/Roof_col` GLB-imported shells.
+Suggested fix (game code, Gage): set `backface_collision = true` on the clipped shape and in `_ext_add_ground_colliders`, then decide whether the RevC shells need it. The checker WARN is correct.
+
+**3b. ThresholdChevrons ExtGroundCol at DOOR_SECTOR4_EXIT, 50°: REAL but harmless, no snag.**
+- **Geometry:** 144 faces totalling 0.0111 m². The 45–70° band is only 0.0029 m² (0.0014 m² at about 50°); the rest is vertical, 30° and 40°. It's a tiny raised chevron inlay at x ±0.91, z -9.15..-8.85. The player's floor_max_angle is 50°.
+- **Probe:** door opened first (`_set_door_open_state` + `_finish_door_field`), and the player moved aside. A CharacterBody3D capsule (r 0.35, h 1.75, snap 0.35, same floor settings, **no step-up assist**, so this is a worst case) started 1.2 m back on each side and walked at 4 m/s at x = -0.6, 0, +0.6, both directions: 6/6 runs crossed the threshold at full speed, with 0 steep contacts on the chevrons.
+- **Not a chevron issue:** one inbound run (x -0.6) later stopped 2.6 m inside, at z -6.48, with its head on the `StairSetSwitchback/Flight1_Ramp-colonly` underside at y 1.82. That's the stair soffit, not the chevron. FYI for Vance/Rook: check whether the area under the stair should be blocked off or kept to 2.1 m headroom.
+Verdict: the WARN is accurate, but the face is a decorative sliver. Suggest allowing a minimum face area (e.g. ignore steep faces < 0.01 m² total per collider) or an allowlist entry, rather than a geometry change.
+
+## Remaining bugs
+| ID | Pri | Bug |
+|---|---|---|
+| FPC-11 | Low | Godot-side checks still cap examples at 5 (`ex.size() < 5`) even with `--verbose`. trimesh_two_sided listed 5 of 45. Pass `--verbose` through to the probe. |
+| FPC-12 | Low | walkable_slope: add a minimum steep-face area / allowlist so decorative slivers (ThresholdChevrons, 0.0014 m² at 50°) don't WARN. |
+Real project items, not checker bugs: 45 one-sided ext colliders (3a), 2 deleted-script scenes, 15 .import + 1 .uid untracked, 9 orphan textures.
+
+Cleanup: deleted only `/tmp/fpc_r2_patch`, `/tmp/fpc_r2_patch_sab` and `/tmp/fpc_r2_patch_out`, by exact name.
