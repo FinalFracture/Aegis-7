@@ -117,3 +117,10 @@ Status values: Open, Open-blocked (waiting on a decision or approval), Deferred 
 - NAV-03 (ALCOVE2C from inside): **Not a bug.** Opens and crosses from (-11.5, 4.08, -5.35).
 - NAV-04 -> M-46. NAV-05 -> M-41. NAV-06 -> M-47.
 - D-204 hatch: troubleshoot-simple 12/0 incl. e_aim_hatch_opens_ui; still a panel, not a walkable exit (M-31, pending Jared).
+
+## 2026-11-03 PM re-test (Patch, fresh clone 6af315b) — qa/PATCH_retest_GEO21_GEO22_FPC11_12_2026-11-03.md
+- GEO-21 (45 one-sided concave colliders: 39 GEO-17 clipped curb/paving, 3 plaza ext ground, 3 RevC shell): **Fixed (verified)** — Gage 6af315b. Frame 60: 3,079 concave, 0 of the 45 one-sided. 4 one-sided left are stair colonly prisms (Flight1_Ramp, Flight2_Ramp, L2_Landing, Flight1_Understair_Closure). They block a capsule from outside and below; Low note: make them two-sided for consistency.
+- GEO-22 (head strike under stair flight 1 at y 1.82, z -6.48): **Fixed (verified)** — Rook 0aec763. The closure is present, inbound capsules stop at its z -7.40 face, stairs pass 3/3 up and 3/3 down, and --qa-egress has 0 failures (23/23).
+- FPC-11 (list cap 8 + "N more", --verbose shows all): **Fixed (verified)** — Gage bb4da02.
+- FPC-12 (walkable-slope min area 0.25 m2 + chevron allowlist): **Fixed (verified)** — Gage bb4da02. Exit codes 0/1(--strict)/2 are correct, and the docs mention --verbose.
+
