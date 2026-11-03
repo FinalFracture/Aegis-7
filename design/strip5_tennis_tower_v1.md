@@ -6,8 +6,9 @@ Plan PNGs (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png
 
 ## 0. Revision log
 - **Rev 2.2 (Jared, 2026-11-02: "forget the dome… the whole upper level in a giant box of glass/plexiglass"; "Don't include the arena on the other side"):**
-  - **F3 becomes the Glass Box** (§3.5): the whole upper level, full 140 × 79 m footprint, glazed walls and a low-pitch glazed roof on a column-free space frame over the hall and all 4 stands. The R1–R5 roof candidates are kept as **superseded** (§3.5a).
+  - **F3 becomes the Glass Box** (§3.5): the whole upper level, full footprint (152 × 79 m after the aquatic growth), glazed walls and a low-pitch glazed roof on a column-free space frame over the hall and all 4 stands. The R1–R5 roof candidates are kept as **superseded** (§3.5a).
   - Stands stay 12 rows on 4 sides (F3 4,704 seats).
+  - **Aquatic center (Jared: "the pool can be bigger or gain amenities")** (§3.7a): the W band grows **12 m west** (X −12..30, 42 × 79 m, both floors) for the lap pool, a kiddie/splash pool, a lazy river loop, 2 waterslide towers to F2 with runouts, and a diving well in a pit formed by the plinth. **Footprint 152 × 79 m** (X −12..140). The building shifts 12 m east on site (x 306..458) so the West Arrival Plaza and the x 300 Station Walk are untouched.
   - **C5 Arena block removed** from this plan next to the East Plaza: **deferred, Jared will revisit later** (§3.8).
 - **Rev 2.1 (Jared, 2026-11-02):**
   - **Box lacrosse accepted** on F2.
@@ -91,17 +92,17 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 | Play area | 39.5..103.5 | 24.5..54.5 | 64 × 30 |
 | Concourse ring (4 m) | 35.5..107.5 | 20.5..58.5 | 72 × 38 outer |
 | F1/F2 stands ring (5.5 m) | 30..113 | 15..64 | 83 × 49 outer |
-| W band: pool (F1–F2) | 0..30 | 0..79 | 30 × 79 |
+| W band: **aquatic center (F1–F2), Rev 2.2** | **−12..30** | 0..79 | 42 × 79 |
 | E band: **arcade (F1–F2)** | 113..140 | 0..79 | 27 × 79 |
 | S band: **F1 bowling + axe**, **F2 TBD** | 30..113 | 0..15 | 83 × 15 |
 | N band: F1 food court, F2 gym | 30..113 | 64..79 | 83 × 15 |
-| Plant corners (F1–F3 stacks) | 0..12 / 128..140 | 0..10 / 69..79 | 4 × 12 × 10 m |
-| **Overall footprint** | **0..140** | **0..79** | **140 × 79 m** (was 109 × 58) |
+| Plant corners (F1–F3 stacks) | **−12..0** / 128..140 | 0..10 / 69..79 | 4 × 12 × 10 m |
+| **Overall footprint** | **−12..140** (Rev 2.2) | **0..79** | **152 × 79 m** (Rev 2.0: 140 × 79; Rev 1: 109 × 58) |
 
 ### 3.2 Footprint check (critical check 1)
 - **Field lacrosse (110 × 55 m):** play + concourse + stands = 129 × 74 m; with the bands **186 × 104 m**. Strip 5 is 125.66 m wide *(doc)*; after the S4|5 station band (6 m), the Rim Promenade (9.5 m), the Rim Trail (6 m) and 1.5 m rib buffers each side (`recreation_slice_36deg_layout_v1.md` §3) only ~101 m is left, so **104 m does not fit**, the curve sag across 104 m is 6.8 m, and a 5 m ceiling can't take field-lacrosse lofted passes. **Rejected.**
 - **Vance proposal: box lacrosse (~61 × 26 m rink, Jared's ~60 × 26) shared with arena soccer and futsal (40 × 20).** This sets the 64 × 30 m play area and the **140 × 79 m** minimum footprint.
-- Strip fit: 79 m across z fits the program area (z −40..50, 90 m) → **place at strip x 306..446, z −40..39** (Vance proposal), next to the x 300 S4|5 stop *(doc)*. Building local → strip: x = 306 + X, z = −40 + Z. **Rev 2.1: the Spine Walk is rerouted to arrive at and loop the complex (§3.8).**
+- Strip fit: 79 m across z fits the program area (z −40..50, 90 m) → **place at strip x 306..458, z −40..39** (Rev 2.2, Vance proposal), next to the x 300 S4|5 stop *(doc)*. Building local → strip: **x = 318 + X** (Rev 2.2; was 306 + X), z = −40 + Z. **Rev 2.1: the Spine Walk is rerouted to arrive at and loop the complex (§3.8).**
 - Curve sag across 79 m: 79²/(8·200) = **3.9 m** *(physics)*, so the plinth steps up to ~3.9 m at the long faces (was 2.1 m).
 
 ### 3.3 Stands per floor in 20 ft storeys (critical check 2)
@@ -122,7 +123,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 - **F3** is roofed by the Glass Box space frame (§3.5); its floor is the PT slab above.
 
 ### 3.5 F3 Glass Box (Rev 2.2, Vance proposal on dimensions and structure)
-**Extent: the full footprint, 140 × 79 m** (X 0..140, Z 0..79), not just the 96 × 62 m hall + stands. Why:
+**Extent: the full footprint, 152 × 79 m** (X −12..140, Z 0..79; Rev 2.2 incl. the aquatic growth), not just the 96 × 62 m hall + stands. Why:
 - Jared asked for "the whole upper level" in a box; the full footprint is that literally.
 - One clean prism is the strongest hard-sci-fi read and the simplest façade (no stepped roofs over the pool/arcade bands).
 - The band roofs outside the stands (W over the pool, E over the arcade, the N/S rear concourses) become enclosed concourse and terrace floor inside the box, so the 14 stairs and 4 lift banks all land indoors.
@@ -130,7 +131,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 
 | Item | Value |
 |---|---|
-| Plan | 140 × 79 m = 11,060 m² |
+| Plan | 152 × 79 m = 12,008 m² |
 | F3 floor | +12.2 m |
 | Top stand row | +17.6 m (12 rows × 0.45 m) |
 | **Roof space-frame underside (soffit)** | **+22.5 m** at the perimeter |
@@ -153,7 +154,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
   - In-engine: alphaMode **BLEND** glass with specular (Aegis-7 Standard, `PROJECT.md`, `context/vance-handoff-v3.md` §2).
 - **Drainage / condensation (habitat atmosphere):** there is no rain, so the 2% fall serves **cleaning water and condensate** only, into 300 mm perimeter gutters piped down the corner plant stacks. The box is a conditioned volume inside the drum's shared air (not a pressure boundary). Condensation risk is where chilled supply air meets glass and on the inside of the roof when the drum's lighting cycle drops; control it with dehumidification (NE plant), warm-air curtains at the façade base and a dew-point alarm. Pool humidity is sealed below the F3 slab.
 - **Hard-sci-fi look:** gunmetal `#1A1E24` space-frame nodes and fins, matte white `#D8DEE6` fin caps, recessed cyan `#00E5FF` LED strips along every roof grid line (so the box reads as a lit grid from across the drum, 400 m overhead), amber `#FF9500` hazard bands at the plant caps (PROJECT.md palette). From the far side of the drum it reads as a glowing glass slab with the courts visible inside.
-- **Smoke:** the 11,060 m² box with a 10–14 m smoke reservoir; NE plant smoke exhaust plus roof vents in the frit zone (Vance proposal).
+- **Smoke:** the 12,008 m² box with a 10–14 m smoke reservoir; NE plant smoke exhaust plus roof vents in the frit zone (Vance proposal).
 
 ### 3.5a Superseded (Rev 2.1): F3 roof candidates
 *Superseded by the Rev 2.2 Glass Box (Jared). Kept for the record.*
@@ -169,18 +170,41 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 **(Superseded) Rev 2.1 recommendation: R4 Diagrid Lens.** It covers the court and all four stands, has no thrust into the 2-floor band, brings the short-side stands back (+2,084 seats), sits lowest in the skyline (crown +29.3 m), and its oculus gives the building a single story beat. R5 Iris is the story alternative if Jared wants an opening roof.
 - Gravity notes: crown heights give 0.853 g (R4) to 0.775 g (R2 mast tips). Coriolis: a ball or tool dropped from the R4 crown (17.1 m above the court) lands ~0.3 m spinward of plumb (physics, (2/3)ω√(2h³/g)), so hang scoreboards on the lens centre line.
 
+### 3.7a Aquatic center (Rev 2.2, all dimensions Vance proposal)
+**Why grow the W band by 12 m (to 42 × 79 m = 3,318 m², was 2,370):** the lap pool, diving well, lazy river, splash pool and slide runouts need ~1,900 m² of water + decks against ~1,830 m² of usable band (after plant corners and the lobby). Growing **west** keeps the core, stands and lifts unchanged. On site the building **shifts 12 m east** (x 306..458) rather than growing into the West Arrival Plaza (x 258..306) and the x 300 Station Walk (x 294..306), so the main arrival and the stop link stay as in Rev 2.1. The east side is free now that the C5 Arena is deferred; the x 450 cross walk now ends at the loop arms.
+
+| Element | X | Z | Size | Depth | Notes |
+|---|---|---|---|---|---|
+| Plant SW / NW | −12..0 | 0..10 / 69..79 | 12 × 10 | — | moved with the corner |
+| **Lap pool** | −10..15 | 12..33 | 25 × 21 (8 lanes) | 2.0 m | deck +2.0 as before |
+| **Diving well** | 16..29 | 1..15 | 13 × 14 | **4.5 m** | 2 × 1 m springboards + 1 × 3 m; boards face +X (axial) |
+| Slide runout lanes | 16..29 | 17..33 | 2 lanes 1.2 m + runout pool 13 × 6 | 1.0 m | south half, by the diving deck |
+| Lobby / aquarium corridor | −12..30 | 34.5..44.5 | 42 × 10 | — | glazed both sides |
+| **Lazy river loop** | −10..28 (outer) | 47..67 (outer) | 3 m channel, ~104 m loop | 1.0 m | current by pumps; flows around the island |
+| Island: **kiddie/splash pool** | −4..10 | 52..62 | 14 × 10 | 0.3–0.6 m | spray deck, no slides |
+| Island: **2 waterslide towers** | 14..20 / 20..26 | 52..58 | 6 × 6 each | — | stair towers to a start deck at **+7.0 m** (F2 gallery +6.1 + 0.9 m stair), 2.7 m headroom under the +9.7 transfer-truss soffit; enclosed tube slides spiral down and cross the corridor in a glazed tube bridge at +4 m to the south runout lanes (Vance proposal) |
+| F2 gallery | −12..0 | 10..69 | 12 m wide | — | changing rooms, lockers, slide tower access, viewing; the rest of the band is double-height water hall |
+
+- **Diving depth vs the plinth:** a 3 m board wants ~3.8–5 m of water (*real-world ref*). The deck is at +2.0 and the hull floor can't be excavated (assumption, unverified), **but the building sits on a plinth that is deepest at its long faces** (curve sag d²/2R: 2.4 m at Z 8 → up to 3.9 m at Z 0). The diving well sits at Z 1..15, so **a 2.5 m pit in the plinth + the 2.0 m raised deck = 4.5 m of water** without touching the hull. Flag: the pit needs a waterproof concrete tank in the plinth fill, and the S face plinth must be built before the well.
+- **Diving headroom:** the band roof over the pool hall carries the F3 stands on ~2.5 m transfer trusses (soffit +9.7, so 7.7 m above the deck). That is fine for 1 m boards; the **3 m board needs ~5 m above it (8.0 m), so add a local coffer between the trusses over the well** (soffit +12.2 there, 10.2 m above the deck; Vance proposal), or drop to 1 m boards only.
+- **Load:** 4.5 m of water = 44 kPa on the plinth pit; the rest of the water ≤ 20 kPa (Rev 1.0 note).
+- **Spin/Coriolis (physics, notes):**
+  - *Slides:* a rider moving spinward/antispinward at 8 m/s feels ±2ωv = ±3.5 m/s² (±36% of g): heavier going spinward, lighter going antispinward, so banked curves must be **enclosed tubes**, and straight runs and runouts should run **axially** (zero effect).
+  - *Diving:* falling away from the axis drifts the diver antispinward by ωgt³/3: **0.07 m** from 1 m, **0.35 m** from 3 m. Boards face axially; the well is sized with ≥ 2.5 m side clearance (Vance proposal).
+  - Water surfaces stay level to local "down" (Rev 1.0 note).
+
 ### 3.8 Spine Walk arrival and loop (Rev 2.1, Jared: "leads directly to and around our sports complex")
 Strip-5 coordinates (x axial, z arc; `recreation_slice_36deg_layout_v1.md` §3). All Vance proposal.
 | Element | x | z | Width | Notes |
 |---|---|---|---|---|
 | Spine Walk (from Fore) | 0..258 | −6..6 | 12 m | unchanged, then opens into the plaza |
 | **West Arrival Plaza** | 258..306 | −24..24 | 48 × 48 m | **main entrance** at the building W face (lobby z −5.5..4.5); the **x 300 Station Walk (12 m, x 294..306)** runs through its east edge, so the x 300 stop towers (z ≈ −56) are 32 m from the plaza |
-| **Loop South arm** | 306..446 | −50..−40.5 | 9.5 m | **shared with the Rim Promenade**, the S face entrance (bowling/axe side) opens onto it |
-| **Loop North arm** | 306..446 | 41..50 | 9 m | new walk along the N face (food court entrance), abutting the Rim Trail at z 50 |
-| West/East corner links | 300..306 / 446..452 | ±24..±41 | 12 m | join the plaza to both arms |
-| **East Plaza (rejoin)** | 446..476 | −24..24 | 30 × 48 m | E face entrance (arcade); the **x 450 cross walk** crosses it; Spine Walk resumes east at z −6..6 |
-| Spine Walk (to Aft) | 476..800 | −6..6 | 12 m | unchanged |
-| Cross walks x 350 / 400 | 350 / 400 | −62.8..−50 and 50..62.8 | 6 m | **end at the loop arms** (S: Rim Promenade, N: north arm) instead of crossing the building |
+| **Loop South arm** | 306..458 | −50..−40.5 | 9.5 m | **shared with the Rim Promenade**, the S face entrance (bowling/axe side) opens onto it |
+| **Loop North arm** | 306..458 | 41..50 | 9 m | new walk along the N face (food court entrance), abutting the Rim Trail at z 50 |
+| West/East corner links | 294..306 / 458..470 | ±24..±41 | 12 m | join the plaza to both arms |
+| **East Plaza (rejoin)** | 458..488 | −24..24 | 30 × 48 m | E face entrance (arcade); Spine Walk resumes east at z −6..6 (Rev 2.2: shifted 12 m east) |
+| Spine Walk (to Aft) | 488..800 | −6..6 | 12 m | unchanged |
+| Cross walks x 350 / 400 / 450 (Rev 2.2) | 350 / 400 / 450 | −62.8..−50 and 50..62.8 | 6 m | **end at the loop arms** (S: Rim Promenade, N: north arm) instead of crossing the building |
 - Rev 2.0's "divert around the N face" is dropped: the loop gives both sides and makes the building the Spine's destination.
 - **Rev 2.2: the C5 Arena block (x 480..520) is removed from this plan. Deferred: Jared will revisit it later.** The area east of the East Plaza stays open lawn (C5 band) for now.
 
@@ -191,8 +215,8 @@ Strip-5 coordinates (x axial, z arc; `recreation_slice_36deg_layout_v1.md` §3).
 - Doc rule: 2 exits per building (`strip4_plan.md` §6). Worst travel from a seat to a stair ≈ 35 m, within the 60 m Vance proposal (`recreation_slice_36deg_layout_v1.md` §5). Ground exits on all 4 faces.
 
 ### 3.7 Pool, bowling, axe throwing, plant
-- **Rev 2.1 main entrance lobby (W band, F1):** X 0..30, Z 34.5..44.5 (10 m), straight from the West Arrival Plaza to the W lift bank and the F1 concourse; F2 above it is a pool viewing gallery.
-- **Pool (W band, F1–F2):** Rev 2.1 at X 2.5..27.5, **Z 11..32** (clear of the SW plant corner Z 0..10 and the lobby); changing rooms Z 47..69. 25 × 21 m, 2.0 m deep, tank on grade, deck +2.0 m (no-excavation assumption, unverified), load ≈ 32 kPa. The SW/NW plant corners serve it.
+- **Main entrance lobby (W band, F1):** Rev 2.2 X −12..30, Z 34.5..44.5 (10 m), a glazed "aquarium corridor" from the West Arrival Plaza through the aquatic center to the W lift bank and the F1 concourse; F2 above it is a viewing bridge.
+- **Pool (W band, F1–F2):** superseded by §3.7a (Rev 2.2 aquatic center). Original lap pool: 25 × 21 m, 2.0 m deep, tank on grade, deck +2.0 m (no-excavation assumption, unverified), load ≈ 32 kPa. The SW/NW plant corners serve it.
 - **Bowling + axe on F1 (S band, X 30..113 × Z 0..15), on grade (best for impact):**
   - **Bowling:** 8 lanes along X, X 30..57 (19.16 m to the head pin + 4.6 m approach + ~3 m pin deck), Z 0.6..15.
   - **Axe:** 2 rows × 4 bays (3.7 × 7 m), throwing **+X axially** into isolated target walls at X 82..83 and X 101..102, Z 0.2..15; 1 m double-stud acoustic wall between bowling and axe at X 57..58 and toward the stands; lift lobby S at X 69.5..73.5 between them.
@@ -219,8 +243,8 @@ Z0  +--------+---------------------------------+---------+
 ```
 | Floor | Height (m) | g | Play area (64 × 30) | Concourse | Stands | S band | N band | W band | E band |
 |---|---|---|---|---|---|---|---|---|---|
-| F1 | 0–6.1 | 1.000 | **4 Spin Court boxes** (2 × 2), each convertible to 1 modified badminton / 1 modified volleyball / 1 pickleball | 4 m ring | 5 rows, 4 sides, **1,960** | Bowling 8 lanes + axe 8 bays | Food court | Pool (deck +2.0) | Arcade L1 |
-| F2 | 6.1–12.2 | 0.970 | **1 box-lacrosse / arena-soccer rink** (61 × 26, boards + glass); converts to 1 futsal 40 × 20 | 4 m ring | 5 rows, 4 sides, **1,960** | **TBD** | Gym | Pool void | Arcade L2 |
+| F1 | 0–6.1 | 1.000 | **4 Spin Court boxes** (2 × 2), each convertible to 1 modified badminton / 1 modified volleyball / 1 pickleball | 4 m ring | 5 rows, 4 sides, **1,960** | Bowling 8 lanes + axe 8 bays | Food court | **Aquatic center** (lap, diving well, lazy river, splash, slide runouts) | Arcade L1 |
+| F2 | 6.1–12.2 | 0.970 | **1 box-lacrosse / arena-soccer rink** (61 × 26, boards + glass); converts to 1 futsal 40 × 20 | 4 m ring | 5 rows, 4 sides, **1,960** | **TBD** | Gym | Aquatic hall void + F2 gallery (changing, slide towers) | Arcade L2 |
 | F3 | 12.2 → Glass Box roof +25.5/26.3 | 0.939 | **2 basketball courts** 28 × 15 end-to-end along X (or 4 cross half-courts for practice) | 4 m ring | 12 rows, **all 4 sides, 4,704** | band roof: rear concourse / terrace | same | flat roof over pool | flat roof over arcade |
 - **Total seats ≈ 8,624** (1,960 + 1,960 + 4,704).
 - Court counts: **F1 4, F2 1 rink, F3 2.**
@@ -233,17 +257,17 @@ Z0  +--------+---------------------------------+---------+
 
 ## 6. Critical issues (Rev 2.1; sports-rule items moved to notes per Jared)
 1. **F3 egress:** 4,704 seats need ~36 m of stair; 14 stairs (8 × 2.5 + 6 × 2.7 m) proposed.
-2. **Footprint 140 × 79 m** and a 3.9 m plinth sag across Z; the loop walk and plazas use ~1.1 ha of the C5 Long Field third.
-3. **Glass Box:** 3.0 m space frame column-free over 96 × 62 m on 12 tree columns at the stand backs; those columns and the band grid must take the roof plus the overhanging short-side stands. 11,060 m² of glazed roof means solar/glare and heat gain (40% frit + plant capacity), condensation control and a cleaning regime (gantry on the roof grid).
-4. **Pool moved** to Z 11..32 for the lobby; pool on grade still assumes no hull excavation (unverified).
+2. **Footprint 152 × 79 m** (Rev 2.2) and a 3.9 m plinth sag across Z; the loop walk and plazas use ~1.1 ha of the C5 Long Field third.
+3. **Glass Box:** 3.0 m space frame column-free over 96 × 62 m on 12 tree columns at the stand backs; those columns and the band grid must take the roof plus the overhanging short-side stands. 12,008 m² of glazed roof means solar/glare and heat gain (40% frit + plant capacity), condensation control and a cleaning regime (gantry on the roof grid).
+4. **Aquatic center:** the diving well relies on a 2.5 m pit in the S-face plinth and a coffer for the 3 m board; pools on grade still assume no hull excavation (unverified); footprint +12 m west, building shifted 12 m east on site.
 5. **Corner-plant ducts** run ~60 m to the far side of the hall.
 6. Doc RPM values don't match R 200 (carried from Rev 1.0).
 **Notes (not critical, per Jared):** F1/F2 clear heights (≈5.0/4.6 m), modified badminton/volleyball, Coriolis shot drift, "not low gravity". Kept in §2 for story/visual use.
 
 ## 7. Open questions for Jared
-1. **Glass Box extent: full 140 × 79 m footprint (proposed), or only the 96 × 62 m hall + stands?** Flat (2% fall) roof OK?
+1. **Glass Box extent: full 152 × 79 m footprint (proposed), or only the 96 × 62 m hall + stands?** Flat (2% fall) roof OK?
 2. Short-side F3 stands kept (+2,084 seats, +6 stairs): confirm?
 3. Spine loop: West Arrival Plaza as the main entrance (with the x 300 stop alongside) and the East Plaza rejoin: OK?
 4. ~~C5 Arena~~ deferred (Jared will revisit).
 5. **S band F2 freed space: TBD - options: esports/VR arena, bar & lounge, kids' play zone, pro shop & lockers.**
-6. Pool on the W side behind the main lobby, arcade on the E side: OK?
+6. Aquatic center as laid out (lap + diving well + lazy river + splash + 2 slide towers), with the building shifted 12 m east: OK? 3 m board with a roof coffer, or 1 m boards only?
