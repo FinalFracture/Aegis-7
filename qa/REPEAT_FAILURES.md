@@ -44,3 +44,10 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | f5f97d4 | "M-46 tram waypoint": egress final waypoint moved to (11.0, 0.30, -16.1) | Patch r3 c7fe8ec marked Fixed because --qa-egress passed |
 | — | — | **Came back:** QA-01 sweep 5e3c137 NAV-04 trapped at (9.98-10.48, 0.33, -16.89..-17.00), escape 0/4; Patch real-input repro on the same code: trapped at (10.20, 0.33, -16.97), floor contacts only (ExtCollision, n +Y), escape 0/4 |
 **Likely cause:** the fix changed the test, not the geometry. Moving the egress waypoint made --qa-egress pass while the platform floor shape (ExtCollision ExtShape_1, likely an edge/seam catch in the deck) still traps the capsule; QA accepted a suite pass instead of a free walk at the original spot. Fix the platform collider and re-test with a real-input walk and an escape check.
+
+## M-46 - tram platform trap (repeat failure, fix pending re-test)
+| Commit | Attempt | Result at re-test |
+|---|---|---|
+| (earlier) | egress waypoint moved to (11.0, -16.1) west of the shelter | QA-01: player still trapped, 2 of 4 exits, stops 1.10 m short |
+| (this commit) | ext trimesh colliders made two-sided (backface_collision) | Gage real-input probe: platform end (11.81, -16.74) 3/3 exits PASS, snag (7.62, -17.95) 3/3 exits PASS; --qa-egress re-run pending Patch |
+**Likely cause:** one-sided ConcavePolygonShape3D trimeshes on exterior props (tram platform kerb/shelter, paving/curb seams). The capsule slid past a face edge and sat on floor contacts only with no way to depenetrate, so every direction read as blocked. Earlier fixes moved the test target instead of the collider.

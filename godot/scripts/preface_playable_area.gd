@@ -8669,6 +8669,9 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 				if shape != null:
 					# Shared across instances of this asset. Margin 0 keeps the hit on the mesh.
 					shape.margin = 0.0
+					# [M-46] Two-sided trimesh. One-sided ext faces let the capsule sink past a face and pin on the
+					# hidden side (tram platform end (11.81, 0.34, -16.74) on ExtShape_0, paving/curb seam (7.62, -17.95)).
+					shape.backface_collision = true
 				unique[mid] = shape
 			cached[i] = shape
 		elif i < cached.size():
