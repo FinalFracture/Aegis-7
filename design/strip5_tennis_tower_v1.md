@@ -1,10 +1,14 @@
 # Strip 5 "The Green" — Multi-Sport Tower (ex Spin Court Tennis Tower) — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.1**, 2026-11-02 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 2.2**, 2026-11-02 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside sports/building practice, not a project constraint; **Vance proposal** = my design call, not a constraint.
-Plan PNGs (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, roof_candidates.png, site_plan.png`.
+Plan PNGs (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png` (roof_candidates.png deleted in Rev 2.2).
 
 ## 0. Revision log
+- **Rev 2.2 (Jared, 2026-11-02: "forget the dome… the whole upper level in a giant box of glass/plexiglass"; "Don't include the arena on the other side"):**
+  - **F3 becomes the Glass Box** (§3.5): the whole upper level, full 140 × 79 m footprint, glazed walls and a low-pitch glazed roof on a column-free space frame over the hall and all 4 stands. The R1–R5 roof candidates are kept as **superseded** (§3.5a).
+  - Stands stay 12 rows on 4 sides (F3 4,704 seats).
+  - **C5 Arena block removed** from this plan next to the East Plaza: **deferred, Jared will revisit later** (§3.8).
 - **Rev 2.1 (Jared, 2026-11-02):**
   - **Box lacrosse accepted** on F2.
   - **Clear heights accepted as they are.** "The point of the game isn't to play sports. It's telling a story": sports are decoration, so rule-driven caveats leave the critical list and stay as notes (§2.4).
@@ -47,7 +51,7 @@ At the floor Strip 5 is **1.00 g** (State 1). Spin gravity g(h) = ω²(R − h):
 | F2 (6.1 m) | 0.970 g | |
 | F3 (12.2 m) | 0.939 g | |
 | F3 roof edge (≈18.3–20.5 m) | 0.909–0.898 g | |
-| R4 lens crown (29.3 m) | 0.853 g | |
+| Glass Box roof top (25.5 m) | 0.873 g | |
 So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s vertical lob takes 2.04 s on F1 and 2.17 s on F3 (+6.5%), apex 5.10 m vs 5.43 m. **The "lower gravity" feel only becomes big in the Chapter 1 crisis states (0.35G/0.12G, doc).** What *is* strong here is **Coriolis**, so I propose the adapted sport is built around Coriolis, with a small per-floor g ladder as a bonus (Vance proposal).
 
 ### 2.3 Coriolis (a = −2ω×v, ω along the drum axis)
@@ -72,7 +76,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 | F2 | **Box lacrosse / arena soccer (recommended)** | rink ~61 × 26 m with boards + glass | ≈4.6 m (§3.4) | Low, fast shots suit it; lofted balls hit the ceiling → ceiling out / ceiling in play (arena-soccer style) |
 | F2 | Futsal | 40 × 20 m inside the rink | ≈4.6 m | Convertible lines on the same floor |
 | F2 | Field lacrosse | 110 × 55 m | — | **Rejected** (§6, issue 1) |
-| F3 | Basketball | 28 × 15 m (+2 m runoff) | **≈8.3 m at the lens edge, 17.1 m under the crown** (R4) | The F3 roof solves the height on this floor only |
+| F3 | Basketball | 28 × 15 m (+2 m runoff) | **10.3 m under the Glass Box soffit** (Rev 2.2) | The F3 box solves the height on this floor only |
 
 **Basketball Coriolis (physics, g = 0.939 on F3):** drift Δ = (4/3)ωv_up³/g². A free throw (v_up ≈ 5 m/s, flight ≈ 1.1 s) drifts **0.44 m** spinward, about one rim diameter (0.457 m *real-world ref*); a 3-pointer (v_up ≈ 6 m/s) drifts **0.75 m**. Players must aim off; both baskets sit on the axial line, so the drift is mirrored for the two teams and fair over two halves. This is the signature look of the floor.
 **Axe throwing Coriolis:** a horizontal 8 m/s throw across the spin gets 2ωv = 3.5 m/s² (0.36 g) radial push, so **all axe lanes throw axially** (along x).
@@ -105,7 +109,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 - Spectators must see over people walking on the concourse in front, so the **front row is raised +0.9 m** behind a glass balustrade (Vance proposal). Risers 0.40 m, treads 0.85 m, top-row headroom ≥ 2.5 m:
   - rows at +0.9, 1.3, 1.7, 2.1, 2.5 → **5 rows within the storey**; the top row has 2.5 m headroom. Depth 5 × 0.85 + 1.2 m rear aisle ≈ 5.5 m.
   - A 6th row would need 2.1 m headroom (too low). **No double-height zones on F1/F2** (they would eat the band floors above); F3's stands rise under the roof instead.
-- **F3 (Rev 2.1, under the R4 lens):** **12 rows on all 4 sides** (0.45 m risers, 0.85 m treads, top row +5.4 m above F3 = +17.6 m), starting at the concourse edge. Long sides Z 9.1..20.5 / 58.5..69.9 (66 m of seating after the 6 m lift gap); short sides X 24.1..35.5 / 107.5..118.9 (32 m after the lift gap). The roof edge sits at ≥ +20.5 m, so ≥ 2.9 m headroom over the top row.
+- **F3 (Rev 2.1; Rev 2.2 inside the Glass Box):** **12 rows on all 4 sides** (0.45 m risers, 0.85 m treads, top row +5.4 m above F3 = +17.6 m), starting at the concourse edge. Long sides Z 9.1..20.5 / 58.5..69.9 (66 m of seating after the 6 m lift gap); short sides X 24.1..35.5 / 107.5..118.9 (32 m after the lift gap). Rev 2.2: the Glass Box soffit is +22.5 m, so 4.9 m headroom over the top row.
   - Seats: long 2 × 12 × 132 = 3,168; short 2 × 12 × 64 = 1,536; **F3 = 4,704** (Rev 2.0 dome: 2,620).
   - The short-side stands overhang the W/E band roofs by 5.9 m (X 24.1..30 and 113..118.9), carried on the band's columns.
 
@@ -115,9 +119,44 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
   - **Post-tensioned concrete band beams (~1.5 m zone, services run in the band, not over the rink) → F2 clear ≈ 4.6 m (recommended, Vance proposal).**
   - F2's low ceiling is the biggest sporting compromise in the building (§6).
 - **F1** can keep columns in the runoff between its 4 court boxes (14 × 26 m grid, 1.1 m floor zone) → F1 clear ≈ 5.0 m. These columns carry the F2 floor.
-- **F3** is spanned by the R4 lens (§3.5); its floor is the PT slab above.
+- **F3** is roofed by the Glass Box space frame (§3.5); its floor is the PT slab above.
 
-### 3.5 F3 roof candidates (Rev 2.1; replaces the Rev 2.0 geodesic dome)
+### 3.5 F3 Glass Box (Rev 2.2, Vance proposal on dimensions and structure)
+**Extent: the full footprint, 140 × 79 m** (X 0..140, Z 0..79), not just the 96 × 62 m hall + stands. Why:
+- Jared asked for "the whole upper level" in a box; the full footprint is that literally.
+- One clean prism is the strongest hard-sci-fi read and the simplest façade (no stepped roofs over the pool/arcade bands).
+- The band roofs outside the stands (W over the pool, E over the arcade, the N/S rear concourses) become enclosed concourse and terrace floor inside the box, so the 14 stairs and 4 lift banks all land indoors.
+- The 4 corner plant stacks rise through the box and end in louvred caps above its roof.
+
+| Item | Value |
+|---|---|
+| Plan | 140 × 79 m = 11,060 m² |
+| F3 floor | +12.2 m |
+| Top stand row | +17.6 m (12 rows × 0.45 m) |
+| **Roof space-frame underside (soffit)** | **+22.5 m** at the perimeter |
+| Roof space-frame depth | 3.0 m |
+| Roof top | +25.5 m at the perimeter, **+26.3 m at the crown** (2% fall from the centre line to perimeter gutters, ~1.1°) |
+| Glazed wall height | +12.2 → +25.5 m = **13.3 m** |
+| Headroom over the top stand row | 22.5 − 17.6 = **4.9 m** ✓ (≥ 2.5 m) |
+| Clear over the courts (ball zone) | 22.5 − 12.2 = **10.3 m** at the edges, ≈11.1 m under the crown ✓ (notes only: FIBA ~7 m *real-world ref*) |
+| Gravity | 0.939 g at the F3 floor, **0.873 g** at the roof top (physics) |
+| Building height | **+26.3 m** to the crown; plant caps ~+28 m |
+
+**Structure (Vance proposal):**
+- **Roof:** two-way **square-on-square steel space frame**, 3.0 × 3.0 m grid, 3.0 m deep, CHS members with bolted ball nodes. **Column-free over 96 × 62 m** (the hall, concourse and all 4 stands, X 23.5..119.5, Z 8.5..70.5): depth 3.0 m on the 62 m short span = span/21 ✓ for a two-way frame with light glazing loads (no wind, rain or snow in the drum, Vance assumption).
+- **Supports:** 12 tree columns at the backs of the stands (4 on each long side, 2 on each short side) carry the inner 96 × 62 field; outside it the frame runs on to the façade on the band's 9 m column grid.
+- **Walls:** steel fin mullions, **600 mm deep, at 3.0 m centres** (matching the roof grid), horizontal transoms at 3.325 m (4 panes over 13.3 m); fins double as façade columns every 9 m (heavier fins).
+- **Glazing module:** 3.0 × 3.325 m wall panes, 3.0 × 3.0 m roof panes (one per grid bay).
+- **Build-up:**
+  - **Wall:** laminated low-iron glass 2 × 10 mm heat-strengthened + 1.52 mm SGP interlayer, plus an inner **10 mm polycarbonate ("plexiglass") ball-guard** from +12.2 to +16.2 behind the concourse (the brief's plexiglass).
+  - **Roof:** laminated 2 × 8 mm heat-strengthened + 1.52 SGP (overhead safety), 40% ceramic frit dot pattern for glare from the Sun-core and the far-wall city; a **tensioned ball net** under the space frame over the play area.
+  - In-engine: alphaMode **BLEND** glass with specular (Aegis-7 Standard, `PROJECT.md`, `context/vance-handoff-v3.md` §2).
+- **Drainage / condensation (habitat atmosphere):** there is no rain, so the 2% fall serves **cleaning water and condensate** only, into 300 mm perimeter gutters piped down the corner plant stacks. The box is a conditioned volume inside the drum's shared air (not a pressure boundary). Condensation risk is where chilled supply air meets glass and on the inside of the roof when the drum's lighting cycle drops; control it with dehumidification (NE plant), warm-air curtains at the façade base and a dew-point alarm. Pool humidity is sealed below the F3 slab.
+- **Hard-sci-fi look:** gunmetal `#1A1E24` space-frame nodes and fins, matte white `#D8DEE6` fin caps, recessed cyan `#00E5FF` LED strips along every roof grid line (so the box reads as a lit grid from across the drum, 400 m overhead), amber `#FF9500` hazard bands at the plant caps (PROJECT.md palette). From the far side of the drum it reads as a glowing glass slab with the courts visible inside.
+- **Smoke:** the 11,060 m² box with a 10–14 m smoke reservoir; NE plant smoke exhaust plus roof vents in the frit zone (Vance proposal).
+
+### 3.5a Superseded (Rev 2.1): F3 roof candidates
+*Superseded by the Rev 2.2 Glass Box (Jared). Kept for the record.*
 **Cover zone:** hall 64 × 30 m + concourse + 12-row stands on 4 sides = **X 23.5..119.5, Z 8.5..70.5 (96 × 62 m)**. Top stand row +17.6 m → roof edge ≥ +20.5 m. No wind, snow or rain in the drum (Vance assumption), so roofs carry self-weight, services and ball-impact only; netting under glazing contains balls.
 | # | Candidate | Span / plan | Rise / height | Structure | Skyline read | Pros | Cons | Story flavor |
 |---|---|---|---|---|---|---|---|---|
@@ -127,7 +166,7 @@ So the top (F3) court is only ~6% lighter. Lob flight time t = 2v_up/g: a 10 m/s
 | **R4** | **Diagrid Lens (recommended)** | elliptical lens **100 × 66 m** over the 96 × 62 cover zone | edge **+20.5 m**, crown **+29.3 m** (rise 8.8 m, 0.853 g at crown) | 2-layer steel diagrid space truss, **3.0 m deep** (≈ span/21 on the 62 m short span), on **8 V-columns** at the stand backs; ETFE cushions + BLEND glass oculus over the courts; no horizontal thrust | a floating disc/lens, an "eye" looking up at the Sun-core from across the drum | covers court + all 4 stands, thrust-free (simple supports on the band), lowest bulk, short-side stands return | 3 m deep truss is heavy for a span; double-curved diagrid nodes are complex | "Ground like a telescope lens; at dusk-cycle the oculus focuses the Sun-core onto centre court." |
 | R5 | **Iris / Petal Roof** | elliptical ring 96 × 62 m, 12 steel petals | ring +20.5 m, petal tips meet at **+26 m** closed | fixed perimeter ring truss (covers the stands) + 12 motorised petals on rail bogies (cover the courts); ball nets under the opening | an aperture that opens to the drum sky, like a camera iris | the most theatrical; opens for events | moving roof = drives, seals and maintenance; ball containment when open needs a net | "Opens only for the Remembrance Match, so the players are seen from every strip." |
 
-**Recommendation (Vance proposal): R4 Diagrid Lens.** It covers the court and all four stands, has no thrust into the 2-floor band, brings the short-side stands back (+2,084 seats), sits lowest in the skyline (crown +29.3 m), and its oculus gives the building a single story beat. R5 Iris is the story alternative if Jared wants an opening roof.
+**(Superseded) Rev 2.1 recommendation: R4 Diagrid Lens.** It covers the court and all four stands, has no thrust into the 2-floor band, brings the short-side stands back (+2,084 seats), sits lowest in the skyline (crown +29.3 m), and its oculus gives the building a single story beat. R5 Iris is the story alternative if Jared wants an opening roof.
 - Gravity notes: crown heights give 0.853 g (R4) to 0.775 g (R2 mast tips). Coriolis: a ball or tool dropped from the R4 crown (17.1 m above the court) lands ~0.3 m spinward of plumb (physics, (2/3)ω√(2h³/g)), so hang scoreboards on the lens centre line.
 
 ### 3.8 Spine Walk arrival and loop (Rev 2.1, Jared: "leads directly to and around our sports complex")
@@ -143,7 +182,7 @@ Strip-5 coordinates (x axial, z arc; `recreation_slice_36deg_layout_v1.md` §3).
 | Spine Walk (to Aft) | 476..800 | −6..6 | 12 m | unchanged |
 | Cross walks x 350 / 400 | 350 / 400 | −62.8..−50 and 50..62.8 | 6 m | **end at the loop arms** (S: Rim Promenade, N: north arm) instead of crossing the building |
 - Rev 2.0's "divert around the N face" is dropped: the loop gives both sides and makes the building the Spine's destination.
-- The C5 Arena block (x 480..520) sits 4 m beyond the East Plaza; its west edge becomes the plaza's frontage (open question: keep bldg_17 there, or drop it because the complex is now the arena).
+- **Rev 2.2: the C5 Arena block (x 480..520) is removed from this plan. Deferred: Jared will revisit it later.** The area east of the East Plaza stays open lawn (C5 band) for now.
 
 ### 3.6 Lifts, stairs and egress (critical check 4)
 - **4 lift banks, one per side** (brief), 2 cars each = 8 cars, at the side midpoints: S X 69.5..73.5 / Z 11..15, N X 69.5..73.5 / Z 64..68, W X 26..30 / Z 37.5..41.5, E X 113..117 / Z 37.5..41.5. Each opens through a **6 m gap in the stands straight onto the concourse** (lifts never surface inside stands). Lift speed cap 1.0–1.6 m/s (Coriolis, Rev 1.0).
@@ -176,13 +215,13 @@ Z15 |  LOBBY>+==== STANDS (5 rows) ============+         |
 Z0  +--------+---------------------------------+---------+
     X0      X30                               X113      X140
  # = stair in ring corner; L = lift bank (S/N at X 69.5..73.5) opening onto the concourse.
- F3: R4 Diagrid Lens 100 x 66 m over hall + 4 stands (12 rows); band roof elsewhere.
+ F3: GLASS BOX over the full 140 x 79 m; hall + 4 stands (12 rows) column-free under it.
 ```
 | Floor | Height (m) | g | Play area (64 × 30) | Concourse | Stands | S band | N band | W band | E band |
 |---|---|---|---|---|---|---|---|---|---|
 | F1 | 0–6.1 | 1.000 | **4 Spin Court boxes** (2 × 2), each convertible to 1 modified badminton / 1 modified volleyball / 1 pickleball | 4 m ring | 5 rows, 4 sides, **1,960** | Bowling 8 lanes + axe 8 bays | Food court | Pool (deck +2.0) | Arcade L1 |
 | F2 | 6.1–12.2 | 0.970 | **1 box-lacrosse / arena-soccer rink** (61 × 26, boards + glass); converts to 1 futsal 40 × 20 | 4 m ring | 5 rows, 4 sides, **1,960** | **TBD** | Gym | Pool void | Arcade L2 |
-| F3 | 12.2–18.3 + R4 lens to 29.3 | 0.939 | **2 basketball courts** 28 × 15 end-to-end along X (or 4 cross half-courts for practice) | 4 m ring | 12 rows, **all 4 sides, 4,704** | band roof: rear concourse / terrace | same | flat roof over pool | flat roof over arcade |
+| F3 | 12.2 → Glass Box roof +25.5/26.3 | 0.939 | **2 basketball courts** 28 × 15 end-to-end along X (or 4 cross half-courts for practice) | 4 m ring | 12 rows, **all 4 sides, 4,704** | band roof: rear concourse / terrace | same | flat roof over pool | flat roof over arcade |
 - **Total seats ≈ 8,624** (1,960 + 1,960 + 4,704).
 - Court counts: **F1 4, F2 1 rink, F3 2.**
 
@@ -195,16 +234,16 @@ Z0  +--------+---------------------------------+---------+
 ## 6. Critical issues (Rev 2.1; sports-rule items moved to notes per Jared)
 1. **F3 egress:** 4,704 seats need ~36 m of stair; 14 stairs (8 × 2.5 + 6 × 2.7 m) proposed.
 2. **Footprint 140 × 79 m** and a 3.9 m plinth sag across Z; the loop walk and plazas use ~1.1 ha of the C5 Long Field third.
-3. **R4 lens:** 3.0 m deep diagrid over 62 m on 8 V-columns standing on the band; the band's columns must take the roof plus the overhanging short-side stands.
+3. **Glass Box:** 3.0 m space frame column-free over 96 × 62 m on 12 tree columns at the stand backs; those columns and the band grid must take the roof plus the overhanging short-side stands. 11,060 m² of glazed roof means solar/glare and heat gain (40% frit + plant capacity), condensation control and a cleaning regime (gantry on the roof grid).
 4. **Pool moved** to Z 11..32 for the lobby; pool on grade still assumes no hull excavation (unverified).
 5. **Corner-plant ducts** run ~60 m to the far side of the hall.
 6. Doc RPM values don't match R 200 (carried from Rev 1.0).
 **Notes (not critical, per Jared):** F1/F2 clear heights (≈5.0/4.6 m), modified badminton/volleyball, Coriolis shot drift, "not low gravity". Kept in §2 for story/visual use.
 
 ## 7. Open questions for Jared
-1. **Roof: R4 Diagrid Lens (recommended), or R1 Saddle / R2 Cable-Net / R3 Barrel Vault / R5 Iris?**
-2. Bring back the short-side F3 stands (+2,084 seats, +6 stairs)?
+1. **Glass Box extent: full 140 × 79 m footprint (proposed), or only the 96 × 62 m hall + stands?** Flat (2% fall) roof OK?
+2. Short-side F3 stands kept (+2,084 seats, +6 stairs): confirm?
 3. Spine loop: West Arrival Plaza as the main entrance (with the x 300 stop alongside) and the East Plaza rejoin: OK?
-4. C5 Arena (bldg_17) next to the East Plaza: keep, move, or drop since this complex is now the arena?
+4. ~~C5 Arena~~ deferred (Jared will revisit).
 5. **S band F2 freed space: TBD - options: esports/VR arena, bar & lounge, kids' play zone, pro shop & lockers.**
 6. Pool on the W side behind the main lobby, arcade on the E side: OK?
