@@ -2367,7 +2367,7 @@ func _spawn_apt201_bench_outline() -> void:
 	quad.orientation = PlaneMesh.FACE_Y
 	deck.mesh = quad
 	# [M-48] 6 mm above the previous 4.418 placement. Lit, so emergency ambient/sun dims it. No collider.
-	deck.position = Vector3(-12.05, 4.418 + 0.006, 7.65)
+	deck.position = Vector3(-12.05, 4.203, 7.65) # [M-71] Rev C L2 floor 4.20 + 3 mm (was the pre-Rev C 4.415 datum)
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.albedo_color = Color(1, 1, 1, 1)
@@ -2498,7 +2498,7 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		# and of the tea caddy (z 7.7..8.1).
 		"id": "Lost_And_Found_Rail_Bins",
 		"path": "res://assets/models/lost_and_found_rail_bins.glb",
-		"position": Vector3(1.40, 0.12, 5.35),
+		"position": Vector3(1.40, -0.27, 5.35), # [M-64/LAY-21] mesh bottom is +0.39 over the pivot; this rests it on the L1 floor 0.12
 		"yaw": 90.0
 	},
 	{
@@ -2520,7 +2520,7 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		# so the pivot is 0.035 above the L2 datum and the hooks sit on it. Head points south at the chair.
 		"id": "Task_Lamp_201",
 		"path": "res://assets/models/task_lamp_rail_slider.glb",
-		"position": Vector3(-13.2, 4.450, 5.6),
+		"position": Vector3(-13.2, 4.235, 5.6), # [M-65/LAY-22] Rev C L2 floor 4.20 + 0.035 hook offset (was the old 4.415 datum)
 		"yaw": 180.0
 	},
 	{
@@ -2549,7 +2549,7 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		# #34 rail cradles, room 102 plan F(10.3, 6, 11, 6.7), center (10.65, 6.35). Floor-referenced pivot.
 		"id": "Potted_Plants_Rail_Cradles_102",
 		"path": "res://assets/models/potted_plants_rail_cradles.glb",
-		"position": Vector3(10.65, 0.12, 6.35),
+		"position": Vector3(10.65, -0.08, 6.35), # [M-72/LAY-24] mesh bottom is +0.20 over the pivot; rests on the L1 floor 0.12
 		"yaw": 0.0
 	},
 	{
@@ -2566,7 +2566,7 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		# so its world-Z extent around this centre is 4.40..7.10. Height 2.1 m.
 		"id": "Wardrobe_101",
 		"path": "res://assets/models/wardrobe_openbays_rails.glb",
-		"position": Vector3(-13.65, 0.12, 5.75),
+		"position": Vector3(-13.65, 0.02, 5.75), # [M-66/LAY-23] mesh bottom is +0.10 over the pivot; rests on the L1 floor 0.12
 		"yaw": 90.0
 	}
 ]
