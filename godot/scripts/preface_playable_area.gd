@@ -318,6 +318,7 @@ var _ext_shot: int = 0
 var _ext_shot_frames: int = -1
 var _ext_scene_cache: Dictionary = {}
 var _ext_shape_cache: Dictionary = {}
+var _ext_shell_clipped: int = 0
 ## placement_assert_exterior.gd waits on this signal and the exterior_spawned meta flag.
 signal exterior_spawned
 var _qa_cyl: bool = false
@@ -8642,6 +8643,54 @@ func _ext_hit_on_ground_prop(collider: Object) -> bool:
 	return false
 
 
+## Vertex lies on the interior side of the Rev C north wall, inside the shell span, and low enough to step on.
+func _ext_shell_lip_inside(p: Vector3) -> bool:
+	return p.z > -8.90 and p.z < -8.0 and p.x >= -14.2 and p.x <= 14.2 and p.y < 1.0
+
+
+## Keep a vertex when it is on or outside the wall, or outside the shell's x span.
+func _ext_shell_lip_safe(p: Vector3) -> bool:
+	return p.z <= -8.90 or p.z >= -8.0 or p.x < -14.2 or p.x > 14.2
+
+
+## [GEO-17/M-73] True when every triangle entered the shell and this shape must not be added.
+## Reads the shared trimesh and writes a new per-instance shape. Does not touch _ext_shape_cache.
+func _ext_clip_shell_lip(cs: CollisionShape3D, inst_world: Transform3D) -> bool:
+	var shape: ConcavePolygonShape3D = cs.shape as ConcavePolygonShape3D
+	if shape == null:
+		return false
+	var face_xf: Transform3D = inst_world * cs.transform
+	var src: PackedVector3Array = shape.data
+	var crosses: bool = false
+	var vi: int = 0
+	while vi + 2 < src.size():
+		if _ext_shell_lip_inside(face_xf * src[vi]) or _ext_shell_lip_inside(face_xf * src[vi + 1]) or _ext_shell_lip_inside(face_xf * src[vi + 2]):
+			crosses = true
+			break
+		vi += 3
+	if not crosses:
+		return false
+	var kept: PackedVector3Array = PackedVector3Array()
+	vi = 0
+	while vi + 2 < src.size():
+		var w0: Vector3 = face_xf * src[vi]
+		var w1: Vector3 = face_xf * src[vi + 1]
+		var w2: Vector3 = face_xf * src[vi + 2]
+		if _ext_shell_lip_safe(w0) and _ext_shell_lip_safe(w1) and _ext_shell_lip_safe(w2):
+			kept.append(src[vi])
+			kept.append(src[vi + 1])
+			kept.append(src[vi + 2])
+		vi += 3
+	_ext_shell_clipped += 1
+	if kept.is_empty():
+		return true
+	var clipped: ConcavePolygonShape3D = ConcavePolygonShape3D.new()
+	clipped.margin = 0.0
+	clipped.data = kept
+	cs.shape = clipped
+	return false
+
+
 func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 	var meshes: Array[MeshInstance3D] = _ext_collect_meshes(inst)
 	var fill: bool = not _ext_shape_cache.has(asset)
@@ -8654,6 +8703,13 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = "ExtCollision"
 	var any: bool = false
+	# [GEO-17/M-73] Ground and curb lips that cross z=-8.90 are clipped per instance.
+	var clip_shell: bool = _ext_spawn_kind(asset) == EXT_KIND_GROUND or _ext_base(asset).begins_with("ext_curb")
+	# Collision is built before the prop is parented. global_transform is invalid until then.
+	# The exterior root is identity, so the placement transform already written on inst is the world transform.
+	var inst_world: Transform3D = inst.transform
+	if inst.is_inside_tree():
+		inst_world = inst.global_transform
 	for i: int in range(meshes.size()):
 		var mi: MeshInstance3D = meshes[i]
 		var shape: ConcavePolygonShape3D = null
@@ -8682,6 +8738,9 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 		cs.name = "ExtShape_%d" % i
 		cs.shape = shape
 		cs.transform = _ext_rel_transform(inst, mi)
+		if clip_shell and _ext_clip_shell_lip(cs, inst_world):
+			cs.free()
+			continue
 		body.add_child(cs)
 		any = true
 	if fill:
@@ -8706,6 +8765,7 @@ func _ext_spawn_kind(asset: String) -> int:
 func _ext_mark_spawned(spawned: int) -> void:
 	set_meta("exterior_spawned", true)
 	print("[EXT] spawned=%d" % spawned)
+	print("[GEO-17] ext shapes clipped at shell z -8.90: %d" % _ext_shell_clipped)
 	exterior_spawned.emit()
 
 
