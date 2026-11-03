@@ -41,7 +41,7 @@ It is read-only by default, prints PASS / WARN / FAIL per check, and **exits non
   *Why:* visible interpenetration and snagging colliders.
 - **Check:** no coplanar faces within 0.001 m over more than 1 cm² between different parts or materials.
   *Why:* coplanar faces z-fight.
-- **Check:** stacked decal layers are more than 1 mm apart.
+- **Check:** stacked decal layers are more than 1 mm apart (see section 8 for decal offsets).
   *Why:* overlapping decals flicker.
 - **Check:** prop footprints don't overlap other props, planned furniture rects or fixed zones (shape query with 0.01 m inset).
   *Why:* clashes keep reappearing when one item moves.
@@ -107,38 +107,80 @@ It is read-only by default, prints PASS / WARN / FAIL per check, and **exits non
   *Why:* double bindings are design decisions, not accidents.
 
 ## 8. Materials and lighting
+- **Check:** every MeshInstance3D surface has a material; flag default white/grey StandardMaterial3D, magenta, or an albedo path that doesn't resolve.
+  *Why:* missing materials render as placeholders.
 - **Check:** every visible surface has UVs plus albedo, roughness and normal maps; no flat-colour placeholders, including undersides and backfaces.
   *Why:* untextured slabs, rails and jambs were a repeat class.
+- **Check:** flag textured meshes with no UVs, and inverted normals (backfaces visible with cull_back).
+  *Why:* both render as smears or holes.
 - **Check:** flag any material with albedo > 0.9 and no texture.
   *Why:* it blows out under any light.
+- **Check:** textures are power-of-two and ≤ 4096 px; ORM maps match their albedo size; flag unused and missing textures.
+  *Why:* odd sizes waste VRAM and mismatched maps misalign.
+- **Check:** decals, cards and signage are offset ≥ 2 mm along the normal; flag overlapping surfaces < 1 mm apart.
+  *Why:* closer surfaces z-fight.
+- **Check:** flag node/mesh names containing debug, test, temp, tmp or placeholder, and unlit or bright emissive quads with no spec entry.
+  *Why:* leftover debug geometry ships otherwise.
 - **Check:** no blanket overrides (forced emission, one glass tint, CULL_DISABLED on everything); set per material.
   *Why:* blanket hacks flatten lighting and cause sorting errors.
+- **Check:** glass, decals and holo panels use BLEND/alpha transparency with cast_shadow off; an opaque material with alpha < 1 is a bug.
+  *Why:* wrong transparency mode shows solid or casts false shadows.
 - **Check:** transparent meshes are single-sided pieces with explicit render priority/sorting; glass has visible tint/Fresnel.
   *Why:* one double-sided alpha mesh mis-sorts; near-zero alpha is invisible.
-- **Check:** vary UV offset/scale per instance; no visible repeats side by side.
-  *Why:* tiling reads as fake.
-- **Check:** target gl_compatibility (Godot 4.7): no reliance on SSAO/SSR/forward_plus-only features; gate or remove dead settings.
+- **Check:** vary UV offset/scale per instance; no visible repeats side by side; texture micro-noise < 1.2% (high-frequency std dev).
+  *Why:* tiling and noise read as fake.
+- **Check:** palette: no wood albedo; accents use OLED amber #FF9500 and gunmetal #282E38.
+  *Why:* keeps the hab's art direction consistent.
+- **Check:** target gl_compatibility (Godot 4.7): no Decal nodes (use BLEND quads), no HDR, no SSAO/SSR/forward_plus-only features; gate or remove dead settings.
   *Why:* unsupported features silently do nothing.
+- **Check:** warn when emission energy > 1.5 (energy × colour above ~1.0 clips).
+  *Why:* clipped emission blows out to white.
 - **Check:** opaque shells block light: shadow range covers the hull, sunlight enters only through real openings, and lights don't leak through floors.
   *Why:* light leaking through hulls was a High bug.
 - **Check:** emergency/toggle states restore authored values exactly; reflection probes update after interiors load.
   *Why:* toggles drifted values; early bakes reflect a sky that isn't there.
-- **Check:** dark interiors are intended; don't "fix" darkness without Jared's call.
-  *Why:* power-outage gameplay relies on it.
+- **Check:** a fix must not change the lighting look; flag any raised light energy, ambient level or tonemap white for a design check.
+  *Why:* interiors are dark by design (power-outage gameplay); only Jared changes the look.
+- **Check:** only check what's actually instanced in the shipped scenes.
+  *Why:* spec-only assets aren't bugs.
 
 ## 9. Layout and clearance
 - **Check:** positions follow the current layout revision, using wall-relative rules (x = wall face ± depth), not absolute coordinates from an old grid.
   *Why:* targets moved with every wall rebuild and the spec drifted from the code.
-- **Check:** furniture front zone ≥ 1.2 m clear; walking paths ≥ 0.9 m clear.
+- **Check:** placed extents match the design numbers within 50 mm.
+  *Why:* drift between code and spec causes repeat clashes.
+- **Check:** props get a ≥ 0.9 m clear aisle in front (1.2 m front zone where specced); walking paths ≥ 0.9 m clear.
   *Why:* blocked fronts and paths fail usability.
-- **Check:** doors keep their swing/approach zone free of props.
-  *Why:* door conflicts block egress.
-- **Check:** wall-mounted items sit flush (back gap ≤ 0.010 m) on the stated wall; floor items aren't hung unless designed wall-hung.
-  *Why:* stand-off rails and hanging carcasses read as bugs.
+- **Check:** prop backs sit flush to walls with a 0–50 mm gap; flag both penetration and gaps > 50 mm; floor items aren't hung unless designed wall-hung.
+  *Why:* stand-off rails and buried backs read as bugs.
+- **Check:** no pairwise prop AABB overlap; door and drawer swing arcs stay clear.
+  *Why:* swings into props block use and egress.
 - **Check:** markers sit on the wall centreline; pivots are bottom-centre, +Z facing (or documented).
   *Why:* face-mounted markers offset doors and sockets.
+- **Check:** reserved zones (inlets, rights-of-way, deferred plots) stay clear, by polygon intersection.
+  *Why:* later builds need that space.
+- **Check:** structure (columns, cores) exists on every floor it's drawn on, each element carrying a floor range; flag columns inside pools, courts, stairs or room zones.
+  *Why:* missing or misplaced structure breaks both rooms and credibility.
+- **Check:** strip/rib seams line up in height and position within 10 mm, no gaps or overlaps, and walkways keep their width across the seam.
+  *Why:* seams are where trips and leaks happen.
+- **Check:** verify curves, slopes and offsets with asserted values at the ends and the middle.
+  *Why:* end-only checks miss mid-span drift.
 - **Check:** when the layout revision changes, regenerate audit tables (corners, routes, waypoints, navmesh) from the new source.
   *Why:* stale tables gave false passes and false fails.
+
+### Building code and egress capacity
+- **Check:** total exit width ≥ occupancy × 0.2 in per person (0.3 in on stairs), counting every use including standing and lounge areas, with ≥ 10% margin.
+  *Why:* undersized exits fail code and crowd flow.
+- **Check:** every occupiable point reaches a stair or exit within 76 m (sprinklered); common path before exits split ≤ 23 m (grid-sampled shortest paths).
+  *Why:* long dead-end travel fails code.
+- **Check:** no stair or lift exit inside seating or fields of play; a walkway separates stands from courts (footprints don't intersect seating/court polygons).
+  *Why:* exits must not discharge into crowds or play.
+- **Check:** ramps 1:12 or gentler (1:20 preferred for long runs); every height step has stairs plus a ramp or lift.
+  *Why:* accessibility.
+- **Check:** restroom fixtures on every occupied floor, sized to occupancy.
+  *Why:* code requirement that's easy to forget.
+- **Check:** drawings have no overlapping labels, every marker is in the legend, and every symbol is labelled with its ID.
+  *Why:* unreadable drawings cause misplacement.
 
 ## 10. Assets and references
 - **Check:** no duplicate assets (same mesh/texture under two names) and no unused assets in the build.
