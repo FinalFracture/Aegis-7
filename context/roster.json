@@ -159,10 +159,10 @@
       "rotated_at": "2026-10-30T04:03:00-05:00"
     },
     "Gage": {
-      "id": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38",
+      "id": "957f052a-7abe-425c-85f5-fa21b72010e3",
       "role": "Godot 4 Developer",
       "purpose": "Assemble Godot 4.3 scenes (.tscn) and GDScript controllers (.gd), render 1920x1080 candidate showcases and 5-panel voting sheets, stage locked winning .glbs into assets/glb/winners/, render multi-camera room/district/metropolis contact sheets, and cast post-render engine/framing votes in VOTE_LOG.md.",
-      "handoff_file": "/workspace/game-project/context/gage-handoff-v4.md",
+      "handoff_file": "/workspace/game-project/context/gage-handoff-v5.md",
       "reference_files": [
         "/workspace/game-project/PROJECT.md",
         "/workspace/game-project/MASTER_ARCHITECTURE_10_ROOMS.md",
@@ -191,13 +191,16 @@
         "/workspace/game-project/godot/assets/models/",
         "/workspace/game-project/context/reticle_stars_doors_qa_log.md",
         "/workspace/game-project/context/gage-handoff-v3.md",
-        "/workspace/game-project/context/gage-handoff-v4.md"
+        "/workspace/game-project/context/gage-handoff-v4.md",
+        "/workspace/game-project/context/gage-handoff-v5.md",
+        "/workspace/game-project/context/ROTATION_RULE.md",
+        "/workspace/game-project/context/BUGFIX_FLOW.md"
       ],
-      "status": "active (rotated 2026-10-30 pre-rebuild)",
-      "previous_id": "5a97ab49-19f0-4b33-889f-e9b5a5389451",
+      "status": "active (rotated 2026-11-03 at 500 messages)",
+      "previous_id": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38",
       "previous_name": "delete-Gage",
-      "replaces": "5a97ab49-19f0-4b33-889f-e9b5a5389451",
-      "rotated_at": "2026-10-30T04:03:00-05:00"
+      "replaces": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38",
+      "rotated_at": "2026-11-03T16:20:00-06:00"
     },
     "Scribe": {
       "id": "61a860b0-0159-406a-af8c-a969dff4722b",
