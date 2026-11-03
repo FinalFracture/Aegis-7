@@ -5,7 +5,7 @@ per corner for planar UVs). Uses the existing Aegis texture sets by relative URI
   Underside    -> residential atlas UV_PLANTER_STONE, dark painted concrete (#5E656E), for down-facing WhiteComposite faces
   WhiteComposite -> facade_aerospace_white_cladding (albedo)       Gunmetal -> qa03/door_jamb_gunmetal (albedo+ORM)
   BrushedAlloy -> qa03/rail_brushed_titanium (albedo+ORM)          Glass    -> residential_atrium_glass_translucent
-LockAmber / AccentViolet emissive accents keep their factor-only materials. Idempotent (skips a glb already re-skinned).
+LockAmber / AccentViolet emissive accents keep their factor-only materials. Rerunnable: on an already re-skinned glb only the Stair_* materials/texture tables are rewritten.
 Run: python3 assets/src/stair_pbr_materials.py   (after stair_set_generator / stair_core_colliders_rev_c)."""
 import os, sys, json, struct, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
@@ -14,13 +14,16 @@ M = os.path.join(HERE, "../../godot/assets/models")
 T = "../textures/"
 ATL = {"albedo": T + "residential_atrium_and_apartment_atlas_albedo.png", "orm": T + "residential_atrium_and_apartment_atlas_orm.png",
        "normal": T + "residential_atrium_and_apartment_atlas_normal.png"}
-# name: (albedo, orm, normal, baseColorFactor, metallic, roughness, uv mode)
-SETS = {"Stair_Slate": (ATL["albedo"], ATL["orm"], ATL["normal"], [1, 1, 1, 1], 1.0, 1.0, ("rect", g.UV_FLOOR_SLATE)),
-        "Stair_Underside_PaintedConcrete": (ATL["albedo"], ATL["orm"], ATL["normal"], [0.85, 0.85, 0.85, 1], 1.0, 1.0, ("rect", g.UV_PLANTER_STONE)),
-        "Stair_WhiteComposite": (T + "facade_aerospace_white_cladding.png", None, None, [1, 1, 1, 1], 0.0, 0.42, ("tile", 1.0)),
+# name: (albedo, orm, normal, baseColorFactor, metallic, roughness, uv mode[, orm drives MR?])
+# glTF multiplies metallicFactor x ORM.B and roughnessFactor x ORM.G. Sampled 2026-11-03: atlas slate region G~0.24
+# (designed terrazzo, kept), planter region G~0.32 (too glossy for painted concrete -> ORM used for AO only, scalar
+# rough 0.85); gunmetal B=1.00 / G~0.65, brushed titanium B=1.00 / G~0.37 (real metal data -> metallic 1.0 kept).
+SETS = {"Stair_Slate": (ATL["albedo"], ATL["orm"], ATL["normal"], [1, 1, 1, 1], 0.0, 1.0, ("rect", g.UV_FLOOR_SLATE)),
+        "Stair_Underside_PaintedConcrete": (ATL["albedo"], ATL["orm"], ATL["normal"], [0.85, 0.85, 0.85, 1], 0.0, 0.85, ("rect", g.UV_PLANTER_STONE), False),
+        "Stair_WhiteComposite": (T + "facade_aerospace_white_cladding.png", None, None, [1, 1, 1, 1], 0.0, 0.5, ("tile", 1.0)),
         "Stair_Gunmetal": (T + "qa03/door_jamb_gunmetal_albedo.png", T + "qa03/door_jamb_gunmetal_orm.png", None, [1, 1, 1, 1], 1.0, 1.0, ("tile", 0.5)),
         "Stair_BrushedAlloy": (T + "qa03/rail_brushed_titanium_albedo.png", T + "qa03/rail_brushed_titanium_orm.png", None, [1, 1, 1, 1], 1.0, 1.0, ("tile", 0.5)),
-        "Stair_Glass": (T + "residential_atrium_glass_translucent.png", None, None, [0.72, 0.8, 0.86, 0.25], 0.18, 0.08, ("tile", 1.0))}
+        "Stair_Glass": (T + "residential_atrium_glass_translucent.png", None, None, [0.72, 0.8, 0.86, 0.25], 0.0, 0.08, ("tile", 1.0))}
 MAP = {"Slate": "Stair_Slate", "WhiteComposite": "Stair_WhiteComposite", "Gunmetal": "Stair_Gunmetal", "BrushedAlloy": "Stair_BrushedAlloy", "Glass": "Stair_Glass"}
 UNDER = "Stair_Underside_PaintedConcrete"
 CT = {5126: np.float32, 5125: np.uint32, 5123: np.uint16, 5121: np.uint8}; NC = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}
@@ -42,20 +45,26 @@ def uvs(P, mode):   # P: (3,3) corner positions of one triangle
 def skin(path, under_meshes=()):
     b = bytearray(open(path, "rb").read()); jl = struct.unpack("<I", b[12:16])[0]
     J = json.loads(b[20:20 + jl]); bo = 20 + jl; bl = struct.unpack("<I", b[bo:bo + 4])[0]; BIN = bytearray(b[bo + 8:bo + 8 + bl])
-    if any(m.get("name", "").startswith("Stair_") for m in J["materials"]): print(os.path.basename(path), "already skinned"); return
+    done = any(m.get("name", "").startswith("Stair_") for m in J["materials"])
+    if done: J["images"], J["textures"] = [], []   # rerun: rebuild image/texture tables + Stair_* materials in place
     J.setdefault("images", []); J.setdefault("textures", []); J["samplers"] = [{"magFilter": 9729, "minFilter": 9987, "wrapS": 10497, "wrapT": 10497}]
     img = {}
     def tex(uri):
         if uri not in img: J["images"].append({"uri": uri}); J["textures"].append({"source": len(J["images"]) - 1, "sampler": 0}); img[uri] = len(J["textures"]) - 1
         return {"index": img[uri]}
     mid = {}
-    for nm, (al, orm, nrm, f, met, rgh, _) in SETS.items():
+    for nm, (al, orm, nrm, f, met, rgh, _, *mr) in SETS.items():
         m = {"name": nm, "pbrMetallicRoughness": {"baseColorTexture": tex(al), "baseColorFactor": f, "metallicFactor": met, "roughnessFactor": rgh},
              "alphaMode": "BLEND" if f[3] < 1 else "OPAQUE", "doubleSided": f[3] < 1}
-        if orm: m["pbrMetallicRoughness"]["metallicRoughnessTexture"] = tex(orm); m["occlusionTexture"] = tex(orm)
+        if orm:
+            m["occlusionTexture"] = tex(orm)
+            if not mr or mr[0]: m["pbrMetallicRoughness"]["metallicRoughnessTexture"] = tex(orm)
         if nrm: m["normalTexture"] = tex(nrm)
-        J["materials"].append(m); mid[nm] = len(J["materials"]) - 1
+        ex = [i for i, q in enumerate(J["materials"]) if q.get("name") == nm]
+        if ex: J["materials"][ex[0]] = m; mid[nm] = ex[0]
+        else: J["materials"].append(m); mid[nm] = len(J["materials"]) - 1
     tri0 = tri1 = 0; report = {}
+    if done: return write(path, J, BIN, "materials updated")
     for mesh in J["meshes"]:
         if "_Col" in mesh["name"]: continue
         newp = []
@@ -76,11 +85,13 @@ def skin(path, under_meshes=()):
                 tri1 += int(sel.sum()); report.setdefault(mesh["name"], []).append(f"{mname}:{int(sel.sum())}")
         mesh["primitives"] = newp
     assert tri0 == tri1, (tri0, tri1)
+    write(path, J, BIN, f"tris {tri0} -> {tri1}"); [print(" ", k, v) for k, v in report.items()]
+def write(path, J, BIN, msg):
     while len(BIN) % 4: BIN.append(0)
     J["buffers"][0]["byteLength"] = len(BIN)
     js = json.dumps(J, separators=(",", ":")).encode(); js += b" " * ((4 - len(js) % 4) % 4)
     open(path, "wb").write(struct.pack("<III", 0x46546C67, 2, 28 + len(js) + len(BIN)) + struct.pack("<II", len(js), 0x4E4F534A) + js + struct.pack("<II", len(BIN), 0x004E4942) + bytes(BIN))
-    print(os.path.basename(path), "tris", tri0, "->", tri1); [print(" ", k, v) for k, v in report.items()]
+    print(os.path.basename(path), msg)
 if __name__ == "__main__":
     skin(os.path.join(M, "stair_set_switchback.glb"), under_meshes=("Flight1_Cast", "Flight2_Modules", "Mid_Landing", "L2_Landing"))
     skin(os.path.join(M, "stair_guard_handrail.glb"))
