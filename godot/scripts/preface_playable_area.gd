@@ -3947,9 +3947,16 @@ func _physics_process(delta: float) -> void:
 	if b.is_on_floor() and dir != Vector3.ZERO:
 		var motion: Vector3 = dir * speed * delta
 		var hit: KinematicCollision3D = KinematicCollision3D.new()
-		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < 0.5:
+		# [SYS-21] Step on any face too steep to walk (floor_max_angle 50 deg), not only normal.y < 0.5.
+		var walk_cos: float = cos(b.floor_max_angle)
+		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < walk_cos - 0.001:
 			var up: Vector3 = up_dir * STEP_HEIGHT
-			if not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
+			# [SYS-22] Only step if walkable ground sits under the step-top within STEP_HEIGHT;
+			# a true wall (landing wall, planter side) leaves no floor there.
+			var top_xf: Transform3D = b.global_transform.translated(up + motion)
+			var down_hit: KinematicCollision3D = KinematicCollision3D.new()
+			var ground_ok: bool = b.test_move(top_xf, -up_dir * (STEP_HEIGHT - 0.01), down_hit) and down_hit.get_normal().dot(up_dir) >= walk_cos - 0.001
+			if ground_ok and not b.test_move(b.global_transform, up) and not b.test_move(b.global_transform.translated(up), motion):
 				step_pre_up = (b.global_position).dot(up_dir)
 				b.global_position += up
 
