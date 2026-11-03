@@ -8917,9 +8917,8 @@ func _ext_batch_multimesh(root: Node3D) -> void:
 		mmi.cast_shadow = first.cast_shadow
 		mmi.gi_mode = first.gi_mode
 		mmi.layers = first.layers
-		mmi.visibility_range_end = first.visibility_range_end
-		mmi.visibility_range_end_margin = first.visibility_range_end_margin
-		mmi.visibility_range_fade_mode = first.visibility_range_fade_mode
+		# [VIS-20] Group AABBs are tens of metres wide; per-group range culling pops whole curb rows. A MultiMesh is one draw call, so no range.
+		mmi.visibility_range_end = 0.0
 		root.add_child(mmi)
 		for item: Variant in members:
 			var hide_mi: MeshInstance3D = item as MeshInstance3D
