@@ -330,6 +330,7 @@ var _qa_exit: bool = false
 var _qa_egress: bool = false
 var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
+var _qa_drawcalls: bool = false
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
 var _ff_shader: Shader = null
@@ -434,6 +435,9 @@ func _ready() -> void:
 			_qa_placement = true
 		elif arg == "--qa-exterior-render":
 			_qa_ext_render = true
+		elif arg == "--qa-drawcalls":
+			_qa_drawcalls = true
+			_qa_hand = true
 		elif arg == "--qa-nav-reach":
 			_qa_nav_reach = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
@@ -490,6 +494,8 @@ func _ready() -> void:
 			_run_qa_player_exit.call_deferred()
 		elif _qa_egress:
 			_run_qa_egress.call_deferred()
+		elif _qa_drawcalls:
+			_run_qa_drawcalls.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -8496,6 +8502,39 @@ func _run_qa_egress() -> void:
 		await _qa_idle(1)
 	print("[EGRESS-QA] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
+
+
+func _run_qa_drawcalls() -> void:
+	await _qa_frames(60)
+	var poses: Array[Dictionary] = [
+		{"name": "P1_spawn_apt201", "pos": SPAWN_POS + Vector3(0.0, 1.6, 0.0), "target": SPAWN_POS + Vector3(3.0, 1.4, -4.0)},
+		{"name": "P2_L2_stairwell", "pos": Vector3(1.15, 5.8, 0.0), "target": Vector3(1.15, 4.6, -6.0)},
+		{"name": "P3_exterior_plaza", "pos": Vector3(0.0, 1.7, -11.0), "target": Vector3(10.0, 1.0, -16.0)},
+		{"name": "P4_tram_platform", "pos": Vector3(11.0, 2.0, -16.1), "target": Vector3(-6.0, 3.0, -10.0)},
+	]
+	for pose: Dictionary in poses:
+		_qa_free_cam(pose["pos"] as Vector3, pose["target"] as Vector3, Vector3.UP, 70.0)
+		await _qa_frames(90)
+		var sum_dc: float = 0.0
+		var sum_obj: float = 0.0
+		var sum_prim: float = 0.0
+		var sum_fps: float = 0.0
+		var n: int = 120
+		for _i: int in range(n):
+			sum_dc += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
+			sum_obj += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME))
+			sum_prim += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME))
+			sum_fps += Engine.get_frames_per_second()
+			await get_tree().process_frame
+		print("[DRAWCALLS] %s draw_calls=%d objects=%d primitives=%d fps=%.1f" % [
+			String(pose["name"]),
+			int(round(sum_dc / float(n))),
+			int(round(sum_obj / float(n))),
+			int(round(sum_prim / float(n))),
+			sum_fps / float(n),
+		])
+	print("[DRAWCALLS] DONE")
+	get_tree().quit(0)
 
 
 # ------------------------------------------------------------------------------
