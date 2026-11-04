@@ -1891,3 +1891,9 @@
 - **#67 WINNER:** `V1 Meadow Hills` -> `godot/assets/models/tt_toddler_zone.glb` (3,532 tris). 8.0 x 8.0 m, bbox height 1.35 (slide lips). Moss EPDM hills 1.0 / 0.7 / 0.45 m in a back crescent + low berms and hummocks, 0.6 m-bore crawl tunnel between the two big hills, mini slide (24°, HDPE ball-yellow) off the 1.0 m hill on a rubber wedge, 4 leaf stepping pods, wavy sand balance path (0.15-0.28), flower + bush clusters. Play surfaces <= 1.2 m, no entrapment gaps, nothing spinning. Colliders: hills/wedges/slide/pods/path hulls (-convcolonly), tunnel (-colonly mesh), zone floor (-colonly).
 - **Spec mismatch for Vance:** §3.11.6 item 5 reads "4 spring riders + toddler deck in an 8 x 8 m toddler zone"; the winner has neither (hills, tunnel, mini slide, stepping pods and a balance path instead). Please update the spec text to match.
 - Texture needs (Sloane, not yet requested): TT_PlayRubber_Moss (+ EPDM, HDPE_Leaf/_Sand).
+
+### #68 Tennis Tower playground balance beams (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/balance_trail/v1..v5.glb` (spec §3.11.6 item 6, 3 balance beams; all PASS, commit 1a2e56e).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#68 WINNER:** `V4 Forest Roots` -> `godot/assets/models/tt_balance_trail.glb` (5,152 tris). 8.0 x 5.0 m (bbox h 3.25 incl. canopy tree). 3 bark-colour EPDM root beams (2 wavy runs along z -1.5 / -1.4, 1 arc r 1.25 round the tree; tops 0.15-0.42, 0.14 wide, 0.06 posts), leaf-canopy tree (steel trunk, HDPE leaves, leaf crest), 4 mushroom stools (0.2 / 0.3), moss hills 0.25-0.5, fern + flower clusters, grass tufts. Colliders: beam segments, posts, mounds, stools, trunk (-convcolonly), zone floor (-colonly). No wood (bark = rubber).
+- **Footprint note for Vance:** spec gives no footprint for the beams; built 8 x 5 m.
