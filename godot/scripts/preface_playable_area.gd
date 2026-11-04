@@ -3875,6 +3875,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		_pitch -= mm.screen_relative.y * _mouse_sens
 		_apply_pitch()
 		return
+	# [MAP-QA r2] [E] / [F] from any input source (gamepad button, InputEventAction) reach the same handlers as the keyboard.
+	if not (event is InputEventKey) and not (event is InputEventMouseMotion):
+		if event.is_action_pressed("interact"):
+			_interact()
+			return
+		if event.is_action_pressed("rfid_pulse"):
+			_trigger_rfid_pulse()
+			return
 	if event is InputEventKey:
 		var ke: InputEventKey = event as InputEventKey
 		if not ke.pressed or ke.echo:
