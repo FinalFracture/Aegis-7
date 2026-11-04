@@ -1,11 +1,17 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.5**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 2.6**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
 
 ## 0. Revision log
+- **Rev 2.6 (2026-11-03, Jared approved all four column-clash fixes, §3.11.11):**
+  - ST+E moved to Z 50..56.
+  - The kids' wall E face is on X 84.5, with TC-S3 as a climbable pillar.
+  - The front desk front is at Z 9.5, with TC-S2 free-standing and clad.
+  - TC-S1 is wrapped in the thickened ST+S1 W wall (core outer face X 57.0); W-CL ends at X 56.
+  - Egress re-checked (§5.2).
 - **Rev 2.5 (2026-11-03, Rook modeling feedback):**
   - New **§3.11 Modeling spec**. It covers:
     - the 4.0 m curtain-wall / roof module, with 1.5 m closure bays on the 79 m faces;
@@ -204,9 +210,9 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 | **Lead / top-rope hall** (belay floor) | 30..57 | 0..8 | 27 × 8 = 216 m² | over the bowling lanes; double-height over Z 3..8 |
 | **Double-height "Stand-Back Wall"** | 36..56 (face at Z 8) | 8..9.1 | **20 m wide × 11.5 m tall** (+6.1 → +17.6 above F1) | through an **F3 slab void X 35..57, Z 3..8** (110 m²); built against the back of the F3 S stand (top row +17.6); ~6 rope lanes at 3.3 m |
 | Changing / lockers / WC | 30..57 | 10.5..15 | 27 × 4.5 | behind the wall |
-| Front desk / gear rental | 58..66.5 | 9..15 | 51 m² | beside ST+S1 |
+| Front desk / gear rental | 58..66.5 | **9.5..15** (Rev 2.6) | 47 m² | TC-S2 stands free in front of it, clad as a feature column |
 | Entry lobby | 66.5..76.5 | 0..9.5 | — | from lift S / LS |
-| Kids' wall + auto-belays (5 m walls) | **77..85** (Rev 2.5; was 85.5, overlapped training) | 0..15 | 120 m² | |
+| Kids' wall + auto-belays (5 m walls) | **77..84.5** (E face on X 84.5, Rev 2.6) | 0..15 | 113 m² | TC-S3 built into the E face as a climbable pillar |
 | Training (spray / hang boards) | 85..94 | 9..15 | 54 m² | behind ST+S2 |
 | **Bouldering hall** | 94..113 | 0..15 | 19 × 15 = 285 m² | 4.5 m walls, 300 mm mats (band clear ≈ 5.4 m); tree column TC-S4 (X 101.5) clad as a free-standing "tree boulder" |
 - **Is the double-height wall feasible? Yes (Vance proposal, engineer to confirm).** The F3 S-band slab spans one way Z 0..15; the void needs **trimmer beams along Z 3 and Z 8** (X 35..57, 22 m), carried by the façade grid at X 33/42/51/60 on Z 3 and by the wall's own steel frame (posts at X 36, 42, 46, 51, 56) on Z 8. No tree column is hit (TC-S1 is at X 57.5, Z 8.5, just outside). The F3 track runs past the void's S edge behind a glass rail, so runners and the S concourse look down on the climbers.
@@ -336,7 +342,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 2. **2% fall:** **model the roof flat** at top +25.5 for instancing. The crown is shown only as a **ridge cap** (one bay each side of Z 39.5, peak +26.3). The physical fall stays a design note.
 3. **Ball net: a separate asset** (alpha-scissor, hung 1.0 m under the space-frame soffit over the F3 play area, plus the F1 court nets).
 4. **Court glass lower: yes**, 3.0 m + net (§3.11.5).
-#### 3.11.11 Column clashes — **Vance proposal — pending Jared** (not applied; §4.6 unchanged)
+#### 3.11.11 Column clashes — **DECIDED (Jared, 2026-11-03), applied in Rev 2.6**
 | Clash | Problem | Proposed fix |
 |---|---|---|
 | **TC-E2** (119.5, 48.5) vs **ST+E** (119.5..125.5, Z 46..52) | trunk on the stair's W edge line | move ST+E north to **Z 50..56** (same X), so the trunk is 1.5 m clear; still outside the E stand and the track (E straight X 125.8) |
@@ -377,14 +383,14 @@ Hull curve, plinth (0 → 4.0 → 0.2 m), F1/F2/F3 slabs, S/N stands, climbing v
 | LN | stair beside N lift, Type A | 71..76.5 | 64..69.5 | F1–F3 | 2.5 | food court / gym |
 | LW | stair beside W lift, Type A | **24.5..30** | 39..44.5 | F1–F3 | 2.5 | lobby corridor end |
 | LE | stair beside E lift, Type A | **113..118.5** | 39..44.5 | F1–F3 | 2.5 | arcade |
-| ST+S1 / ST+S2 | stair (S rear), **Type B** | **58..64 / 86..92** | 2.6..8.6 | F1–F3 | 2.7 | **free bays** X 58..66.5 / 85..94 |
+| ST+S1 / ST+S2 | stair (S rear), **Type B** (ST+S1 W wall thickened to X 57.0, wraps TC-S1, Rev 2.6) | **58..64 / 86..92** | 2.6..8.6 | F1–F3 | 2.7 | **free bays** X 58..66.5 / 85..94 |
 | ST+N1 / ST+N2 | stair (N rear), Type B | **58..64 / 86..92** | 70.4..76.4 | F1–F3 | 2.7 | food court / gym |
-| ST+E | stair (E terrace), Type B | 119.5..125.5 | 46..52 | F1–F3 | 2.7 | arcade |
+| ST+E | stair (E terrace), Type B | 119.5..125.5 | **50..56** (Rev 2.6) | F1–F3 | 2.7 | arcade |
 | ST-AQS / ST-AQN | stair (W façade), Type B | −12..−6 | 10..16 / 63..69 | F1–F3 | 2.7 | foyer / gallery ends |
 | ST-ARS / ST-ARN | stair (E façade), Type B | 134..140 | 10..16 / 63..69 | F1–F3 | 2.7 | arcade, by the SE/NE plant |
 | Lift S / N | 2 cars | 66.5..70.5 | 11..15 / 64..68 | F1–F3 | — | concourse via 10 m gap |
 | Lift W / E | 2 cars | 26..30 / 113..117 | 34.5..38.5 | F1–F3 | — | concourse via 10 m gap |
-| TC-S1..S4 | tree column | 57.5, 65.5, 84.5, 101.5 | 8.5 | grade–roof | — | acoustic wall, free bay, axe target walls |
+| TC-S1..S4 | tree column | 57.5, 65.5, 84.5, 101.5 | 8.5 | grade–roof | — | S1 inside the ST+S1 W wall; S2 free-standing clad in the F2 climbing lobby (F1: free bay); S3 climbable pillar in the F2 kids' wall E face (F1: axe target wall); S4 tree boulder / axe target wall |
 | TC-N1..N4 | tree column | 57.5, 65.5, 84.5, 101.5 | 70.5 | grade–roof | — | food court / gym |
 | TC-W1 / W2 | tree column | 23.5 | 30.5 / 48.5 | F3–roof | — | **on transfer trusses T-W4 / T-W6** |
 | TC-E1 / E2 | tree column | 119.5 | 30.5 / 48.5 | grade–roof | — | arcade |
@@ -413,7 +419,8 @@ Factors (IBC Table 1004.5): fixed seats as counted; unconcentrated assembly (foo
 - QA-04's F3 ~8,700 / F2 ~4,600 estimates agree within ~10% (the difference is the 10 m lift gaps and aisles, which remove 928 F3 seats).
 - **Stairs: 17 full-height, 8 × 2.5 + 9 × 2.7 = 44.3 m.** Rev 2.4 margin **22% on F3** (was 12%): the track, dining tables and playground are lighter loads than open terrace. If the F3 open areas are ever cleared for standing events (0.46 m²), cap them at ~4,000 by signage (unchanged rule).
 ### 5.2 Distances (DQ-15)
-- Travel (IBC A, sprinklered, 76 m; Vance 60 m to an axial route): Rev 2.4 worst F3 points: cabana at X −11, Z 40 → ST-AQS ≈ **25 m**; playground X 140, Z 40 → ST+E (gated crossing) ≈ 21 m, → ARS ≈ 24 m; climbing belay floor X 30, Z 5 → C-SW ≈ 17 m; bouldering X 113, Z 0 → ST+S2 ≈ 21 m; W terrace X 10, Z 26 → ST-AQS/LW ≈ 24 m; S rear concourse X 45 → C-SW ≈ 20 m; F1 lap deck → foyer doors ≈ 25 m. QA-04's 48–52 m terrace figure was against the Rev 2.2 14-stair set; all now ≤ 30 m ✓.
+- Travel (IBC A, sprinklered, 76 m; Vance 60 m to an axial route): Rev 2.4 worst F3 points: cabana at X −11, Z 40 → ST-AQS ≈ **25 m**; playground X 140, Z 40 → ST+E (gated crossing, Rev 2.6 at Z 50..56) ≈ 25 m, → ARS ≈ 24 m; climbing belay floor X 30, Z 5 → C-SW ≈ 17 m; bouldering X 113, Z 0 → ST+S2 ≈ 21 m; W terrace X 10, Z 26 → ST-AQS/LW ≈ 24 m; S rear concourse X 45 → C-SW ≈ 20 m; F1 lap deck → foyer doors ≈ 25 m. QA-04's 48–52 m terrace figure was against the Rev 2.2 14-stair set; all now ≤ 30 m ✓.
+- Rev 2.6 ST+E move: E terrace worst point (X 120, Z 30) → LE ≈ 10 m, → ST+E ≈ 20 m; arcade (F1/F2) X 125, Z 40 → ST+E ≈ 10 m; all ≤ 30 m ✓; stair width unchanged (44.3 m).
 - Common path (A: 23 m): the playground has 3 gates, worst common path ≈ 12 m ✓; the climbing belay floor opens at both ends (C-SW side and the S lobby), ≈ 14 m ✓. F2 gallery now has stairs at both ends (ST-AQS/ST-AQN, 47 m apart, plus the W lift/LW via the bridge), so the worst common path ≈ 15 m ✓ (DQ-07).
 - Doc rule 2 exits per building (`strip4_plan.md` §6): exits on all 4 faces.
 ### 5.3 Main exit (DQ-05)
@@ -424,7 +431,7 @@ Lift → concourse → stands (front/radial/rear aisles); bands open off the rea
 ## 6. Critical issues (Rev 2.4)
 1. **Raised W/E terraces** (+4.0 HD) and the E Spine ramp (Jared OK). New: the W terrace depends on the **Fore cap portal level** (+4.0 HD wanted; fallback steps/lifts/switchback, §3.8).
 1a. **Climbing void** in the F3 S-band slab needs trimmer beams (§3.7.1).
-1b. Column clashes TC-E2 / TC-S1..S3 pending Jared (§3.11.11).
+1b. Column clashes resolved in Rev 2.6 (§3.11.11).
 2. **Glass Box:** 3.0 m deep space frame (4.0 m grid) column-free over 96 × 62 m; glare/heat gain, condensation control, cleaning gantry.
 3. **W-band transfer trusses** (9 × 30 m span, 2.5 m deep) carry the F3 W terrace, stand overhang and 2 tree columns over the aquatic hall.
 4. **Diving pit** 1.0 m below F1 in the deepest plinth zone (3.2–3.9 m of plinth): waterproof tank in fill; assumes no hull excavation (unverified).
@@ -436,8 +443,7 @@ Lift → concourse → stands (front/radial/rear aisles); bands open off the rea
 ## 7. Open questions for Jared
 Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F3 = lounge/dining/track/playground; F2 S band = climbing; 3 m + 1 m boards.
 1. Fore cap portal: can the Fore Cap map put the Spine portal at +4.0 HD (level onto the terrace), or keep it at grade (steps + lifts + switchback)?
-2. Column clash fixes (§3.11.11): approve, change or reject each one.
-3. C5 Arena: deferred (Jared will revisit).
+2. C5 Arena: deferred (Jared will revisit).
 
 ## 8. QA-04 + self-review resolution (Rev 2.3)
 | Finding | Resolution | § |
