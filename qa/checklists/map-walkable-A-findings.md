@@ -21,3 +21,20 @@ Tested commit: `e9fad26` (round 1 pin). Godot 4.7.2 headless, `--fixed-fps 60`. 
 3. **[INFO] Player hangs mid-air when placed inside a prop collider.** A teleport to (-11.0, 4.4, -4.8) lands inside `Alcove2C_Battery_Expansion_Support/Shelf_Shape`. The player stays at y 4.40 with `is_on_floor()=false`, never falls, and can't walk -X. Only the harness can reach this; normal walking can't. I couldn't test the Seam03 1.1 m rail from this start because of it.
 
 No problems on: L2 east/west wing inner edges (x ±2.45, z -8.5..-1.2: solid wall `RevC_Shell_L2_col`), L2 outer walls (x ±13.55, z +8.55, z -8.55), the ±10 m "hole" cells at z -0.5..0.5 (they are solid columns, blocked at z ±1.35), the whole L1 floor (no ray holes and no falls on any radial), or the walk down flight 2 from (1.2, 4.3, -2.5), which steps smoothly to y 2.46.
+
+## MAP-QA-4 — Exterior & Tram (2026-11-03)
+
+Method: fresh clone of main, Godot 4.7.2 headless (`godot --headless --path godot -s <harness> -- --qa-placement`), harness kept outside the repo. Movement used real `Input.action_press` on move_forward / jump / interact / rfid_pulse through the CharacterBody3D controller; teleports were used only to choose start points. Ray grid: 1 m over x -17..17, z -44..-9 (plaza/promenade) and x -22..22, z -9..8 (planting strips).
+
+1. **HIGH: you can climb promenade guardrails and leave bounds.** Nodes: `SectorArchitecture/SectorSafetyFloorColliders` → PromenadeSouthGuardrail (z -45), PromenadeWestGuardrail (x -18), PromenadeEastGuardrail (x +18). All are 1.25 m tall and 0.24 m thick.
+   - Repro: start at (0, 0.3, -42) facing -Z, hold W, tap jump every 20 frames. Player reaches y=2.27 (standing on top of the rail and jumping again) and lands at (0, -0.88, -51.4), outside the deck. Same at x=-15 / x=+15, z=-30 facing out → ends at x=∓24.4, y=-0.88. Later the out-of-bounds reset sends the player back to spawn (-9.4, 4.08, 6.1).
+   - Walking without jumping is blocked correctly (stops at z -44.53).
+   - Expected: the rail cannot be stood on (taller collider or a no-stand cap like TramRoofNoStand). Actual: the rail top can be stood on and the player escapes.
+2. **MEDIUM: DOOR_SECTOR4_EXIT does not open from E or RFID pulse.** Node: `InteractivePropsAndPickups/SectorRFIDForceFieldDoors/DOOR_SECTOR4_EXIT` (root (0,0,-9), FieldCollider top y=2.45, hub shift 0.31 at seat).
+   - Repro: stand at (0, 0.05, -10.2) facing +Z, press interact (or rfid_pulse), wait 90 frames, hold W. Player stops at z -9.45. From the atrium side, (0,0,-7.5) facing -Z stops at z -8.54. Walking straight in does not pass either.
+   - Expected: interacting opens the exit field, or else the door is clearly locked. Actual: the field stays solid both ways. This may be an intended RFID gate, so please confirm.
+3. **LOW: dead-foliage planting strip can be hopped, reaching x ≈ -23.5.** Node: `ExteriorPlacements_v1_3/Ext_49_ext_ts4_dead_foliage_1004` at (-16.6, 0.17, 0.0), collider top y=0.68.
+   - Repro: start at (-14.5, 0.3, 0.0) facing -X, hold W plus jump. Player crosses the strip and ends at (-23.5, 0.34, -0.17).
+   - The neighbouring hydro planters 1006/1007 (same top, 0.68) block correctly at x -13.55. Please confirm x < -22 is meant to be walkable. If not, the strip needs a bounds blocker.
+4. **INFO (pass): tram shelter and tram car roofs cannot be stood on.** `Ext_15_ext_tram_shelter_0` roof collider is y=3.13. Jumps from north, south and west reach at most y 1.57, so the roof can't be reached. `Ext_19_ext_maglev_car_body_17/18` roofs are y 3.58–3.83 and have TramRoofNoStand caps. Platform kerbs `Ext_16_*` (y≈0.31) step up cleanly.
+5. **INFO (pass): no ground holes.** 0 ray misses across the plaza/promenade grid. Deck is at y≈0.0–0.06 and there are no sunk or floating ground tiles. 13 exterior visuals have no collider, and all of them are flat decals or litter (`Ext_47_ext_desire_path_decal_*`, `Ext_49_ext_ts4_wear_decal_1005`, `Ext_50_ext_litter_drift_*`, `Ext_51_ext_track_scuff_guideway_*`), so that is expected.
