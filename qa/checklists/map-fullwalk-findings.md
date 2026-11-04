@@ -58,3 +58,22 @@ Tested commit: `91ea2d1` (fresh clone; `godot --headless --import` run once firs
 2. **[INFO] Shelf hang: REPRODUCES again**; round 2 marked it as not reproduced, so it's intermittent. After a teleport to (-11.0, 4.4, -4.8), between `Alcove2C_Battery_Expansion_Support/Shelf_Shape` and `Alcove2C_SuperWire_Expansion_Support/Shelf_Shape`, the player hangs at y 4.40 with `is_on_floor()=false`. Holding W works in neither direction. Only a teleport gets you there; walking from (-12.5, 4.3, -5.4) slides past the SuperWire shelf without sticking. It would matter only if a respawn or save point ever lands there.
 
 Full edge sweep: every probe ends at the same place as round 2, within ±0.02 m. That covers the L2 inner wing edges at x ±2.45, the outer walls at x ±13.55 and z ±8.55, the old west-wing guardrail line (still clear), and the stairwell glass, where walking stops at z -4.42 and all six sprint-jumps are stopped by `StairwellHeadGlassCap`. It also covers the 0.37–0.40 gap before flight 2 (sealed), the ±10 m columns, all four L2 corners and the diagonal wall slides (no wedging), and the L1 radials (no falls; min y dipped to -0.09 once at the a22 threshold and recovered). The new ExtGround bounds and curb seam caps are exterior, MAP-QA-4's area, so I didn't test them here.
+
+## MAP-QA-4 — Exterior & Tram (Round 3, 2026-11-03)
+
+Build: main 91ea2d1, fresh clone, `godot --headless --path godot --import` (clean), then `-s <harness> -- --qa-placement` (harness kept outside the repo). Movement used `Input.action_press` move_forward/jump through the player controller. E/F used real `InputEventKey` press+release via `Input.parse_input_event`. `_qa_place` was used only for start points. Curb joins: 162 collinear seams across 197 curb segments were each crossed at the seam, and every failure was re-crossed 0.5 m off-seam to separate seam bugs from walls.
+
+### Findings
+- **HIGH — the map-edge bounds stop at z≈-28 (ExtGroundWestBound / ExtGroundEastBound, z range -28.0..42.5).** Repro: start at (±44, 0, -29.5) and walk outward (west/east) while jumping. Expected: a wall at x ±49. Actual: the player walks past the south end of the bound, falls off the ground (min y -7.87) and the fall recovery respawns them at (-11.96, 4.08, 1.36). Same result on both sides.
+- **MEDIUM — the mid-air hang at y 0.72 is still there on the west/east guardrails (x ±18).** Repro: start at (∓15, 0, -30), walk toward the rail and jump every 20 frames. Actual: the player ends at (±17.53, 0.72, -30) with is_on_floor=false and 77–79 stuck frames. Expected: they slide down to the floor.
+- **MEDIUM (new) — the same hang at y 0.72 happens in the new bound corners NW (-48.65, 42.15) and NE (48.65, 42.15).** Repro: start at (±45, 0, 38.5), walk diagonally into the corner and jump. Actual: stuck at y 0.72 with floor=false. The straight wall faces (x ±49 at z -25/0/20/40, and z 42.6 at x -40/-10/10/40) block correctly, ending at ±48.65 / 42.15 on the floor, and no climb-over was seen (max y 1.27).
+- **LOW — the dead-foliage strip Ext_49_ext_ts4_dead_foliage_1004 can still be hopped.** Repro: start at (-14.5, 0, 0), yaw 90, jump. Actual: the player reaches x -24.37.
+- **LOW (new) — curb seam snag on the rotY=90 curb row at x -16.95.** Seams Ext_41_ext_curb_segment_61|62 (z -5.0), 69|70 (z 0.0) and 77|78 (z 5.0). Repro: walk -x across the seam from x -15.55. Actual: the player stops on the curb at (-16.25, 0.35) after moving 0.7 m (22 stuck frames). 0.5 m off the seam they cross cleanly (2.08 m).
+- Info: the other non-crossings (z 10.15, z -8.95/-10.15, z -18.35, z -21.8, x -15.25 rows) were blocked the same way off-seam, so they come from adjacent walls or colliders and are not seam bugs.
+
+### Round 2 retest
+- Guardrail south (z -45) mid-air hang: **FIXED** (ends at z -44.53 on the floor).
+- Guardrail west/east mid-air hang at y 0.72: **STILL OPEN**.
+- DOOR_SECTOR4_EXIT: **FIXED**. A real E key opens it from the north (-7.5) and from the south (-10.2), and the player walks through.
+- Dead-foliage hop to x≈-24.4: **STILL OPEN** (x -24.37).
+- Curb seam snag at x -7.0, z 19.35: **FIXED** (step-up and step-down are clean).
