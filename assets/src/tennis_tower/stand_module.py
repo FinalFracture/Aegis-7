@@ -34,12 +34,12 @@ def build(q):
         xs = np.linspace(x0 + HA + .1, x1 - HA - .1, 4)
         p.add("Guard_Glass", GL, *[box(a + .03 - E, b - .03 + E, R + .1, R + .9, -.095, -.085) for a, b in zip(xs[:-1], xs[1:])])
         for xp in xs:
-            p.add("Rail_Posts", ST, box(xp - .03, xp + .03, R - E, R + 1.0, -.12, -.06)); p.add("Ball_Caps", BA, node((xp, R + 1.0 + .06 - E, -.09), .065, 1))
+            p.add("Rail_Posts", ST, box(xp - .03, xp + .03, R - E, R + 1.0, -.12, -.06)); p.add("Ball_Caps", BA, node((xp, R + 1.0 + .06 - E, -.09), .065, 0 if q.get("lite") else 1))
         p.add("Row_LED", AM, *[box(x0 + HA + .05, x0 + HA + .45, R*i + .1, R*i + .2, -T*i + E - E, -T*i + E + .008) for i in range(1, n)])
     if q.get("canopy"):  # rear branch-canopy posts with leaf shade (tree column language)
         yt = R*n; zb = -T*n + .1
         for xp in (x0 + 1.2, x1 - 1.2):
-            top = np.array([xp, yt + 2.8, zb]); p.add("Canopy_Steel", ST, tube((xp, yt - E, zb), top, .08, 8), node(top, .12, 1),
+            top = np.array([xp, yt + 2.8, zb]); p.add("Canopy_Steel", ST, tube((xp, yt - E, zb), top, .08, 8), node(top, .12, 0 if q.get("lite") else 1),
                 *[tube(top, top + d, .05, 6) for d in ([.9, .6, 1.4], [-.9, .6, 1.4])])
             p.add("Canopy_Leaves", LF, *[leaf_dir(top + np.array([dx, .62, 1.45]) + [0, .02, 0], (dx*.6, .15, 1), 1.4, .6, t=.03) for dx in (.9, -.9)])
     return p
@@ -51,6 +51,9 @@ VARIANTS = [
     dict(label="Court Rail: glass ball-guard, ball caps, amber row LEDs", back="solid", sports=True),
     dict(label="Branch Canopy: rear Y-posts with leaf shades", back="none", canopy=True),
 ]
-if __name__ == "__main__":
+HYBRID = dict(label="Court Rail + Branch Canopy: V4 rail/ball caps/LEDs + V5 Y-posts, leaf shades", back="solid", sports=True, canopy=True, lite=True)
+if __name__ == "__main__" and sys.argv[1:] == ["hybrid"]:
+    run("stand_module", build, [HYBRID, dict(HYBRID, cfg="F3")], title="V6 hybrid: F1/F2 5-row | F3 12-row", names=["v6_hybrid", "v6_hybrid_f3"], sheet="hybrid_sheet.png", suffix="_hybrid")
+elif __name__ == "__main__":
     run("stand_module", build, VARIANTS, title="7.5 m bay, 12 seats x 5 rows (F1/F2) | nature + sports")
     run("stand_module", build, [dict(v, cfg="F3") for v in VARIANTS], title="F3 case: 12 rows, riser 0.45, tread 0.95", suffix="_f3")
