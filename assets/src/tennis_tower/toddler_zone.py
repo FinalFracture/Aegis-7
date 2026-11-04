@@ -1,4 +1,5 @@
-"""Rook: Tennis Tower E-terrace playground piece 5, toddler zone (spec §3.11.6: 4 spring riders + toddler deck in an 8 x 8 m zone).
+"""SUPERSEDED (Nov 4): round 1 rejected by Jared ("terrible"), replaced by toddler_landscape.py. Do not promote.
+Rook: Tennis Tower E-terrace playground piece 5, toddler zone (spec §3.11.6: 4 spring riders + toddler deck in an 8 x 8 m zone).
 Poured-rubber pad 8 x 8; toddler deck 2.0 x 2.0 at +0.45 on the -Z side with a 3-step stair (0.15 rise / 0.30 tread) facing +Z and 0.6 m
 low guards; 4 spring riders at (+-2.4, +0.9) and (+-2.4, +2.9), coil 0.35 m, seat ~0.55, separate RiderN_Body parts (animate: rock about
 the coil base, +-12 deg). No spinning parts, no wood, no planter boxes.
