@@ -25,3 +25,14 @@ When you're done appending, open Doc B (`map-fullwalk-signoff.md`) and sign it.
 | 9 | Egress route exterior paving + `--qa-egress` path | All in band. | — | PASS |
 
 Totals: 0 Critical, 0 High, 2 Medium, 0 Low, 1 Info; 7 PASS, 2 FAIL.
+
+## MAP-QA-5 — Freeform player playtest round 3 (main 91ea2d1, 2026-11-03)
+
+Fresh clone at 91ea2d1, `godot --headless --import` once (rc 0). Godot 4.7.2 headless, `preface_playable_area.tscn` with `-- --qa-placement` (normal Apt 201 spawn (-9.35,4.25,6.20)). Movement via `Input.action_press`; E/F sent as real `InputEventKey` press+release through `Input.parse_input_event`. Driver scripts in /tmp, not in repo. Same route as round 2: Apt 201 → 2F corridor → switchback stairs → ground → SECTOR-4 exit (E at hub) → promenade both ways; plus Apt 201 corner/wall sprint+jump run and the north-railing jump run. Results are identical to round 2 coordinates — no change observed.
+
+- **R2-N1 ground-floor blocker (1.55, 0.00, -0.99) — STILL PRESENT (MEDIUM).** Walking east along z -1.0 from the stair foot stops dead at x 1.55; heading north needs a jump (apex y 1.22, floor=false ~1 s) to clear it, landing (1.55,0,-4.35). Repro: stairs down → (-1.55,-1.0) → forward toward (3.5,-1.0), then toward (3.5,-7.9).
+- **R2-N2 Apt 201 west-wall snag (-13.55, 4.08, 5.82) — STILL PRESENT (LOW).** Sprinting south along the west wall from (-13.3,8.4): stuck ~1 s+ with input held (4 samples mv=0.00); jump clears a ~1.2 m obstacle (apex y 5.29) and lands z 1.84. Repro: spawn → sprint to (-13.5,8.5) → sprint toward (-13.5,1.4).
+- **R2-N3 exit-panel short stop (1.55, 0.00, -7.86) — STILL PRESENT (LOW).** Player is blocked ~1 m short of the hub (1.45,0,-8.90); real E keypress from there opens SECTOR4_EXIT and the exit walks fine to (0.06,0.06,-11.77).
+- **Promenade bumps — STILL PRESENT (LOW).** y pops 0.15 at (-5.62,-10.35) and (-6.86,-9.96) on the diagonal from the exit; sprinting the wall at z≈-9.5: y 0.20 at x -2.94 and 0.19 at x +3.07. No wall hang.
+- **Apt 201 door snag (-3.99, 4.08, 1.69) — STILL PRESENT (LOW).** Approach to the Apt 201 hub stops ~1 s; real E keypress opens APT201 from there and the doorway is walkable.
+- **Regression checks — PASS.** North-railing jump at (0,4.08,-4.43) still contained (no drop to promenade). Apt 201/Alcove 2C/SECTOR-4 open with real E; closed Apt 202 not tested this round; stairs 4.08 → 2.46 → 0.00 clean; Apt 201 SE corner ledge not reproduced.
