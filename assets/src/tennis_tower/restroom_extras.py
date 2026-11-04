@@ -10,22 +10,36 @@ from restroom import wc, Z0, ZW
 bp.FL = 0.0
 def crest(c): return xf(leaf_dir((0, 0, 0), (0, 1, 0), .35, .25, t=.0125), R=trimesh.transformations.rotation_matrix(np.pi/2, [0, 1, 0]), t=c)  # leaf crest, blade in the partition plane
 
-def basin(p):
-    W, D = 3.6, .46; x0 = -W/2
+def basin(p):   # §3.11.7: vanities at 0.75 m centres, 0.6 m deep counter, 1.0 m mirror band
+    W, D, N = 3.0, .6, 4; x0 = -W/2
     p.add("Wet_Wall", WH, box(x0, -x0, 0, 2.4, -.1, 0))
-    p.add("Splash_Panel", LF, box(x0 + .05, -x0 - .05, .86 + .002, 1.1, -E, .008))
-    p.add("Mirror", "mirror", box(x0 + .1, -x0 - .1, 1.15, 1.85, -E, .01))
-    top = box(x0 + .02, -x0 - .02, .82, .86, -E, D)
-    p.add("Counter", WH, top)
-    for k in range(4):
-        cx = x0 + .45 + k*.9
-        p.add("Basin_Bowl", SSL, xf(loft(circle(1, 16), [(0.858, .2, .14), (0.864, .19, .13)]), t=(cx, 0, .24)))
+    p.add("Splash_Panel", LF, box(x0 + .05, -x0 - .05, .86 + .002, 1.0, -E, .008))
+    p.add("Mirror", "mirror", box(x0 + .05, -x0 - .05, 1.05, 2.05, -E, .01))
+    p.add("Counter", WH, box(x0 + .0425 - E, -x0 - .0425 + E, .82, .86, -E, D))
+    for k in range(N):
+        cx = x0 + .375 + k*.75
+        p.add("Basin_Bowl", SSL, xf(loft(circle(1, 16), [(0.858, .2, .15), (0.864, .19, .14)]), t=(cx, 0, .3)))
         p.add("Taps", ALY, box(cx - .015, cx + .015, .86 - E, .98, .05, .08), box(cx - .015, cx + .015, .95, .98, .08 - E, .16))
-    p.add("Counter_Brackets", SGM, *[box(x - .04, x + .04, .3, .82 + E, -E, D - .06) for x in (x0 + .9, 0, -x0 - .9)])
-    for x in (x0 + .03, -x0 - .03):   # end privacy fins with leaf crests (Leaf Crest echo)
+    p.add("Counter_Brackets", SGM, *[box(x - .04, x + .04, .3, .82 + E, -E, D - .06) for x in (-.75, 0, .75)])
+    for x in (x0 + .03, -x0 - .03):
         p.add("End_Fins", WH, box(x - .0125, x + .0125, .15, 1.95, -E, D + .1))
-        p.add("Leaf_Crests", LF, crest((x, 1.95 - .003, D/2)))
-    p.add("Dryer_Lamps", GRN, *[box(x - .05, x + .05, 1.95, 1.99, -E, .03) for x in (x0 + .9, -x0 - .9)])
+        p.add("Leaf_Crests", LF, crest((x, 1.95 - .003, (D + .1)/2)))
+    p.add("Dryer_Lamps", GRN, *[box(x - .05, x + .05, 2.1, 2.14, -E, .03) for x in (-.75, .75)])
+
+def urinal(p):  # §3.11.7: urinals at 0.75 m centres with 0.45 m privacy screens (V2 Leaf Crest: leaf-green screens, leaf crests)
+    W, N = 3.0, 4; x0 = -W/2
+    p.add("Wet_Wall", WH, box(x0, -x0, 0, 2.4, -.1, 0))
+    p.add("Splash_Panel", SSL, box(x0 + .05, -x0 - .05, .2, 1.3, -E, .008))
+    for k in range(N):
+        cx = x0 + .375 + k*.75
+        body = loft(rrect(.36, .32, .1, 3), [(.35, .8, .8), (.42, 1, 1), (.85, 1, 1), (.95, .9, .85)])
+        p.add("Urinal", WH, xf(body, t=(cx, 0, .008 - E + .16)))
+        p.add("Urinal_Bowl", SSL, box(cx - .12, cx + .12, .45, .78, .008 - E + .32 - .004, .008 - E + .32 + .004))
+        p.add("Flush_Sensor", GRN, box(cx - .03, cx + .03, 1.12, 1.16, .008 - E, .02))
+    for k in range(1, N):
+        x = x0 + k*.75
+        p.add("Privacy_Screens", LF, box(x - .0125, x + .0125, .3, 1.5, .008 - E, .45))
+        p.add("Leaf_Crests", LF2, crest((x, 1.5 - .003, .23)))
 
 def accessible(p):
     W, X0 = 1.8, -.9; ZFa = ZW + 1.6; xs = (X0 + .03, -X0 - .03)
@@ -49,6 +63,6 @@ def accessible(p):
     p.add("Mirror", "mirror", box(cx - .22, cx + .22, 1.0, 1.7, ZW - E, ZW + .01))
     p.add("Access_Sign", CY, cap((0, 1.6, ZFa + .008 + .004 - E), .09, .008, 16, axis="z"))
 
-def build(q): p = Part(); {"basin": basin, "accessible": accessible}[q["kind"]](p); return p
-VAR = [dict(kind="basin", label="Basin unit: 3.6 m, 4 basins, leaf splash, leaf-crest fins"), dict(kind="accessible", label="Accessible stall: 1.8 x 1.6 m, grab bars, 0.95 m door")]
-if __name__ == "__main__": run("restroom", build, VAR, names=["basin", "accessible"], suffix="_extras", sheet="restroom_extras_sheet.png", title="V2 Leaf Crest extras")
+def build(q): p = Part(); {"basin": basin, "accessible": accessible, "urinal": urinal}[q["kind"]](p); return p
+VAR = [dict(kind="basin", label="Vanity unit: 3.0 m, 4 basins @0.75, 0.6 deep, 1.0 m mirror band"), dict(kind="accessible", label="Accessible stall: 1.8 x 1.6 m, grab bars, 0.95 m door"), dict(kind="urinal", label="Urinal unit: 3.0 m, 4 urinals @0.75, 0.45 m leaf screens")]
+if __name__ == "__main__": run("restroom", build, VAR, names=["basin", "accessible", "urinal"], suffix="_extras", sheet="restroom_extras_sheet.png", title="V2 Leaf Crest extras")
