@@ -20,11 +20,13 @@ def beam(s, pts, mat, w=.14, th=.1, post=SGM, part="Balance_Beam", finial=None):
     if finial == "ball": s.add(part + "_Finials", BA, *[node((x, y + .05 - E, z), .05, 0) for x, z, y in (pts[0], pts[-1])], col=None)
     if finial == "leaf": s.add(part + "_Crests", LF, *[crest((x, y + .17 - .004, z)) for x, z, y in (pts[0], pts[-1])], col=None)
 def tufts(s, n, seed=0, mats=(LF, LF2), keep=.3):  # dense grass/fern tufts on open ground (clear of every solid footprint)
-    rng = np.random.default_rng(seed); placed = 0; tries = 0
+    for a, k in s.SQ: s._slide(*a, **k)
+    s.SQ = []; rng = np.random.default_rng(seed); placed = 0; tries = 0
     S = [m for m in s.solid if m is not s.pad]
     while placed < n and tries < 4000:
         tries += 1; x, z = rng.uniform(-tl.HX + .25, tl.HX - .25), rng.uniform(-tl.HZ + .25, tl.HZ - .25)
         if any(m.bounds[0][0] - keep < x < m.bounds[1][0] + keep and m.bounds[0][2] - keep < z < m.bounds[1][2] + keep and (m.bounds[1][0] - m.bounds[0][0]) * (m.bounds[1][2] - m.bounds[0][2]) < 1.5 for m in S): continue
+        if any(m.contains([[x, PAD + .01, z]])[0] for m in S if m.is_watertight and m.bounds[0][0] < x < m.bounds[1][0] and m.bounds[0][2] < z < m.bounds[1][2]): continue
         if any(trimesh.proximity.closest_point(m, [[x, PAD, z]])[1][0] < keep for m in S if m.bounds[0][0] - 1 < x < m.bounds[1][0] + 1 and m.bounds[0][2] - 1 < z < m.bounds[1][2] + 1): continue
         if any(np.hypot(x - c.centroid[0], z - c.centroid[2]) < (c.bounds[1][0] - c.bounds[0][0])/2 + keep for c, _ in s.Q): continue
         h = rng.uniform(.22, .4); L = []
