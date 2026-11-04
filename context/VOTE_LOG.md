@@ -1824,3 +1824,10 @@
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook:** `V5 Court Wayfinding`. Stairs rebuilt to **Rev 2.7** (636d804) in V5 style, full-storey modules (one GLB per storey, stack every 6.1 m).
 - **#57 WINNER:** `godot/assets/models/tt_stair_core_a.glb` (Type A 5.5 x 10.2 m, 2.5 m flights, 2,952 tris) + `tt_stair_core_b.glb` (Type B 6.0 x 10.6 m, 2.7 m flights, 2,952 tris) + `tt_lift_core.glb` (V5 lift, 640 tris; pivot at pit floor, place 0.15 m below the landing).
 - Stairs: 36 R x 0.1694 / 17 T x 0.28 per flight, landings = flight width, 0.2 m walls, corridor door (2.2 m) on the flight-1 side at the +Z face. Rev C reuse: switchback build (stair_set_generator), well guards (stair_guard_generator style, + -convcolonly hulls), Flight*_Ramp / *_Landing -colonly colliders (stair_core_colliders_rev_c.slab_between), stair_pbr_materials textures. Walk check PASS (step 0.03, slope 31.4 deg); clip/validator/pivot/naming PASS.
+
+### #58 Tennis Tower restroom WC row (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/restroom/v1..v5.glb` (spec §3.10 + §3.11.7 grid, block positions Rev 2.7; all PASS, commit 3ccf89a).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#58 WINNER:** `V2 Leaf Crest` -> `godot/assets/models/tt_restroom.glb` (2,840 tris). Half row unit 7.2 x 2.4 m: 8 WC stalls 0.9 x 1.5 m + half the 1.8 m aisle; place two face to face (180° about Y, pivots coincident) for the 7.2 x 4.8 m row, repeat every 7.2 m in X. Wet wall at -Z (local z -1.2), aisle centre at +Z (+1.2). Pair check PASS.
+- Reuse: bath_pod_generator.wc() recipe (vac tank wall-hung/slimmed), Rev C stair PBR materials, bath-pod door-frame language. Basin unit + accessible stall follow as `tt_restroom_basin.glb` / `tt_restroom_accessible.glb`.
+- Blocks: F3 R3-S1/S2/N1/N2 under the stands; F1 R1-S/NW/NE; F2 R2-NW/NE.
