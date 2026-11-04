@@ -1192,6 +1192,10 @@ func _add_m58_edge_guards(parent: Node3D) -> void:
 		{"name": "PromenadeWestGuardrailCap", "size": Vector3(0.24, 2.25, 36.0), "pos": Vector3(-18.0, 2.375, -27.0)},
 		{"name": "PromenadeEastGuardrailCap", "size": Vector3(0.24, 2.25, 36.0), "pos": Vector3(18.0, 2.375, -27.0)},
 		{"name": "PromenadeSouthGuardrailCap", "size": Vector3(36.0, 2.25, 0.24), "pos": Vector3(0.0, 2.375, -45.0)},
+		# [MAP-QA r2] Invisible bounds at the outer edge of the ExtGround slabs (x +/-49, z 42.5): open ground ends there with no wall.
+		{"name": "ExtGroundWestBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(-49.12, 1.87, 7.25)},
+		{"name": "ExtGroundEastBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(49.12, 1.87, 7.25)},
+		{"name": "ExtGroundNorthBound", "size": Vector3(98.5, 3.5, 0.24), "pos": Vector3(0.0, 1.87, 42.62)},
 	]
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
