@@ -5,6 +5,6 @@ If you're the LAST to tick: message Gage once (priority false) saying "Doc A rea
 
 - [ ] MAP-QA-1 Traversal sweep
 - [x] MAP-QA-2 Collision edges & falls
-- [ ] MAP-QA-3 Stairs, ramps & vertical
+- [x] MAP-QA-3 Stairs, ramps & vertical
 - [x] MAP-QA-4 Exterior & tram
 - [ ] MAP-QA-5 Freeform player playtest
