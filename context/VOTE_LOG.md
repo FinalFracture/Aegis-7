@@ -1850,3 +1850,12 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V2 Leaf Crest` frame + lounger `L3 Alloy + Slate`.
 - **#61 WINNER:** `godot/assets/models/tt_cabana.glb` (4,292 tris). 4 x 4 m, eave 3.0, hip peak 3.4, back fabric down, sides rolled, open face +Z (rotate so +Z faces the W glass, i.e. -X). 2 slatted brushed-alloy loungers (35° backrest, tufted slate upholstery mapped to the starting-area atlas UV_FABRIC_SLATE) + slatted side table. Box-projected UVs; COLOR_0 tone variation on cushions/canvas. Colliders: posts, loungers (seat + backrest hulls), table (-convcolonly). 8 instances along X -11..-7, Z 18..62.
 - Texture needs (Sloane, not yet requested): TT_CabanaCanvas_White, TT_Upholstery_FabricSlate (tileable), TT_Cushion_Button (optional).
+
+### #62 Tennis Tower F3 small bar (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/bar/v1..v5.glb` (spec §3.9; all PASS, commit b81718d).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#62 WINNER:** `V3 Court Line`, split into `godot/assets/models/tt_bar.glb` (608 tris; U counter 8.0 m front + 2 x 3.0 m returns = 14 m, h 1.10, gunmetal body, slate top, amber court-line LED, score screen, ball finials, back bar 4.8 m; bbox 8.5 x 2.2 x 3.3, guest side +Z, staff opening -Z; Bar-convcolonly) + `godot/assets/models/tt_bar_stool.glb` (264 tris; L3 alloy + slate, seat 0.79; pivot = stool axis at the floor, rotation-free; Stool-convcolonly cylinder r 0.22 x 0.8).
+- **Stool placement (20 instances, translations in the tt_bar pivot frame, rotation 0, scale 1; y = 0):**
+  - Front run (z +1.88): x -3.575, -2.925, -2.275, -1.625, -0.975, -0.325, +0.325, +0.975, +1.625, +2.275, +2.925, +3.575.
+  - West return (x -4.65): z -1.25, -0.60, +0.05, +0.70. East return (x +4.65): z -1.25, -0.60, +0.05, +0.70.
+  - Same list as JSON: `assets/src/tennis_tower/bar.py` STOOLS (+ bar recenter shift x 0, z +0.20). Use a MultiMesh for the 20 stools.

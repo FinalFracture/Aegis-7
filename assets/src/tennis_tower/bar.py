@@ -8,6 +8,7 @@ from cabana_lounger import boxuv, atlasuv, pillow, fit, T, ATLAS, vcolor
 from restroom_extras import crest
 CH, TOPT = 1.10, .04
 def U(m): m.metadata["uv"] = np.zeros((len(m.vertices), 2)); return m
+STOOLS = [(x, 1.68) for x in np.linspace(-3.575, 3.575, 12)] + [(sx*4.65, z) for sx in (-1, 1) for z in (-1.45, -.8, -.15, .5)]
 lay = trimesh.transformations.rotation_matrix(np.pi/2, [1, 0, 0])
 
 def stool(F, C, x, z):
@@ -26,10 +27,8 @@ def build(q):
     p.add("Foot_Rail", ALY, *[boxuv(m, .5) for m in rail])
     p.add("Back_Bar", body, boxuv(box(-2.4, 2.4, 0, .95 + E, -1.8, -1.35), .6)); p.add("Back_Bar_Top", SSL, boxuv(box(-2.42, 2.42, .95, .99, -1.82, -1.33), .6))
     F, C = [], []
-    for x in np.linspace(-3.575, 3.575, 12): stool(F, C, x, 1.68)
-    for sx in (-1, 1):
-        for z in (-1.45, -.8, -.15, .5): stool(F, C, sx*4.65, z)
-    p.add("Stool_Frame", ALY, *[boxuv(m, .4) for m in F]); p.add("Stool_Cushions", "tt_cush_slate", *[atlasuv(m, ATLAS["tt_cush_slate"]) for m in C])
+    for x, z in (STOOLS if q.get("stools", True) else []): stool(F, C, x, z)
+    if F: p.add("Stool_Frame", ALY, *[boxuv(m, .4) for m in F]); p.add("Stool_Cushions", "tt_cush_slate", *[atlasuv(m, ATLAS["tt_cush_slate"]) for m in C])
     cols = [box(-4.25, 4.25, 0, CH, .55, 1.45), box(3.35, 4.25, 0, CH, -1.85, .55), box(-4.25, -3.35, 0, CH, -1.85, .55), box(-2.42, 2.42, 0, .99, -1.82, -1.33)]
     p.add("Bar-convcolonly", G, *[U(trimesh.creation.box(bounds=c.bounds)) for c in cols])
     if d == "leaf":    # Leaf Crest: leaf-green counter front + leaf crests standing on the back bar
@@ -60,4 +59,17 @@ VARIANTS = [
     dict(label="Garden Bar: herb planter along the back bar", dress="garden"),
     dict(label="Tree Canopy: Y-fork posts with a leaf ring over the aisle", dress="canopy"),
 ]
-if __name__ == "__main__": run("bar", build, VARIANTS, title="U counter 14 m (8 + 2 x 3), 20 L3 stools, back bar | nature + sports", post=vcolor)
+def stool_only(q):
+    p = Part(); F, C = [], []; stool(F, C, 0, 0)
+    p.add("Stool_Frame", ALY, *[boxuv(m, .4) for m in F]); p.add("Stool_Cushions", "tt_cush_slate", *[atlasuv(m, ATLAS["tt_cush_slate"]) for m in C])
+    p.add("Stool-convcolonly", G, U(trimesh.creation.cylinder(.22, .8, sections=10, transform=trimesh.transformations.translation_matrix((0, .4, 0)) @ trimesh.transformations.rotation_matrix(np.pi/2, [1, 0, 0])))); return p
+
+def final():
+    q = dict(VARIANTS[2], stools=False); raw = build(q)
+    V = np.vstack([m.vertices for k, (_, m) in raw.P.items() if "colonly" not in k]); lo, hi = V.min(0), V.max(0); sh = (-(lo[0]+hi[0])/2, -lo[1], -(lo[2]+hi[2])/2)
+    rep = run("bar", lambda qq: build(qq) if qq.get("kind") != "stool" else stool_only(qq), [dict(q, label="Court Line counter + back bar (no stools)"), dict(kind="stool", label="L3 bar stool")],
+              names=["final_bar", "final_stool"], suffix="_final", sheet="bar_final_sheet.png", title="#62 split", post=vcolor)
+    pos = [(round(x + sh[0], 3), 0.0, round(z + sh[2], 3)) for x, z in STOOLS]; json.dump(pos, open(os.path.join(RENDER_OUT, "bar", "stool_positions.json"), "w")); print("POS", pos, "SHIFT", sh); return rep
+
+if __name__ == "__main__" and sys.argv[1:] == ["final"]: final()
+elif __name__ == "__main__": run("bar", build, VARIANTS, title="U counter 14 m (8 + 2 x 3), 20 L3 stools, back bar | nature + sports", post=vcolor)
