@@ -1196,6 +1196,9 @@ func _add_m58_edge_guards(parent: Node3D) -> void:
 		{"name": "ExtGroundWestBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(-49.12, 1.87, 7.25)},
 		{"name": "ExtGroundEastBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(49.12, 1.87, 7.25)},
 		{"name": "ExtGroundNorthBound", "size": Vector3(98.5, 3.5, 0.24), "pos": Vector3(0.0, 1.87, 42.62)},
+		# [MAP-QA r3] South edge of the side slabs (z -28.0): a jump over the canal edge at x |18..49| fell into the void.
+		{"name": "ExtGroundSouthWestBound", "size": Vector3(31.24, 3.5, 0.24), "pos": Vector3(-33.5, 1.87, -28.12)},
+		{"name": "ExtGroundSouthEastBound", "size": Vector3(31.24, 3.5, 0.24), "pos": Vector3(33.5, 1.87, -28.12)},
 	]
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
