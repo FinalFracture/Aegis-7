@@ -1,11 +1,20 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.6**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 2.7**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
 
 ## 0. Revision log
+- **Rev 2.7 (2026-11-03, Rook stair finding; Vance decision):**
+  - Stair cores enlarged for code landings: **Type A 5.5 × 10.2 m, Type B 6.0 × 10.6 m**; flight widths unchanged.
+  - All 17 cores re-fitted (§4.6). Zone trims:
+    - corner stairs take 4.7 m of each S/N stand segment (≈ −580 seats);
+    - ST-AQS/AQN moved to the foyer's inner side (X −6..0) to keep the 42 m of doors;
+    - F2 desk moved into the entry lobby; F2 training moved onto the bouldering W wall;
+    - F3 playground Z 20.6..58.4 (454 m²); F3 lounge Z 20.6..58.4;
+    - F3 restroom blocks re-split, with W/E under-stand blocks added.
+  - Egress re-checked (§5).
 - **Rev 2.6 (2026-11-03, Jared approved all four column-clash fixes, §3.11.11):**
   - ST+E moved to Z 50..56.
   - The kids' wall E face is on X 84.5, with TC-S3 as a climbable pillar.
@@ -124,6 +133,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 - F1/F2: 5 rows, front row +0.9 m behind a glass balustrade, risers 0.40, treads 0.85, top-row headroom 2.5 m (Appendix A.2 derivation). **1,540 per floor.**
 - F3: 12 rows on all 4 sides (risers 0.45, top row +5.4 m above F3 = +17.6), long sides Z 9.1..20.5 / 58.5..69.9, short sides X 24.1..35.5 / 107.5..118.9. Long 12 × 208 = 2,496; short 12 × 100 = **1,200** (the Rev 2.2 "+2,084" was wrong; Rev 2.2's true short-side figure was 1,536, DQ-13). **F3 = 3,696.**
 - **Total 6,776 seats** (1,540 + 1,540 + 3,696).
+- **Rev 2.7:** the enlarged corner stairs take the first 4.7 m of each S/N stand segment: −180 seats on F1 and on F2 (1,360 each), and about −216 on F3 (≈3,480). **Total ≈6,200** (Jared: the seat count doesn't matter).
 
 ### 3.3 Plinth and grade (DQ-06, M3)
 - The hull floor rises toward the strip edges: height above the centreline **h(z) = z²/(2R) = z²/400** *(physics, R 200 doc)*. The building floor is flat, so the plinth under F1 is **p = F1 − h**.
@@ -210,10 +220,10 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 | **Lead / top-rope hall** (belay floor) | 30..57 | 0..8 | 27 × 8 = 216 m² | over the bowling lanes; double-height over Z 3..8 |
 | **Double-height "Stand-Back Wall"** | 36..56 (face at Z 8) | 8..9.1 | **20 m wide × 11.5 m tall** (+6.1 → +17.6 above F1) | through an **F3 slab void X 35..57, Z 3..8** (110 m²); built against the back of the F3 S stand (top row +17.6); ~6 rope lanes at 3.3 m |
 | Changing / lockers / WC | 30..57 | 10.5..15 | 27 × 4.5 | behind the wall |
-| Front desk / gear rental | 58..66.5 | **9.5..15** (Rev 2.6) | 47 m² | TC-S2 stands free in front of it, clad as a feature column |
+| Front desk / gear rental | **67..76** (Rev 2.7; moved into the entry lobby) | **6.5..9.5** | 27 m² | ST+S1 now fills X 57..64 to Z 13.2; TC-S2 stays free-standing, clad, between the stair and the desk |
 | Entry lobby | 66.5..76.5 | 0..9.5 | — | from lift S / LS |
 | Kids' wall + auto-belays (5 m walls) | **77..84.5** (E face on X 84.5, Rev 2.6) | 0..15 | 113 m² | TC-S3 built into the E face as a climbable pillar |
-| Training (spray / hang boards) | 85..94 | 9..15 | 54 m² | behind ST+S2 |
+| Training (spray / hang boards) | — | — | — | **Rev 2.7: moved onto the W wall of the bouldering hall (X 94)**; ST+S2 now fills X 86..92 to Z 13.2 |
 | **Bouldering hall** | 94..113 | 0..15 | 19 × 15 = 285 m² | 4.5 m walls, 300 mm mats (band clear ≈ 5.4 m); tree column TC-S4 (X 101.5) clad as a free-standing "tree boulder" |
 - **Is the double-height wall feasible? Yes (Vance proposal, engineer to confirm).** The F3 S-band slab spans one way Z 0..15; the void needs **trimmer beams along Z 3 and Z 8** (X 35..57, 22 m), carried by the façade grid at X 33/42/51/60 on Z 3 and by the wall's own steel frame (posts at X 36, 42, 46, 51, 56) on Z 8. No tree column is hit (TC-S1 is at X 57.5, Z 8.5, just outside). The F3 track runs past the void's S edge behind a glass rail, so runners and the S concourse look down on the climbers.
 - **Physics:** g at the top hold (+17.6) is 0.912 g. Climbing is slow (≈0.5 m/s → 0.02 g sideways, same as the stair doc), but a lowering climber at 1.5 m/s feels 2ωv ≈ 0.07 g sideways, so auto-belays and lowers swing gently spinward; lanes 3.3 m apart, story beat "you never come down where you went up".
@@ -247,9 +257,9 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 | **Running track** | loop X 0.7..127.6, Z 0.7..78.4 | — | **1.8 m wide (2 lanes), ≈400 m centreline lap** | Offsets (Rev 2.5): **S and N straights 0.7 m** off the Z 0 / Z 79 glass (clears the 600 mm fins). **W straight 12.7 m** in from the X −12 glass and **E straight 12.4 m** in from the X 140 glass: both run inboard of the 4 plant corners (12 m deep), so the cabanas sit on the W side and the playground on the E side, outside the loop; painted crossings at every stair landing. S/N straights are axial (zero Coriolis); on the W/E straights a 4 m/s runner gets ±0.18 g (spinward "heavy leg", antispinward "light leg"), story beat |
 | **Dining terrace (tables)** | 3.5..23 | 4..33 and 46..75 | 2 × 565 m², ≈230 seats each | over the aquatic transfers; served from the F1 food court via lift W |
 | **Cabanas** | −11..−7 | 18..62 | **8 cabanas, 4 × 4 m**, 1.5 m apart | along the W glass, looking out at the Fore cap |
-| Lounge / view walk | −7..−0.7 | 16..63 | 6.3 m wide | between cabanas and track |
+| Lounge / view walk | −7..−0.7 | **20.6..58.4** (Rev 2.7) | 6.3 m wide | between cabanas and track; ST-AQS/AQN at its ends |
 | **Small bar** | 8..20 | 35..44 | 12 × 9 = 108 m², ~14 m counter, ~20 stools | opposite the LW / lift W landing |
-| **Kids' playground** | 128.3..140 | 17..62 | **12 × 45 = 530 m²**, fenced 1.2 m | **fits**, on the E terrace outside the track between ARS and ARN; 3 gates (S end → ARS, N end → ARN, gated track crossing → ST+E); swings and slides axial (no Coriolis twist) |
+| **Kids' playground** | 128.3..140 | **20.6..58.4** (Rev 2.7) | **12 × 37.8 = 454 m²**, fenced 1.2 m | **fits**, on the E terrace outside the track between ARS and ARN; 3 gates (S end → ARS, N end → ARN, gated track crossing → ST+E); swings and slides axial (no Coriolis twist) |
 | Climbing void + glass rail | 35..57 | 3..8 | 110 m² | view down to F2 (§3.7.1) |
 | S / N rear concourse lounges | 3..125 | 2.5..9.1 / 69.9..76.5 | ≈650 / 730 m² net | |
 | Restrooms under the stands | §3.10 | | | |
@@ -260,7 +270,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 |---|---|---|---|---|---|---|---|---|
 | F1 | 5,120 | 29 | 56 | 13 / 18 | 6 | ≈470 m² | **R1-S** 102..113, 0..15 (165); **R1-NW** 30..44, 64..79 (210); **R1-NE** 102..113, 64..79 (165) | 540 m² ✓ |
 | F2 | 4,138 | 25 | 48 | 11 / 14 | 5 | ≈400 m² | **R2-NW** 30..44, 64..79 (210); **R2-NE** 102..113, 64..79 (165); climbing changing WC 30..57, 10.5..15 (~60) | 435 m² ✓ |
-| F3 | 7,120 | 38 | 72 | 18 / 24 | 8 | ≈605 m² | **4 blocks under the F3 stands** X 36..66.5 / 76.5..107, Z 9.1..15 (S) and 64..69.9 (N), headroom 2.6–5.4 m | 708 m² ✓ |
+| F3 | 7,120 (conservative; Rev 2.7 ≈ 6,830) | 38 | 72 | 18 / 24 | 8 | ≈605 m² | Rev 2.7, under the stands (headroom 2.6–5.4 m): **S** X 36..57, 76.5..86, 92..107 (Z 9.1..15); **N** X 36..58, 76.5..86, 92..107 (Z 64..69.9); **W** X 24.1..30, Z 21..34; **E** X 113..118.9, Z 21..34 | 696 m² ✓ |
 | **Total** | | **92** | **176** | **42 / 56** | **19** | | **268 WCs** | |
 - Wet stacks line up at X 36..44 and X 102..107 (N) through all three floors; R1-S stands alone over the SE substation side.
 - The R1-S block takes the free S-band bay X 102..113 behind the AXE 2 target wall; R1/R2-NW and NE take the ends of the food court and gym.
@@ -321,8 +331,10 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 #### 3.11.8 Lifts and stairs
 - **Lift car:** 1.6 × 2.4 × 2.5 m internal, 1,600 kg / 21 persons (stretcher-capable), centre-opening doors 1.1 × 2.1 m. 2 cars per stack in the 4 × 4 m shaft zone (2 × 2.0 × 2.8 m shafts). Speed 1.0–1.6 m/s (§2.3).
 - **Stair cores, 2 types only:**
-  - **Type A: core 5.5 × 5.5 m**, 2 flights × 2.5 m, no well. Used for C-SW/SE/NW/NE, LS, LN, LW, LE (8 cores). LW trimmed to X 24.5..30, LE to X 113..118.5.
-  - **Type B: core 6.0 × 6.0 m**, 2 flights × 2.7 m + 0.6 m of walls. Used for ST+S1/S2/N1/N2, ST+E, ST-AQS/AQN, ST-ARS/ARN (9 cores). ST+S/N trimmed from 6.4 m to 6.0 m.
+  - **Rev 2.7 (Rook: two flights per 6.1 m storey need code landings):** 36 risers per storey at **0.1694 m**, 18 per flight (3.05 m rise, under the 3.66 m IBC flight limit); **treads 0.28 m**, 17 per flight = **4.76 m run**; **landing depth = flight width**; walls 0.2 m; 0.1 m well.
+  - **Type A: core 5.5 × 10.2 m** (5.5 = 2 × 2.5 + 0.1 + 2 × 0.2; 10.16 = 4.76 + 2 × 2.5 + 2 × 0.2). 2.5 m flights. 8 cores: C-SW/SE/NW/NE, LS, LN, LW, LE.
+  - **Type B: core 6.0 × 10.6 m** (6.0 = 2 × 2.7 + 0.2 + 2 × 0.2; 10.56 = 4.76 + 2 × 2.7 + 2 × 0.2). 2.7 m flights. 9 cores: ST+S1/S2/N1/N2, ST+E, ST-AQS/AQN, ST-ARS/ARN.
+  - Long-axis orientation per core is in §4.6.
   - **Egress re-check:** 8 × 2.5 + 9 × 2.7 = **44.3 m, unchanged**. F3 needs 36.3 m ✓, F2 21.1 m ✓ (§5.1).
 #### 3.11.9 Tri budget and transparency (Rook)
 - **Accepted (Rook's plan):**
@@ -378,16 +390,16 @@ Hull curve, plinth (0 → 4.0 → 0.2 m), F1/F2/F3 slabs, S/N stands, climbing v
 ### 4.6 Coordinate table: stairs, lifts, tree columns, transfers (DQ-02, DQ-14, B3)
 | ID | Type | X | Z | Floors | Width | Lands in (F1 / F2) |
 |---|---|---|---|---|---|---|
-| C-SW / C-SE / C-NW / C-NE | stair (ring corner), **Type A** | 30..35.5 / 107.5..113 | 15..20.5 / 58.5..64 | F1–F3 | 2.5 | stand-free ring corners |
-| LS | stair beside S lift, Type A | 71..76.5 | 9.5..15 | F1–F3 | 2.5 | S entrance lobby / climbing lobby |
-| LN | stair beside N lift, Type A | 71..76.5 | 64..69.5 | F1–F3 | 2.5 | food court / gym |
-| LW | stair beside W lift, Type A | **24.5..30** | 39..44.5 | F1–F3 | 2.5 | lobby corridor end |
-| LE | stair beside E lift, Type A | **113..118.5** | 39..44.5 | F1–F3 | 2.5 | arcade |
-| ST+S1 / ST+S2 | stair (S rear), **Type B** (ST+S1 W wall thickened to X 57.0, wraps TC-S1, Rev 2.6) | **58..64 / 86..92** | 2.6..8.6 | F1–F3 | 2.7 | **free bays** X 58..66.5 / 85..94 |
-| ST+N1 / ST+N2 | stair (N rear), Type B | **58..64 / 86..92** | 70.4..76.4 | F1–F3 | 2.7 | food court / gym |
-| ST+E | stair (E terrace), Type B | 119.5..125.5 | **50..56** (Rev 2.6) | F1–F3 | 2.7 | arcade |
-| ST-AQS / ST-AQN | stair (W façade), Type B | −12..−6 | 10..16 / 63..69 | F1–F3 | 2.7 | foyer / gallery ends |
-| ST-ARS / ST-ARN | stair (E façade), Type B | 134..140 | 10..16 / 63..69 | F1–F3 | 2.7 | arcade, by the SE/NE plant |
+| C-SW / C-SE / C-NW / C-NE | stair (ring corner), **Type A 5.5 × 10.2**, long axis X | **30..40.2 / 102.8..113** | 15..20.5 / 58.5..64 | F1–F3 | 2.5 | ring corner + first 4.7 m of the S/N stand segment (Rev 2.7) |
+| LS | stair beside S lift, Type A, long axis Z | 71..76.5 | **9.5..19.7** | F1–F3 | 2.5 | S lift gap (4.5 m passage kept at X 66.5..71) |
+| LN | stair beside N lift, Type A, long axis Z | 71..76.5 | **59.3..69.5** | F1–F3 | 2.5 | N lift gap (4.5 m passage kept) |
+| LW | stair beside W lift, Type A, long axis X | **24.5..34.7** | 39..44.5 | F1–F3 | 2.5 | lobby end + W lift gap (passage Z 34.5..39 kept) |
+| LE | stair beside E lift, Type A, long axis X | **108.3..118.5** | 39..44.5 | F1–F3 | 2.5 | E lift gap + arcade |
+| ST+S1 / ST+S2 | stair (S rear), **Type B 6.0 × 10.6**, long axis Z (ST+S1 W wall thickened to X 57.0, wraps TC-S1) | **57..64 / 86..92** | **2.6..13.2** | F1–F3 | 2.7 | F1 free bays; F2 climbing; F3 S concourse, under the stand rake (≥3.4 m) |
+| ST+N1 / ST+N2 | stair (N rear), Type B, long axis Z | 58..64 / 86..92 | **65.8..76.4** | F1–F3 | 2.7 | food court / gym / F3 N concourse |
+| ST+E | stair (E terrace), Type B, long axis Z | 119.5..125.5 | **50..60.6** | F1–F3 | 2.7 | arcade / E terrace (TC-E2 1.5 m clear) |
+| ST-AQS / ST-AQN | stair (W foyer, inner side), Type B, long axis Z | **−6..0** | **10..20.6 / 58.4..69** | F1–F3 | 2.7 | foyer / gallery ends; moved off the façade so the 42 m of W doors stay |
+| ST-ARS / ST-ARN | stair (E façade), Type B, long axis Z | 134..140 | **10..20.6 / 58.4..69** | F1–F3 | 2.7 | arcade, by the SE/NE plant |
 | Lift S / N | 2 cars | 66.5..70.5 | 11..15 / 64..68 | F1–F3 | — | concourse via 10 m gap |
 | Lift W / E | 2 cars | 26..30 / 113..117 | 34.5..38.5 | F1–F3 | — | concourse via 10 m gap |
 | TC-S1..S4 | tree column | 57.5, 65.5, 84.5, 101.5 | 8.5 | grade–roof | — | S1 inside the ST+S1 W wall; S2 free-standing clad in the F2 climbing lobby (F1: free bay); S3 climbable pillar in the F2 kids' wall E face (F1: axe target wall); S4 tree boulder / axe target wall |
@@ -420,11 +432,12 @@ Factors (IBC Table 1004.5): fixed seats as counted; unconcentrated assembly (foo
 - **Stairs: 17 full-height, 8 × 2.5 + 9 × 2.7 = 44.3 m.** Rev 2.4 margin **22% on F3** (was 12%): the track, dining tables and playground are lighter loads than open terrace. If the F3 open areas are ever cleared for standing events (0.46 m²), cap them at ~4,000 by signage (unchanged rule).
 ### 5.2 Distances (DQ-15)
 - Travel (IBC A, sprinklered, 76 m; Vance 60 m to an axial route): Rev 2.4 worst F3 points: cabana at X −11, Z 40 → ST-AQS ≈ **25 m**; playground X 140, Z 40 → ST+E (gated crossing, Rev 2.6 at Z 50..56) ≈ 25 m, → ARS ≈ 24 m; climbing belay floor X 30, Z 5 → C-SW ≈ 17 m; bouldering X 113, Z 0 → ST+S2 ≈ 21 m; W terrace X 10, Z 26 → ST-AQS/LW ≈ 24 m; S rear concourse X 45 → C-SW ≈ 20 m; F1 lap deck → foyer doors ≈ 25 m. QA-04's 48–52 m terrace figure was against the Rev 2.2 14-stair set; all now ≤ 30 m ✓.
+- **Rev 2.7 re-fit:** width unchanged at 44.3 m. Loads drop with the seats: F3 ≈ 6,830 → 34.8 m needed (27% margin); F2 ≈ 3,960 → 20.2 m; F1 ≈ 4,940. Travel: playground X 140, Z 40 → ARS (now ends Z 20.6) ≈ 20 m, → ARN ≈ 19 m; cabana X −11, Z 40 → ST-AQS (X −6..0, ends Z 20.6) ≈ 24 m; F2 bouldering X 113, Z 0 → ST+S2 ≈ 21 m; F1 lap deck → foyer doors ≈ 25 m. All ≤ 30 m ✓ (limit 76 m). The corner stairs now open onto the concourse directly at the stand ends. Common paths unchanged (≤ 15 m).
 - Rev 2.6 ST+E move: E terrace worst point (X 120, Z 30) → LE ≈ 10 m, → ST+E ≈ 20 m; arcade (F1/F2) X 125, Z 40 → ST+E ≈ 10 m; all ≤ 30 m ✓; stair width unchanged (44.3 m).
 - Common path (A: 23 m): the playground has 3 gates, worst common path ≈ 12 m ✓; the climbing belay floor opens at both ends (C-SW side and the S lobby), ≈ 14 m ✓. F2 gallery now has stairs at both ends (ST-AQS/ST-AQN, 47 m apart, plus the W lift/LW via the bridge), so the worst common path ≈ 15 m ✓ (DQ-07).
 - Doc rule 2 exits per building (`strip4_plan.md` §6): exits on all 4 faces.
 ### 5.3 Main exit (DQ-05)
-IBC §1030.2: the main exit must take ≥ ½ the building load: Rev 2.4: ½ × 16,380 (F1 5,120 + F2 4,140 + F3 7,120) × 3.8 mm = **31.1 m**. W face doors **Z 18.5..60.5 = 42 m ✓** onto the +4.0 HD West Arrival terrace (a public way via the Fore cap portal, the Fore Hub Station Walk and the corner links to both loop arms).
+IBC §1030.2: the main exit must take ≥ ½ the building load. Rev 2.7: ½ × (4,940 + 3,960 + 6,830) × 3.8 mm = **29.9 m** ≤ 42 m ✓. Rev 2.4: ½ × 16,380 (F1 5,120 + F2 4,140 + F3 7,120) × 3.8 mm = **31.1 m**. W face doors **Z 18.5..60.5 = 42 m ✓** onto the +4.0 HD West Arrival terrace (a public way via the Fore cap portal, the Fore Hub Station Walk and the corner links to both loop arms).
 ### 5.4 Circulation
 Lift → concourse → stands (front/radial/rear aisles); bands open off the rear aisles and outside; lift speed cap 1.0–1.6 m/s (Coriolis, §2.3).
 
