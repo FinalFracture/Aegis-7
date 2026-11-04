@@ -7,7 +7,7 @@ CFG = {"F12": (5, .40, .85), "F3": (12, .45, .95)}
 
 def build(q):
     n, R, T = CFG[q.get("cfg", "F12")]; p = Part(); x0, x1 = -W/2, W/2; sp = (W - 2*HA) / NS
-    p.add("Tier_Concrete", SL, *[box(x0, x1, 0, R*(i+1), -T*(i+1), -T*i + (E if i else 0)) for i in range(n)])
+    p.add("Tier_Concrete", SL, *[box(x0 + .001, x1 - .001, 0, R*(i+1), -T*(i+1), -T*i + (E if i else 0)) for i in range(n)])
     p.add("Aisle_Steps", G, *[box(*sorted((s*(W/2 - .01), s*(W/2 - HA + .02))), R*(i+1) - E, R*(i+1) + R/2, -T*(i+1) + T/2, -T*i - .01) for i in range(n - 1) for s in (-1, 1)])
     seats, backs, peds = [], [], []
     for i in range(n):
@@ -40,8 +40,8 @@ def build(q):
         yt = R*n; zb = -T*n + .1
         for xp in (x0 + 1.2, x1 - 1.2):
             top = np.array([xp, yt + 2.8, zb]); p.add("Canopy_Steel", ST, tube((xp, yt - E, zb), top, .08, 8), node(top, .12, 0 if q.get("lite") else 1),
-                *[tube(top, top + d, .05, 6) for d in ([.9, .6, 1.4], [-.9, .6, 1.4])])
-            p.add("Canopy_Leaves", LF, *[leaf_dir(top + np.array([dx, .62, 1.45]) + [0, .02, 0], (dx*.6, .15, 1), 1.4, .6, t=.03) for dx in (.9, -.9)])
+                *[tube(top, top + d, .05, 6) for d in ([.6, .6, 1.4], [-.6, .6, 1.4])])
+            p.add("Canopy_Leaves", LF, *[leaf_dir(top + np.array([dx, .62, 1.45]) + [0, .02, 0], (0, .15, 1), 1.4, .6, t=.03) for dx in (.6, -.6)])
     return p
 
 VARIANTS = [

@@ -1802,3 +1802,8 @@
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
 - **#53 WINNER:** `V4 Leaf Capital` (992 tris) -> `godot/assets/models/tt_tree_column.glb` (grade-to-roof type, TC-S1..S4 / TC-N1..N4 / TC-E1/E2; pivot at F1 pedestal base, branch heads at +22.5).
 - **West type:** `godot/assets/models/tt_tree_column_west.glb` (TC-W1/W2, V4 style, shoe on T-W4/T-W6 at F3 +12.2; pivot at shoe base; 960 tris, all checks PASS). Built from `assets/src/tennis_tower/tree_column.py` with `base='truss'`.
+
+### #54 Tennis Tower stand module (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/stand_module/v1..v5(.glb|_f3.glb)` (spec §3.2 / §3.11.4; all PASS, commit c093f32) + hybrid `v6_hybrid(_f3).glb` (commit 5beed7c).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook:** V4 Court Rail + V5 branch posts/leaf shades = **V6 hybrid**, approved.
+- **#54 WINNER:** `V6 hybrid` -> `godot/assets/models/tt_stand_module.glb` (F1/F2, 5 rows, 2,696 tris) + `godot/assets/models/tt_stand_module_f3.glb` (F3, 12 rows, 5,944 tris). Canopy trimmed inside the bay: width 7.498 m (1 mm end inset per side), tiles at 7.5 m along X with no overlap or coplanar faces between adjacent bays (pair check PASS). Front +Z = concourse.
