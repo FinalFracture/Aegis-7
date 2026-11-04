@@ -183,3 +183,13 @@ Project items found by the checker, not checker bugs: 2 deleted-script showcase 
 - M-70: **PASS (stays verified)** — `--qa-stairs` 12/12, `DONE failures=0` (down to L1 and back up F1/F2 to L2 (1.15, 4.08, -1.03)); egress crosses both flights.
 - M-73: **not re-run by Patch** — no built-in QA mode covers the NW corner and this session wrote no harness; status rests on QA-01 + QA-02 at 248257d. The egress route passes the exit at z -8.8 cleanly.
 - Built-in modes only; no real-input free-walk escape check this session.
+
+## Map full-walk playtest — rounds 1–4 summary (clean at main 702c257, 2026-11-03)
+
+- Method: 5 QA bots per round (traversal, collision edges, stairs/vertical, exterior/tram, freeform) logged blind to a findings doc and signed off; Gage deduped and fixed every real walkability/solidity bug in one batch per round (collider-only, verified with real-input walk probes + first_pass_check + `--qa-egress` + `--qa-stairs`).
+- Round 1: stale invisible walls removed (M58_L2GalleryWestEdge, EastLandingWestGuardrail, L2WestWingSouthGuardrail); StairwellHeadGlassCap and Promenade guardrail caps added; GEO-15 foliage collider; `--qa-stairs` mode.
+- Round 2: ExtGround West/East/North bounds (west of x -22 walkable and bounded); DOOR_SECTOR4_EXIT opens with E (non-key input events); curb seam caps.
+- Round 3: ExtGroundSouthWest/EastBound at z -28.12 (canal-edge jump fell into the void at x ±44–48).
+- Round 4: 0 real walkability bugs. Remaining reports were reproduced as by-design solids (stair-core shell wall, kerb-ramp handrail SYS-15, planters behind the x -16.95 curb), test-harness artifacts, teleport-only states, or invalid start points outside the slab.
+- Open, needs Jared: Task_Lamp_201 floating lamp/collider (M-65); whether the Alcove 2C rails should contain sprint-jumps; kerb ramp 953 handrail (SYS-15); movement-code airborne wall-slide hang on rails/corners; deletion of the buried x 10.65 ramp collider.
+- Non-walkability notes: navmesh mismatch (M-63); canal-edge props `Ext_46_ext_canal_edge_968/_986` float at y 1.245; stale `close_blocker` field on doors; fresh clones need `godot --import`; `Input.action_press` can't trigger E.
