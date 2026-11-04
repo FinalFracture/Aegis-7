@@ -1871,3 +1871,9 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V2 Leaf Crest`, beam lengthened for 0.6 m seat gaps.
 - **#64 WINNER:** `godot/assets/models/tt_swing_set.glb` (1,440 tris). 4.3 m beam at +2.45 on 3 A-frames (z -2.1 / 0 / +2.1, feet x ±1.0), leaf crests on the apexes, 4 leaf-green belt seats at z -1.575 / -0.525 / +0.525 / +1.575 (+0.45), swing along local X; EPDM pad 7.0 x 4.4 m. Animate `Swing1..4_Seat` + `_Chains` about a Z hinge at local (0, 2.39, z_i), ±60°. Sweep clearance: 0.251 m to the frame, 0.40 m to the pad. Colliders: A-frame hulls + beam (-convcolonly).
 - **Footprint deviation for Vance:** spec §3.11.6 says 7 x 3 m; built **7 x 4.45 m** (pad 4.4 m) to give 0.6 m between seats. Check the E-terrace playground layout (12 m wide zone) still fits.
+
+### #65 Tennis Tower playground climbing dome (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/dome_climber/v1..v5.glb` (spec §3.11.6 piece 3; all PASS, commit 6ce15b2).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V4 Garden`, "but without the little planter boxes".
+- **#65 WINNER:** `godot/assets/models/tt_dome_climber.glb` (3,642 tris). Lamella dome R 2.0 (Ø 4 m), 4 rings x 10 nodes + apex, 110 slate struts with merged hub nodes, leaf crest on the apex (top 2.65), EPDM fall-zone pad Ø 7.0 (1.5 m past the dome). Planter troughs removed. Openings 0.296..0.542 m, 0 hits in the 89..230 mm entrapment band. Collider: Dome-convcolonly (single convex hull; outside climb only, interior not enterable). bbox 7.0 x 2.65 x 7.0, pivot pad centre at the floor.
+- **Footprint note for Vance:** pad Ø 7 m vs spec dome Ø 4 m (fall zone added).

@@ -49,7 +49,7 @@ def build(q):
     elif d == "canopy":  # Leaf Canopy: full leaf-panel cap on the top ring (shade) + leaf-green frame
         pans = pick(lambda i, c: c[1] > 1.6); p.add("Canopy_Panels", "tt_hdpe_leaf", *[boxuv(m, .5) for m, _, _ in pans])
     elif d == "garden":  # Garden Ring: 4 planter troughs on the pad edge, outside the fall zone core
-        for a in np.radians([45, 135, 225, 315]):
+        for a in (np.radians([45, 135, 225, 315]) if q.get("planters", True) else []):
             tr, so, sy = planter(-.45, .45, PAD - E, -.15, .15, h=.35)
             for m in (tr, so): m.apply_transform(trimesh.transformations.rotation_matrix(-a + np.pi/2, [0, 1, 0])); m.apply_translation((3.2*np.cos(a), 0, 3.2*np.sin(a)))
             sh = shrubs(-.4, .4, sy, 0, r=.12, seed=int(a*10)); sh.apply_transform(trimesh.transformations.rotation_matrix(-a + np.pi/2, [0, 1, 0])); sh.apply_translation((3.2*np.cos(a), 0, 3.2*np.sin(a)))
@@ -74,6 +74,9 @@ VARIANTS = [
     dict(label="Garden Ring: planter troughs round the pad, leaf crest", dress="garden", frame=ST),
     dict(label="Court Holds: slate climbing panels with ball holds", dress="holds"),
 ]
-if __name__ == "__main__":
+def final():  # #65: V4 Garden without the planter troughs (Jared)
+    run("dome_climber", build, [dict(VARIANTS[3], planters=False, label="#65 Garden, slate frame, leaf crest, no planters")], names=["final"], suffix="_final", sheet="dome_climber_final_sheet.png", title="#65 final")
+if __name__ == "__main__" and sys.argv[1:] == ["final"]: final()
+elif __name__ == "__main__":
     run("dome_climber", build, VARIANTS, title="climbing dome Ø 4.0 m, 110 struts, Ø 7 m fall-zone pad | nature + sports")
     o = openings(); print("OPEN", o); json.dump(o, open(os.path.join(RENDER_OUT, "dome_climber", "clearance.json"), "w"), indent=1)
