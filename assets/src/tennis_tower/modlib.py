@@ -172,20 +172,20 @@ def name_rule(p):
     return all(("glass" in k.lower()) == (mk == GL) for k, (mk, _) in p.P.items())
 
 # ---------------- variant runner ----------------
-def run(module, builder, params, title="", tri_max=TRI_MAX, suffix="", names=None, sheet=None):
+def run(module, builder, params, title="", tri_max=TRI_MAX, suffix="", names=None, sheet=None, post=None, view=None):
     """builder(prm) -> Part. params: list of 5 dicts, each with 'label'. Writes v1..v5.glb, validates, renders, contact sheet."""
     gdir = os.path.join(GLB_OUT, module); rdir = os.path.join(RENDER_OUT, module); os.makedirs(gdir, exist_ok=True); os.makedirs(rdir, exist_ok=True)
-    iso = views()[3]; rep = []; tiles = []
+    iso = view if view is not None else views()[3]; rep = []; tiles = []
     for i, prm in enumerate(params, 1):
         p = recenter(builder(prm)); chk = cc.check({k: v for k, v in p.P.items() if 'colonly' not in k}, n_samp=400)
-        vn = names[i-1] if names else f"v{i}{suffix}"; gp = os.path.join(gdir, f"{vn}.glb"); tris, geo = export_final(p.P, [gp]); finish_glb(gp)
+        vn = names[i-1] if names else f"v{i}{suffix}"; gp = os.path.join(gdir, f"{vn}.glb"); tris, geo = export_final(p.P, [gp]); finish_glb(gp); post and post(gp)
         try: ok_v = vm.validate_file(gp, check_tri_range=(1, tri_max), require_textures=False, require_blend_glass=any(mk == GL for mk, _ in p.P.values()))
         except AssertionError as e: print('VALIDATE FAIL', e); ok_v = False
         r = dict(v=vn, label=prm.get("label", ""), tris=int(tris), clip_pass=chk["pass"], worst_overlap=chk["worst_overlap"],
                  bad_overlaps=[o for o in chk["overlap"] if not o[3]], coplanar=chk["coplanar"], open=chk["open"], pivot=chk["pivot"], size=chk["size"],
                  names_ok=name_rule(p), validate=bool(ok_v), passed=bool(ok_v and chk["pass"] and tris <= tri_max and name_rule(p)))
         rep.append(r); print(json.dumps(r, default=str))
-        im = crop(render_view(geo, iso, size=640, shadow=True, glass_alpha=.35)); plt.imsave(os.path.join(rdir, f"{vn}.png"), np.clip(im, 0, 1))
+        im = crop(render_view({k: v for k, v in geo.items() if 'colonly' not in k}, iso, size=640, shadow=True, glass_alpha=.35)); plt.imsave(os.path.join(rdir, f"{vn}.png"), np.clip(im, 0, 1))
         tiles.append((f"{vn}  {r['label'].replace(': ', chr(10)).replace(', ', chr(10))}\n{tris} tris | {'PASS' if r['passed'] else 'FAIL'}", im))
     fig, axs = plt.subplots(1, len(tiles), figsize=(4.4*len(tiles), 9), facecolor="#F4F2EC")
     for ax, (t, im) in zip(np.atleast_1d(axs), tiles): ax.imshow(np.clip(im, 0, 1)); ax.axis("off"); ax.set_title(t, fontsize=10, color="#222")
