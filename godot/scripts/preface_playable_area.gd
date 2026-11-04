@@ -2683,8 +2683,52 @@ func _prop_mesh_aabb(root: Node3D) -> AABB:
 	return merged
 
 
+# [NAV-12] One box per visible mesh, in the prop's local frame. A single merged AABB
+# stretches the notice board's tall south edge across the bin front, where the mesh has
+# no vertices (capsule contact (1.50, 1.13, 4.70)). Each box stays on its own mesh.
+func _add_prop_part_boxes(root: Node3D) -> bool:
+	var body := StaticBody3D.new()
+	body.name = "PropAabbBody"
+	var stack: Array = []
+	for child: Node in root.get_children():
+		stack.append([child, Transform3D.IDENTITY])
+	var n: int = 0
+	while not stack.is_empty():
+		var item: Array = stack.pop_back()
+		var curr: Node = item[0] as Node
+		var parent_xf: Transform3D = item[1] as Transform3D
+		var xf: Transform3D = parent_xf
+		if curr is Node3D:
+			xf = parent_xf * (curr as Node3D).transform
+		if curr is MeshInstance3D:
+			var mi: MeshInstance3D = curr as MeshInstance3D
+			if mi.mesh != null:
+				var bb: AABB = xf * mi.get_aabb()
+				if bb.size.x > 0.0001 and bb.size.y > 0.0001 and bb.size.z > 0.0001:
+					var shape_node := CollisionShape3D.new()
+					shape_node.name = "Part_%s" % mi.name
+					var shape := BoxShape3D.new()
+					shape.size = bb.size
+					shape.margin = 0.0
+					shape_node.shape = shape
+					shape_node.position = bb.get_center()
+					body.add_child(shape_node)
+					n += 1
+		for grandchild: Node in curr.get_children():
+			stack.append([grandchild, xf])
+	if n == 0:
+		body.free()
+		return false
+	root.add_child(body)
+	return true
+
+
 func _add_prop_aabb_body(root: Node3D) -> void:
 	if root == null or root.get_node_or_null("PropAabbBody") != null:
+		return
+	# Lost-and-found only. Armchair_Reading_201's shell vertices reach the SW corner
+	# the Apt 201 west-wall walk hits, so that prop keeps the merged box.
+	if String(root.name) == "Lost_And_Found_Rail_Bins" and _add_prop_part_boxes(root):
 		return
 	var box: AABB = _prop_mesh_aabb(root)
 	if box.size.x <= 0.0001 or box.size.y <= 0.0001 or box.size.z <= 0.0001:
