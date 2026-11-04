@@ -15,7 +15,8 @@ When the last box is checked, message QA-01 (navigation) and QA-02 (geometry) on
 - [x] T8 GEO-16: skipped, visual only (the mesh floats 0.051 m). No collider fix applies.
 - [x] T9 GEO-15: 370bc40. ext_ts4_dead_foliage is now solid; walking across it at z 1 is blocked at x -16.8. You can step up onto its low tier, like the neighbouring planters 1006/1007.
 - [x] T10: 4f39d99 adds --qa-stairs, 12/12 pass. Egress itself was not edited (M-28 left open, since that would change an existing test).
-- [ ] T11 NEW (needs Jared's OK, it removes a collider): M58_L2GalleryWestEdge (invisible box at x 5.50, y 4.75, z 0, 0.1x1.1x1.7) cuts the L2 gallery. The Rev C L2 slab is continuous across it (floor rays y 4.20 at x 4..9, z -0.6..0.7). Real input from (-9.7,4.08,0.3) heading +X stops at x 5.10, so the east L2 gallery can't be reached from the west.
+- [x] T11: 9b69997 removed M58_L2GalleryWestEdge (Jared approved). A real-input walk from (-9.7,4.08,0.3) heading +X now gets to x 7.11 on L2, y 4.08. No new fall-off: south walks from the gallery at x 5/6/7 stay on y 4.08 (shell wall at z -0.8). first_pass_check 0 FAIL, egress 0 failures, stairs 12/12.
+- [ ] T12 NEW (needs Jared's OK, it removes a collider): EastLandingWestGuardrail (SectorSafetyFloorColliders, x 7.55, z -0.45, 0.18x1.25x3.55) belongs to the pre-Rev C east landing that M-41 removed. It now stops the L2 gallery at x 7.11; the floor is continuous (y 4.20 at x 7..9.5).
 
 ## Sign-off
 - [ ] Gage
