@@ -34,10 +34,17 @@ _m("tt_leaf", "TT_Leaf", (.27, .50, .30), 0, .8)
 _m("tt_leaf2", "TT_LeafLight", (.46, .66, .36), 0, .8)
 _m("tt_soil", "TT_Soil", (.24, .18, .13), 0, .95)
 _m("tt_ball", "TT_BallYellow", (.83, .90, .25), 0, .7)
+# Rev C stair / residential lift materials (preface sector), same textures as stair_pbr_materials.py
+_m("tt_white", "TT_WhiteComposite", (.92, .93, .94), 0, .5); _m("tt_alloy", "TT_BrushedAlloy", (.80, .81, .83), 1, .4)
+_m("tt_sgun", "TT_StairGunmetal", (.30, .32, .35), 1, .65); _m("tt_sslate", "TT_StairSlate", (.23, .25, .28), 0, .6)
+_m("tt_violet", "TT_AccentViolet", (.55, .25, 1), 0, .4, em=(.55, .25, 1)); _m("tt_green", "TT_StatusGreen", (.25, .69, .42), 0, .4, em=(.25, .69, .42))
+WH, ALY, SGM, SSL, VIO, GRN = "tt_white", "tt_alloy", "tt_sgun", "tt_sslate", "tt_violet", "tt_green"
 LF, LF2, SO, BA = "tt_leaf", "tt_leaf2", "tt_soil", "tt_ball"
 G, ST, SL, CY, AM, GL = "tt_gun", "tt_steel", "tt_slate", "tt_cyan", "tt_amber", "glass"
 TEXMAP = {"TT_Gunmetal": "facade_titanium_gunmetal_hull.png", "TT_BrushedSteel": "facade_brushed_steel_gantry.png",
-          "TT_CarbonSlate": "facade_titanium_gunmetal_hull.png", "Glass": "residential_atrium_glass_translucent.png"}
+          "TT_CarbonSlate": "facade_titanium_gunmetal_hull.png", "Glass": "residential_atrium_glass_translucent.png",
+          "TT_WhiteComposite": "facade_aerospace_white_cladding.png", "TT_BrushedAlloy": "qa03/rail_brushed_titanium_albedo.png",
+          "TT_StairGunmetal": "qa03/door_jamb_gunmetal_albedo.png"}
 
 # ---------------- primitives (all closed meshes with uv metadata) ----------------
 def box(x0, x1, y0, y1, z0, z1):  # 12-tri axis box
@@ -119,8 +126,8 @@ class Part(Pod):
         assert ("glass" in part.lower()) == (mat == GL), f"naming rule: {part} / {mat}"
         super().add(part, mat, *meshes)
 
-def recenter(p):
-    V = np.vstack([m.vertices for _, m in p.P.values()]); lo, hi = V.min(0), V.max(0); d = (-(lo[0]+hi[0])/2, -lo[1], -(lo[2]+hi[2])/2)
+def recenter(p):  # visual parts only (colliders may dip below the floor)
+    V = np.vstack([m.vertices for k, (_, m) in p.P.items() if "colonly" not in k]); lo, hi = V.min(0), V.max(0); d = (-(lo[0]+hi[0])/2, -lo[1], -(lo[2]+hi[2])/2)
     for k, (mk, m) in p.P.items(): uv = m.metadata["uv"]; m.apply_translation(d); m.metadata["uv"] = uv
     return p
 
@@ -144,6 +151,23 @@ def finish_glb(path):
     while len(blob) % 4: blob.append(0)
     g.buffers[0].byteLength = len(blob); g.set_binary_blob(bytes(blob)); g.save_binary(path)
 
+def walk_check(p, path, y0=0.0, step=.3, max_slope=35.0, head=2.1):
+    """capsule-lite walk over the *-colonly colliders: ray-down floor per 5 cm, step <= 0.3, slope <= 35 deg, headroom vs visual >= 2.1."""
+    col = trimesh.util.concatenate([m for k, (_, m) in p.P.items() if "colonly" in k]); vis = trimesh.util.concatenate([m for k, (_, m) in p.P.items() if "colonly" not in k])
+    fl, hv = trimesh.ray.ray_triangle.RayMeshIntersector(col), trimesh.ray.ray_triangle.RayMeshIntersector(vis)
+    pts = []; y = y0; worst = dict(step=0, slope=0, head=9.0, nofloor=0)
+    for (ax, az), (bx, bz) in zip(path, path[1:]):
+        n = max(2, int(np.hypot(bx - ax, bz - az) / .05)); pts += [(ax + (bx - ax)*k/n, az + (bz - az)*k/n) for k in range(n)]
+    for i, (x, z) in enumerate(pts):
+        l, _, _ = fl.intersects_location([[x, y + step + .05, z]], [[0, -1, 0]], multiple_hits=False)
+        if not len(l): worst["nofloor"] += 1; continue
+        f = l[0][1]
+        if i: worst["step"] = max(worst["step"], abs(f - y)); worst["slope"] = max(worst["slope"], np.degrees(np.arctan2(abs(f - y), .05)))
+        y = f; u, _, _ = hv.intersects_location([[x, y + .05, z]], [[0, 1, 0]], multiple_hits=False)
+        if len(u): worst["head"] = min(worst["head"], float(u[0][1] - y))
+    worst["pass"] = worst["nofloor"] == 0 and worst["step"] <= step and worst["head"] >= head; worst["top_y"] = round(y, 3)
+    return {k: (round(v, 3) if isinstance(v, float) else v) for k, v in worst.items()}
+
 def name_rule(p):
     return all(("glass" in k.lower()) == (mk == GL) for k, (mk, _) in p.P.items())
 
@@ -153,18 +177,18 @@ def run(module, builder, params, title="", tri_max=TRI_MAX, suffix="", names=Non
     gdir = os.path.join(GLB_OUT, module); rdir = os.path.join(RENDER_OUT, module); os.makedirs(gdir, exist_ok=True); os.makedirs(rdir, exist_ok=True)
     iso = views()[3]; rep = []; tiles = []
     for i, prm in enumerate(params, 1):
-        p = recenter(builder(prm)); chk = cc.check(p.P, n_samp=400)
+        p = recenter(builder(prm)); chk = cc.check({k: v for k, v in p.P.items() if 'colonly' not in k}, n_samp=400)
         vn = names[i-1] if names else f"v{i}{suffix}"; gp = os.path.join(gdir, f"{vn}.glb"); tris, geo = export_final(p.P, [gp]); finish_glb(gp)
         try: ok_v = vm.validate_file(gp, check_tri_range=(1, tri_max), require_textures=False, require_blend_glass=any(mk == GL for mk, _ in p.P.values()))
         except AssertionError as e: print('VALIDATE FAIL', e); ok_v = False
         r = dict(v=vn, label=prm.get("label", ""), tris=int(tris), clip_pass=chk["pass"], worst_overlap=chk["worst_overlap"],
                  bad_overlaps=[o for o in chk["overlap"] if not o[3]], coplanar=chk["coplanar"], open=chk["open"], pivot=chk["pivot"], size=chk["size"],
                  names_ok=name_rule(p), validate=bool(ok_v), passed=bool(ok_v and chk["pass"] and tris <= tri_max and name_rule(p)))
-        rep.append(r); print(json.dumps(r))
+        rep.append(r); print(json.dumps(r, default=str))
         im = crop(render_view(geo, iso, size=640, shadow=True, glass_alpha=.35)); plt.imsave(os.path.join(rdir, f"{vn}.png"), np.clip(im, 0, 1))
         tiles.append((f"{vn}  {r['label'].replace(': ', chr(10)).replace(', ', chr(10))}\n{tris} tris | {'PASS' if r['passed'] else 'FAIL'}", im))
     fig, axs = plt.subplots(1, len(tiles), figsize=(4.4*len(tiles), 9), facecolor="#F4F2EC")
     for ax, (t, im) in zip(np.atleast_1d(axs), tiles): ax.imshow(np.clip(im, 0, 1)); ax.axis("off"); ax.set_title(t, fontsize=10, color="#222")
     fig.suptitle(f"Rook | Tennis Tower {module} V1-V5 | {title}", fontsize=13, color="#333"); plt.tight_layout(rect=(0, 0, 1, .95))
     sp = os.path.join(rdir, sheet or f"{module}{suffix}_contact_sheet.png"); fig.savefig(sp, dpi=90, facecolor="#F4F2EC"); plt.close(fig)
-    json.dump(rep, open(os.path.join(rdir, f"report{suffix}.json"), "w"), indent=1); print("sheet", sp); return rep
+    json.dump(rep, open(os.path.join(rdir, f"report{suffix}.json"), "w"), indent=1, default=str); print("sheet", sp); return rep
