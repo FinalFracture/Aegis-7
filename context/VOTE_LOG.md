@@ -1796,3 +1796,9 @@
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
 - **#52 WINNER:** `V3 Branch Fin` (1,520 tris) -> `godot/assets/models/tt_curtain_wall_panel.glb`. Y-forked tree-branch fins echoing the tree columns; tiles at 4.0 m along the façade, +Z exterior.
 - Moss + vine overlay: deferred by Jared (Nov 3), not built.
+
+### #53 Tennis Tower tree column (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/tree_column/v1..v5.glb` (spec Rev 2.6 §3.11.3; all checks PASS, commit eb67101).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#53 WINNER:** `V4 Leaf Capital` (992 tris) -> `godot/assets/models/tt_tree_column.glb` (grade-to-roof type, TC-S1..S4 / TC-N1..N4 / TC-E1/E2; pivot at F1 pedestal base, branch heads at +22.5).
+- **West type:** `godot/assets/models/tt_tree_column_west.glb` (TC-W1/W2, V4 style, shoe on T-W4/T-W6 at F3 +12.2; pivot at shoe base; 960 tris, all checks PASS). Built from `assets/src/tennis_tower/tree_column.py` with `base='truss'`.
