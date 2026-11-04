@@ -2599,12 +2599,14 @@ const REV_C_STATIC_PROP_SPECS: Array[Dictionary] = [
 		"yaw": 0.0
 	},
 	{
-		# #27 beside the 201 chair. Plan center (-13.2, 5.6). Rail hooks reach local y=-0.035,
-		# so the pivot is 0.035 above the L2 datum and the hooks sit on it. Head points south at the chair.
+		# #27 beside the 201 chair, on its east side. Rail hooks reach local y=-0.035,
+		# so the pivot is 0.035 above the L2 datum and the hooks sit on it. Head points west at the chair.
+		# [M-65] Apt 201 has no desk/nightstand surface, so it stands on the floor; moved off the
+		# west-wall walk line (was (-13.2, 5.6), it snagged the player at (-13.55, 4.08, 5.82)).
 		"id": "Task_Lamp_201",
 		"path": "res://assets/models/task_lamp_rail_slider.glb",
-		"position": Vector3(-13.2, 4.235, 5.6), # [M-65/LAY-22] Rev C L2 floor 4.20 + 0.035 hook offset (was the old 4.415 datum)
-		"yaw": 180.0
+		"position": Vector3(-12.1, 4.235, 4.7), # [M-65/LAY-22] Rev C L2 floor 4.20 + 0.035 hook offset
+		"yaw": -90.0
 	},
 	{
 		# M-43 / #27 room 104. No desk under (5.0, -8.7). Lowest mesh is local y=-0.035,
