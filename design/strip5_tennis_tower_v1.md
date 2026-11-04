@@ -1,11 +1,29 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.4**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 2.5**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
 
 ## 0. Revision log
+- **Rev 2.5 (2026-11-03, Rook modeling feedback):**
+  - New **§3.11 Modeling spec**. It covers:
+    - the 4.0 m curtain-wall / roof module, with 1.5 m closure bays on the 79 m faces;
+    - space-frame members and the tree column detail;
+    - the stand treads;
+    - court boxes 10 × 20 m on a 2 × 2 grid of 14 × 26 m modules, glass **3.0 m + net**;
+    - cabanas, climbing panels, the playground piece list, the restroom grid and the lift car;
+    - stair cores standardized to 2 types (egress width unchanged at 44.3 m).
+  - The roof grid changes from 3.0 m to **4.0 m**, and the façade columns from 9 m to **8 m** centres.
+  - Rook's tri-budget plan is accepted, and the BLEND stacking fix is set (§3.11.9).
+  - Rook's roof, net and glass questions are answered (§3.11.10).
+  - Coordinate fixes:
+    - kids wall now X 77..85 (it overlapped training by 0.5 m);
+    - track offsets restated against all four glass lines;
+    - LW / LE trimmed to 5.5 m and ST+S/N to 6.0 m (core types);
+    - §3.5 / §4.6 W tree columns reconciled;
+    - stale C5 notes removed.
+  - **Column clashes:** TC-E2 / ST+E, TC-S3, TC-S2 and TC-S1 are written up as **Vance proposal — pending Jared** (§3.11.11). They are not applied.
 - **Rev 2.4 (2026-11-03, Jared decisions on Rev 2.3 §7):**
   - **Relocated to the Fore cap:** footprint now **x 48..200** (W face **48 m** from the Fore cap at x 0). The West Arrival terrace sits between the Fore Hub and the main entrance. The W Spine ramp is gone; the E ramp and loop moved with the building. Station Walks are re-routed to the **Fore Hub (x 0), x 100 and x 200** stops (§3.8).
   - **F2 S band = climbing & bouldering gym**, with a double-height **20 × 11.5 m wall** through an F3 slab void (§3.7.1).
@@ -114,7 +132,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 ### 3.4 Long spans and columns (DQ-09, DQ-21)
 - **F2 rink column-free:** the F3 floor spans 30 m across Z on **post-tensioned band beams, 1.5 m zone** → F2 clear ≈ 4.6 m. **PT columns 0.9 × 0.9 m** at 8 m centres on the play-area edge lines Z 24.5 / 54.5 (X 39.5..103.5, 9 per side), padded, inside the concourse (clear width 3.1 m past them).
 - **F1:** columns also in the runoff between the 4 court boxes (14 × 26 m grid, 1.1 m floor zone) → F1 clear ≈ 5.0 m.
-- **Bands (S/N/E):** one-way 15 m (S/N) and 27 m (E, with a line at X 126.5) slabs between façade columns (9 m centres) and the stand-back line; **no columns in the bowling lanes** (X 30..57 spans Z 0..15 in one).
+- **Bands (S/N/E):** one-way 15 m (S/N) and 27 m (E, with a line at X 126.5) slabs between façade columns (8 m centres, Rev 2.5) and the stand-back line; **no columns in the bowling lanes** (X 30..57 spans Z 0..15 in one).
 - **W band (aquatic), Rev 2.3:**
   - Column lines **X −12 (façade), X 0 (foyer/water edge) and X 30 (stand back)**, at **Z 3.5, 12.5, 21.5, 30.5, 39.5, 48.5, 57.5, 66.5, 75.5** (9 m). No column stands in water: every water body lies in X 1..29.
   - **9 transfer trusses**, one per Z line, span **30 m (X 0..30)** over the aquatic hall, **2.5 m deep**, top chord at F3 (+12.2), **soffit +9.7**. They carry the F3 W terrace, the W stand overhang (X 24.1..30) and the 2 W tree columns.
@@ -123,10 +141,10 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 
 ### 3.5 F3 Glass Box (Jared Rev 2.2; dimensions and structure Vance proposal)
 **Structure (Vance proposal):**
-- **Roof:** two-way **square-on-square steel space frame**, 3.0 × 3.0 m grid, 3.0 m deep, CHS members with bolted ball nodes. **Column-free over 96 × 62 m** (the hall, concourse and all 4 stands, X 23.5..119.5, Z 8.5..70.5): depth 3.0 m on the 62 m short span = span/21 ✓ for a two-way frame with light glazing loads (no wind, rain or snow in the drum, Vance assumption).
-- **Supports (Rev 2.3, DQ-02/DQ-17):** 12 tree columns at the stand backs (coordinates §4.6) carry the inner 96 × 62 field. Outside it the frame is **continuous to perimeter façade columns at 9 m centres on all four faces plus the 4 plant-stack corners** (concrete shafts take the box corners), so there are **no cantilevers**: the largest bay outside the field is 9 × 12 m (W terrace) on a 3.0 m two-way frame.
-- **Walls:** steel fin mullions, **600 mm deep, at 3.0 m centres** (matching the roof grid), horizontal transoms at 3.325 m (4 panes over 13.3 m); fins double as façade columns every 9 m (heavier fins).
-- **Glazing module:** 3.0 × 3.325 m wall panes, 3.0 × 3.0 m roof panes (one per grid bay).
+- **Roof:** two-way **square-on-square steel space frame**, **4.0 × 4.0 m grid** (Rev 2.5; was 3.0), 3.0 m deep, CHS members with bolted ball nodes. **Column-free over 96 × 62 m** (the hall, concourse and all 4 stands, X 23.5..119.5, Z 8.5..70.5): depth 3.0 m on the 62 m short span = span/21 ✓ for a two-way frame with light glazing loads (no wind, rain or snow in the drum, Vance assumption).
+- **Supports (Rev 2.3, DQ-02/DQ-17; reconciled Rev 2.5):** 12 tree columns carry the inner 96 × 62 field (coordinates §4.6). **10 run grade to roof** (TC-S1..S4, TC-N1..N4 at the S/N stand backs, TC-E1/E2 at the E stand back). **TC-W1/W2 run F3 to roof only**: they stand on transfer trusses T-W4/T-W6 behind the W stand, not on grade. Outside the field the frame is **continuous to perimeter façade columns at 8 m centres** (Rev 2.5; module §3.11.1) plus the 4 plant-stack corners, so there are **no cantilevers**.
+- **Walls (Rev 2.5):** steel fin mullions, **600 mm deep, at 2.0 m centres**, with a heavier fin every 4.0 m on the roof grid lines; horizontal transoms at 3.325 m (4 panes over 13.3 m); a façade column every 8 m. Details in §3.11.1.
+- **Glazing module:** 2.0 × 3.325 m wall panes; roof panes 2.0 × 4.0 m (2 per 4 m grid bay, split by a glazing bar).
 - **Build-up:**
   - **Wall:** laminated low-iron glass 2 × 10 mm heat-strengthened + 1.52 mm SGP interlayer, plus an inner **10 mm polycarbonate ("plexiglass") ball-guard** from +12.2 to +16.2 behind the concourse (the brief's plexiglass).
   - **Roof:** laminated 2 × 8 mm heat-strengthened + 1.52 SGP (overhead safety), 40% ceramic frit dot pattern for glare from the Sun-core and the far-wall city; a **tensioned ball net** under the space frame over the play area.
@@ -188,7 +206,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 | Changing / lockers / WC | 30..57 | 10.5..15 | 27 × 4.5 | behind the wall |
 | Front desk / gear rental | 58..66.5 | 9..15 | 51 m² | beside ST+S1 |
 | Entry lobby | 66.5..76.5 | 0..9.5 | — | from lift S / LS |
-| Kids' wall + auto-belays (5 m walls) | 77..85.5 | 0..15 | 128 m² | |
+| Kids' wall + auto-belays (5 m walls) | **77..85** (Rev 2.5; was 85.5, overlapped training) | 0..15 | 120 m² | |
 | Training (spray / hang boards) | 85..94 | 9..15 | 54 m² | behind ST+S2 |
 | **Bouldering hall** | 94..113 | 0..15 | 19 × 15 = 285 m² | 4.5 m walls, 300 mm mats (band clear ≈ 5.4 m); tree column TC-S4 (X 101.5) clad as a free-standing "tree boulder" |
 - **Is the double-height wall feasible? Yes (Vance proposal, engineer to confirm).** The F3 S-band slab spans one way Z 0..15; the void needs **trimmer beams along Z 3 and Z 8** (X 35..57, 22 m), carried by the façade grid at X 33/42/51/60 on Z 3 and by the wall's own steel frame (posts at X 36, 42, 46, 51, 56) on Z 8. No tree column is hit (TC-S1 is at X 57.5, Z 8.5, just outside). The F3 track runs past the void's S edge behind a glass rail, so runners and the S concourse look down on the climbers.
@@ -215,12 +233,12 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 - **Area (m², Rev 2.4):** terraces 3,744 + E ramp 960 + N arm 1,672 + corner links 816 + Station Walks 942 ≈ **8,130 m² (0.81 ha)** excluding the existing Rim Promenade (the W ramp is gone).
 - C5 Arena block: **deferred, Jared will revisit**.
 - **Spine at the Fore cap (Vance proposal, needs a Fore Cap map tie):** the cap portal (x 0, z −6..6) lands **level at +4.0 HD** on the terrace. If the Fore Cap map fixes the portal at grade (0 HD), the fallback is grand steps + 2 lifts + a 1:12 switchback ramp (48 m in 4 legs) inside the terrace's W 12 m; an 80 m 1:20 ramp does not fit between the cap and the building.
-- **Follow-up (not in this commit):** `recreation_slice_36deg_layout_v1.md` §8 C5 still shows the tower in the middle third. The parks + Dome move from the Fore third to x 310..568; the Aft River (x 530 inlet) is unaffected.
+- **Recreation layout:** `recreation_slice_36deg_layout_v1.md` §8 C5 was updated in 2bef23c. Tower complex x 0..310; parks + Dome x 310..520; River x 530..740 unchanged.
 
 ### 3.9 F3 open areas (Jared Rev 2.4; layout Vance proposal)
 | Element | X | Z | Size | Note |
 |---|---|---|---|---|
-| **Running track** | loop X 0.7..127.6, Z 0.7..78.4 | — | **1.8 m wide (2 lanes), ≈400 m centreline lap** | 0.7 m off the glass (clears the 600 mm fins); inboard of the 4 plant corners; painted crossings at every stair landing. S/N straights are axial (zero Coriolis); on the W/E straights a 4 m/s runner gets ±0.18 g (spinward "heavy leg", antispinward "light leg"), story beat |
+| **Running track** | loop X 0.7..127.6, Z 0.7..78.4 | — | **1.8 m wide (2 lanes), ≈400 m centreline lap** | Offsets (Rev 2.5): **S and N straights 0.7 m** off the Z 0 / Z 79 glass (clears the 600 mm fins). **W straight 12.7 m** in from the X −12 glass and **E straight 12.4 m** in from the X 140 glass: both run inboard of the 4 plant corners (12 m deep), so the cabanas sit on the W side and the playground on the E side, outside the loop; painted crossings at every stair landing. S/N straights are axial (zero Coriolis); on the W/E straights a 4 m/s runner gets ±0.18 g (spinward "heavy leg", antispinward "light leg"), story beat |
 | **Dining terrace (tables)** | 3.5..23 | 4..33 and 46..75 | 2 × 565 m², ≈230 seats each | over the aquatic transfers; served from the F1 food court via lift W |
 | **Cabanas** | −11..−7 | 18..62 | **8 cabanas, 4 × 4 m**, 1.5 m apart | along the W glass, looking out at the Fore cap |
 | Lounge / view walk | −7..−0.7 | 16..63 | 6.3 m wide | between cabanas and track |
@@ -240,6 +258,91 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 | **Total** | | **92** | **176** | **42 / 56** | **19** | | **268 WCs** | |
 - Wet stacks line up at X 36..44 and X 102..107 (N) through all three floors; R1-S stands alone over the SE substation side.
 - The R1-S block takes the free S-band bay X 102..113 behind the AXE 2 target wall; R1/R2-NW and NE take the ends of the food court and gym.
+
+### 3.11 Modeling spec (Rev 2.5, for Rook; Vance proposal unless marked)
+#### 3.11.1 Curtain-wall and roof module
+- **Module 4.0 m**, origin at the SW corner (X −12, Z 0).
+  - **X faces (S/N, 152 m): 38 bays × 4.0 m**, which divides exactly.
+  - **Z faces (W/E, 79 m): 1.5 m closure bay + 19 × 4.0 m + 1.5 m closure bay.** The closure bays sit at the corners, behind the plant shafts.
+- **Mullion fins:** every 2.0 m (light fin, 600 × 25 mm plate). Every 4.0 m a heavy fin (600 × 50 mm) lands on a roof grid line. **Façade columns** (600 × 300 mm box) at 8.0 m: 19 bays on the X faces; on the Z faces at Z 1.5 + 8k (k = 0..9), then the last bay of 4.0 m to Z 77.5.
+- **Transoms** at +3.325 / 6.65 / 9.975 above F3 (box 150 × 100 mm). **Wall pane 2.0 × 3.325 m.**
+- **Roof grid:** 4.0 × 4.0 m on the same origin (X −12 + 4i; Z 1.5 + 4j inside the 1.5 m closure strips). Roof pane 2.0 × 4.0 m.
+- **Tree trunks keep their §4.6 positions** (they are not on grid lines). Their branches land on the nearest 4 bottom-chord nodes (§3.11.3).
+#### 3.11.2 Space frame
+| Member | Size | Note |
+|---|---|---|
+| Top / bottom chords | CHS **219 mm** (CHS 273 in the 2 bays around each tree) | 4.0 m long |
+| Diagonals | CHS **168 mm** | top-to-bottom, half-offset (square-on-square) |
+| Ball nodes | **Ø 350 mm**; Ø 450 mm at tree branch heads and façade columns | bolted |
+| Depth | 3.0 m centre to centre | soffit +22.5, top +25.5 (flat, §3.11.10) |
+| Instancing | **5 × 5 bay tile = 20 × 20 m** (Rook) | along X: 7 full tiles + a 3-bay strip; along Z: 3 full tiles + a 4-bay strip + the 1.5 m closure strips |
+#### 3.11.3 Tree columns (12)
+- **Trunk:** CHS **Ø 914 mm**, from the base to the branch point at **+19.0** (1.4 m above the top F3 stand row).
+- **Branches:** **4 per tree**, CHS Ø 406 mm, cast-steel crown node at +19.0. They land on **4 bottom-chord nodes at +22.5** forming an 8 × 8 m square around the trunk. Each tree's square snaps to the nearest grid nodes, so branch lengths vary ±0.7 m; model 2 variants.
+- **Base:** 10 trees run grade to roof on a pinned cast-steel shoe on a 2.0 × 2.0 × 0.6 m concrete pedestal on the F1 slab; the trunk is clad 1.2 m square through the bands. TC-W1/W2 sit on a shoe on the top chord of T-W4 / T-W6 at +12.2 (F3 floor).
+- Colours: gunmetal `#1A1E24`, with a cyan LED ring at the crown node.
+#### 3.11.4 Stands
+- **F3:** 12 rows, riser 0.45 m, **tread 0.95 m** (11.4 m deep / 12), seat 0.5 m wide.
+- **F1/F2:** 5 rows, riser 0.40 m, tread 0.85 m (Rev 2.3).
+- Instance unit: a **7.5 m stand bay** (Rook), i.e. 15 seats between radial aisles. Odd lengths use one cut bay per segment end.
+#### 3.11.5 F1 court boxes (reconciles the 14 × 26 m grid with 4 boxes in 64 × 30)
+- **Glass court box: 10 × 20 m** (Z × X), play along X. The modified volleyball court (18 × 9 m) and pickleball fit inside it.
+- **Module 14 × 26 m** (2 m runoff around each box on the sides, 3 m at the ends). 2 × 2 modules = **28 × 52 m**, centred in the 64 × 30 play area at **X 45.5..97.5, Z 25.5..53.5** (1 m clear to the PT lines at Z 24.5 / 54.5).
+- **Boxes:** X **48.5..68.5 and 74.5..94.5** × Z **27.5..37.5 and 41.5..51.5**. The F1 runoff columns stand on X 71.5 at Z 39.5 (the middle of the 2 × 2 grid).
+- **Glass (Rev 2.5): panels 2.0 m wide × 3.0 m tall** (12 mm toughened, in steel posts at 2.0 m). Each box takes 2 × 10 long-side + 2 × 5 end panels = **30 panels**, minus 2 door panels. Above the glass a **ball net runs from 3.0 m to the ceiling** (≈5.0 m).
+#### 3.11.6 F3 amenities
+- **Cabanas (8):** 4 × 4 m. Post-and-beam frame 3.0 m to the eave, fabric hip roof with its **peak at 3.4 m**, 3 sides with roll-down fabric, open toward the glass.
+- **Climbing panels:** module **1.25 m wide**.
+  - Lead wall: 20 m = 16 panels, 11.5 m tall in 2.3 m courses (5 courses).
+  - Kids' wall (Z 15 m face): 12 panels × 5.0 m.
+  - Bouldering: 15 m wall = 12 panels; the 19 m wall = 15 panels + a 0.25 m trim; 4.5 m tall, with 1.5 m faceted overhang segments.
+- **Playground (E terrace, 12 × 45 m):**
+  1. combo tower (2 decks at 1.2 / 2.0 m, 2 slides running axially), 8 × 6 m;
+  2. 2-bay swing set (4 seats, swinging along X), 7 × 3 m;
+  3. climbing dome Ø 4 m;
+  4. 2 see-saws (axial);
+  5. 4 spring riders + toddler deck in an 8 × 8 m toddler zone;
+  6. 3 balance beams;
+  7. soft-play pit 6 × 6 m;
+  8. 6 benches;
+  9. 1.2 m fence with 3 gates; poured-rubber surface in 3 colours (decals).
+  - No spinning pieces (Coriolis).
+#### 3.11.7 Restrooms
+- **Grid 0.9 m.** WC stalls 0.9 × 1.5 m; accessible stall 1.8 × 1.6 m (1 per block); partitions 1.8 m tall, 0.15 m off the floor.
+- Urinals at 0.75 m centres with 0.45 m screens. Vanities at 0.75 m centres, 0.6 m deep counters, mirror band 1.0 m.
+- Blocks are built from a 7.2 m (8 × 0.9) row unit: 8 stalls facing 8 stalls across a 1.8 m aisle (7.2 × 4.8 m).
+- Counts per floor: §3.10.
+#### 3.11.8 Lifts and stairs
+- **Lift car:** 1.6 × 2.4 × 2.5 m internal, 1,600 kg / 21 persons (stretcher-capable), centre-opening doors 1.1 × 2.1 m. 2 cars per stack in the 4 × 4 m shaft zone (2 × 2.0 × 2.8 m shafts). Speed 1.0–1.6 m/s (§2.3).
+- **Stair cores, 2 types only:**
+  - **Type A: core 5.5 × 5.5 m**, 2 flights × 2.5 m, no well. Used for C-SW/SE/NW/NE, LS, LN, LW, LE (8 cores). LW trimmed to X 24.5..30, LE to X 113..118.5.
+  - **Type B: core 6.0 × 6.0 m**, 2 flights × 2.7 m + 0.6 m of walls. Used for ST+S1/S2/N1/N2, ST+E, ST-AQS/AQN, ST-ARS/ARN (9 cores). ST+S/N trimmed from 6.4 m to 6.0 m.
+  - **Egress re-check:** 8 × 2.5 + 9 × 2.7 = **44.3 m, unchanged**. F3 needs 36.3 m ✓, F2 21.1 m ✓ (§5.1).
+#### 3.11.9 Tri budget and transparency (Rook)
+- **Accepted (Rook's plan):**
+  - an instanced 5 × 5 space-frame tile (§3.11.2);
+  - a 7.5 m stand bay;
+  - a track kit of 4 straights + 4 corners;
+  - decals for court lines, track lanes, wayfinding and playground surfacing.
+- **Stacked BLEND glass fix (Vance proposal):**
+  - **only the Glass Box envelope is BLEND** (one layer from any viewpoint, plus the roof);
+  - **F1 court glass drops to 3.0 m** and uses **alpha-scissor** (dithered 30% tint + opaque frame/frit edge band);
+  - the F3 polycarbonate ball guard and **all ball nets are alpha-scissor**;
+  - roof frit is baked into the roof BLEND texture (no extra layer);
+  - the pool hall glass on the lobby / view bridge is opaque-frit scissor.
+  - So no view looks through more than one BLEND layer.
+#### 3.11.10 Rook's questions, answered
+1. **Roof crown: faceted.** Two flat planes meeting at a ridge along X at Z 39.5, not a curved surface.
+2. **2% fall:** **model the roof flat** at top +25.5 for instancing. The crown is shown only as a **ridge cap** (one bay each side of Z 39.5, peak +26.3). The physical fall stays a design note.
+3. **Ball net: a separate asset** (alpha-scissor, hung 1.0 m under the space-frame soffit over the F3 play area, plus the F1 court nets).
+4. **Court glass lower: yes**, 3.0 m + net (§3.11.5).
+#### 3.11.11 Column clashes — **Vance proposal — pending Jared** (not applied; §4.6 unchanged)
+| Clash | Problem | Proposed fix |
+|---|---|---|
+| **TC-E2** (119.5, 48.5) vs **ST+E** (119.5..125.5, Z 46..52) | trunk on the stair's W edge line | move ST+E north to **Z 50..56** (same X), so the trunk is 1.5 m clear; still outside the E stand and the track (E straight X 125.8) |
+| **TC-S3** (84.5, 8.5) vs kids' wall (X 77..85) | trunk inside the kids' wall zone near its E edge | set the kids' wall's E face on **X 84.5** and build the trunk into the wall (clad as a climbable pillar); no zone change |
+| **TC-S2** (65.5, 8.5) vs front desk (X 58..66.5, Z 9..15) | trunk 0.5 m in front of the desk | move the desk front back to **Z 9.5** and leave the trunk free-standing in the lobby as a clad feature column |
+| **TC-S1** (57.5, 8.5) vs ST+S1 (X 58..64, Z 2.6..8.6) and W-CL end (X 56) | trunk 0.5 m from the stair corner, 1.5 m from the wall end | wrap the trunk in a thickened W wall of ST+S1 (core outer face to X 57.0); W-CL stays ending at X 56 |
 
 ## 4. Floor-by-floor plans
 ### 4.1 Summary
@@ -269,16 +372,16 @@ Hull curve, plinth (0 → 4.0 → 0.2 m), F1/F2/F3 slabs, S/N stands, climbing v
 ### 4.6 Coordinate table: stairs, lifts, tree columns, transfers (DQ-02, DQ-14, B3)
 | ID | Type | X | Z | Floors | Width | Lands in (F1 / F2) |
 |---|---|---|---|---|---|---|
-| C-SW / C-SE / C-NW / C-NE | stair (ring corner) | 30..35.5 / 107.5..113 | 15..20.5 / 58.5..64 | F1–F3 | 2.5 | stand-free ring corners |
-| LS | stair beside S lift | 71..76.5 | 9.5..15 | F1–F3 | 2.5 | S entrance lobby / climbing lobby |
-| LN | stair beside N lift | 71..76.5 | 64..69.5 | F1–F3 | 2.5 | food court / gym |
-| LW | stair beside W lift | 24..30 | 39..44.5 | F1–F3 | 2.5 | lobby corridor end |
-| LE | stair beside E lift | 113..119 | 39..44.5 | F1–F3 | 2.5 | arcade |
-| ST+S1 / ST+S2 | stair (S rear) | 58..64.4 / 86..92.4 | 2.6..8.6 | F1–F3 | 2.7 | **free bays** X 58..66.5 / 85..94 |
-| ST+N1 / ST+N2 | stair (N rear) | 58..64.4 / 86..92.4 | 70.4..76.4 | F1–F3 | 2.7 | food court / gym |
-| ST+E | stair (E terrace) | 119.5..125.5 | 46..52 | F1–F3 | 2.7 | arcade |
-| ST-AQS / ST-AQN | stair (W façade) | −12..−6 | 10..16 / 63..69 | F1–F3 | 2.7 | foyer / gallery ends |
-| ST-ARS / ST-ARN | stair (E façade) | 134..140 | 10..16 / 63..69 | F1–F3 | 2.7 | arcade, by the SE/NE plant |
+| C-SW / C-SE / C-NW / C-NE | stair (ring corner), **Type A** | 30..35.5 / 107.5..113 | 15..20.5 / 58.5..64 | F1–F3 | 2.5 | stand-free ring corners |
+| LS | stair beside S lift, Type A | 71..76.5 | 9.5..15 | F1–F3 | 2.5 | S entrance lobby / climbing lobby |
+| LN | stair beside N lift, Type A | 71..76.5 | 64..69.5 | F1–F3 | 2.5 | food court / gym |
+| LW | stair beside W lift, Type A | **24.5..30** | 39..44.5 | F1–F3 | 2.5 | lobby corridor end |
+| LE | stair beside E lift, Type A | **113..118.5** | 39..44.5 | F1–F3 | 2.5 | arcade |
+| ST+S1 / ST+S2 | stair (S rear), **Type B** | **58..64 / 86..92** | 2.6..8.6 | F1–F3 | 2.7 | **free bays** X 58..66.5 / 85..94 |
+| ST+N1 / ST+N2 | stair (N rear), Type B | **58..64 / 86..92** | 70.4..76.4 | F1–F3 | 2.7 | food court / gym |
+| ST+E | stair (E terrace), Type B | 119.5..125.5 | 46..52 | F1–F3 | 2.7 | arcade |
+| ST-AQS / ST-AQN | stair (W façade), Type B | −12..−6 | 10..16 / 63..69 | F1–F3 | 2.7 | foyer / gallery ends |
+| ST-ARS / ST-ARN | stair (E façade), Type B | 134..140 | 10..16 / 63..69 | F1–F3 | 2.7 | arcade, by the SE/NE plant |
 | Lift S / N | 2 cars | 66.5..70.5 | 11..15 / 64..68 | F1–F3 | — | concourse via 10 m gap |
 | Lift W / E | 2 cars | 26..30 / 113..117 | 34.5..38.5 | F1–F3 | — | concourse via 10 m gap |
 | TC-S1..S4 | tree column | 57.5, 65.5, 84.5, 101.5 | 8.5 | grade–roof | — | acoustic wall, free bay, axe target walls |
@@ -286,7 +389,7 @@ Hull curve, plinth (0 → 4.0 → 0.2 m), F1/F2/F3 slabs, S/N stands, climbing v
 | TC-W1 / W2 | tree column | 23.5 | 30.5 / 48.5 | F3–roof | — | **on transfer trusses T-W4 / T-W6** |
 | TC-E1 / E2 | tree column | 119.5 | 30.5 / 48.5 | grade–roof | — | arcade |
 | T-W1..T-W9 | transfer truss 2.5 m | 0..30 | 3.5, 12.5 … 75.5 | F2/F3 | — | over aquatic hall; bear on X 0 and X 30 columns |
-| Façade columns | perimeter | X −12, 140 / Z 0, 79 | 9 m c/c | grade–roof | — | Glass Box edges, no cantilevers |
+| Façade columns | perimeter | X −12, 140 / Z 0, 79 | **8 m c/c** (Rev 2.5; §3.11.1) | grade–roof | — | Glass Box edges, no cantilevers |
 | PT columns | 0.9 × 0.9 | 39.5..103.5 @ 8 | 24.5 / 54.5 | F1–F3 | — | concourse inner edge |
 | **Rev 2.4 additions** | | | | | | |
 | V-CL | F3 slab void (climbing) | 35..57 | 3..8 | F2–F3 | — | trimmers on Z 3 / Z 8 (§3.7.1) |
@@ -321,8 +424,8 @@ Lift → concourse → stands (front/radial/rear aisles); bands open off the rea
 ## 6. Critical issues (Rev 2.4)
 1. **Raised W/E terraces** (+4.0 HD) and the E Spine ramp (Jared OK). New: the W terrace depends on the **Fore cap portal level** (+4.0 HD wanted; fallback steps/lifts/switchback, §3.8).
 1a. **Climbing void** in the F3 S-band slab needs trimmer beams (§3.7.1).
-1b. `recreation_slice_36deg_layout_v1.md` §8 C5 is out of date after the move.
-2. **Glass Box:** 3.0 m space frame column-free over 96 × 62 m; glare/heat gain, condensation control, cleaning gantry.
+1b. Column clashes TC-E2 / TC-S1..S3 pending Jared (§3.11.11).
+2. **Glass Box:** 3.0 m deep space frame (4.0 m grid) column-free over 96 × 62 m; glare/heat gain, condensation control, cleaning gantry.
 3. **W-band transfer trusses** (9 × 30 m span, 2.5 m deep) carry the F3 W terrace, stand overhang and 2 tree columns over the aquatic hall.
 4. **Diving pit** 1.0 m below F1 in the deepest plinth zone (3.2–3.9 m of plinth): waterproof tank in fill; assumes no hull excavation (unverified).
 5. **Egress margin 22% on F3** with the Rev 2.4 uses; a standing-event conversion must be capped (§5.1).
@@ -333,7 +436,7 @@ Lift → concourse → stands (front/radial/rear aisles); bands open off the rea
 ## 7. Open questions for Jared
 Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F3 = lounge/dining/track/playground; F2 S band = climbing; 3 m + 1 m boards.
 1. Fore cap portal: can the Fore Cap map put the Spine portal at +4.0 HD (level onto the terrace), or keep it at grade (steps + lifts + switchback)?
-2. Update the recreation doc C5 (parks + Dome move to the middle third)?
+2. Column clash fixes (§3.11.11): approve, change or reject each one.
 3. C5 Arena: deferred (Jared will revisit).
 
 ## 8. QA-04 + self-review resolution (Rev 2.3)
