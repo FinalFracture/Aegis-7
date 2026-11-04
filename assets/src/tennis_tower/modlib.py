@@ -95,13 +95,19 @@ def green_wall(x0, x1, y0, y1, z, r=.14, seed=0):  # grid of clumps on a +Z face
         for x in xs + (r*.85 if j % 2 else 0):
             if x < x1 - r: ms.append(clump((x, y, z + r - E), r, seed+k)); k += 1
     return merge(ms)
-def vine(pts, r=.012, leaf_every=.45, leaf_len=.16, seed=0):  # polyline stem tubes + leaves -> (stem, leaves)
+def vine(pts, r=.012, leaf_every=.45, leaf_len=.16, seed=0, outward=False):  # polyline stem tubes + leaves -> (stem, leaves)
     pts = np.asarray(pts, float); stem = merge([tube(a, b, r, 5) for a, b in zip(pts[:-1], pts[1:])]); ls = []; rng = np.random.default_rng(seed)
     for a, b in zip(pts[:-1], pts[1:]):
         L = np.linalg.norm(b-a)
         for k in range(1, max(2, int(L // leaf_every))):
-            q = a + (b-a)*k/max(2, int(L // leaf_every)); ls.append(leaf(q + [0, 0, r*2.2], leaf_len, leaf_len*.5, rng.uniform(-.6, .6), rng.choice([-1.2, 1.2])))
+            q = a + (b-a)*k/max(2, int(L // leaf_every)); ls.append(leaf(q + [0, 0, r*2.2], leaf_len, leaf_len*.5, rng.uniform(-.6, .6), 1.2 if outward else rng.choice([-1.2, 1.2])))
     return stem, merge(ls)
+
+def ring_band(r, y, h=.05, n=16, t=.02):  # segmented annular band hugging a round host of radius r (embed E), e.g. LED rings
+    w = 2*r*np.tan(np.pi/n) + .002
+    return merge([xf(box(-w/2, w/2, y - h/2, y + h/2, r - E, r - E + t), R=trimesh.transformations.rotation_matrix(k*2*np.pi/n, [0, 1, 0])) for k in range(n)])
+def leaf_dir(c, d, length, width, t=.02):  # leaf whose long axis points along direction d
+    d = np.asarray(d, float); return xf(leaf((0, 0, 0), length, width, t=t), R=trimesh.geometry.align_vectors([0, 1, 0], d / np.linalg.norm(d)), t=c)
 
 class Part(Pod):
     """Pod + name guard: only glass-material parts may contain 'glass' (and they must)."""
@@ -146,7 +152,7 @@ def run(module, builder, params, title="", tri_max=TRI_MAX):
     for i, prm in enumerate(params, 1):
         p = recenter(builder(prm)); chk = cc.check(p.P, n_samp=400)
         gp = os.path.join(gdir, f"v{i}.glb"); tris, geo = export_final(p.P, [gp]); finish_glb(gp)
-        ok_v = vm.validate_file(gp, check_tri_range=(1, tri_max), require_textures=False, require_blend_glass=True)
+        ok_v = vm.validate_file(gp, check_tri_range=(1, tri_max), require_textures=False, require_blend_glass=any(mk == GL for mk, _ in p.P.values()))
         r = dict(v=f"v{i}", label=prm.get("label", ""), tris=int(tris), clip_pass=chk["pass"], worst_overlap=chk["worst_overlap"],
                  bad_overlaps=[o for o in chk["overlap"] if not o[3]], coplanar=chk["coplanar"], open=chk["open"], pivot=chk["pivot"], size=chk["size"],
                  names_ok=name_rule(p), validate=bool(ok_v), passed=bool(ok_v and chk["pass"] and tris <= tri_max and name_rule(p)))
