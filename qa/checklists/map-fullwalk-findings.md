@@ -68,3 +68,47 @@ Build: main 63ee92e, fresh clone, `godot --headless --path godot --import`, and 
 - **F2 LOW: the curb row at z≈19.35 snags at a segment seam at x = -7.0.** Repro: start at (-7.0,0.3,17.5) facing +Z and hold W for 60 frames. The player stops at z 18.9 (stuck for 40 frames) and does not step up. At x -7.05, -6.95, -3.4, -4, -5, -9, -10, -11 and -12.5 the player steps up to the 0.27 curb top and back down cleanly. Walking along the row (z 19.35 and 19.2, x -2.9 ↔ -13.1, both ways) has no snags or drops. Jumping onto the curb works. Expected: no snag at the seam. Actual: the player is blocked on the exact seam line between the curbs at x -8.0 and -6.003.
 - **F3 INFO (pass): tram platform kerb `Ext_16_ext_tram_platform_kerb_1..6` (z -17.55, x 10..20).** The kerb steps up from the platform end at x 8 and can be jumped onto from the end. Walking along it at z -17.55 and -17.7 from x 9.3 → 17.53 (stopped by the east guardrail, as expected) and back west to x 4.42 has no snag or fall-through. Stepping or jumping toward the track side stops at z -18.24 (on floor, y 0.35) at x 9.5, 11, 13, 15, 19 and 21, so the player can't fall onto the guideway. Note: walking -Z at x 17 stops early at z -16.11 (prop/shelter collider, probably intended).
 - **F4 INFO (pass): no ground holes or sunk/floating ground** in either grid. The curb top is y 0.27 and the deck is y 0.12.
+
+## MAP-QA-1 Round 2 — Traversal sweep — 2026-11-03
+
+- Build: FinalFracture/Aegis-7 main @ 63ee92e, fresh clone, `godot --headless --import` run first, Godot 4.7.2 headless `--fixed-fps 60`. Scene: `res://scenes/preface/preface_playable_area.tscn`.
+- Method: same harness and grid as Round 1. Movement used only `Input.action_press` (move_* / sprint / look_left / look_right) plus `InputEventKey` E taps to open doors. The only reset is back to SPAWN_POS before each attempt. Routes go from spawn and from the `--qa-egress` checkpoints, then follow the navmesh. 482 cells (2 m XZ × 1.5 m Y), the same cell set as Round 1. Stuck = max escape displacement < 0.15 m. Fall-through = ends > 2 m below the cell.
+
+### Coverage (Round 2; Round 1 in brackets)
+| Region | Cells | Reached | Not reached |
+|---|---|---|---|
+| L1 | 118 | 45 (44) | 73 (74) |
+| L2 | 36 | 7 (7) | 29 (29) |
+| Apartments | 44 | 22 (22) | 22 (22) |
+| Exterior plaza | 266 | 187 (187) | 79 (79) |
+| Upper slab y≈8.95 | 18 | 0 (0) | 18 (18) |
+
+Total reached: 261/482 (Round 1: 260/482). Stuck spots: **0**. Fall-through: **0**. Neither changed from Round 1.
+
+### Change vs Round 1
+- Newly reached: L1 (-5.00,0.30,-0.80), L1 (-7.00,0.30,-1.00), Plaza (41.00,0.25,-19.00)
+- Newly not reached: Plaza (-43.00,0.25,-19.00), blocked by Ext_17_ext_maglev_guideway_8. L1 (-9.00,0.30,-1.00), blocked by RevC_Shell_L1_col.
+- All other cells had the same result. These flips are at cluster edges, so they may be route noise rather than map changes.
+
+### Not-reached cells (x, y, z) and the last collider hit
+```
+UNREACHABLE by region & blocker
+Apartments 22 [('RevC_Shell_L1/RevC_Shell_L1_col', 22)]
+    (5.00,4.40,3.00); (6.99,4.40,1.58); (7.00,4.40,3.20); (7.00,4.40,5.00); (7.00,4.40,7.00); (7.00,4.40,8.50); (9.00,4.40,1.00); (9.00,4.40,5.00); (9.00,4.40,7.00); (9.00,4.40,8.50); (9.05,4.40,3.10); (11.00,4.40,1.00); (11.00,4.40,3.10); (11.00,4.40,5.00); (11.00,5.25,7.00); (11.00,4.40,8.50); (11.25,4.40,6.50); (13.00,4.40,1.00); (13.00,4.40,3.10); (13.00,5.05,5.00); (13.00,4.40,7.00); (13.00,4.40,8.50)
+ExteriorPlaza 79 [('RevC_Shell_L2/RevC_Shell_L2_col', 22), ('Ext_19_ext_maglev_car_body_18/ExtCollision', 12), ('Ext_19_ext_maglev_car_body_17/ExtCollision', 10), ('Ext_17_ext_maglev_guideway_7/ExtCollision', 8), ('RevC_Shell_L1/RevC_Shell_L1_col', 5), ('Ext_17_ext_maglev_guideway_8/ExtCollision', 3)]
+    (-43.00,0.25,-19.00); (-41.00,0.25,-21.00); (-41.00,0.25,-19.00); (-39.00,0.25,-21.00); (-39.00,0.25,-19.00); (-37.00,0.22,-27.00); (-37.00,0.21,-23.00); (-37.00,0.25,-21.00); (-37.00,0.25,-19.00); (-35.00,0.25,-21.00); (-35.00,0.25,-19.00); (-31.00,0.25,-19.00); (-29.00,0.25,-21.00); (-29.00,0.25,-19.00); (-27.00,0.25,-21.00); (-27.00,0.25,-19.00); (-25.00,0.25,-21.00); (-25.00,0.25,-19.00); (-23.00,0.21,-27.00); (-23.00,0.23,-25.00); (-23.00,0.25,-21.00); (-23.00,0.26,-19.00); (-21.00,0.25,-21.00); (-21.00,0.27,-19.01); (-19.00,0.22,-27.00); (-19.00,0.25,-21.00); (-19.00,0.26,-19.00); (-17.00,0.25,-21.00); (-15.00,0.21,-33.00); (-15.00,0.23,-25.00); (-15.00,0.25,-21.00); (-15.00,0.25,-19.00); (-13.04,0.25,-9.30); (-13.00,0.25,-21.00); (-9.00,0.20,-9.30); (-7.00,0.20,-9.30); (-5.00,0.20,-9.30); (5.00,0.22,-39.00); (5.00,0.21,-23.00); (5.00,0.80,-20.40); (5.00,0.80,-19.35); (7.00,0.80,-20.87); (7.00,0.80,-19.00); (7.00,0.20,-9.30); (9.00,0.80,-20.35); (9.00,0.20,-9.30); (9.04,0.80,-19.40); (11.00,0.80,-20.86); (11.00,0.80,-19.00); (11.00,0.20,-9.30); (12.99,0.80,-20.37); (12.99,0.80,-19.38); (13.03,0.24,-9.30); (14.45,0.80,-20.85); (17.00,0.80,-20.35); (17.00,0.80,-19.40); (19.00,0.22,-27.00); (19.00,0.80,-20.86); (19.00,0.80,-19.00); (21.00,0.80,-20.35); (21.00,0.80,-19.40); (23.00,0.20,-27.00); (23.00,0.80,-20.87); (23.00,0.80,-19.00); (25.00,0.80,-20.40); (25.00,0.80,-19.35); (27.13,0.25,-21.35); (27.50,0.29,-19.00); (29.00,0.25,-21.00); (29.00,0.25,-19.00); (35.00,0.25,-21.00); (35.00,0.25,-19.00); (37.00,0.22,-27.00); (37.00,0.23,-23.00); (37.00,0.25,-21.00); (37.00,0.25,-19.00); (39.00,0.25,-21.00); (39.00,0.25,-19.00); (41.00,0.25,-21.00)
+L1 73 [('RevC_Shell_L1/RevC_Shell_L1_col', 56), ('StairSetSwitchback/Flight1_Understair_Closure-colonly', 8), ('Ext_44_ext_paving_promenade_535/ExtCollision', 4), ('Ext_41_ext_curb_segment_894mm_118/ExtCollision', 3), ('DOOR_RM1A/PortalJambCollider_R', 1), ('ExtGroundNorth/ExtGroundBody', 1)]
+    (-13.00,0.30,-7.00); (-13.00,0.30,-5.00); (-13.00,0.30,-1.00); (-13.00,0.30,1.00); (-13.00,0.30,3.00); (-13.00,0.30,5.00); (-13.00,0.30,7.00); (-11.45,0.75,5.00); (-11.00,0.30,-5.00); (-11.00,0.30,-3.00); (-11.00,0.30,-1.00); (-11.00,0.30,3.20); (-11.00,0.30,6.65); (-11.00,1.65,7.15); (-11.00,0.20,9.35); (-9.00,0.30,-1.00); (-9.00,0.30,5.00); (-9.00,0.30,6.65); (-9.00,1.65,7.15); (-9.00,0.20,9.35); (-7.60,1.65,7.15); (-7.00,0.30,-5.00); (-7.00,0.30,3.20); (-7.00,0.30,5.00); (-7.00,0.20,9.35); (-6.55,1.15,6.90); (-5.00,0.30,-7.00); (-5.00,0.30,-5.00); (-5.00,0.70,-2.65); (-5.00,0.30,3.20); (-5.00,0.30,5.00); (-5.00,0.30,7.00); (-5.00,0.20,9.35); (-3.35,0.70,-2.65); (-3.00,0.30,-7.00); (-3.00,0.30,-5.00); (-3.00,0.20,9.35); (-2.95,0.30,-0.95); (-1.00,0.30,-7.00); (-1.00,0.30,3.00); (-1.00,0.30,5.00); (-1.00,0.30,7.00); (1.00,0.30,3.20); (1.00,0.30,5.00); (1.00,0.30,7.00); (3.00,0.30,-5.00); (3.00,0.30,5.00); (3.00,0.40,6.99); (3.30,0.70,-2.65); (4.95,0.45,6.95); (4.99,0.30,3.29); (5.00,0.30,-7.00); (5.00,0.70,-2.65); (5.00,0.30,5.00); (7.00,0.30,-7.00); (7.00,0.30,-5.00); (7.00,0.30,-3.00); (7.00,0.30,3.20); (7.00,0.30,5.00); (8.90,0.30,-7.00); (9.00,0.30,-1.00); (9.01,0.20,9.39); (11.00,0.93,-6.87); (11.00,2.27,-5.09); (11.00,0.30,-3.00); (11.00,0.30,-1.00); (11.00,0.30,1.00); (11.00,0.20,9.36); (12.99,0.20,9.38); (13.00,0.30,-7.00); (13.00,0.30,-5.00); (13.00,0.30,-1.00); (13.00,0.30,1.00)
+L2 29 [('RevC_Shell_L1/RevC_Shell_L1_col', 23), ('Ext_44_ext_paving_promenade_535/ExtCollision', 2), ('Ext_15_ext_tram_shelter_0/ExtCollision', 2), ('Ext_0_ext_platform_infill_952/ExtCollision', 2)]
+    (-13.00,4.40,-6.20); (-13.00,4.40,-5.00); (-13.00,4.40,-3.00); (-13.00,4.40,-1.00); (-11.00,4.40,-6.20); (-11.00,5.20,-5.00); (-11.00,4.40,-4.45); (-11.00,4.40,-1.00); (-9.00,4.40,-6.20); (-9.00,4.40,-5.00); (-9.00,4.40,-3.00); (-9.00,4.40,-1.00); (1.00,4.40,3.00); (1.00,4.40,5.00); (1.00,4.40,7.00); (1.00,4.40,8.50); (3.00,4.40,1.55); (3.00,4.40,7.00); (3.00,4.40,8.50); (9.00,4.40,-1.00); (9.55,4.05,-2.73); (11.00,4.07,-2.70); (11.00,4.41,-1.00); (13.00,3.20,-16.35); (13.00,3.20,-15.50); (13.00,4.40,-2.10); (13.00,4.40,-1.00); (15.00,3.20,-16.35); (15.00,3.20,-15.50)
+Upper(y>6.5) 18 [('RevC_Shell_L1/RevC_Shell_L1_col', 15), ('Ext_41_ext_curb_segment_894mm_118/ExtCollision', 2), ('Ext_44_ext_paving_promenade_535/ExtCollision', 1)]
+    (-11.00,8.95,-5.00); (-11.00,8.95,7.00); (-9.00,8.95,-8.80); (-9.00,8.95,-1.00); (-9.00,8.95,1.00); (-9.00,8.95,3.00); (-7.00,8.95,-7.00); (-3.00,8.95,-8.80); (-3.00,8.95,3.00); (3.00,8.95,-7.00); (3.00,8.95,7.00); (7.00,8.95,-7.00); (9.00,8.95,-8.80); (9.00,8.95,-1.00); (9.00,8.95,1.00); (9.00,8.95,3.00); (11.00,8.95,-5.00); (11.00,8.95,7.00)
+```
+
+### Notes (same causes as Round 1; please triage)
+- The navmesh still runs through RevC_Shell_L2_col at about (0, 4.1, 1.7). The real route is through DOOR_APT201, then the stairs.
+- The east apartments (x 5–13, z 1–8.5) and the L1 side rooms end on the shell colliders. These are likely closed rooms or doors, or the navmesh passing through walls.
+- The L1 cells under the stair are sealed by Flight1_Understair_Closure.
+- Plaza: the maglev car body and guideway block z≈-19…-21, and the building face blocks z=-9.3.
+- The y≈8.95 navmesh on the upper slab has no route to it.
+- Scene check: there are no separate L1, L2, apartment or plaza scenes. All four areas are in preface_playable_area.tscn.
