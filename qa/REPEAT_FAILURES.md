@@ -22,7 +22,7 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | 0205e56, 873d9be | 20 mm chamfer in 62 concave corners; table uses SEAM_AUDIT method + full height | **Patch r4 9ecfdef (fresh import): SEAM_AUDIT 336/0, probe 336/0 — fixed** |
 **Likely cause:** the audit corner list, the GLB and the runtime colliders were changed independently (old grid coordinates, convex tips counted as corners, rays landing exactly on triangle edge lines at round heights), so each fix moved the failure rather than removing it.
 
-## M-23 (SYS-03 / INPUT-01) — hardcoded input keys (open)
+## M-23 (SYS-03 / INPUT-01) — hardcoded input keys (fixed 0ee29a3, see below)
 | Commit | Attempt | Result at re-test |
 |---|---|---|
 | 2195f8a | INPUT-01 | Patch 1a349a3 marked INPUT-01 FIXED (movement uses input actions) |
@@ -37,7 +37,7 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | ff057ff (M-41 decks removed, doors moved to Rev C) | — | **came back:** Patch r3 0/19; r4 9ecfdef 0/19 |
 **Likely cause:** the navmesh and NavLinks are baked/placed from geometry and door coordinates that keep changing (Rev C grid, M-41), and nothing rebakes them, so every layout change silently breaks reachability. Downgraded to Low by Jared (only the player navigates).
 
-## M-46 (NAV-04) — tram platform end point / deck trap (reopened 2026-11-02)
+## M-46 (NAV-04) — tram platform end point / deck trap (reopened 2026-11-02; fixed be4159e, see below)
 | Commit | Attempt | Result at re-test |
 |---|---|---|
 | (none, ee61cb6..fec275e) | — | Patch 1a349a3: stops 1.08 m short of (12.8, -16.6); Patch r2 fec275e: 1.24 m short; QA-01 r2: stalls at (10.26, 0.33, -16.97) |
@@ -45,16 +45,18 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | — | — | **Came back:** QA-01 sweep 5e3c137 NAV-04 trapped at (9.98-10.48, 0.33, -16.89..-17.00), escape 0/4; Patch real-input repro on the same code: trapped at (10.20, 0.33, -16.97), floor contacts only (ExtCollision, n +Y), escape 0/4 |
 **Likely cause:** the fix changed the test, not the geometry. Moving the egress waypoint made --qa-egress pass while the platform floor shape (ExtCollision ExtShape_1, likely an edge/seam catch in the deck) still traps the capsule; QA accepted a suite pass instead of a free walk at the original spot. Fix the platform collider and re-test with a real-input walk and an escape check.
 
-## M-46 - tram platform trap (repeat failure, fix pending re-test)
+## M-46 - tram platform trap (repeat failure, fixed and verified 2026-11-03)
 | Commit | Attempt | Result at re-test |
 |---|---|---|
 | (earlier) | egress waypoint moved to (11.0, -16.1) west of the shelter | QA-01: player still trapped, 2 of 4 exits, stops 1.10 m short |
-| (this commit) | ext trimesh colliders made two-sided (backface_collision) | Gage real-input probe: platform end (11.81, -16.74) 3/3 exits PASS, snag (7.62, -17.95) 3/3 exits PASS; --qa-egress re-run pending Patch |
+| be4159e | ext trimesh colliders made two-sided (backface_collision) | Gage real-input probe: platform end (11.81, -16.74) 3/3 exits PASS, snag (7.62, -17.95) 3/3 exits PASS |
+| — | — | **QA-01 re-test be4159e (2026-11-03): PASS** — NAV-04 escape 4/4 from both approaches, NAV-09 free, egress 23/23; still free at 248257d. **Fixed (verified).** Residual NAV-14 kerb snag -> M-85 |
 **Likely cause:** one-sided ConcavePolygonShape3D trimeshes on exterior props (tram platform kerb/shelter, paving/curb seams). The capsule slid past a face edge and sat on floor contacts only with no way to depenetrate, so every direction read as blocked. Earlier fixes moved the test target instead of the collider.
 
-## M-23 - E / F / Tab hardcoded keys (repeat failure, fix pending re-test)
+## M-23 - E / F / Tab hardcoded keys (repeat failure, fixed and verified 2026-11-03)
 | Commit | Attempt | Result at re-test |
 |---|---|---|
 | (earlier) | INPUT-01 moved WASD/Shift/Space to the InputMap | E, F, Tab/V still matched on physical_keycode in _input |
-| (this commit) | E/F/Tab/V go through `interact` / `rfid_pulse` / `toggle_view` actions (event.is_action_pressed); Tab added to `toggle_view`; held-F arm raise uses Input.is_action_pressed | Gage real key events: Tab PASS, V PASS, E opens DOOR_APT201 PASS; F dispatch not state-checked (no pulse state var); --qa-egress 0 failures |
+| 0ee29a3 | E/F/Tab/V go through `interact` / `rfid_pulse` / `toggle_view` actions (event.is_action_pressed); Tab added to `toggle_view`; held-F arm raise uses Input.is_action_pressed | Gage real key events: Tab PASS, V PASS, E opens DOOR_APT201 PASS; F dispatch not state-checked (no pulse state var); --qa-egress 0 failures |
+| — | — | **QA-05 re-test 8a2a33f (2026-11-03): PASS** — E/F/Tab/V each fire once, F sets _rfid_pulse_timer, runtime remap E->K works, egress 23/23. **Fixed (verified).** Remaining physical-key reads split out as M-90 (SYS-16) / M-91 (SYS-17) |
 **Likely cause:** the movement fix only covered polled movement actions; the one-shot keys lived in a separate physical_keycode match and were never migrated.
