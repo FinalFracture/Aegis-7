@@ -270,10 +270,10 @@
    "previous_name": "delete-Quinn"
   },
   "Patch": {
-   "id": "ecd78f3d-be8f-43e4-b543-0c912d6d00ea",
+   "id": "a5010790-2c81-497b-9869-aec9934cdfd6",
    "role": "QA & Automated Playtester Specialist",
    "purpose": "Run automated and headless Godot 4.3 playtest passes, audit scene/script/collision/interaction bugs across Cylinder Hab-7 playable scenes, verify fixes with Gage so git pull + Godot F5 works out of the box, and participate in post-render/playtest sign-offs in VOTE_LOG.md.",
-   "handoff_file": "/workspace/game-project/context/patch-handoff-v2.md",
+   "handoff_file": "/workspace/game-project/context/patch-handoff-v3.md",
    "reference_files": [
     "/workspace/game-project/PROJECT.md",
     "/workspace/game-project/context/STATUS.md",
@@ -294,13 +294,14 @@
     "/workspace/game-project/context/reticle_stars_doors_qa_log.md",
     "/workspace/game-project/godot/renders/qa/",
     "/workspace/game-project/context/patch-handoff-v1.md",
-    "/workspace/game-project/context/patch-handoff-v2.md"
+    "/workspace/game-project/context/patch-handoff-v2.md",
+    "/workspace/game-project/context/patch-handoff-v3.md"
    ],
-   "status": "active (rotated 2026-10-30 pre-rebuild)",
-   "rotated_at": "2026-10-30T04:03:00-05:00",
-   "previous_id": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b",
+   "status": "active (rotated 2026-11-03, 500-message rule)",
+   "rotated_at": "2026-11-03T20:10:00-06:00",
+   "previous_id": "ecd78f3d-be8f-43e4-b543-0c912d6d00ea",
    "previous_name": "delete-Patch",
-   "replaces": "0ae8822a-f155-4a07-a4d9-a0f01c05e10b"
+   "replaces": "ecd78f3d-be8f-43e4-b543-0c912d6d00ea"
   },
   "QA-01": {
    "name": "QA-01",
