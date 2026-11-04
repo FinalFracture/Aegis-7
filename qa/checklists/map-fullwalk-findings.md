@@ -21,3 +21,19 @@ When you're done appending, open Doc B (`map-fullwalk-signoff.md`) and sign it.
 | 5 | Stair core F1/F2 normal walk + exterior egress route | Covered by `--qa-stairs`/`--qa-egress` and driver walks; all in Y band. | — | PASS |
 
 Totals: 0 Critical, 0 High, 2 Medium, 0 Low, 1 Info; 3 PASS, 2 FAIL.
+
+## MAP-QA-2 — Round 2 (63ee92e)
+
+Tested commit: `63ee92e` (fresh clone, `godot --headless --import` run once first). Godot 4.7.2 headless, `--fixed-fps 60`. Same untracked harness as round 1, outside the repo: it teleports `PlayerBody` to each start point, then holds `move_forward`/`sprint`/`jump` with `Input.action_press`. I also re-ran the 0.5 m downward ray grid on L1 (y 0) and L2 (y 4.2). The L1 and L2 x -17..16.5 / z -13..10.5 hole grid is identical to round 1. 106 walk probes in all: the round-1 sweep repeated in full (L2 wing edges, stairwell glass, L2 perimeter N/S/E/W, four L2 corners, ±10 m column cells, L1 radials) plus 14 targeted re-verify probes.
+
+**Counts:** falls / unguarded drops 0 · invisible walls over continuous floor 0 · holes in floor 0 · walk-through solids 0 · wedge/stuck spots 0 · low 1.
+
+**Round-1 re-verify**
+1. Stairwell glass sprint-jump: **FIXED.** I sprint-jumped at x -1.8, -1.2, -0.6, 0.0, 0.3 and 0.36 from z -3.0 toward -Z. Every jump is stopped by `StairwellHeadGlassCap` at z -4.43, the player peaks at y 5.27 and lands back on L2, and none of them enters the well. Walking into the glass at x -1.2..0.45 still stops at z -4.43, and the 0.37–0.40 gap before flight 2 is still sealed.
+2. `L2WestWingSouthGuardrail` invisible wall: **FIXED** (collider removed). At x -12, -10 and -8 the player walks freely across the old line at z -6.55 in both directions, out to the real shell wall at z -8.55. The SW corner wedge probe now slides cleanly into (-13.55, -8.55).
+3. Shelf hang at (-11.0, 4.4, -4.8): **not reproduced.** The player is pushed clear of `Alcove2C_Battery_Expansion_Support/Shelf_Shape` and lands on the floor at y 4.08 within 0.1 s. It walks normally both ways: -X reaches the rail at x -10.69, and +X reaches the west wall at x -13.55.
+
+**New**
+- **[LOW] A sprint-jump clears the Seam03 Alcove 2C rails.** Nodes: `Seam03_Alcove2C_EastRail` (x -10.30) and `Seam03_Alcove2C_Rail` (x -10.18), both 1.1 m tall with top y 5.42. Repro: start at (-11.0, 4.4, -4.8) facing +X (yaw -90), hold W and Shift, and tap Space. The player clears both rails and keeps going east to (-2.45, 4.08, -4.07). The floor is the same height on both sides (min y 4.08), so there is no fall. It's only a guard bypass, and it matters only if the rails are meant to keep the player inside Alcove 2C.
+
+Everything else matches round 1. The L2 inner wing edges (x ±2.45), the outer walls (x ±13.55, z ±8.55) and the ±10 m column cells all block solidly. Every L1 radial ends at the same point as in round 1, with no falls, and the walk down flight 2 from (1.2, 4.3, -2.5) is still smooth. The new `Promenade*GuardrailCap` boxes are outside this interior sweep, so I didn't test them here; that's MAP-QA-4's exterior job.
