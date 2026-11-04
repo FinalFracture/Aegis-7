@@ -37,3 +37,19 @@ Tested commit: `63ee92e` (fresh clone, `godot --headless --import` run once firs
 - **[LOW] A sprint-jump clears the Seam03 Alcove 2C rails.** Nodes: `Seam03_Alcove2C_EastRail` (x -10.30) and `Seam03_Alcove2C_Rail` (x -10.18), both 1.1 m tall with top y 5.42. Repro: start at (-11.0, 4.4, -4.8) facing +X (yaw -90), hold W and Shift, and tap Space. The player clears both rails and keeps going east to (-2.45, 4.08, -4.07). The floor is the same height on both sides (min y 4.08), so there is no fall. It's only a guard bypass, and it matters only if the rails are meant to keep the player inside Alcove 2C.
 
 Everything else matches round 1. The L2 inner wing edges (x ±2.45), the outer walls (x ±13.55, z ±8.55) and the ±10 m column cells all block solidly. Every L1 radial ends at the same point as in round 1, with no falls, and the walk down flight 2 from (1.2, 4.3, -2.5) is still smooth. The new `Promenade*GuardrailCap` boxes are outside this interior sweep, so I didn't test them here; that's MAP-QA-4's exterior job.
+
+## MAP-QA-5 — Freeform player playtest round 2 (main 63ee92e, 2026-11-03)
+
+Fresh clone at 63ee92e, `godot --headless --import` run once (rc 0), Godot 4.7.2 headless, `preface_playable_area.tscn` with `-- --qa-placement` (passive mode, normal Apt 201 spawn (-9.35,4.25,6.20)). Input: `Input.action_press` move/sprint/jump plus `InputEventKey` E/F via `Input.parse_input_event`; driver scripts in /tmp, not in repo. Traces every 0.25–0.5 s. Full route walked: Apt 201 → 2F corridor (both ends, Alcove 2C, closed Apt 202) → switchback stairs → ground → SECTOR-4 exit (opened with E at hub) → promenade both directions.
+
+### Round-1 rechecks
+- **R1 north-railing jump to promenade — FIXED.** At (0.00,4.08,-4.43) repeated jumps (apex y 5.29) now land back at z -4.43; walking/jumping north 10 s never leaves the floor. Exit stays closed, no bypass.
+- **R1 promenade wall bumps — STILL PRESENT (LOW).** Sprinting along the wall at z≈-9.5 from x -8 → +8: pop to y 0.21 (floor=false) at x≈-3.24; walking the diagonal from the exit to (-8,-9.6): y 0.15/0.14 at (-5.62,-10.35)/(-6.86,-9.96). No longer hangs on the wall (sprint run was continuous).
+- **R1 Apt 201 SE corner ledge — NOT REPRODUCED.** Same sprint/bunnyhop sequence into (-0.45,·,1.35) stays at floor y 4.08.
+- **R1 door snags — PARTLY PRESENT (LOW).** (-3.99,4.08,1.69) on Apt 201 hub approach still stops ~1 s (hub E still works from there). Alcove 2C jamb snag (-3.38,-0.45) not seen this round.
+
+### New findings
+- **N1 — MEDIUM — Ground floor: invisible/waist-high blocker at (1.55, 0.00, -0.99).** Walking east along z -1.0 from the stair foot (-1.55,0,-1.29) stops dead at x 1.55; continuing north requires a jump (apex y 1.22, floor=false ~1 s) to get over it, then you land at (1.55,0,-4.35). Repro: stairs down → (-1.55,-1.0) → hold forward toward (3.5,-1.0), then toward (3.5,-7.9).
+- **N2 — LOW — Apt 201 west wall snag at (-13.55, 4.08, 5.82).** Sliding south along the west wall (sprint, yaw ~58°) the player sticks for 4+ s with input held; only a jump frees it (it then glides over at y 5.29 to z 1.84, i.e. there's a ~1.2 m obstacle you can hop). Reproduced in two separate runs. Repro: spawn → sprint to (-13.5,8.5) → sprint toward (-13.5,1.4).
+- **N3 — LOW — Ground route to SECTOR-4 hub stops 1 m short.** Heading north at x 1.55 the player is blocked at (1.55,0,-7.86) (hub at (1.45,0,-8.90)); E still opens SECTOR4_EXIT from there and the exit/promenade route walks fine (0.06,-11.77).
+- **Pass:** Apt 201/Alcove 2C open with E and are walkable; closed Apt 202 field holds (stops z 0.30 sprinting); 2F corridor walls x ±9.55 / z ±0.45 solid; switchback stairs walk cleanly 4.08 → landing 2.46 (z -8.1..-8.55) → 0.00 at (-1.55,-2.93); jumps on the landing return to y 2.46.
