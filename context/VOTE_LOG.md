@@ -1877,3 +1877,9 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V4 Garden`, "but without the little planter boxes".
 - **#65 WINNER:** `godot/assets/models/tt_dome_climber.glb` (3,642 tris). Lamella dome R 2.0 (Ø 4 m), 4 rings x 10 nodes + apex, 110 slate struts with merged hub nodes, leaf crest on the apex (top 2.65), EPDM fall-zone pad Ø 7.0 (1.5 m past the dome). Planter troughs removed. Openings 0.296..0.542 m, 0 hits in the 89..230 mm entrapment band. Collider: Dome-convcolonly (single convex hull; outside climb only, interior not enterable). bbox 7.0 x 2.65 x 7.0, pivot pad centre at the floor.
 - **Footprint note for Vance:** pad Ø 7 m vs spec dome Ø 4 m (fall zone added).
+
+### #66 Tennis Tower playground see-saws (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/see_saw/v1..v5.glb` (spec §3.11.6 piece 4; all PASS, commit 8b447bc).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#66 WINNER:** `V1 Court Line` -> `godot/assets/models/tt_see_saw.glb` (1,104 tris). Pair of axial see-saws: 3.0 m gunmetal beams along local X at z -0.8 / +0.8, pivot +0.60, ball-yellow seats (+0.66) at x ±1.15..1.45, alloy T-handles at x ±1.0 with ball finials, twin-post fulcrums + axle stubs, EPDM end bumpers, court-line pad 5.0 x 3.0 m (bbox 5.0 x 0.98 x 3.0). Animate `SeesawN_Beam` + `_Seats` + `_Handles` about a Z hinge at local (0, 0.60, z_i), ±15° (bumper contact ~16°). Colliders: beam + fulcrum boxes (-convcolonly). Orient local X along the hab axis.
+- **Footprint note for Vance:** spec gives no footprint; built 5 x 3 m, 1.6 m between beam centres.
