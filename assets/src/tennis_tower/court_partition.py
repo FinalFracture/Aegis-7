@@ -68,7 +68,23 @@ def combo_geo(q):  # panel + net at +3.0, 3 bays side by side, for the player-he
                 m = m.copy(); m.metadata["uv"] = part.P[nm][1].metadata["uv"]; m.apply_translation((k*2.0, dy, 0)); P[f"{tag}{k}_{nm}"] = (mk, m)
     fd, tp = tempfile.mkstemp(suffix=".glb"); os.close(fd); _, geo = export_final(P, [tp]); os.remove(tp); return geo
 
-if __name__ == "__main__":
+def door(q):  # §3.11.5 door bay (2 per box), V3 Garden Kick style: fixed sidelight + 1.0 m clear opening, door leaf parked open 90°
+    p = Part(); xp = -1 + PW/2; jx = (-.14, -.06); oh = 2.2
+    p.add("Floor_Channel", G, box(-.999, jx[0] + E, 0, .08, -.04, .04))
+    p.add("Glass_Sidelight", GL, box(-1 + PW + .004, jx[0] + E, .08 - E, GH, -.006, .006))
+    p.add("Post_Steel", ST, box(-.997, -1 + PW, .08 - E, GH + NH, -.045, .045), box(jx[0], jx[1], 0, GH, -.045, .045))
+    p.add("Door_Header", G, box(jx[1] - E, .999, oh, oh + .1, -.04, .04))
+    p.add("Glass_Transom", GL, box(jx[1] + .004, .995, oh + .1 - E, GH, -.006, .006))
+    p.add("Door_Leaf_Frame", G, box(.93, .97, 0.02, oh - .02, .05, .1))  # leaf hinge stile, swung onto the court side
+    p.add("Glass_Door_Leaf", GL, box(.944, .956, .1, oh - .1, .1 - E + .0, .96))
+    p.add("Pull_Handle", ST, box(.97 - E, 1.0, .9, 1.2, .85, .89))
+    tr, so, sy = planter(-.95, jx[0] - .02, 0, -.5, -.06, h=.45); p.add("Planter_Trough", G, tr); p.add("Planter_Soil", SO, so)
+    p.add("Foliage", LF2, shrubs(-.9, jx[0] - .06, sy, -.28, r=.2, seed=3))
+    return p
+
+if __name__ == "__main__" and sys.argv[1:] == ["door"]:
+    run("court_partition", door, [dict(VARIANTS[2], label="Garden Kick door bay: 1.0 m clear opening, leaf parked open")], names=["v3_door"], suffix="_door", sheet="door_sheet.png")
+elif __name__ == "__main__":
     rp = run("court_partition", build, VARIANTS, title="2.0 m panel: 3.0 m glass + post to 5.0 m | nature + sports")
     rn = run("court_partition", net, VARIANTS, title="ball net 2.0 x 2.0 m (own asset, place at +3.0)", suffix="_net")
     a = np.radians(4); eye = np.array([[1, 0, 0], [0, np.cos(a), -np.sin(a)], [0, np.sin(a), np.cos(a)]])  # player eye ~1.7 m, looking at the glass from the court (+Z)

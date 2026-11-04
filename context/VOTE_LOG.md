@@ -1812,3 +1812,9 @@
 - **Candidates:** `assets/glb/tennis_tower/roof_bay/v1..v5.glb` (spec §3.11.2 Rev 2.5; 20x20 m tile, 4.0 m grid; all PASS, commit ddbc676).
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
 - **#55 WINNER:** `V4 Branch Diagonals` (5,660 tris) -> `godot/assets/models/tt_roof_bay.glb`. Y-fork tree-crown diagonals; tiles every 20.0 m in X and Z (tile owns its -X/-Z edge nodes; pair-tiling check PASS). Flat at top +25.5; ridge crown is a separate piece (not built).
+
+### #56 Tennis Tower F1 court partition (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/court_partition/v1..v5.glb` + `v1_net..v5_net.glb` (spec §3.11.5 Rev 2.5; all PASS, commit 2f3f1ad).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#56 WINNER:** `V3 Garden Kick` -> `godot/assets/models/tt_court_partition.glb` (244 tris) + `tt_court_net.glb` (544 tris, place at y +3.0 on the same X/Z) + new door bay `tt_court_partition_door.glb` (216 tris, all checks PASS; 1.0 m clear opening, leaf parked open 90° on the court side; 2 per box).
+- **Placement:** 2.0 m bays along X, +Z = court side. The glass line sits at local z **+0.2275** in the panel/net pivot frame and **-0.230** in the door pivot frame (bbox-centred pivots), so offset each asset by that amount to put the glass on the box line.
