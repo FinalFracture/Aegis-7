@@ -1818,3 +1818,9 @@
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
 - **#56 WINNER:** `V3 Garden Kick` -> `godot/assets/models/tt_court_partition.glb` (244 tris) + `tt_court_net.glb` (544 tris, place at y +3.0 on the same X/Z) + new door bay `tt_court_partition_door.glb` (216 tris, all checks PASS; 1.0 m clear opening, leaf parked open 90° on the court side; 2 per box).
 - **Placement:** 2.0 m bays along X, +Z = court side. The glass line sits at local z **+0.2275** in the panel/net pivot frame and **-0.230** in the door pivot frame (bbox-centred pivots), so offset each asset by that amount to put the glass on the box line.
+
+### #57 Tennis Tower stair + lift cores (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/stair_core/v1..v5(.glb|_upper.glb|_lift.glb)` (Rev 2.5 Type A, all PASS, commit 7414c1a).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook:** `V5 Court Wayfinding`. Stairs rebuilt to **Rev 2.7** (636d804) in V5 style, full-storey modules (one GLB per storey, stack every 6.1 m).
+- **#57 WINNER:** `godot/assets/models/tt_stair_core_a.glb` (Type A 5.5 x 10.2 m, 2.5 m flights, 2,952 tris) + `tt_stair_core_b.glb` (Type B 6.0 x 10.6 m, 2.7 m flights, 2,952 tris) + `tt_lift_core.glb` (V5 lift, 640 tris; pivot at pit floor, place 0.15 m below the landing).
+- Stairs: 36 R x 0.1694 / 17 T x 0.28 per flight, landings = flight width, 0.2 m walls, corridor door (2.2 m) on the flight-1 side at the +Z face. Rev C reuse: switchback build (stair_set_generator), well guards (stair_guard_generator style, + -convcolonly hulls), Flight*_Ramp / *_Landing -colonly colliders (stair_core_colliders_rev_c.slab_between), stair_pbr_materials textures. Walk check PASS (step 0.03, slope 31.4 deg); clip/validator/pivot/naming PASS.

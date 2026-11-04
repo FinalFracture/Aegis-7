@@ -139,7 +139,73 @@ VARIANTS = [
     dict(label="Court Wayfinding: court-line landing stripes, level disc, lift indicator", dress="court"),
 ]
 PATH = [(-1.25, 2.3), (-1.25, ZL - .2), (-1.25, ZS + .6), (1.25, ZS + .6), (1.25, ZL), (1.25, ZN - .2)]
-if __name__ == "__main__":
+
+# ================= Rev 2.7 full-storey cores (Type A / B), V5 Court Wayfinding =================
+CORE = {"A": dict(W=5.5, L=10.2, FW=2.5), "B": dict(W=6.0, L=10.6, FW=2.7)}
+def stair_full(q):
+    c = CORE[q["type"]]; WT2 = .2; xi = c["W"]/2 - WT2; zi = c["L"]/2 - WT2; FWc = c["FW"]; H = ST_H; n = 18; r = H/(2*n); t = .28
+    f1, f2 = (-xi, -xi + FWc), (xi - FWc, xi); zs, zn = -zi, zi; zl = zs + FWc; z1b = zl + (n-1)*t; z2t = zl + (n-1)*t; yl = n*r
+    assert zn - z2t >= FWc - 1e-6, "front landing shorter than flight width"
+    p = Part()
+    for k in range(1, n):
+        za, zb, yt = z1b - k*t - (E if k == n-1 else 0), z1b - (k-1)*t, k*r
+        p.add("Flight1_Cast", WH, box(f1[0] - E, f1[1], 0, yt - FIN + E, za, zb))
+        p.add("Treads_Slate", SSL, box(f1[0] - E + .002, f1[1] - .002, yt - FIN, yt, za + .002, zb + .005)); p.add("Nosing_Emergency", AM, box(f1[0] + .03, f1[1] - .03, yt - .003, yt + .002, zb - NOSE, zb - .002))
+    for j in range(1, n):
+        za, zb, yt = zl + (j-1)*t - (E if j == 1 else 0), zl + j*t - (.002 if j == n-1 else 0), yl + j*r
+        p.add("Flight2_Modules", WH, box(f2[0], f2[1] + E, yt - .25, yt - FIN + E, za, zb))
+        p.add("Treads_Slate", SSL, box(f2[0] + .002, f2[1] + E - .002, yt - FIN, yt, za - .005, zb - .002)); p.add("Nosing_Emergency", AM, box(f2[0] + .03, f2[1] - .03, yt - .003, yt + .002, za + .002, za + NOSE))
+    p.add("Mid_Landing", WH, box(-xi - E, xi + E, 0, yl - FIN + E, zs - E, zl)); p.add("Mid_Landing_Slate", SSL, box(-xi + .002, xi - .002, yl - FIN, yl, zs + .002, zl + .005))
+    p.add("Top_Landing", WH, box(-xi - E, xi + E, H - .30, H - FIN + E, z2t, zn + E)); p.add("Top_Landing_Slate", SSL, box(-xi + .002, xi - .002, H - FIN, H, z2t - .005, zn - .002))
+    p.add("Core_Walls", WH, box(-xi - WT2, -xi, 0, H - .002, zs - WT2, zn + WT2), box(xi, xi + WT2, 0, H - .002, zs - WT2, zn + WT2), box(-xi, xi, 0, H - .002, zs - WT2, zs))
+    # front wall (corridor side) with the storey door opening on the flight-1 side (2.2 m high); next storey's opening sits on this top landing
+    p.add("Front_Wall", WH, box(-xi + E*0 - E, f1[0] + .3, 0, H - .002, zn, zn + WT2 - .002), box(f1[1] - .3, xi + E, 0, H - .002, zn, zn + WT2 - .002), box(f1[0] + .3 - E, f1[1] - .3 + E, 2.2, H - .002, zn, zn + WT2 - .002))
+    p.add("Door_Jambs", SGM, box(f1[0] + .28, f1[0] + .3 + E, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01), box(f1[1] - .3 - E, f1[1] - .28, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01))
+    # well guards (glass + alloy posts + cap rail) on both flight edges, Rev C stair_guard language
+    for fx, (zfun, yfun, ks) in ((f1[1], (lambda k: z1b - (k - .5)*t, lambda k: k*r, range(1, n))), (f2[0], (lambda j: zl + (j - .5)*t, lambda j: yl + j*r, range(1, n)))):
+        s = 1 if fx > 0 else -1; gx = fx + s*.04; gl, po = [], []
+        for k in ks:
+            zc, yt = zfun(k), yfun(k)
+            gl.append(box(gx - .006, gx + .006, yt + .06, yt + .85, zc - t/2 + .015, zc + t/2 - .015))
+            if k % 4 == 1: po.append(box(*sorted((gx + s*.015, gx + s*.045)), yt - E, yt + .966 - .012 + E - .02, zc - .02, zc + .02))
+        a, b = np.array([gx + s*.03, yfun(ks[0]) + 1.0, zfun(ks[0])]), np.array([gx + s*.03, yfun(ks[-1]) + 1.0, zfun(ks[-1])])
+        p.add("Guard_Glass", GL, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, tube(a, b, .025, 6))
+    hr = []
+    for x, (y0, z0, y1, z1) in ((-xi + .07, (r + .9, z1b - .5*t, (n-1)*r + .9, zl + .5*t)), (xi - .07, (yl + r + .9, zl + .5*t, yl + (n-1)*r + .9, z2t - .5*t))):
+        hr.append(tube((x, y0, z0), (x, y1, z1), .022, 6)); s = -1 if x < 0 else 1
+        for u in (.1, .5, .9):
+            cc_ = np.array([x, y0 + (y1 - y0)*u, z0 + (z1 - z0)*u]); hr.append(box(*sorted((cc_[0], x + s*.07 - s*.0 + s*E)), cc_[1] - .015, cc_[1] + .015, cc_[2] - .015, cc_[2] + .015))
+    p.add("Handrail_Wall", ALY, *hr)
+    # V5 Court Wayfinding dressing
+    p.add("Court_Line_Landing", AM, box(-xi + .2, xi - .2, H - .002, H + .003, zn - .2, zn - .14), box(-xi + .2, xi - .2, yl - .002, yl + .003, zs + .2, zs + .26))
+    p.add("Level_Disc", AM, cap((-xi + .005 + .002, 1.6, zn - 1.2), .3, .01, 16, axis="x"), cap((xi - .007, yl + 1.6, zs + 1.2), .3, .01, 16, axis="x"))
+    # colliders (Rev C scheme)
+    p.add("Flight1_Ramp-colonly", G, slab_between(*f1, z1b + t, 0.0, zl, yl)); p.add("Flight2_Ramp-colonly", G, slab_between(*f2, zl - t, yl, z2t, H))
+    p.add("Mid_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, yl - .25, zs], [xi, yl, zl]])); p.add("Top_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, H - .3, z2t], [xi, H, zn]]))
+    for gname, fx in (("Well_Guard_F1-convcolonly", f1[1] - .04), ("Well_Guard_F2-convcolonly", f2[0] + .04)):
+        pts = [(x, y, z) for x in (fx - .006, fx + .006) for (y, z) in ((0, zl), (0, z1b + t) if fx < 0 else (yl, zl), (yl + 1.0, zl), (1.0 if fx < 0 else H + 1.0, z1b + t if fx < 0 else z2t))]
+        p.add(gname, G, trimesh.convex.convex_hull(np.array(pts)))
+    for k, (mk, m) in list(p.P.items()):
+        if "colonly" in k:
+            if m.bounds[0][1] < 0: m = m.slice_plane([0, 0, 0], [0, 1, 0], cap=True); p.P[k] = (mk, m)
+            m.metadata["uv"] = np.zeros((len(m.vertices), 2))
+    p.walk = [(f1[0] + FWc/2, zn - .3), (f1[0] + FWc/2, zl - .3), (0, zs + .6), (f2[0] + FWc/2, zs + .6), (f2[0] + FWc/2, zl), (f2[0] + FWc/2, zn - .3)]
+    return p
+
+def final():
+    rep = run("stair_core", stair_full, [dict(type="A", label="Type A 5.5 x 10.2: V5 Court Wayfinding, full storey"), dict(type="B", label="Type B 6.0 x 10.6: V5 Court Wayfinding, full storey")],
+              names=["final_a", "final_b"], suffix="_final", sheet="final_ab_sheet.png", title="Rev 2.7 full-storey cores")
+    W = {}
+    for ty in ("A", "B"):
+        pp = stair_full(dict(type=ty)); c = CORE[ty]; zi = c["L"]/2 - .2
+        fl = trimesh.creation.box(bounds=[[-c["W"]/2, -.2, zi - c["FW"]], [c["W"]/2, 0, zi]]); fl.metadata["uv"] = np.zeros((8, 2)); pp.P["Entry_Floor-colonly"] = (G, fl)
+        W[ty] = walk_check(pp, pp.walk)
+    print("WALK", json.dumps(W)); json.dump(W, open(os.path.join(RENDER_OUT, "stair_core", "walk_check_final.json"), "w"), indent=1)
+    return rep, W
+
+if __name__ == "__main__" and sys.argv[1:] == ["final"]:
+    final()
+elif __name__ == "__main__":
     rs = run("stair_core", stair, VARIANTS, title="Type A 5.5 x 5.5 m, half-storey switchback (stack 2 per 6.1 m storey) | ground module")
     ru = run("stair_core", stair, [dict(v, ground=False) for v in VARIANTS], title="Type A upper half (modular flights)", suffix="_upper")
     rl = run("stair_core", lift, VARIANTS, title="lift core: 2 shafts 2.0 x 2.8, car 1.6 x 2.4 x 2.5, doors 1.1 x 2.1", suffix="_lift")
