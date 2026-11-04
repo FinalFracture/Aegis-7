@@ -1079,7 +1079,6 @@ func _add_safety_floor_colliders(parent: Node3D) -> void:
 		# M-41: UpperL2NorthDeck, UpperL2WestWing and UpperL2EastStairLanding removed.
 		# Those boxes were the pre-Rev C gallery floor (top y=4.20). L2 is the shell trimesh, slab top y=4.2.
 		# PATH-06 Fixed: Missing guardrail colliders on L2 West Wing South Edge, East Upper Landing West Edge & East Staircase West Edge
-		{"name": "L2WestWingSouthGuardrail", "size": Vector3(6.5, 1.25, 0.18), "pos": Vector3(-10.65, 4.82, -6.55), "rot_x": 0.0},
 		{"name": "EastStairWestGuardrail", "size": Vector3(0.18, 4.80, 4.00), "pos": Vector3(9.16, 2.40, -4.20), "rot_x": 0.0},
 		# Walkable Exterior Sector-4 Cylinder Hab-7 Promenade Deck (Z = -9.15m..-45.0m, X = -18.0m..+18.0m) + Guardrails
 		{"name": "Sector4PromenadeExteriorDeck", "size": Vector3(36.0, 0.40, 36.0), "pos": Vector3(0.0, -0.08, -27.0), "rot_x": 0.0},
