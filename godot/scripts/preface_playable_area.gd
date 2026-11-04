@@ -8760,7 +8760,8 @@ func _ext_is_solid(asset: String) -> bool:
 	var base: String = _ext_base(asset)
 	if base.begins_with("ext_paving_") or base.begins_with("ext_curb_"):
 		return true
-	return base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_tram_platform_kerb" or base == "ext_maglev_guideway" or base == "ext_canal_edge" or base == "ext_tram_shelter" or base == "ext_maglev_car_body" or base == "ext_maglev_magnet_module" or base == "hydro_planter_tiered_exterior"
+	# [GEO-15] ext_ts4_dead_foliage planting strip gets the same two-sided trimesh collider as its hydro planter neighbours.
+	return base == "ext_platform_infill" or base == "ext_kerb_ramp" or base == "ext_tram_platform_kerb" or base == "ext_maglev_guideway" or base == "ext_canal_edge" or base == "ext_tram_shelter" or base == "ext_maglev_car_body" or base == "ext_maglev_magnet_module" or base == "hydro_planter_tiered_exterior" or base == "ext_ts4_dead_foliage"
 
 
 func _ext_packed_scene(asset: String) -> PackedScene:
