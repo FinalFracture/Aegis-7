@@ -25,3 +25,24 @@ When you're done appending, open Doc B (`map-fullwalk-signoff.md`) and sign it.
 | 9 | Egress route exterior paving + `--qa-egress` path | All in band. | — | PASS |
 
 Totals: 0 Critical, 0 High, 2 Medium, 0 Low, 1 Info; 7 PASS, 2 FAIL.
+
+## MAP-QA-2 — Round 4 (b15a245)
+
+Tested commit: `b15a245` (fresh clone; `godot --headless --import` run once first). Godot 4.7.2 headless, `--fixed-fps 60`, one run at a time. The untracked harness is outside the repo, and all input is real `InputEventKey` events sent through `Input.parse_input_event`: W, Shift, Space, E and F. The harness only teleports the player to each start point and sets yaw before a probe. The only script change since round 3 is the exterior `ExtGroundSouth*Bound` boxes, and every interior result matches round 3. The 0.5 m down-ray hole grid on L1 and L2 is identical to rounds 1–3. Coverage: 114 walk probes and 54 door steps (9 per door × 6).
+
+**Counts:** falls / unguarded drops 0 · invisible walls over continuous floor 0 · holes 0 · walk-through solids 0 · wedge/stuck from normal play 0 · low 1 (still open) · info 1 (still open).
+
+**Re-checks**
+1. **[LOW] Alcove 2C rail sprint-jump: STILL REPRODUCES**, with the same result as round 3. Nodes: `Seam03_Alcove2C_EastRail` (x -10.30) and `Seam03_Alcove2C_Rail` (x -10.18), 1.1 m tall.
+   - Out of the alcove: start at (-12.5, 4.3, -4.2) or (-12.5, 4.3, -5.4) at yaw -90, hold W and Shift, then hold Space. The player clears both rails and stops at x -2.45.
+   - Into the alcove: start at (-8.5, 4.3, -4.2 / -5.4) at yaw 90, same keys. The player clears both rails and stops at x -13.55.
+   - Plain walking is blocked at x -10.69, and the floor is level on both sides, so there's no fall.
+2. **[INFO] Shelf hang: STILL REPRODUCES.** After a teleport to (-11.0, 4.4, -4.8), between `Alcove2C_Battery_Expansion_Support/Shelf_Shape` and `Alcove2C_SuperWire_Expansion_Support/Shelf_Shape`, the player hangs at y 4.40 with `is_on_floor()=false`. Holding W does nothing in either direction. Only a teleport gets you there; normal walking slides past the shelves.
+3. **Doors, all 6 (APT201, APT202, ALCOVE2C, RM1A, RM1B, SECTOR4_EXIT): PASS.**
+   - Locked: walking stops 0.45 m short of the field.
+   - New this round: tapping F (RFID pulse) at the hub does not open the door, and the walk stays blocked, which matches the QA-HUB-01 design.
+   - E at the hub opens the door, and the player walks through.
+   - E pressed while standing in the doorway sets `close_pending`/`close_blocker=PlayerBody`. The door holds open, the player isn't trapped, and it closes once they leave.
+   - Once it closes, a walk and a sprint-jump are both blocked again.
+
+Full edge sweep: every probe ends where it did in round 3, within ±0.01 m. Covered: the L2 inner wing edges at x ±2.45, the outer walls at x ±13.55 and z ±8.55, the old west-wing guardrail line (still clear), and the stairwell glass, where walking stops at z -4.42 and all six sprint-jumps are stopped by `StairwellHeadGlassCap`. Also covered: the gap before flight 2 (sealed), the ±10 m columns, all four L2 corners and the diagonal wall slides (no wedging), flight 2 (smooth descent to y 2.46), and the L1 radials (no falls). The new `ExtGroundSouth*Bound` boxes are exterior, MAP-QA-4's area, so I didn't test them here.
