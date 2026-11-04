@@ -1186,7 +1186,6 @@ func _add_glass_balustrade_colliders(parent: Node3D) -> void:
 ## NE and W sit outside the Rev C wall line (north outer face z=9.1, west outer face x=-14.1).
 func _add_m58_edge_guards(parent: Node3D) -> void:
 	var runs: Array[Dictionary] = [
-		{"name": "M58_L2GalleryWestEdge", "size": Vector3(0.10, 1.1, 1.70), "pos": Vector3(5.50, 4.75, 0.0)},
 		{"name": "M58_L2NorthEastEdge", "size": Vector3(2.0, 1.1, 0.10), "pos": Vector3(13.0, 4.75, 9.15)},
 		{"name": "M58_L2WestEdge", "size": Vector3(0.10, 1.1, 6.0), "pos": Vector3(-14.15, 4.75, 5.0)},
 	]
