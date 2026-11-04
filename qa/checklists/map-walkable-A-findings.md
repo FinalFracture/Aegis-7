@@ -58,3 +58,21 @@ Method: fresh clone of main, Godot 4.7.2 headless (`godot --headless --path godo
 | 9 | Coverage gap: `ext_curb_segment_*` row at z≈19.35 (x -12..-8) and tram platform kerb front edge (z=-17.55) | Not driven this round (outside reachable route in the 60 s budget). | Info | NOT TESTED |
 
 Totals: 0 Critical, 0 High, 1 Medium, 1 Low, 3 Info (incl. 1 coverage gap); 7 PASS rows, 1 FAIL.
+
+## MAP-QA-5 — Freeform player playtest (2026-11-03)
+
+Tested SHA: main e9fad26 (fresh clone). Godot 4.7.2 headless, scene `preface_playable_area.tscn` booted with `-- --qa-placement` (passive mode, spawn Apt 201 (-9.35,4.25,6.20)). Input via a throwaway driver in /tmp (not in repo): `Input.action_press` for move_forward/sprint/jump, and `InputEventKey` (E/F) via `Input.parse_input_event` for interact/pulse. Position traces every 0.25–0.5 s.
+
+**F1 — HIGH — Upper-floor north opening lets player vault and drop outside the building, bypassing the locked SECTOR-4 exit (soft-lock).**
+- Location: 2F corridor centre, north opening at x=0. Player stops at (0.01, 4.08, -4.47) against a ~1.2 m blocker (rail/guard).
+- What happens: one jump clears it (apex y≈5.29 at z -4.85), player falls through (0,3.30,-8.20) → (0,2.75,-9.59) → lands on exterior promenade (0, 0.06, -12.19) in ~1 s. DOOR_SECTOR4_EXIT still reports closed. Walking back south stops at z=-9.45 (closed field / shell); the exit hub is on the inside (1.45,0,-8.90), so the player cannot get back in.
+- Repro: spawn → walk to (-4.0,1.7), face hub (-4.14,0.797), E → walk (-3,1.6)→(-3,0)→(0,0)→ hold forward toward (0,-8.5); when stuck at z -4.47 press jump while holding forward.
+- Variant: jumping at the same spot while steering west lands at (-1.69, 0.05, -9.45) on ground after drop from y≈2.4.
+
+**F2 — LOW — Small bumps on exterior promenade strip at z≈-9.45.** At x≈-3.1/-3.4 and x≈+3.0 player pops to y 0.13–0.19 (floor=false briefly) walking along z -9.45; at (0,·,-18.5) y 0.20. Also when sprinting into the wall at z -9.45 near x -3.9..+2.6 the player hangs (STUCK) repeatedly until jumping. Repro: from F1 landing, walk to (-8,-9.4) then (8,-9.4).
+
+**F3 — INFO (pass) — Doors / walls behave.** APT201 and ALCOVE2C open with E at hub and are passable; closed APT202 field holds (player stops z=0.30 sprinting at it from (3,0)). 2F corridor end walls at x=±9.55 and side walls z=±0.45 solid; jumps against them return to floor 4.08, no clipping. Apt 201 interior bounds x[-13.55,-0.45] z[1.35,8.55] solid incl. sprint/bunnyhop into corners.
+
+**F4 — LOW — Apt 201 SE corner perch.** Bunnyhop into (-0.45, ·, 1.35) leaves player resting at y≈5.2 (≈1.15 m above floor) for several seconds while still pushing into corner (slowly sinks 5.25→5.16). Feels like standing on an invisible ledge/furniture top. Repro: from spawn sprint to (-0.45,1.35) holding jump.
+
+**F5 — LOW — Snags at hub approach.** Standing at (-3.99,4.08,1.69) heading for hub/door, and at (-3.38,4.08,-0.45) by the Alcove 2C jamb, the player gets stuck for 1–1.5 s until a jump/side-step. Repro: route in F1.
