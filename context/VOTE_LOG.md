@@ -1859,3 +1859,8 @@
   - Front run (z +1.88): x -3.575, -2.925, -2.275, -1.625, -0.975, -0.325, +0.325, +0.975, +1.625, +2.275, +2.925, +3.575.
   - West return (x -4.65): z -1.25, -0.60, +0.05, +0.70. East return (x +4.65): z -1.25, -0.60, +0.05, +0.70.
   - Same list as JSON: `assets/src/tennis_tower/bar.py` STOOLS (+ bar recenter shift x 0, z +0.20). Use a MultiMesh for the 20 stools.
+
+### #63 Tennis Tower playground combo tower (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/play_tower/v1..v5.glb` (spec §3.11.6 piece 1; all PASS incl. walk check, commit 0dbf5c7).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#63 WINNER:** `V3 Court Line` -> `godot/assets/models/tt_play_tower.glb` (1,696 tris). ~7.7 x 6.1 m; entry stair on +Z (6 x 0.20 / 0.32) to deck A +1.2, link stair (4 x 0.20) to deck B +2.0, slides along X (S1 from B toward +X, S2 from A toward -X, 30°, exit +0.25), 0.9 m gunmetal infill guards, ball finials, court-line decks, ball holds, yellow HDPE slides, canopy +4.2. Colliders: stair ramps, decks, slide segments, guards. Walk check PASS (step 0.034, slope 34.3°, head 2.1). Slides run axially (no Coriolis twist); orient local X along the hab axis.
