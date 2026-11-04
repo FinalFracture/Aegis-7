@@ -58,3 +58,24 @@ Fresh clone at b15a245, `godot --headless --import` once (rc 0). Godot 4.7.2 hea
 - **Apt 201 door snag (-3.99, 4.08, 1.69) — STILL PRESENT (LOW).** ~1 s stop approaching the hub; real E opens APT201; doorway walkable.
 - **Closed Apt 202 door — PASS (solid).** Sprinting from (2.70,4.08,0) at the closed field stops at (3.25,4.08,0.35) for 2 s (field at z 0.8); a jump there tops out y 5.28 and lands back at z 0.30 — no pass-through. APT202 stays closed.
 - **Regression — PASS.** North-railing jump at (0,4.08,-4.43) still contained; stairs 4.08 → 2.46 → 0.00 clean; Apt 201 SE corner ledge not reproduced.
+
+## MAP-QA-4 — Exterior & Tram (Round 4, 2026-11-03)
+
+Main b15a245, fresh clone, `godot --headless --path godot --import` clean, harness /workspace/mapqa4-harness/r4.gd + r4d.gd run with `--qa-placement`. Movement via move_forward/jump actions on the player controller; E via real InputEventKey press+release (Input.parse_input_event).
+
+### Findings
+- **HIGH — south ends of map-edge walls x ±49 (still open from R3).** Repro: place (-44, 0.3, -29.5) yaw 90 (or (44, 0.3, -29.5) yaw -90), hold forward with jumps. Expected: blocked by wall/south bound. Actual: falls to y -7.87 and respawns at (-11.88, 4.08, 1.44). The new south bound at z -28.1 does not close the gap below z ≈ -28 outside the guardrails.
+- **MEDIUM — south bound z -28.1 can be jumped over near the centre (|x| ≈ 10).** Repro: place (±10, 0.3, -24) yaw 0, forward + jump every 15 frames (also 30° diagonal). Expected: blocked at ≈ -25.4 like walking. Actual: crosses bound, lands at z -36.9 (x 10 → -36.91; diag → (2.68, -36.68) / (-17.32, -36.68)). Walking is blocked at -25.42; at x ±30/±45 jumping is blocked at -27.65. Not off-map (lands on lower promenade), but bound is climbable.
+- **MEDIUM — west/east promenade guardrail mid-air hang (still open).** Repro: place (±15, 0.3, -30) yaw ±90, forward + jump. Actual: stuck at (±17.53, 0.72, -30), is_on_floor=false, ~77 stuck frames. South rail is clean (stops at z -44.53 on floor).
+- **LOW — dead-foliage strip Ext_49_ext_ts4_dead_foliage_1004 hop (still open).** Repro: (-14.5, 0.3, 0) yaw 90, forward + jump. Actual: reaches x -24.37 on floor.
+- **LOW — curb seams at x -16.95, z -5 / 0 / 5 (still open).** Repro: (-15.5, 0.3, z) yaw 90 walk 45 frames. Expected: step over. Actual: moves only 0.75 m, 21 stuck frames at x -16.25; reverse from (-18.4, z) yaw -90 stalls at -17.15 (26 stuck frames).
+
+### Passed
+- Map-edge walls x ±49 (z -27.5, -20, 0, 20, 40) and z 42.6 (x -45…45): walk, jump, diagonal all blocked at x ±48.65 / z 42.15; no escape. Corners NW/NE/SW/SE walk + jump blocked. Re-check showed no mid-air hang at walls (player lands on floor within 30 frames) — NW/NE corner hang from R3 FIXED.
+- DOOR_SECTOR4_EXIT opens with real E from south and from north (fresh run); walk-through both sides OK.
+- Curb x -7.0 at z≈19.35 steps up cleanly; south promenade rail jump blocked.
+
+### Round 3 status
+- Fixed: NW/NE wall corner hang.
+- Still open: wall south-end fall-off (High), W/E guardrail hang at y 0.72, dead-foliage hop to x -24.37, curb seams x -16.95.
+- Confirmed: DOOR_SECTOR4_EXIT still opens.
