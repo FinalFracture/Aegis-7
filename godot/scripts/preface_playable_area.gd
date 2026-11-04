@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -345,6 +345,7 @@ var _qa_hub_shot: bool = false
 var _qa_ts: bool = false
 var _qa_exit: bool = false
 var _qa_egress: bool = false
+var _qa_stairs: bool = false
 var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
 var _qa_drawcalls: bool = false
@@ -447,6 +448,9 @@ func _ready() -> void:
 		elif arg == "--qa-egress":
 			_qa_egress = true
 			_qa_hand = true
+		elif arg == "--qa-stairs":
+			_qa_stairs = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -516,6 +520,8 @@ func _ready() -> void:
 			_run_qa_player_exit.call_deferred()
 		elif _qa_egress:
 			_run_qa_egress.call_deferred()
+		elif _qa_stairs:
+			_run_qa_stairs.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
 		else:
@@ -8707,6 +8713,103 @@ func _run_qa_egress() -> void:
 		_qa_key(KEY_W, false)
 		await _qa_idle(1)
 	print("[EGRESS-QA] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# [M-70/T10] Real-input stair round trip (`-- --qa-stairs`): spawn -> L1 via the stair core -> back to L2, Y band per waypoint.
+func _run_qa_stairs() -> void:
+	var failures: int = 0
+	var wps: Array[Dictionary] = [
+		{"label": "(-6.0, 4.5)", "xz": Vector2(-6.0, 4.5), "door": "", "ymin": 3.9, "ymax": 4.4},
+		{"label": "(-3.0, 1.8)", "xz": Vector2(-3.0, 1.8), "door": "DOOR_APT201", "ymin": 3.9, "ymax": 4.4},
+		{"label": "(-3.0, 0.0)", "xz": Vector2(-3.0, 0.0), "door": "", "ymin": 3.9, "ymax": 4.4},
+		{"label": "(1.15, 0.0)", "xz": Vector2(1.15, 0.0), "door": "", "ymin": 3.9, "ymax": 4.4},
+		{"label": "down F1 (1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": "", "ymin": 2.2, "ymax": 2.8},
+		{"label": "landing (-1.15, -8.15)", "xz": Vector2(-1.15, -8.15), "door": "", "ymin": 2.2, "ymax": 2.8},
+		{"label": "down F2 (-1.15, -2.0)", "xz": Vector2(-1.15, -2.0), "door": "", "ymin": -0.1, "ymax": 0.4},
+		# Turn on L1 clear of the flight foot so the 180 deg mouse turn does not arc off the ramp edge.
+		{"label": "L1 (0.3, -1.4)", "xz": Vector2(0.3, -1.4), "door": "", "ymin": -0.1, "ymax": 0.4},
+		{"label": "L1 (-1.15, -1.0)", "xz": Vector2(-1.15, -1.0), "door": "", "ymin": -0.1, "ymax": 0.4},
+		{"label": "up F2 (-1.15, -8.15)", "xz": Vector2(-1.15, -8.15), "door": "", "ymin": 2.2, "ymax": 2.8},
+		{"label": "landing (1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": "", "ymin": 2.2, "ymax": 2.8},
+		{"label": "up F1 L2 (1.15, -0.3)", "xz": Vector2(1.15, -0.3), "door": "", "ymin": 3.9, "ymax": 4.4},
+	]
+	var parts: PackedStringArray = PackedStringArray()
+	for wp_route: Dictionary in wps:
+		parts.append(String(wp_route["label"]))
+	print("[STAIRS-QA] route=%s" % "; ".join(parts))
+	if _player_body == null:
+		for wp0: Dictionary in wps:
+			print("[STAIRS-QA] FAIL | %s | pos=(missing) frames=0" % String(wp0["label"]))
+			print("[STAIRS-QA] last_slide=%s" % _qa_last_slide_path)
+		print("[STAIRS-QA] DONE failures=%d" % wps.size())
+		get_tree().quit(1)
+		return
+	# Normal spawn already placed the body at SPAWN_POS. Wait for it to settle; do not write position.
+	await _qa_frames(30)
+	var holding_w: bool = false
+	for i: int in range(wps.size()):
+		var wp: Dictionary = wps[i]
+		var xz: Vector2 = wp["xz"] as Vector2
+		var door_id: String = String(wp["door"])
+		var door: Dictionary = _find_door(door_id) if door_id != "" else {}
+		if not holding_w:
+			_qa_key(KEY_W, true)
+			await _qa_idle(2)
+			holding_w = true
+		var frames: int = 0
+		var arrived: bool = false
+		while frames < 900:
+			var pos: Vector3 = _player_body.global_position
+			var horiz: float = Vector2(pos.x, pos.z).distance_to(xz)
+			var aim: Vector2 = xz
+			if door_id != "" and not door.is_empty():
+				var droot: Node3D = door.get("root") as Node3D
+				if droot != null:
+					aim = Vector2(droot.global_position.x, droot.global_position.z)
+			_qa_egress_steer(aim if door_id != "" else xz)
+			if door_id != "":
+				if _qa_egress_door_ready(door) or horiz < 0.8:
+					arrived = true
+					break
+			elif horiz < 0.8:
+				arrived = true
+				break
+			await get_tree().physics_frame
+			frames += 1
+		var ok: bool = false
+		if door_id != "":
+			_qa_key(KEY_W, false)
+			await _qa_idle(2)
+			holding_w = false
+			var face_left: int = 900 - frames
+			var faced: int = 0
+			while not _qa_egress_door_ready(door) and faced < face_left:
+				var droot2: Node3D = door.get("root") as Node3D
+				if droot2 != null:
+					_qa_egress_steer(Vector2(droot2.global_position.x, droot2.global_position.z))
+				await get_tree().physics_frame
+				faced += 1
+			frames += faced
+			if _qa_egress_door_ready(door):
+				await _qa_tap(KEY_E)
+				await get_tree().create_timer(1.0).timeout
+				ok = bool(door.get("open", false))
+			else:
+				ok = false
+		else:
+			var ymin: float = float(wp["ymin"])
+			var ymax: float = float(wp["ymax"])
+			ok = arrived and ymin <= _player_body.global_position.y and _player_body.global_position.y <= ymax
+		var here: Vector3 = _player_body.global_position
+		print("[STAIRS-QA] %s | %s | pos=%s frames=%d" % ["PASS" if ok else "FAIL", String(wp["label"]), str(here), frames])
+		if not ok:
+			failures += 1
+			print("[STAIRS-QA] last_slide=%s" % _qa_last_slide_path)
+	if holding_w:
+		_qa_key(KEY_W, false)
+		await _qa_idle(1)
+	print("[STAIRS-QA] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
 
