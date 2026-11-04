@@ -1187,6 +1187,8 @@ func _add_m58_edge_guards(parent: Node3D) -> void:
 	var runs: Array[Dictionary] = [
 		{"name": "M58_L2NorthEastEdge", "size": Vector3(2.0, 1.1, 0.10), "pos": Vector3(13.0, 4.75, 9.15)},
 		{"name": "M58_L2WestEdge", "size": Vector3(0.10, 1.1, 6.0), "pos": Vector3(-14.15, 4.75, 5.0)},
+		# [MAP-QA r1] Invisible cap above the L2 stairwell head glass (top y 5.25) so a sprint-jump cannot vault into the well.
+		{"name": "StairwellHeadGlassCap", "size": Vector3(2.30, 1.80, 0.10), "pos": Vector3(-0.76, 6.15, -4.83)},
 	]
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
