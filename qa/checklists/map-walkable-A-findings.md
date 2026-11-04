@@ -38,3 +38,23 @@ Method: fresh clone of main, Godot 4.7.2 headless (`godot --headless --path godo
    - The neighbouring hydro planters 1006/1007 (same top, 0.68) block correctly at x -13.55. Please confirm x < -22 is meant to be walkable. If not, the strip needs a bounds blocker.
 4. **INFO (pass): tram shelter and tram car roofs cannot be stood on.** `Ext_15_ext_tram_shelter_0` roof collider is y=3.13. Jumps from north, south and west reach at most y 1.57, so the roof can't be reached. `Ext_19_ext_maglev_car_body_17/18` roofs are y 3.58–3.83 and have TramRoofNoStand caps. Platform kerbs `Ext_16_*` (y≈0.31) step up cleanly.
 5. **INFO (pass): no ground holes.** 0 ray misses across the plaza/promenade grid. Deck is at y≈0.0–0.06 and there are no sunk or floating ground tiles. 13 exterior visuals have no collider, and all of them are flat decals or litter (`Ext_47_ext_desire_path_decal_*`, `Ext_49_ext_ts4_wear_decal_1005`, `Ext_50_ext_litter_drift_*`, `Ext_51_ext_track_scuff_guideway_*`), so that is expected.
+
+## MAP-QA-3 — Stairs, Ramps & Vertical
+
+- Date: 2026-11-03 · Round 1 · tested against main @ e9fad26 · Godot 4.7 headless
+- Method: real simulated input only (InputEventKey W/Shift/Space/E + InputEventMouseMotion yaw via the scene's own `_qa_key`/`_qa_mouse`/`_qa_egress_steer`); throwaway SceneTree drivers in /tmp (outside repo), run with `-- --qa-placement`. No position writes. No repo .gd/.tscn/.py edited.
+- Built-in modes: `--qa-stairs` → **PASS** (12/12 waypoints, `DONE failures=0`); `--qa-egress` → **PASS** (18/18 waypoints, `DONE failures=0`). Note: on a fresh clone both fail to parse (`TroubleshootSimpleUI` class not found) until `godot --headless --import` has built the class cache once.
+
+| # | Location | Repro | Severity | Result |
+|---|----------|-------|----------|--------|
+| 1 | Stair core head, L2 (1.15, 0.0) → F1 | From the stair head hold W toward F1 foot (1.15,-8.15) and tap Space every ~0.3 s. First jump carries the player sideways east to x≈3.65 against `RevC_Shell_L2_col` and pins them there ~3 s; then the player crosses the whole F1 flight airborne at y≈4.1–5.3 (L2 height, flight surface is 2.5–4.1) and only drops to the landing at the end. Walk time 92 frames vs 298 with jumps. Looks like a jump-height surface/collider over the F1 stairwell or air-jump chaining. | Medium | FAIL |
+| 2 | Stair core F1/F2, jump-down/jump-up | Repeated jumps descending F2, ascending F2 and F1: all arrive and settle on floor in Y band (L1 y=0.00, landing y=2.465, L2 y=4.08). No fall-through, no snag. | — | PASS |
+| 3 | Mid-flight F2 (-1.15,-5.0) | Stop on the ramp (y=1.048, on_floor), 180° mouse turn, walk back down: stays on floor, no slide, reaches L1. | — | PASS |
+| 4 | Landings (±1.15,-8.15) | Standing jump on landing: lands dy=-0.001, on_floor. Turning across landing between flights: PASS both directions. | — | PASS |
+| 5 | Stair core F1 sprint | Shift+W down F1 and up F1: arrives, settles on floor (2.465 / 4.080). | — | PASS |
+| 6 | Up F1 after jumping | Arrival at L2 airborne (y=5.23); needs ~23 frames to land. Normal jump arc, not a bug. | Info | PASS |
+| 7 | Exterior kerb ramp `ext_kerb_ramp` → tram platform (10–12,-16.5) | Walk up, walk down, jump-spam up: up and jump reach platform y=0.351 on floor. Walking down, the player is still at y≈0.31 at (9.35,-16.49); the ramp's rise sits in the last ~0.5 m toward the paving, so it reads as a short steep kerb, not a gentle ramp. | Low | PASS (note) |
+| 8 | Egress route exterior paving (0..8.9, -9.8..-15.9) | Small paving step (0.00→0.05) passes, no snag. | — | PASS |
+| 9 | Coverage gap: `ext_curb_segment_*` row at z≈19.35 (x -12..-8) and tram platform kerb front edge (z=-17.55) | Not driven this round (outside reachable route in the 60 s budget). | Info | NOT TESTED |
+
+Totals: 0 Critical, 0 High, 1 Medium, 1 Low, 3 Info (incl. 1 coverage gap); 7 PASS rows, 1 FAIL.
