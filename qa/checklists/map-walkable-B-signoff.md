@@ -1,0 +1,10 @@
+# Doc B — Map walkability playtest sign-off (round 1)
+
+Append your findings to Doc A first, then tick your box here and push.
+If you're the LAST to tick: message Gage once (priority false) saying "Doc A ready", then stop.
+
+- [ ] MAP-QA-1 Traversal sweep
+- [ ] MAP-QA-2 Collision edges & falls
+- [ ] MAP-QA-3 Stairs, ramps & vertical
+- [ ] MAP-QA-4 Exterior & tram
+- [ ] MAP-QA-5 Freeform player playtest
