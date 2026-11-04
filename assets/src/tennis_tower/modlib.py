@@ -52,8 +52,11 @@ def tube(a, b, r, seg=8):  # CHS member between two points
     L = np.linalg.norm(np.subtract(b, a)); return _orient(loft(circle(r, seg), [(0, 1, 1), (L, 1, 1)]), a, b)
 def beam(a, b, w, h):  # rectangular member between two points (w across X-ish, h across Z-ish)
     L = np.linalg.norm(np.subtract(b, a)); return _orient(box(-w/2, w/2, 0, L, -h/2, h/2), a, b)
-def node(c, r, sub=1):  # ball node
-    m = trimesh.creation.icosphere(subdivisions=sub, radius=r); m.apply_translation(c)
+def node(c, r, sub=1):  # ball node (sub=-1: 8-tri octahedron for big instanced grids)
+    if sub < 0:
+        m = trimesh.Trimesh(np.array([(r,0,0),(-r,0,0),(0,r,0),(0,-r,0),(0,0,r),(0,0,-r)], float), np.array([[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]]), process=False)
+    else: m = trimesh.creation.icosphere(subdivisions=sub, radius=r)
+    m.apply_translation(c)
     v = m.vertices - c; m.metadata["uv"] = np.c_[np.arctan2(v[:, 0], v[:, 2]) / (2*np.pi) + .5, v[:, 1] / (2*r) + .5]; return m
 def cap(c, r, h, seg=12, axis="z"):  # disc / cylinder cap, centre c, along axis
     c = np.asarray(c, float); d = {"x": [1, 0, 0], "y": [0, 1, 0], "z": [0, 0, 1]}[axis]
