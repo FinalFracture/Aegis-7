@@ -1790,3 +1790,9 @@
 
 ### #41 curb fillers (Rook, Oct 31, branch wip/item4-exterior-scene)
 - **Atlas PM call (not a Jared vote), Oct 31 ~3:12 PM CT:** exact-fit Chamfer Slate filler curbs, no scaling, from `assets/src/ext_curb_generator.py` (`--len`): `godot/assets/models/ext_curb_segment_894mm.glb` (x14, 0.9 m bed ends), `_809mm.glb` (x4, planter S runs), `_397mm.glb` (x6, hydro planter W ends). Also `ext_curb_segment_1m.glb` (x8). Clip check PASS on all three seeds; verify_curb_overlaps.py 0 curb-curb / 0 curb-kerb.
+
+### #52 Tennis Tower curtain wall panel (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/curtain_wall_panel/v1..v5.glb` (4.0 x 13.3 m F3 Glass Box bay, spec Rev 2.6 §3.11.1; all checks PASS, commit 114df2d).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#52 WINNER:** `V3 Branch Fin` (1,520 tris) -> `godot/assets/models/tt_curtain_wall_panel.glb`. Y-forked tree-branch fins echoing the tree columns; tiles at 4.0 m along the façade, +Z exterior.
+- Moss + vine overlay: deferred by Jared (Nov 3), not built.
