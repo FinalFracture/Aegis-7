@@ -2436,37 +2436,6 @@ func _spawn_interior_pickups(initial_setup: bool = false) -> int:
 	return spawned
 
 
-# Rev C.2 ghost of #26. Literal plan rect F(-13.9, 6.4, -10.2, 8.9): 3.7 x 2.5 m, center (-12.05, 7.65).
-# Flat decal on the Section 2 L2 floor datum (y=4.415). No collider. #54 decal GLB is not modeled.
-func _spawn_apt201_bench_outline() -> void:
-	if _props_container == null:
-		return
-	if _props_container.get_node_or_null("Apt201_ExBench_DustOutline") != null:
-		return
-	var deck: MeshInstance3D = MeshInstance3D.new()
-	deck.name = "Apt201_ExBench_DustOutline"
-	var quad: QuadMesh = QuadMesh.new()
-	quad.size = Vector2(3.7, 2.5)
-	quad.orientation = PlaneMesh.FACE_Y
-	deck.mesh = quad
-	# [M-48] 6 mm above the previous 4.418 placement. Lit, so emergency ambient/sun dims it. No collider.
-	deck.position = Vector3(-12.05, 4.203, 7.65) # [M-71] Rev C L2 floor 4.20 + 3 mm (was the pre-Rev C 4.415 datum)
-	var mat: StandardMaterial3D = StandardMaterial3D.new()
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color = Color(1, 1, 1, 1)
-	mat.roughness = 1.0
-	mat.metallic = 0.0
-	mat.cull_mode = BaseMaterial3D.CULL_BACK
-	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
-	var dust_tex: Texture2D = _load_tex("qa03/apt201_bench_dust_outline_decal.png")
-	if dust_tex != null:
-		mat.albedo_texture = dust_tex
-	mat.render_priority = -1
-	deck.material_override = mat
-	deck.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_props_container.add_child(deck)
-
-
 # Baked one-shot / loop clips. Pivot is bottom-centre, front is local +Z, back is local -Z.
 # Loaded Rev C shell: L1 floor top y=0.12. Generator L2 slab top is 4.2
 # (preface_sector_rev_c_generator.py L2). placement_assert reads this const.
@@ -2754,7 +2723,6 @@ func _spawn_rev_c_static_props() -> void:
 		node.scale = spec.get("scale", Vector3.ONE) as Vector3
 		_props_container.add_child(node)
 		_add_prop_aabb_body(node)
-	_spawn_apt201_bench_outline()
 
 
 func _spawn_animated_props() -> void:
