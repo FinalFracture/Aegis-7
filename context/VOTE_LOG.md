@@ -1883,3 +1883,11 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
 - **#66 WINNER:** `V1 Court Line` -> `godot/assets/models/tt_see_saw.glb` (1,104 tris). Pair of axial see-saws: 3.0 m gunmetal beams along local X at z -0.8 / +0.8, pivot +0.60, ball-yellow seats (+0.66) at x ±1.15..1.45, alloy T-handles at x ±1.0 with ball finials, twin-post fulcrums + axle stubs, EPDM end bumpers, court-line pad 5.0 x 3.0 m (bbox 5.0 x 0.98 x 3.0). Animate `SeesawN_Beam` + `_Seats` + `_Handles` about a Z hinge at local (0, 0.60, z_i), ±15° (bumper contact ~16°). Colliders: beam + fulcrum boxes (-convcolonly). Orient local X along the hab axis.
 - **Footprint note for Vance:** spec gives no footprint; built 5 x 3 m, 1.6 m between beam centres.
+
+### #67 Tennis Tower playground toddler zone (Rook, box pipeline, Nov 4)
+- **Round 1** `assets/glb/tennis_tower/toddler_zone/v1..v5` (spring riders + deck on a flat pad, commit 7d5badc) **rejected by Jared ("terrible": too empty/flat, wrong concept)** -> superseded, not promoted.
+- **Round 2 candidates:** `assets/glb/tennis_tower/toddler_landscape/v1..v5.glb` (natural play landscapes; all PASS, commit 14beeb8).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#67 WINNER:** `V1 Meadow Hills` -> `godot/assets/models/tt_toddler_zone.glb` (3,532 tris). 8.0 x 8.0 m, bbox height 1.35 (slide lips). Moss EPDM hills 1.0 / 0.7 / 0.45 m in a back crescent + low berms and hummocks, 0.6 m-bore crawl tunnel between the two big hills, mini slide (24°, HDPE ball-yellow) off the 1.0 m hill on a rubber wedge, 4 leaf stepping pods, wavy sand balance path (0.15-0.28), flower + bush clusters. Play surfaces <= 1.2 m, no entrapment gaps, nothing spinning. Colliders: hills/wedges/slide/pods/path hulls (-convcolonly), tunnel (-colonly mesh), zone floor (-colonly).
+- **Spec mismatch for Vance:** §3.11.6 item 5 reads "4 spring riders + toddler deck in an 8 x 8 m toddler zone"; the winner has neither (hills, tunnel, mini slide, stepping pods and a balance path instead). Please update the spec text to match.
+- Texture needs (Sloane, not yet requested): TT_PlayRubber_Moss (+ EPDM, HDPE_Leaf/_Sand).
