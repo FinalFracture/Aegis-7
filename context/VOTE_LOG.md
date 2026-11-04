@@ -1807,3 +1807,8 @@
 - **Candidates:** `assets/glb/tennis_tower/stand_module/v1..v5(.glb|_f3.glb)` (spec §3.2 / §3.11.4; all PASS, commit c093f32) + hybrid `v6_hybrid(_f3).glb` (commit 5beed7c).
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook:** V4 Court Rail + V5 branch posts/leaf shades = **V6 hybrid**, approved.
 - **#54 WINNER:** `V6 hybrid` -> `godot/assets/models/tt_stand_module.glb` (F1/F2, 5 rows, 2,696 tris) + `godot/assets/models/tt_stand_module_f3.glb` (F3, 12 rows, 5,944 tris). Canopy trimmed inside the bay: width 7.498 m (1 mm end inset per side), tiles at 7.5 m along X with no overlap or coplanar faces between adjacent bays (pair check PASS). Front +Z = concourse.
+
+### #55 Tennis Tower space-frame roof bay (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/roof_bay/v1..v5.glb` (spec §3.11.2 Rev 2.5; 20x20 m tile, 4.0 m grid; all PASS, commit ddbc676).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#55 WINNER:** `V4 Branch Diagonals` (5,660 tris) -> `godot/assets/models/tt_roof_bay.glb`. Y-fork tree-crown diagonals; tiles every 20.0 m in X and Z (tile owns its -X/-Z edge nodes; pair-tiling check PASS). Flat at top +25.5; ridge crown is a separate piece (not built).
