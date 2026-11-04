@@ -9,7 +9,7 @@ from modlib import *
 import modlib, play_tower as pt
 from cabana_lounger import boxuv
 from restroom_extras import crest
-U = pt.U; PAD = .03; HZ = 4.0
+U = pt.U; PAD = .03; HZ = 4.0; HX = 4.0  # HX: half-size in X (zone may be rectangular)
 modlib._m("tt_rubber_moss", "TT_PlayRubber_Moss", (.36, .55, .30), 0, .9)
 modlib._m("tt_rubber_tan", "TT_PlayRubber_Tan", (.70, .60, .44), 0, .9)
 modlib._m("tt_rubber_river", "TT_PlayRubber_River", (.26, .50, .72), 0, .6)
@@ -52,7 +52,7 @@ class Scape:
     """collects meshes per (part, material); terrain = one rubber part per concept (pieces of one part may interlock)."""
     def __init__(s, ground, terrain):
         s.p = Part(); s.L = {}; s.col = {}; s.terrain = terrain; s.T = []; s.solid = []; s.G = []; s.Q = []; s.SQ = []
-        s.pad = box(-HZ, HZ, 0, PAD, -HZ, HZ); s.add("Safety_Pad", ground, s.pad, col=None)
+        s.pad = box(-HX, HX, 0, PAD, -HZ, HZ); s.add("Safety_Pad", ground, s.pad, col=None)
     def add(s, part, mat, *ms, col="hull", solid=True):
         s.L.setdefault((part, mat), []).extend(ms)
         if solid: s.solid += ms
@@ -119,7 +119,7 @@ class Scape:
         else: F = [T(xf(trimesh.creation.torus(.1, .012, 12, 6), t=(u, h*.55, .03 + .012 - E))) for u in (-w/4, w/4)]; fm = AM
         s.add("Panel_Features", fm, *F, col=None)
     def bush(s, x, z, r, mat=LF2, seed=0):
-        x, z = np.clip(x, -HZ + r + .05, HZ - r - .05), np.clip(z, -HZ + r + .05, HZ - r - .05); s.Q.append((clump((x, 1.6, z), r, seed), mat))
+        x, z = np.clip(x, -HX + r + .05, HX - r - .05), np.clip(z, -HZ + r + .05, HZ - r - .05); s.Q.append((clump((x, 1.6, z), r, seed), mat))
     def cluster(s, x, z, n, r, mats=(LF, LF2), seed=0, spread=.35):
         rng = np.random.default_rng(seed)
         for k in range(n): s.bush(x + rng.uniform(-spread, spread), z + rng.uniform(-spread, spread), r*rng.uniform(.6, 1.0), mats[k % len(mats)], seed*10 + k)
@@ -132,10 +132,10 @@ class Scape:
         for c, mat in s.Q:
             if any(np.all(c.bounds[0][[0, 2]] <= m.bounds[1][[0, 2]] + .35) and np.all(m.bounds[0][[0, 2]] <= c.bounds[1][[0, 2]] + .35) for m in SL): continue  # keep slide run-outs clear
             drop([c], [s.pad] + s.solid, emb=.006); s.add("Foliage", mat, c, col=None, solid=False)
-        V = np.vstack([m.vertices for ms in s.L.values() for m in ms]); assert np.all(np.abs(V[:, [0, 2]]) <= HZ + 1e-6), ("outside the 8 x 8 zone", V[:, [0, 2]].min(0), V[:, [0, 2]].max(0))
+        V = np.vstack([m.vertices for ms in s.L.values() for m in ms]); assert np.all(np.abs(V[:, 0]) <= HX + 1e-6) and np.all(np.abs(V[:, 2]) <= HZ + 1e-6), ("outside the 8 x 8 zone", V[:, [0, 2]].min(0), V[:, [0, 2]].max(0))
         for (part, mat), ms in s.L.items(): s.p.add(part, mat, *[boxuv(m, .5) for m in ms])
         for k, ms in s.col.items(): s.p.add(k.replace("_mesh", "") + ("-colonly" if k.endswith("_mesh") else "-convcolonly"), G, *[U(m) for m in ms])
-        s.p.add("Zone-colonly", G, U(box(-HZ, HZ, 0, PAD, -HZ, HZ)))
+        s.p.add("Zone-colonly", G, U(box(-HX, HX, 0, PAD, -HZ, HZ)))
         return s.p
 
 def meadow(q):   # Meadow Hills
