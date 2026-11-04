@@ -36,3 +36,25 @@ Fresh clone at 91ea2d1, `godot --headless --import` once (rc 0). Godot 4.7.2 hea
 - **Promenade bumps — STILL PRESENT (LOW).** y pops 0.15 at (-5.62,-10.35) and (-6.86,-9.96) on the diagonal from the exit; sprinting the wall at z≈-9.5: y 0.20 at x -2.94 and 0.19 at x +3.07. No wall hang.
 - **Apt 201 door snag (-3.99, 4.08, 1.69) — STILL PRESENT (LOW).** Approach to the Apt 201 hub stops ~1 s; real E keypress opens APT201 from there and the doorway is walkable.
 - **Regression checks — PASS.** North-railing jump at (0,4.08,-4.43) still contained (no drop to promenade). Apt 201/Alcove 2C/SECTOR-4 open with real E; closed Apt 202 not tested this round; stairs 4.08 → 2.46 → 0.00 clean; Apt 201 SE corner ledge not reproduced.
+
+## MAP-QA-2 — Round 3 (91ea2d1)
+
+Tested commit: `91ea2d1` (fresh clone; `godot --headless --import` run once first). Godot 4.7.2 headless, `--fixed-fps 60`, one run at a time. The untracked harness lives outside the repo. **All input this round is real `InputEventKey` events sent through `Input.parse_input_event`**: W, Shift, Space, and E for doors; no `Input.action_press`. The harness only teleports the player to each start point and sets yaw before a probe; everything after that is key input. The 0.5 m down-ray hole grid on L1 and L2 is identical to rounds 1 and 2. Walk probes: 113 (the full round-1/2 edge sweep, the 14 round-2 re-checks, and 8 new round-3 probes), plus 42 door steps (7 per door × 6 RFID doors).
+
+**Counts:** falls / unguarded drops 0 · invisible walls over continuous floor 0 · holes 0 · walk-through solids 0 · wedge/stuck from normal play 0 · low 1 (still open from round 2) · info 1 (back from round 1).
+
+**Doors (E key, all 6: APT201, APT202, ALCOVE2C, RM1A, RM1B, SECTOR4_EXIT): PASS.**
+- Locked: walking into the field stops 0.45 m short of it.
+- E pressed at the hub (from the corridor side, 0.9 m out, facing the door's direction) opens the door, and the player walks through.
+- E pressed while the player stands in the doorway plane: the door sets `close_pending`, names `close_blocker=PlayerBody`, and stays open, so the player is never trapped or shoved. It closes once the player walks clear.
+- Once it closes, a walk and a sprint-jump are both blocked again.
+- Minor: `close_blocker` still reads `PlayerBody` after the door has closed. It's a stale field with no effect on collision.
+
+**Re-check of round 2**
+1. **[LOW] Alcove 2C rail sprint-jump: STILL REPRODUCES**, now in both directions. Nodes: `Seam03_Alcove2C_EastRail` (x -10.30) and `Seam03_Alcove2C_Rail` (x -10.18), 1.1 m tall.
+   - Out of the alcove: start at (-12.5, 4.3, -4.2) or (-12.5, 4.3, -5.4) at yaw -90, hold W and Shift, then hold Space. The player clears both rails and crosses the atrium to (-2.45, ~4.1, -4.2 / -6.37).
+   - Into the alcove: start at (-8.5, 4.3, -4.2 / -5.4) at yaw 90, same keys. The player clears both rails and reaches the alcove west wall at (-13.55, 4.08, z).
+   - Plain walking is blocked at x -10.69. The floor is the same level on both sides, so there's no fall.
+2. **[INFO] Shelf hang: REPRODUCES again**; round 2 marked it as not reproduced, so it's intermittent. After a teleport to (-11.0, 4.4, -4.8), between `Alcove2C_Battery_Expansion_Support/Shelf_Shape` and `Alcove2C_SuperWire_Expansion_Support/Shelf_Shape`, the player hangs at y 4.40 with `is_on_floor()=false`. Holding W works in neither direction. Only a teleport gets you there; walking from (-12.5, 4.3, -5.4) slides past the SuperWire shelf without sticking. It would matter only if a respawn or save point ever lands there.
+
+Full edge sweep: every probe ends at the same place as round 2, within ±0.02 m. That covers the L2 inner wing edges at x ±2.45, the outer walls at x ±13.55 and z ±8.55, the old west-wing guardrail line (still clear), and the stairwell glass, where walking stops at z -4.42 and all six sprint-jumps are stopped by `StairwellHeadGlassCap`. It also covers the 0.37–0.40 gap before flight 2 (sealed), the ±10 m columns, all four L2 corners and the diagonal wall slides (no wedging), and the L1 radials (no falls; min y dipped to -0.09 once at the a22 threshold and recovered). The new ExtGround bounds and curb seam caps are exterior, MAP-QA-4's area, so I didn't test them here.
