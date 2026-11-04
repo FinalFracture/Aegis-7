@@ -46,3 +46,15 @@ Tested commit: `b15a245` (fresh clone; `godot --headless --import` run once firs
    - Once it closes, a walk and a sprint-jump are both blocked again.
 
 Full edge sweep: every probe ends where it did in round 3, within ±0.01 m. Covered: the L2 inner wing edges at x ±2.45, the outer walls at x ±13.55 and z ±8.55, the old west-wing guardrail line (still clear), and the stairwell glass, where walking stops at z -4.42 and all six sprint-jumps are stopped by `StairwellHeadGlassCap`. Also covered: the gap before flight 2 (sealed), the ±10 m columns, all four L2 corners and the diagonal wall slides (no wedging), flight 2 (smooth descent to y 2.46), and the L1 radials (no falls). The new `ExtGroundSouth*Bound` boxes are exterior, MAP-QA-4's area, so I didn't test them here.
+
+## MAP-QA-5 — Freeform player playtest round 4 (main b15a245, 2026-11-03)
+
+Fresh clone at b15a245, `godot --headless --import` once (rc 0). Godot 4.7.2 headless, `preface_playable_area.tscn` with `-- --qa-placement` (normal Apt 201 spawn (-9.35,4.25,6.20)). Movement via `Input.action_press`; E/F as real `InputEventKey` press+release via `Input.parse_input_event`. Driver scripts in /tmp, not in repo. Route: Apt 201 → 2F corridor (incl. closed Apt 202) → switchback stairs → ground → SECTOR-4 exit (E at hub) → promenade both ways; Apt 201 corner/wall sprint+jump; north-railing jump. All coordinates match round 3 — no change observed.
+
+- **Ground-floor blocker (1.55, 0.00, -0.99) — STILL PRESENT (MEDIUM).** East along z -1.0 from stair foot stops dead at x 1.55; northward needs a jump (apex ~1.2 m) to clear it. Repro: stairs down → (-1.55,-1.0) → forward toward (3.5,-1.0), then (3.5,-7.9).
+- **Apt 201 west-wall snag (-13.55, 4.08, 5.82) — STILL PRESENT (LOW).** Sprinting south along west wall from (-13.3,8.4): 4 samples mv=0.00 with input held until a jump clears a ~1.2 m obstacle. Repro: spawn → sprint (-13.5,8.5) → sprint toward (-13.5,1.4).
+- **Exit-panel short stop (1.55, 0.00, -7.86) — STILL PRESENT (LOW).** Blocked ~1 m short of hub (1.45,0,-8.90); real E opens SECTOR4_EXIT from there; exit walkable to (0.07,0.06,-11.77).
+- **Promenade bumps — STILL PRESENT (LOW).** y 0.15 at (-5.62,-10.35)/(-6.86,-9.96); sprinting wall z≈-9.5: y 0.20 at x -2.94 and x +3.07.
+- **Apt 201 door snag (-3.99, 4.08, 1.69) — STILL PRESENT (LOW).** ~1 s stop approaching the hub; real E opens APT201; doorway walkable.
+- **Closed Apt 202 door — PASS (solid).** Sprinting from (2.70,4.08,0) at the closed field stops at (3.25,4.08,0.35) for 2 s (field at z 0.8); a jump there tops out y 5.28 and lands back at z 0.30 — no pass-through. APT202 stays closed.
+- **Regression — PASS.** North-railing jump at (0,4.08,-4.43) still contained; stairs 4.08 → 2.46 → 0.00 clean; Apt 201 SE corner ledge not reproduced.
