@@ -1832,3 +1832,9 @@
 - Reuse: bath_pod_generator.wc() recipe (vac tank wall-hung/slimmed), Rev C stair PBR materials, bath-pod door-frame language. Basin unit + accessible stall follow as `tt_restroom_basin.glb` / `tt_restroom_accessible.glb`.
 - Blocks: F3 R3-S1/S2/N1/N2 under the stands; F1 R1-S/NW/NE; F2 R2-NW/NE.
 - **#58 follow-up (V2 Leaf Crest style, Jared-requested):** `tt_restroom_basin.glb` (576 tris; 3.6 m wall-hung run, 4 basins, back face at local z -0.33, mount on a wall) + `tt_restroom_accessible.glb` (744 tris; 1.8 x 1.6 m accessible stall, 1 per block, same 2.4 m half-unit depth and wet-wall line as tt_restroom.glb, place at the row end, centre x ±4.5). Clip/validator/first-pass PASS (first-pass WARNs: bath-pod white/mirror/cyan albedo > 0.9, untextured).
+
+### #59 Tennis Tower slide tower T1/T2 (Rook, box pipeline, Nov 3)
+- **Candidates:** `assets/glb/tennis_tower/slide_tower/v1..v5.glb` (spec §3.6; all PASS incl. walk check, commit 741a98e).
+- **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
+- **#59 WINNER:** `V3 Leaf Crest` -> `godot/assets/models/tt_slide_tower.glb` (2,328 tris). 5 x 5 m (5.2 m roof), base y 0, +Z = ground entry face. Switchback 9/9/8/8 x 0.1794 to the bridge landing at +6.1 (opening in the -X face, local z +1.2..+2.3), 5 x 0.18 east onto the start deck +7.0; slide tube stub leaves the +X face at local z -1.2 (invert +7.0); roof +9.4 (fascia to +9.46). Colliders: F1..F5 ramps, S1/N1/S2/N2 landings, deck (-colonly). One per tower (T1, T2).
+- Open: island datum, 2.4 m bridge vs 1.1 m opening, bridge reaches T2 only (see Rook report).
