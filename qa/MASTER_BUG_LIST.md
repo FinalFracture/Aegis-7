@@ -177,3 +177,9 @@ Project items found by the checker, not checker bugs: 2 deleted-script showcase 
 - FPC-11 (list cap 8 + "N more", --verbose shows all): **Fixed (verified)** — Gage bb4da02.
 - FPC-12 (walkable-slope min area 0.25 m2 + chevron allowlist): **Fixed (verified)** — Gage bb4da02. Exit codes 0/1(--strict)/2 are correct, and the docs mention --verbose.
 
+
+## 2026-11-03 ~8:45 PM CT re-test (Patch, fresh clone 5a70190, Godot 4.7.2, --headless --import then xvfb, gl_compatibility, --fixed-fps 60)
+- M-46: **PASS (stays verified)** — `--qa-egress` 23/23, `DONE failures=0`, tram point reached, final (11.59, 0.34, -16.53).
+- M-70: **PASS (stays verified)** — `--qa-stairs` 12/12, `DONE failures=0` (down to L1 and back up F1/F2 to L2 (1.15, 4.08, -1.03)); egress crosses both flights.
+- M-73: **not re-run by Patch** — no built-in QA mode covers the NW corner and this session wrote no harness; status rests on QA-01 + QA-02 at 248257d. The egress route passes the exit at z -8.8 cleanly.
+- Built-in modes only; no real-input free-walk escape check this session.
