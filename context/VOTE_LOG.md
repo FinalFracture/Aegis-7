@@ -1838,3 +1838,8 @@
 - **Deciding vote: Jared (Nov 3, 2026), relayed via Rook.**
 - **#59 WINNER:** `V3 Leaf Crest` -> `godot/assets/models/tt_slide_tower.glb` (2,328 tris). 5 x 5 m (5.2 m roof), base y 0, +Z = ground entry face. Switchback 9/9/8/8 x 0.1794 to the bridge landing at +6.1 (opening in the -X face, local z +1.2..+2.3), 5 x 0.18 east onto the start deck +7.0; slide tube stub leaves the +X face at local z -1.2 (invert +7.0); roof +9.4 (fascia to +9.46). Colliders: F1..F5 ramps, S1/N1/S2/N2 landings, deck (-colonly). One per tower (T1, T2).
 - Open: island datum, 2.4 m bridge vs 1.1 m opening, bridge reaches T2 only (see Rook report).
+
+### #60 Tennis Tower climbing wall panel (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/climbing_panel/v1..v5.glb` (spec §3.11.6 / §3.7.1; all PASS, commit b9804de).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#60 WINNER:** `V3 Court Line` -> `godot/assets/models/tt_climbing_panel.glb` (452 tris). Lead-wall course panel 1.25 x 2.3 m: tile every 1.25 m in X, stack every 2.3 m in Y (16 x 5 = 20 x 11.5 m Stand-Back Wall). Face +Z, slate face, tennis-ball holds, amber route tape; sub-frame behind (back at local z -0.085 from bbox centre); Panel-colonly collider.
