@@ -5,6 +5,6 @@ If you're the LAST to tick: message Gage (id 957f052a-7abe-425c-85f5-fa21b72010e
 
 - [ ] MAP-QA-1 Traversal sweep
 - [ ] MAP-QA-2 Collision edges & falls
-- [ ] MAP-QA-3 Stairs, ramps & vertical
+- [x] MAP-QA-3 Stairs, ramps & vertical
 - [ ] MAP-QA-4 Exterior & tram
 - [ ] MAP-QA-5 Freeform player playtest
