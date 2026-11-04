@@ -8996,6 +8996,26 @@ func _ext_add_infill_top_cap(inst: Node3D, body: StaticBody3D) -> void:
 	body.add_child(cs)
 
 
+## [MAP-QA r2] Thin lid on a curb segment top, 1 cm longer at each end (local X) so neighbouring lids bridge the seam.
+func _ext_add_curb_seam_cap(inst: Node3D, body: StaticBody3D) -> void:
+	var merged: Dictionary = _ext_local_visual_aabb(inst)
+	if not bool(merged["ok"]):
+		return
+	var bb: AABB = merged["aabb"] as AABB
+	if bb.size.x < 0.05 or bb.size.z < 0.05:
+		return
+	var thick: float = 0.004
+	var top: float = bb.position.y + bb.size.y
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = "ExtCurbSeamCap"
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = Vector3(bb.size.x + 0.02, thick, bb.size.z)
+	shape.margin = 0.0
+	cs.shape = shape
+	cs.position = Vector3(bb.get_center().x, top - thick * 0.5, bb.get_center().z)
+	body.add_child(cs)
+
+
 func _ext_hit_on_ground_prop(collider: Object) -> bool:
 	if not (collider is Node):
 		return false
@@ -9075,6 +9095,7 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 	var inst_world: Transform3D = inst.transform
 	if inst.is_inside_tree():
 		inst_world = inst.global_transform
+	var clipped_before: int = _ext_shell_clipped
 	for i: int in range(meshes.size()):
 		var mi: MeshInstance3D = meshes[i]
 		var shape: ConcavePolygonShape3D = null
@@ -9112,6 +9133,9 @@ func _ext_add_solid_collision(inst: Node3D, asset: String) -> void:
 		_ext_shape_cache[asset] = cached
 	if any and _ext_base(asset) == "ext_platform_infill":
 		_ext_add_infill_top_cap(inst, body)
+	# [MAP-QA r2] Curb segment ends: a down-ray at the 3 mm seam between segments misses the curb top, so step-up refused there.
+	if any and _ext_base(asset).begins_with("ext_curb_segment") and _ext_shell_clipped == clipped_before:
+		_ext_add_curb_seam_cap(inst, body)
 	if any:
 		inst.add_child(body)
 
