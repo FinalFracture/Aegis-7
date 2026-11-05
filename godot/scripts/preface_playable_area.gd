@@ -294,6 +294,7 @@ var _task_base: Array[Dictionary] = []
 var _spot_lights: Array[SpotLight3D] = []
 var _spot_base: Array[Dictionary] = []
 var _emissive_mats: Array[Dictionary] = []
+var _window_card_mats: Array[StandardMaterial3D] = []
 var _reflection_probe: ReflectionProbe
 var _probe_rebake_frames: int = 0
 var _emergency: bool = false
@@ -2076,6 +2077,8 @@ func _assemble_open_doorless_sector() -> void:
 	_build_crisp_3d_signage_and_wall_monitor(_arch_container)
 	if not _batch_render:
 		_build_cylinder_gravity_ring(_arch_container)
+	# After the sector (and its colliders) exist. Cards are visual only.
+	_place_window_cards()
 
 
 # Rev C switchback (M-70). Both GLBs use the sector's building-plan origin.
@@ -3503,8 +3506,216 @@ func _retrigger_reflection_probe() -> void:
 	_probe_rebake_frames = 2
 
 
+# [M-37] One 3.0 x 1.5 m card per apartment. Pivot is the window bottom-centre, 0.15 m
+# inside the glass, facing the street. QuadMesh local +Z is the outward normal.
+# 103/104/203/204/201 are the RevC_Window_*_Glass panes in the sector GLB
+# (preface_sector_rev_c_generator.py WIN). 101/102/202 have no cut: the window wall is
+# the north exterior (corridor door on z +0.8). Their X comes from the rev C.2 plan:
+#   101 between the bed (x -11.9) and the tool wall (x -8.0)
+#   102 in front of the reading chair and plants (x 9..11)
+#   202 in front of the window chairs (x 1.3..2.5) and planter marks (x 2.7..5.0)
+# The north glass plane is the wall centreline, measured from the shell at runtime.
+# Removal decals (decal_103/104/202/204) are not placed.
+const WINDOW_CARD_UNITS: PackedStringArray = ["101", "102", "103", "104", "201", "202", "203", "204"]
+const WINDOW_CARD_SIZE := Vector2(3.0, 1.5)
+const WINDOW_CARD_GLASS_INSET := 0.15
+const WINDOW_CARD_NORTH_X: Dictionary = {"101": -9.95, "102": 10.0, "202": 3.15}
+
+
+func _place_window_cards() -> void:
+	_window_card_mats.clear()
+	var sector: Node = _arch_container.get_node_or_null("PrefaceResidentialSector_Doorless")
+	var parent: Node3D = _arch_container
+	if sector is Node3D:
+		parent = sector as Node3D
+	var shapes := 0
+	for unit: String in WINDOW_CARD_UNITS:
+		var place: Dictionary = _window_card_placement(sector, unit)
+		var pos: Vector3 = place["pos"] as Vector3
+		var outward: Vector3 = place["normal"] as Vector3
+		var mi: MeshInstance3D = _spawn_window_card(parent, unit, pos, outward)
+		shapes += _window_card_collision_count(mi)
+		var n: Vector3 = mi.global_transform.basis.z
+		print("[M-37] WindowCard_%s pos=(%.3f,%.3f,%.3f) normal=(%.3f,%.3f,%.3f)" % [unit, mi.global_position.x, mi.global_position.y, mi.global_position.z, n.x, n.y, n.z])
+	_apply_window_card_emergency(_emergency)
+	print("[M-37] placed=%d collision_shapes=%d" % [WINDOW_CARD_UNITS.size(), shapes])
+
+
+func _window_card_placement(sector: Node, unit: String) -> Dictionary:
+	var inside := Vector3.ZERO
+	var floor_y := 0.0 if unit.begins_with("1") else 4.2
+	if sector != null:
+		var marker: Node = _lookup_sector_node(sector, "Unit_" + unit)
+		if marker is Node3D:
+			inside = (marker as Node3D).global_position
+			floor_y = inside.y
+	var glass: Node = null
+	if sector != null:
+		glass = _lookup_sector_node(sector, "RevC_Window_%s_Glass" % unit)
+	if glass is MeshInstance3D and (glass as MeshInstance3D).mesh != null:
+		return _placement_from_glass(glass as MeshInstance3D, inside)
+	return _placement_from_north_wall(sector, unit, inside, floor_y)
+
+
+func _placement_from_glass(mi: MeshInstance3D, inside: Vector3) -> Dictionary:
+	var aabb: AABB = mi.global_transform * mi.mesh.get_aabb()
+	var ext: Vector3 = aabb.size
+	var center: Vector3 = aabb.get_center()
+	var axis := 0
+	var thin: float = ext.x
+	if ext.y < thin:
+		axis = 1
+		thin = ext.y
+	if ext.z < thin:
+		axis = 2
+		thin = ext.z
+	var center_c: float = center.x
+	var inside_c: float = inside.x
+	if axis == 1:
+		center_c = center.y
+		inside_c = inside.y
+	elif axis == 2:
+		center_c = center.z
+		inside_c = inside.z
+	var outward := Vector3.ZERO
+	var sign := 1.0 if center_c >= inside_c else -1.0
+	if axis == 0:
+		outward.x = sign
+	elif axis == 1:
+		outward.y = sign
+	else:
+		outward.z = sign
+	var bottom: Vector3 = center
+	bottom.y -= WINDOW_CARD_SIZE.y * 0.5
+	var pos: Vector3 = bottom - outward * WINDOW_CARD_GLASS_INSET
+	# Glass is a 20 mm pane. 0.15 m inside the centreline is ~0.14 m off either face.
+	var gap: float = absf((pos - center).dot(outward)) - thin * 0.5
+	if gap < 0.003:
+		pos -= outward * (0.003 - gap + 0.01)
+	return {"pos": pos, "normal": outward}
+
+
+func _placement_from_north_wall(sector: Node, unit: String, inside: Vector3, floor_y: float) -> Dictionary:
+	var x: float = inside.x
+	if WINDOW_CARD_NORTH_X.has(unit):
+		x = float(WINDOW_CARD_NORTH_X[unit])
+	var inner_z := 8.9
+	var outer_z := 9.1
+	var shell_name := "RevC_Shell_L1" if floor_y < 2.0 else "RevC_Shell_L2"
+	var shell: Node = null
+	if sector != null:
+		shell = _lookup_sector_node(sector, shell_name)
+	if shell is MeshInstance3D and (shell as MeshInstance3D).mesh != null:
+		var measured: Vector2 = _measure_north_wall_z(shell as MeshInstance3D, x, floor_y + 1.65)
+		if measured.x > 0.0:
+			inner_z = measured.x
+		if measured.y > 0.0:
+			outer_z = measured.y
+	# Centreline of the 0.20 m wall is where a glass pane would sit. Step into the room.
+	var centre_z: float = (inner_z + outer_z) * 0.5
+	var pos_z: float = centre_z - WINDOW_CARD_GLASS_INSET
+	if absf(pos_z - inner_z) < 0.003:
+		pos_z = inner_z - 0.05
+	var pos := Vector3(x, floor_y + 0.9, pos_z)
+	return {"pos": pos, "normal": Vector3(0.0, 0.0, 1.0)}
+
+
+# Inner face (normal -Z) and outer face (normal +Z) of the north exterior wall, near (x, y).
+# Returns (-1, -1) components when that face is not in the shell.
+func _measure_north_wall_z(shell: MeshInstance3D, x: float, y: float) -> Vector2:
+	var faces: PackedVector3Array = shell.mesh.get_faces()
+	var xf: Transform3D = shell.global_transform
+	var inner_sum := 0.0
+	var outer_sum := 0.0
+	var inner_n := 0
+	var outer_n := 0
+	var i := 0
+	while i + 2 < faces.size():
+		var a: Vector3 = xf * faces[i]
+		var b: Vector3 = xf * faces[i + 1]
+		var c: Vector3 = xf * faces[i + 2]
+		i += 3
+		var nrm: Vector3 = (b - a).cross(c - a)
+		if nrm.length_squared() < 1e-8:
+			continue
+		nrm = nrm.normalized()
+		if absf(nrm.z) < 0.85:
+			continue
+		var cx: float = (a.x + b.x + c.x) / 3.0
+		var cy: float = (a.y + b.y + c.y) / 3.0
+		var cz: float = (a.z + b.z + c.z) / 3.0
+		if absf(cx - x) > 1.5 or absf(cy - y) > 1.3 or cz < 8.6 or cz > 9.4:
+			continue
+		if nrm.z < 0.0:
+			inner_sum += cz
+			inner_n += 1
+		else:
+			outer_sum += cz
+			outer_n += 1
+	var inner_z := -1.0 if inner_n == 0 else inner_sum / float(inner_n)
+	var outer_z := -1.0 if outer_n == 0 else outer_sum / float(outer_n)
+	return Vector2(inner_z, outer_z)
+
+
+func _spawn_window_card(parent: Node3D, unit: String, pos: Vector3, outward: Vector3) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	mi.name = "WindowCard_%s" % unit
+	var quad := QuadMesh.new()
+	quad.size = WINDOW_CARD_SIZE
+	# QuadMesh is centred. Shift it up so the node origin is the bottom-centre.
+	quad.center_offset = Vector3(0.0, WINDOW_CARD_SIZE.y * 0.5, 0.0)
+	mi.mesh = quad
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = "Mat_WindowCard_%s" % unit
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color.WHITE
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+	mat.cull_mode = BaseMaterial3D.CULL_BACK
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	# Image.load on the globalized path. These PNGs have no .import sidecar, so ResourceLoader.load misses them.
+	var tex_path := "res://assets/textures/window_cards/window_card_%s_albedo_emission.png" % unit
+	var tex: Texture2D = _load_tex("window_cards/window_card_%s_albedo_emission.png" % unit)
+	if tex == null:
+		push_warning("[M-37] missing texture %s" % tex_path)
+	else:
+		mat.albedo_texture = tex
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+	var n: Vector3 = outward.normalized()
+	var x_axis: Vector3 = Vector3.UP.cross(n)
+	if x_axis.length_squared() < 1e-6:
+		x_axis = Vector3.RIGHT
+	x_axis = x_axis.normalized()
+	var y_axis: Vector3 = n.cross(x_axis).normalized()
+	mi.global_transform = Transform3D(Basis(x_axis, y_axis, n), pos)
+	_window_card_mats.append(mat)
+	return mi
+
+
+func _window_card_collision_count(mi: Node) -> int:
+	if mi == null:
+		return 0
+	var n := 0
+	if mi is CollisionShape3D or mi is CollisionObject3D:
+		n += 1
+	for c: Node in mi.find_children("*", "CollisionShape3D", true, false):
+		n += 1
+	for c: Node in mi.find_children("*", "CollisionObject3D", true, false):
+		n += 1
+	return n
+
+
+func _apply_window_card_emergency(on: bool) -> void:
+	var col := Color(0.12, 0.12, 0.12) if on else Color.WHITE
+	for mat: StandardMaterial3D in _window_card_mats:
+		if mat != null:
+			mat.albedo_color = col
+
+
 func _set_emergency_lighting(on: bool) -> void:
 	_emergency = on
+	_apply_window_card_emergency(on)
 	var tw: Tween = _start_light_tween()
 	if on:
 		# 3 brownouts in 0.3 s (×0.4 → ×1 → ×0.2 → ×0.8), then 1.2 s expo ease-out to emergency.
