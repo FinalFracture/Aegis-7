@@ -34,3 +34,7 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 ## Plinth skirt (#76)
 - tt_plinth_skirt.glb (4.0 m) / tt_plinth_skirt_half.glb (2.0 m): place under tt_facade_bay(_half) with the same X and the façade line aligned (the skirt pivot is bbox-centred in Z, depth 2.2 m incl. the base mat, so align face lines, not pivots). The façade bay sits on the cap at +4.0.
 - Courses are separate nodes (Course0..3_Facets) for trimming where p(Z) < 4.0. Holds sit on specific courses, so a course-trim script should also drop the holds above the trimmed height. Colliders: Skirt-colonly, Mat-colonly.
+
+## Terrace kit (#77)
+- Place tt_terrace_deck / tt_terrace_edge at y=+3.70 (deck top = +4.00). Under terrace edges use tt_plinth_skirt_terrace(_half) (top +3.70), NOT tt_plinth_skirt (top +4.00, for façade-only runs). Same footprint/pivot, same 4/2 m tiling.
+- Ramp tiles chain at 4 m X / -0.20 m Y; aprons 4 m wide, 1:12. Deck tiles have a medallion each; rotate/alternate if repetition reads.
