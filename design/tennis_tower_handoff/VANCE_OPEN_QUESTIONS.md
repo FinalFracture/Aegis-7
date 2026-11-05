@@ -52,3 +52,8 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 - 42 m door run = 10.5 x 4.0 m bays: the run is built as 10 x 4.0 m + 1 x 2.0 m half bay. Where does the half bay go, and how does the run align with the 8 m façade columns (not modelled as separate assets)?
 - Door glass: built BLEND (envelope). §3.11.9 makes lobby / pool-hall glass opaque-frit alpha-scissor. Should the entrance doors switch to alpha-scissor (stacking with the Glass Box BLEND layer from the F3 terrace)?
 - Canopy reach: the canopy projects 2.6 m over the West Arrival terrace (+3.0..+3.16, fascia to ~+3.3), and the kerb, hedge and bollards reach z 1.82 m. Neither is in the spec. Check the terrace circulation and egress width (§5.3) in front of the doors.
+
+## Façade bay (#75 tt_facade_bay / _half)
+- Which faces/runs get tt_facade_bay (S/N/E, W outside the 42 m doors)? Closure bays at the corners (1.5 m on the W/E faces per §3.11.1) have no F1/F2 module. Is a 1.5 m bay needed?
+- The trunk stands 0.62 m proud of the glass on a 0.4 x 0.42 m pedestal (bay depth 1.66 m). Check the S/N aprons (1:12 over ~1 m at grade) and the Rim Promenade clear width.
+- F1 glazing at the bowling, axe and WC bands: should those bays be opaque (slate) rather than glass?

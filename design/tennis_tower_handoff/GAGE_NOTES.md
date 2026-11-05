@@ -27,3 +27,6 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - Doors are modelled closed. If they should open (auto-sliding or swing), split the Glass_Door_* / Door_Stiles leaves and script them. Colliders still need adding (doors, canopy blade, bollards, kerb).
 - Door glass is BLEND for now. If Vance switches it to alpha-scissor (§3.11.9), change the material to dithered scissor with an opaque frit edge.
 - The canopy (2.6 m) and the kerb/hedge (to z 1.82) project onto the terrace, so keep the navmesh / egress clear.
+
+## Façade bay (#75)
+- tt_facade_bay.glb (4.0 m) / tt_facade_bay_half.glb (2.0 m): tile along local X, pivot bottom centre but bbox-centred in Z (glass line at local z ≈ -0.245 from the pivot; check in Godot before aligning with tt_curtain_wall_panel at +12.2). Colliders are included: Wall-colonly, Plinth-colonly, Trunk-convcolonly.
