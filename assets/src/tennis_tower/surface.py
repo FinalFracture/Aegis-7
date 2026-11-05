@@ -5,6 +5,7 @@ so no coplanar faces). Low rubber humps (0.08-0.14 m, toddler bumps) give relief
 Each concept matches a promoted winner: #67 Meadow Hills, #68 Forest Roots, #69 Riverbed, #71 Court Line, #70 Leaf Canopy.
 REUSE: toddler_landscape kit (Scape pad, mounds, zone collider), winners' rubber colours. Run: python3 surface.py"""
 from modlib import *
+import sys
 import modlib, toddler_landscape as tl
 from toddler_landscape import Scape, iso, RU, MOSS, TAN, RIV, BARK, STONE, PAD
 from shapely.geometry import Point, LineString, Polygon, box as sbox
@@ -67,6 +68,22 @@ def river(q):     # #69 Riverbed
     rng = np.random.default_rng(3); peb = [Point(*rng.uniform(-2.8, 2.8, 2)).buffer(rng.uniform(.05, .09), 8) for _ in range(30)]
     S.lay(2, stones + [p for p in peb if not p.intersects(rv.buffer(.05))], "Stone_Inlay", STONE)
     return S.finish()
+def wrap(g, P=6.0):  # periodic copies so anything crossing an edge re-enters on the opposite edge
+    return unary_union([affinity.translate(g, dx, dz) for dx in (-P, 0, P) for dz in (-P, 0, P)])
+def river_seamless(q):  # #72: V3 Riverbed made periodic (6 m in X and Z): river z(x) has period 6, stones/pebbles wrapped, humps interior
+    S = Surf(RU, RU); S.keep = sbox(-2.9985, -2.9985, 2.9985, 2.9985)
+    for x, z, rx, rz, h in [(-1.9, -2.0, .5, .45, .12), (1.9, 1.9, .55, .45, .1)]: S.hump(x, z, rx, rz, h)
+    f = lambda x: .25 + .55*np.sin(2*np.pi*x/6) + .2*np.sin(4*np.pi*x/6 + .7)
+    xs = np.linspace(-4.5, 4.5, 37); rv = LineString([(x, f(x)) for x in xs]).buffer(.5, 6)
+    pool = Point(-.2, -1.85).buffer(.62, 10)
+    S.lay(1, [rv, pool], "River_Inlay", RIV)
+    st = [affinity.scale(Point(x, f(x) + (.12 if k % 2 else -.12)).buffer(1, 6), .21, .14) for k, x in enumerate(np.arange(-3.0, 3.0, .75))] + [affinity.scale(Point(-.35, -1.9).buffer(1, 6), .2, .14), affinity.scale(Point(.1, -1.65).buffer(1, 6), .18, .12)]
+    rng = np.random.default_rng(3); peb = []
+    while len(peb) < 26:
+        p = Point(*rng.uniform(-3, 3, 2)).buffer(rng.uniform(.05, .08), 3)
+        if not wrap(p).intersects(rv.buffer(.06)) and not p.intersects(pool.buffer(.06)) and not any(p.intersects(h.buffer(.04)) for h in S.humps) and not any(p.buffer(.03).intersects(q2) for q2 in peb): peb.append(p)
+    S.lay(2, [wrap(unary_union(st))] + [wrap(unary_union(peb))], "Stone_Inlay", STONE)
+    return S.finish()
 def court(q):     # #71 Court Line
     S = Surf(RU, RU)
     S.hump(-2.3, 2.3, .4, .35, .1); S.hump(2.3, -2.3, .4, .35, .1)
@@ -91,7 +108,7 @@ def canopy(q):    # #70 Leaf Canopy
     rng = np.random.default_rng(5); dap = [Point(*rng.uniform(-2.8, 2.8, 2)).buffer(rng.uniform(.06, .12), 10) for _ in range(30)]
     S.lay(2, [unary_union(vein).intersection(unary_union(leaves).buffer(-.04))] + [d for d in dap if not d.intersects(unary_union(leaves))], "Vein_Inlay", MOSS)
     return S.finish()
-B = dict(meadow=meadow, forest=forest, river=river, court=court, canopy=canopy)
+B = dict(river_seamless=river_seamless, meadow=meadow, forest=forest, river=river, court=court, canopy=canopy)
 def build(q): return B[q["c"]](q)
 VARIANTS = [
     dict(c="meadow", label="Meadow Hills: moss base, leaf meadow drifts, sun flowers, 3 humps"),
@@ -110,5 +127,20 @@ def sheet(rep):
             if row == 0: ax.set_title(f"v{i+1}  {prm['label'].split(': ')[0]}\n{prm['label'].split(': ')[1]}\n{r['tris']} tris | {'PASS' if r['passed'] else 'FAIL'}", fontsize=10, color="#222")
     fig.suptitle("Rook | Tennis Tower playground poured-rubber surface V1-V5 | 6 x 6 m tile, 3 colours (stepped inlays) | low 3/4 (top) + high 3/4 (bottom)", fontsize=14, color="#333")
     plt.tight_layout(rect=(0, 0, 1, .95)); sp = os.path.join(rdir, "surface_contact_sheet.png"); fig.savefig(sp, dpi=110, facecolor="#F4F2EC"); plt.close(fig); print("SHEET", sp)
-if __name__ == "__main__":
+def tiled():
+    rep = run("surface", build, [dict(c="river_seamless", label="#72 Riverbed seamless: 6 m periodic river, wrapped stones + pebbles")], names=["final"], suffix="_final", view=iso(24, 30), sheet="surface_final_sheet.png", title="#72 final")
+    A = Part()
+    for k, (dx, dz) in enumerate([(-3, -3), (3, -3), (-3, 3), (3, 3)]):
+        p = recenter(build(dict(c="river_seamless")))
+        for n, (mk, m) in p.P.items():
+            if "colonly" in n: continue
+            m = m.copy(); m.apply_translation((dx, 0, dz)); A.add(f"{n}_{k}", mk, m)
+    _, geo = export_final(A.P, ["/tmp/su_tiled.glb"]); rdir = os.path.join(RENDER_OUT, "surface")
+    fig, axs = plt.subplots(1, 2, figsize=(22, 11), facecolor="#F4F2EC")
+    for ax, (el, az), t in zip(axs, ((90, 0), (28, 30)), ("top (seams at x = 0, z = 0)", "low 3/4")):
+        im = crop(render_view(geo, iso(el, az), size=1100, shadow=True)); ax.imshow(np.clip(im, 0, 1)); ax.axis("off"); ax.set_title(t, fontsize=13)
+    fig.suptitle(f"Rook | #72 tt_play_surface (Riverbed, seamless) | 2 x 2 tiled = 12 x 12 m | {rep[0]['tris']} tris per tile | {'PASS' if rep[0]['passed'] else 'FAIL'}", fontsize=15, color="#333")
+    plt.tight_layout(rect=(0, 0, 1, .94)); sp = os.path.join(rdir, "surface_2x2_tiled_sheet.png"); fig.savefig(sp, dpi=100, facecolor="#F4F2EC"); plt.close(fig); print("TILED", sp)
+if __name__ == "__main__" and sys.argv[1:] == ["final"]: tiled()
+elif __name__ == "__main__":
     rep = run("surface", build, VARIANTS, title="poured-rubber surface", view=iso(24, 30), sheet="surface_run_sheet.png"); sheet(rep)

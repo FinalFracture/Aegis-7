@@ -1919,3 +1919,9 @@
   - Child-safe: solid screen (no openings), 40 mm bottom gap, no mid rails. Colliders: posts, rails, screen, frame (-convcolonly), strip floor (-colonly).
 - **Sightline trade-off (Vance/Jared):** the solid court-net screen blocks views into the playground from the terrace; if supervision sightlines matter, swap the screen for 80 mm pickets (V1/V2 infill) or lower the screen to a 0.6 m kick-plate with pickets above.
 - **Gate scripting for Gage:** open/close animation of `Gate_*` about the hinge (0..100°), self-closing spring return, child-proof latch at the top (requires adult reach / interact), gate collider must move with the leaf; 3 gate instances per spec (positions TBD, Vance).
+
+### #72 Tennis Tower playground poured-rubber surface (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/surface/v1..v5.glb` (spec §3.11.6 item 9, 3-colour poured rubber; all PASS, commit bff901a).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V3 Riverbed`, made seamless.
+- **#72 WINNER:** `godot/assets/models/tt_play_surface.glb` (2,872 tris), source `surface.py river_seamless()`. 6.0 x 6.0 m tile, periodic in X and Z (tile on a 6 m grid, no rotation): green EPDM base, blue river inlay z(x) with a 6 m period (enters/leaves at the same z and slope), blue pool, grey stepping stones + pebbles wrapped across all four edges, 2 interior humps (0.10 / 0.12). Stepped inlays: L1 river top +0.034, L2 stones top +0.038, inlays inset 1.5 mm from the tile edge (3 mm joint, no coplanar faces between tiles). 2x2 preview: `/workspace/renders/tennis_tower/surface/surface_2x2_tiled_sheet.png`. Collider: tile floor (-colonly) + humps (-convcolonly).
+- **For Vance/Gage:** decide floor replacement vs overlay (top +0.038); place between/around the other playground pieces (they carry their own pads). Humps are 0.10-0.12 m: keep them off accessible routes.
