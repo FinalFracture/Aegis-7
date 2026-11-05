@@ -29,4 +29,4 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - The canopy (2.6 m) and the kerb/hedge (to z 1.82) project onto the terrace, so keep the navmesh / egress clear.
 
 ## Façade bay (#75)
-- tt_facade_bay.glb (4.0 m) / tt_facade_bay_half.glb (2.0 m): tile along local X, pivot bottom centre but bbox-centred in Z (glass line at local z ≈ -0.245 from the pivot; check in Godot before aligning with tt_curtain_wall_panel at +12.2). Colliders are included: Wall-colonly, Plinth-colonly, Trunk-convcolonly.
+- tt_facade_bay.glb (4.0 m) / tt_facade_bay_half.glb (2.0 m): tile along local X, pivot bottom centre but bbox-centred in Z (façade line (raw z 0) at local z -0.181 from the pivot, recessed pane at -0.226; check in Godot before aligning with tt_curtain_wall_panel at +12.2). Colliders are included: Wall-colonly, Plinth-colonly, Trunk-convcolonly.

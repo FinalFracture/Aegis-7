@@ -57,3 +57,8 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 - Which faces/runs get tt_facade_bay (S/N/E, W outside the 42 m doors)? Closure bays at the corners (1.5 m on the W/E faces per §3.11.1) have no F1/F2 module. Is a 1.5 m bay needed?
 - The trunk stands 0.62 m proud of the glass on a 0.4 x 0.42 m pedestal (bay depth 1.66 m). Check the S/N aprons (1:12 over ~1 m at grade) and the Rim Promenade clear width.
 - F1 glazing at the bowling, axe and WC bands: should those bays be opaque (slate) rather than glass?
+
+## Plinth skirt (candidates, not promoted)
+- Where is the plinth actually exposed? Per §3.3 the W and E faces sit on raised terraces at +4.0 HD, so the building plinth is buried there and the S/N faces are at grade. The 4.0 m skirt therefore reads only on the terrace edges (West Arrival / East Plaza perimeters, the East Spine ramp sides) unless something else is meant. Please confirm the runs and the faces.
+- p(Z) varies 0..4.0 m along the W/E faces. The skirt is built as 4 x 1.0 m courses for trimming. Is a stepped trim acceptable, or is a sloped top / custom per-bay height needed?
+- Stepped variants (V1/V2) project 1.6-1.85 m from the face line. Does that fit the plaza edge and the 1:12 aprons?
