@@ -30,3 +30,7 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 
 ## Façade bay (#75)
 - tt_facade_bay.glb (4.0 m) / tt_facade_bay_half.glb (2.0 m): tile along local X, pivot bottom centre but bbox-centred in Z (façade line (raw z 0) at local z -0.181 from the pivot, recessed pane at -0.226; check in Godot before aligning with tt_curtain_wall_panel at +12.2). Colliders are included: Wall-colonly, Plinth-colonly, Trunk-convcolonly.
+
+## Plinth skirt (#76)
+- tt_plinth_skirt.glb (4.0 m) / tt_plinth_skirt_half.glb (2.0 m): place under tt_facade_bay(_half) with the same X and the façade line aligned (the skirt pivot is bbox-centred in Z, depth 2.2 m incl. the base mat, so align face lines, not pivots). The façade bay sits on the cap at +4.0.
+- Courses are separate nodes (Course0..3_Facets) for trimming where p(Z) < 4.0. Holds sit on specific courses, so a course-trim script should also drop the holds above the trimmed height. Colliders: Skirt-colonly, Mat-colonly.
