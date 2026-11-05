@@ -34,9 +34,9 @@ def build(q):
         if not len(loc): return None
         i = np.argmax(loc[:, 2]); n = allc.face_normals[ti[i]]; return loc[i], n / np.linalg.norm(n)
     # cap course tying into the façade plinth ledge
-    p.add("Cap_Course", SL, box(X0, X1, HT - .12, HT, -.2, .78), box(X0, X1, HT - .2, HT - .12 + E, .62, .78))
-    p.add("Cap_Court_Line", AM, box(X0, X1, HT - .09, HT - .05, .78 - E, .787))
-    p.add("Cap_Drip_Edge", G, box(X0, X1, HT - .23, HT - .2 + E, .64, .76))
+    p.add("Cap_Course", SL, box(X0, X1, HT - .12, HT, -.2, .9), box(X0, X1, HT - .2, HT - .12 + E, .74, .9))
+    p.add("Cap_Court_Line", AM, box(X0, X1, HT - .09, HT - .05, .9 - E, .907))
+    p.add("Cap_Drip_Edge", G, box(X0, X1, HT - .23, HT - .2 + E, .76, .88))
     def ok(m, lim=.0095):
         return max(trimesh.proximity.signed_distance(sb, m.vertices).max() for sb in SLABS if np.all(sb.bounds[0] - .2 < m.bounds[1]) and np.all(m.bounds[0] < sb.bounds[1] + .2)) <= lim
     # holds
@@ -56,7 +56,7 @@ def build(q):
             x, y = rng.uniform(-h + .08, h - .08), rng.uniform(k + .1, (k + .9) if k < 3 else 3.75); s = seat(x, y)
             if s is None or s[1][2] < .3: continue
             grit.append(node(s[0] + s[1]*(.014 - .005), .014, -1))
-    cap = trimesh.util.concatenate([box(X0, X1, HT - .23, HT, -.2, .78)])
+    
     clear = lambda m: m.bounds[1][1] < HT - .235
     balls, jugs, crimps, slopers = [[m for m in L if clear(m) and ok(m)] for L in (balls, jugs, crimps, slopers)]
     HC = np.array([m.centroid for L in (balls, jugs, crimps, slopers) for m in L])
