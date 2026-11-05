@@ -1925,3 +1925,11 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V3 Riverbed`, made seamless.
 - **#72 WINNER:** `godot/assets/models/tt_play_surface.glb` (2,872 tris), source `surface.py river_seamless()`. 6.0 x 6.0 m tile, periodic in X and Z (tile on a 6 m grid, no rotation): green EPDM base, blue river inlay z(x) with a 6 m period (enters/leaves at the same z and slope), blue pool, grey stepping stones + pebbles wrapped across all four edges, 2 interior humps (0.10 / 0.12). Stepped inlays: L1 river top +0.034, L2 stones top +0.038, inlays inset 1.5 mm from the tile edge (3 mm joint, no coplanar faces between tiles). 2x2 preview: `/workspace/renders/tennis_tower/surface/surface_2x2_tiled_sheet.png`. Collider: tile floor (-colonly) + humps (-convcolonly).
 - **For Vance/Gage:** decide floor replacement vs overlay (top +0.038); place between/around the other playground pieces (they carry their own pads). Humps are 0.10-0.12 m: keep them off accessible routes.
+
+### #73 Tennis Tower Glass Box roof ridge crown (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/ridge_crown/v1..v5.glb` (spec §3.11.10 faceted crown; all PASS, seat + pair-tiling checks PASS, commit daa32c8).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook:** `V3 Leaf Relief Slate`.
+- **#73 WINNER:** `godot/assets/models/tt_roof_ridge_crown.glb` (1,372 tris), source `ridge_crown.py` V3. 20.0 m tile along X (tiles with tt_roof_bay #55 V4, same 20 m pitch, no rotation): two opaque slate facets ridge +26.3, eaves +/-4.0 m (slope 6.1°), gunmetal glazing caps + ridge cap, raised leaf relief per panel, CHS rafters/ridge/eave beams, supports on the roof top-chord nodes at ridge +/-2.0 m with ball shoes.
+- **Placement offset:** crown position = roof_bay position + (0.075, 3.346, 0.112 + ridge_z) m, where ridge_z is the roof-tile local Z of the ridge.
+- **Mid-bay ridge:** the ridge must sit on a MID-BAY line of the roof grid (e.g. roof-tile local z = 10, between grid lines 8 and 12) so the supports land on top-chord nodes; spec Z 39.5 must map to a mid-bay line. Eaves sit ~0.2 m above the roof (40 mm clear of the glazing bars), not flush.
+- Opaque crown = no second BLEND layer over the roof glass (one-BLEND-layer rule kept). Leaf relief tops reach ~+26.36.
