@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -171,6 +171,46 @@ const RING_ORIENT_RATE := 3.5          # rad/s max basis re-orientation (smooth 
 const RING_FEET_OFFSET := 0.10         # body origin sits ~0.12 m below capsule bottom
 const CORE_TRANSIT_DURATION := 4.0
 const CORE_PAD_RADIUS := 1.4
+
+# Walkable Hab-7 drum. Axis parallel to world +X.
+# _load_glb_scene(..., 0.85) is an emission multiplier, not a scale, so the GLB
+# local span [-368, +354] maps 1:1 through the pivot at x = 135.
+# World axial ends are -233 and +489. Floor and caps sit 1 m inside those ends.
+# A circle cannot sit within 0.05 m of every outer edge of a 98 m x 87.5 m
+# footprint unless R is tens of kilometres, which cannot be walked. This circle
+# kisses the two farthest lips (plaza south z = -45 and ExtGround north z = 42.5)
+# 0.04 m under the deck top (y = 0.12) and stays below the deck inside the
+# footprint. East/west edges and the z = -28 bay lips are lower; ramps at
+# <= 12 deg close those drops. Lips already within 0.10 m are left flush.
+#   AXIS_Z = (-45 + 42.5) / 2 = -1.25, half-chord H = 43.75, R = 200
+#   AXIS_Y = 0.08 + sqrt(R^2 - H^2) = 195.236187
+#   nadir y = AXIS_Y - R = -4.763
+# Strip angle alpha = 0 at the nadir (outward world -Y), positive toward +Z.
+# Strip k is centered at alpha = (k - 4) * 36 deg. Positive alpha is away from
+# the observation window, so strip 0 at -144 deg lies toward -Z, the same side
+# as _cut_observation_window (60 deg from +Y toward -Z, about 120 deg from the
+# nadir). The window wedge is not centered in the strip; it is the window side.
+const DRUM_AXIS_Y := 195.236187
+const DRUM_AXIS_Z := -1.25
+const DRUM_FLOOR_R := 200.0
+const DRUM_X_MIN := -232.0
+const DRUM_X_MAX := 488.0
+const DRUM_FACETS := 360
+const DRUM_SLAB_THICK := 0.45
+const DRUM_TUCK := 1.2
+const DRUM_PLAZA_HALF_X := 18.0
+const DRUM_PLAZA_Z_SOUTH := -45.0
+const DRUM_RAMP_DEG := 12.0
+# Ramps start above this drop. Sampled edges overlap, so the unramped seam stays under 0.30 m.
+const DRUM_STEP_OK := 0.10
+const DRUM_CAP_THICK := 1.2
+const DRUM_CAP_EXTRA_R := 1.5
+# World-down inside the footprint (plus 1 m), radial past 4 m. Overhead
+# (y 22..25) fades to radial so the far side of the drum is not "inside".
+const DRUM_BLEND_IN := 1.0
+const DRUM_BLEND_OUT := 4.0
+const DRUM_PREFACE_Y0 := 22.0
+const DRUM_PREFACE_Y1 := 25.0
 
 # [t38u] Rotating distant outer starfield cylinder & RFID doors ([t45u] force-field)
 const STARFIELD_CYL_RADIUS := 2200.0
@@ -347,6 +387,9 @@ var _qa_ts: bool = false
 var _qa_exit: bool = false
 var _qa_egress: bool = false
 var _qa_stairs: bool = false
+var _qa_ring: bool = false
+# +1 when steering toward +tangent increases alpha. The circle probe may flip it.
+var _qa_ring_flip: float = 1.0
 var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
 var _qa_drawcalls: bool = false
@@ -452,6 +495,9 @@ func _ready() -> void:
 		elif arg == "--qa-stairs":
 			_qa_stairs = true
 			_qa_hand = true
+		elif arg == "--qa-ring":
+			_qa_ring = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -523,6 +569,8 @@ func _ready() -> void:
 			_run_qa_egress.call_deferred()
 		elif _qa_stairs:
 			_run_qa_stairs.call_deferred()
+		elif _qa_ring:
+			_run_qa_ring.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
 		else:
@@ -1193,13 +1241,8 @@ func _add_m58_edge_guards(parent: Node3D) -> void:
 		{"name": "PromenadeWestGuardrailCap", "size": Vector3(0.24, 2.25, 36.0), "pos": Vector3(-18.0, 2.375, -27.0)},
 		{"name": "PromenadeEastGuardrailCap", "size": Vector3(0.24, 2.25, 36.0), "pos": Vector3(18.0, 2.375, -27.0)},
 		{"name": "PromenadeSouthGuardrailCap", "size": Vector3(36.0, 2.25, 0.24), "pos": Vector3(0.0, 2.375, -45.0)},
-		# [MAP-QA r2] Invisible bounds at the outer edge of the ExtGround slabs (x +/-49, z 42.5): open ground ends there with no wall.
-		{"name": "ExtGroundWestBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(-49.12, 1.87, 7.25)},
-		{"name": "ExtGroundEastBound", "size": Vector3(0.24, 3.5, 70.5), "pos": Vector3(49.12, 1.87, 7.25)},
-		{"name": "ExtGroundNorthBound", "size": Vector3(98.5, 3.5, 0.24), "pos": Vector3(0.0, 1.87, 42.62)},
-		# [MAP-QA r3] South edge of the side slabs (z -28.0): a jump over the canal edge at x |18..49| fell into the void.
-		{"name": "ExtGroundSouthWestBound", "size": Vector3(31.24, 3.5, 0.24), "pos": Vector3(-33.5, 1.87, -28.12)},
-		{"name": "ExtGroundSouthEastBound", "size": Vector3(31.24, 3.5, 0.24), "pos": Vector3(33.5, 1.87, -28.12)},
+		# ExtGround West/East/North/SouthWest/SouthEast bounds are not rebuilt.
+		# The walkable drum and its <= 12 deg ramps continue those edges.
 	]
 	for r: Dictionary in runs:
 		var body: StaticBody3D = StaticBody3D.new()
@@ -1336,7 +1379,426 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 			cap.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			plaza_root.add_child(cap)
 
+	_build_drum_walkable_ring(hab_root)
 
+
+# ------------------------------------------------------------------------------
+# Hab-7 walkable drum. Faceted floor, strip materials, ramps, end caps.
+# Frame at the nadir (alpha = 0): outward = (0, -1, 0), tangent = outward × +X
+# = (0, 0, 1), local up = -outward = +Y, and tangent × up = -X.
+# Basis(tangent, -outward, -X) is right-handed. Box size is (chord, thickness,
+# axial). The inner face sits on the design circle; thickness runs outward.
+# ------------------------------------------------------------------------------
+func _drum_outward(alpha: float) -> Vector3:
+	return Vector3(0.0, -cos(alpha), sin(alpha))
+
+
+func _drum_tangent(alpha: float) -> Vector3:
+	return _drum_outward(alpha).cross(Vector3.RIGHT)
+
+
+func _drum_offset(p: Vector3) -> Vector3:
+	return Vector3(0.0, p.y - DRUM_AXIS_Y, p.z - DRUM_AXIS_Z)
+
+
+func _drum_rho(p: Vector3) -> float:
+	return _drum_offset(p).length()
+
+
+func _drum_alpha(p: Vector3) -> float:
+	var d: Vector3 = _drum_offset(p)
+	return atan2(d.z, -d.y)
+
+
+func _drum_up_at(p: Vector3) -> Vector3:
+	var d: Vector3 = _drum_offset(p)
+	if d.length_squared() < 0.0001:
+		return Vector3.UP
+	return -d.normalized()
+
+
+func _drum_gravity_at(p: Vector3) -> Vector3:
+	var d: Vector3 = _drum_offset(p)
+	var rho: float = d.length()
+	if rho < 0.001:
+		return Vector3.ZERO
+	return (d / rho) * GRAVITY * clampf(rho / DRUM_FLOOR_R, 0.0, 1.2)
+
+
+func _drum_blend_up(a: Vector3, b: Vector3, t: float) -> Vector3:
+	var from_u: Vector3 = a.normalized()
+	var to_u: Vector3 = b.normalized()
+	var u: Vector3 = from_u.slerp(to_u, clampf(t, 0.0, 1.0))
+	if u.length_squared() < 0.0001:
+		return to_u
+	return u.normalized()
+
+
+func _drum_arc_y(z: float) -> float:
+	var dz: float = z - DRUM_AXIS_Z
+	var disc: float = DRUM_FLOOR_R * DRUM_FLOOR_R - dz * dz
+	if disc <= 1.0:
+		return DRUM_AXIS_Y
+	return DRUM_AXIS_Y - sqrt(disc)
+
+
+func _drum_strip_index(alpha: float) -> int:
+	return posmod(roundi(rad_to_deg(alpha) / 36.0) + 4, 10)
+
+
+func _drum_footprint_poly() -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(EXT_GROUND_X0, EXT_GROUND_Z1),
+		Vector2(EXT_GROUND_X1, EXT_GROUND_Z1),
+		Vector2(EXT_GROUND_X1, EXT_GROUND_Z0),
+		Vector2(DRUM_PLAZA_HALF_X, EXT_GROUND_Z0),
+		Vector2(DRUM_PLAZA_HALF_X, DRUM_PLAZA_Z_SOUTH),
+		Vector2(-DRUM_PLAZA_HALF_X, DRUM_PLAZA_Z_SOUTH),
+		Vector2(-DRUM_PLAZA_HALF_X, EXT_GROUND_Z0),
+		Vector2(EXT_GROUND_X0, EXT_GROUND_Z0),
+	])
+
+
+func _drum_point_in_poly(x: float, z: float, poly: PackedVector2Array) -> bool:
+	var inside: bool = false
+	var n: int = poly.size()
+	var j: int = n - 1
+	for i: int in range(n):
+		var pi: Vector2 = poly[i]
+		var pj: Vector2 = poly[j]
+		if (pi.y > z) != (pj.y > z):
+			var x_hit: float = (pj.x - pi.x) * (z - pi.y) / (pj.y - pi.y) + pi.x
+			if x < x_hit:
+				inside = not inside
+		j = i
+	return inside
+
+
+func _drum_dist_seg(px: float, pz: float, ax: float, az: float, bx: float, bz: float) -> float:
+	var abx: float = bx - ax
+	var abz: float = bz - az
+	var len2: float = abx * abx + abz * abz
+	var t: float = 0.0
+	if len2 > 0.0000001:
+		t = clampf(((px - ax) * abx + (pz - az) * abz) / len2, 0.0, 1.0)
+	var dx: float = px - (ax + abx * t)
+	var dz: float = pz - (az + abz * t)
+	return sqrt(dx * dx + dz * dz)
+
+
+func _drum_footprint_sdf(x: float, z: float) -> float:
+	var poly: PackedVector2Array = _drum_footprint_poly()
+	var best: float = INF
+	var n: int = poly.size()
+	for i: int in range(n):
+		var a: Vector2 = poly[i]
+		var b: Vector2 = poly[(i + 1) % n]
+		best = minf(best, _drum_dist_seg(x, z, a.x, a.y, b.x, b.y))
+	if _drum_point_in_poly(x, z, poly):
+		return -best
+	return best
+
+
+func _drum_world_weight(p: Vector3) -> float:
+	var edge: float = smoothstep(DRUM_BLEND_IN, DRUM_BLEND_OUT, _drum_footprint_sdf(p.x, p.z))
+	var high: float = smoothstep(DRUM_PREFACE_Y0, DRUM_PREFACE_Y1, p.y)
+	return (1.0 - edge) * (1.0 - high)
+
+
+# -1 means a full-length floor. Only the lower valley can sit under the deck;
+# the overhead arc crosses the same z and stays solid.
+func _drum_hole_half(alpha: float, z0: float, z1: float) -> float:
+	if cos(alpha) <= 0.0:
+		return -1.0
+	var lo: float = minf(z0, z1)
+	var hi: float = maxf(z0, z1)
+	if hi < DRUM_PLAZA_Z_SOUTH or lo > EXT_GROUND_Z1:
+		return -1.0
+	if lo < DRUM_PLAZA_Z_SOUTH or hi > EXT_GROUND_Z1:
+		return -1.0
+	if lo >= EXT_GROUND_Z0:
+		return EXT_GROUND_X1 - DRUM_TUCK
+	return DRUM_PLAZA_HALF_X - DRUM_TUCK
+
+
+func _drum_grass_material() -> StandardMaterial3D:
+	var grass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	grass_mat.albedo_color = Color(1, 1, 1, 1)
+	grass_mat.roughness = 1.0
+	grass_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	grass_mat.uv1_triplanar = true
+	grass_mat.uv1_world_triplanar = true
+	grass_mat.uv1_scale = Vector3(0.5, 0.5, 0.5)
+	var grass_alb: Texture2D = _load_tex("qa03/rec_grass_albedo.png")
+	var grass_nrm: Texture2D = _load_tex("qa03/rec_grass_normal.png")
+	var grass_orm: Texture2D = _load_tex("qa03/rec_grass_orm.png")
+	if grass_alb != null:
+		grass_mat.albedo_texture = grass_alb
+	if grass_nrm != null:
+		grass_mat.normal_enabled = true
+		grass_mat.normal_texture = grass_nrm
+		grass_mat.normal_scale = 0.6
+	if grass_orm != null:
+		grass_mat.roughness_texture = grass_orm
+		grass_mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+		grass_mat.ao_enabled = true
+		grass_mat.ao_texture = grass_orm
+		grass_mat.ao_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+		grass_mat.ao_light_affect = 0.3
+	return grass_mat
+
+
+func _drum_strip_material(strip: int) -> StandardMaterial3D:
+	if strip == 0:
+		return _make_observation_window_glass_material()
+	if strip == 5:
+		return _drum_grass_material()
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.albedo_color = Color(0.40, 0.42, 0.46, 1.0)
+	mat.roughness = 0.62
+	mat.metallic = 0.18
+	mat.cull_mode = BaseMaterial3D.CULL_BACK
+	return mat
+
+
+func _drum_add_box(body: StaticBody3D, basis: Basis, center: Vector3, size: Vector3, shape_name: String) -> void:
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = shape_name
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = size
+	cs.shape = bs
+	cs.transform = Transform3D(basis.orthonormalized(), center)
+	body.add_child(cs)
+
+
+func _drum_add_inner_quad(st: SurfaceTool, face: Vector3, tangent: Vector3, axis_x: float, half_w: float, x0: float, x1: float, face_dir: Vector3) -> void:
+	var p00: Vector3 = face + Vector3(x0 - axis_x, 0.0, 0.0) - tangent * half_w
+	var p10: Vector3 = face + Vector3(x1 - axis_x, 0.0, 0.0) - tangent * half_w
+	var p01: Vector3 = face + Vector3(x0 - axis_x, 0.0, 0.0) + tangent * half_w
+	var p11: Vector3 = face + Vector3(x1 - axis_x, 0.0, 0.0) + tangent * half_w
+	_add_facing_tri(st, p00, p10, p01, face_dir)
+	_add_facing_tri(st, p10, p11, p01, face_dir)
+
+
+func _build_drum_walkable_ring(parent: Node3D) -> void:
+	var root: Node3D = Node3D.new()
+	root.name = "HabDrumSpinGravityRing"
+	parent.add_child(root)
+
+	var floor_body: StaticBody3D = StaticBody3D.new()
+	floor_body.name = "DrumFloor"
+	floor_body.collision_layer = 1
+	floor_body.collision_mask = 1
+	root.add_child(floor_body)
+
+	var sts: Array[SurfaceTool] = []
+	for _si: int in range(10):
+		var st_new: SurfaceTool = SurfaceTool.new()
+		st_new.begin(Mesh.PRIMITIVE_TRIANGLES)
+		sts.append(st_new)
+
+	var half_w: float = DRUM_FLOOR_R * tan(PI / float(DRUM_FACETS)) * 1.04
+	var facet_n: int = 0
+	for i: int in range(DRUM_FACETS):
+		var alpha: float = -PI + (float(i) + 0.5) * TAU / float(DRUM_FACETS)
+		var outward: Vector3 = _drum_outward(alpha)
+		var tangent: Vector3 = _drum_tangent(alpha)
+		var z_lo: float = DRUM_AXIS_Z + outward.z * DRUM_FLOOR_R - tangent.z * half_w
+		var z_hi: float = DRUM_AXIS_Z + outward.z * DRUM_FLOOR_R + tangent.z * half_w
+		var hole: float = _drum_hole_half(alpha, z_lo, z_hi)
+		var spans: Array[Vector2] = []
+		if hole < 0.0:
+			spans.append(Vector2(DRUM_X_MIN, DRUM_X_MAX))
+		else:
+			spans.append(Vector2(DRUM_X_MIN, -hole))
+			spans.append(Vector2(hole, DRUM_X_MAX))
+		var strip: int = _drum_strip_index(alpha)
+		var face_dir: Vector3 = -outward
+		var basis: Basis = Basis(tangent, face_dir, -Vector3.RIGHT)
+		for s: int in range(spans.size()):
+			var x0: float = spans[s].x
+			var x1: float = spans[s].y
+			if x1 - x0 < 0.4:
+				continue
+			var mid_x: float = (x0 + x1) * 0.5
+			var face: Vector3 = Vector3(mid_x, DRUM_AXIS_Y, DRUM_AXIS_Z) + outward * DRUM_FLOOR_R
+			var center: Vector3 = face + outward * (DRUM_SLAB_THICK * 0.5)
+			_drum_add_box(floor_body, basis, center, Vector3(half_w * 2.0, DRUM_SLAB_THICK, x1 - x0), "Facet%03d_%d" % [i, s])
+			_drum_add_inner_quad(sts[strip], face, tangent, mid_x, half_w, x0, x1, face_dir)
+			facet_n += 1
+
+	for strip_i: int in range(10):
+		sts[strip_i].generate_normals()
+		var built: ArrayMesh = sts[strip_i].commit()
+		if built == null or built.get_surface_count() <= 0:
+			continue
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "DrumStrip%d" % strip_i
+		mi.mesh = built
+		mi.material_override = _drum_strip_material(strip_i)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		floor_body.add_child(mi)
+
+	var ramp_n: int = _drum_build_ramps(root)
+	_drum_build_caps(root)
+	print("[DRUM] axis_y=%.3f axis_z=%.3f r=%.1f x=[%.0f, %.0f] kiss_y=%.3f nadir_y=%.3f facets=%d ramps=%d" % [
+		DRUM_AXIS_Y, DRUM_AXIS_Z, DRUM_FLOOR_R, DRUM_X_MIN, DRUM_X_MAX,
+		_drum_arc_y(EXT_GROUND_Z1), _drum_arc_y(DRUM_AXIS_Z), facet_n, ramp_n
+	])
+
+
+func _drum_add_ramp_slab(body: StaticBody3D, st: SurfaceTool, surface_pt: Vector3, dir_h: Vector2, along: float, across: float, serial: int) -> void:
+	var dir: Vector3 = Vector3(dir_h.x, 0.0, dir_h.y)
+	if dir.length_squared() < 0.0001:
+		return
+	dir = dir.normalized()
+	var beta: float = deg_to_rad(DRUM_RAMP_DEG)
+	var normal: Vector3 = Vector3(-dir.x * sin(beta), cos(beta), -dir.z * sin(beta))
+	var downhill: Vector3 = Vector3(dir.x * cos(beta), -sin(beta), dir.z * cos(beta))
+	var across_axis: Vector3 = Vector3(dir.z, 0.0, -dir.x)
+	var basis: Basis = Basis(across_axis, normal, downhill)
+	var center: Vector3 = surface_pt - normal * (DRUM_SLAB_THICK * 0.5)
+	_drum_add_box(body, basis, center, Vector3(across, DRUM_SLAB_THICK, along), "Ramp%04d" % serial)
+	var hx: float = across * 0.5
+	var hz: float = along * 0.5
+	var p00: Vector3 = surface_pt - across_axis * hx - downhill * hz
+	var p10: Vector3 = surface_pt + across_axis * hx - downhill * hz
+	var p01: Vector3 = surface_pt - across_axis * hx + downhill * hz
+	var p11: Vector3 = surface_pt + across_axis * hx + downhill * hz
+	_add_facing_tri(st, p00, p10, p01, normal)
+	_add_facing_tri(st, p10, p11, p01, normal)
+
+
+func _drum_emit_edge_ramps(body: StaticBody3D, st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, ox: float, oz: float, serial: int) -> int:
+	var edge: Vector2 = Vector2(x1 - x0, z1 - z0)
+	var length: float = edge.length()
+	if length < 0.5:
+		return serial
+	var along_edge: Vector2 = edge / length
+	var outward: Vector2 = Vector2(ox, oz).normalized()
+	var tan_b: float = tan(deg_to_rad(DRUM_RAMP_DEG))
+	var across: float = 2.4
+	var along: float = 3.2
+	var cos_b: float = cos(deg_to_rad(DRUM_RAMP_DEG))
+	var s: float = across * 0.5
+	while s < length:
+		var px: float = x0 + along_edge.x * s
+		var pz: float = z0 + along_edge.y * s
+		if EXT_GROUND_TOP_Y - _drum_arc_y(pz) > DRUM_STEP_OK:
+			var u: float = along * 0.5 * cos_b
+			var guard: int = 0
+			while guard < 40:
+				var qx: float = px + outward.x * u
+				var qz: float = pz + outward.y * u
+				var y_r: float = EXT_GROUND_TOP_Y - u * tan_b
+				_drum_add_ramp_slab(body, st, Vector3(qx, y_r, qz), outward, along, across * 1.25, serial)
+				serial += 1
+				if y_r <= _drum_arc_y(qz) + 0.05:
+					break
+				u += along * 0.78
+				guard += 1
+		s += across * 0.78
+	return serial
+
+
+func _drum_emit_corner_fan(body: StaticBody3D, st: SurfaceTool, cx: float, cz: float, a0: float, a1: float, serial: int) -> int:
+	var tan_b: float = tan(deg_to_rad(DRUM_RAMP_DEG))
+	var sweep: float = absf(a1 - a0)
+	var r: float = 2.0
+	while r < 36.0:
+		var steps: int = maxi(1, int(ceil(r * sweep / 3.2)))
+		var placed: int = 0
+		for i: int in range(steps):
+			var ang: float = lerpf(a0, a1, (float(i) + 0.5) / float(steps))
+			var dir: Vector2 = Vector2(cos(ang), sin(ang))
+			var qz: float = cz + dir.y * r
+			var y_r: float = EXT_GROUND_TOP_Y - r * tan_b
+			if y_r <= _drum_arc_y(qz) - 0.02:
+				continue
+			var span: float = maxf(3.4, r * sweep / float(steps) + 0.6)
+			_drum_add_ramp_slab(body, st, Vector3(cx + dir.x * r, y_r, qz), dir, 3.6, span, serial)
+			serial += 1
+			placed += 1
+		if placed == 0:
+			break
+		r += 2.9
+	return serial
+
+
+func _drum_build_ramps(root: Node3D) -> int:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "DrumRamps"
+	body.collision_layer = 1
+	body.collision_mask = 1
+	root.add_child(body)
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var serial: int = 0
+	# East and west lips. North lip and plaza-south lip are within 0.04 m, so no ramp.
+	serial = _drum_emit_edge_ramps(body, st, EXT_GROUND_X1, EXT_GROUND_Z1, EXT_GROUND_X1, EXT_GROUND_Z0, 1.0, 0.0, serial)
+	serial = _drum_emit_edge_ramps(body, st, EXT_GROUND_X0, EXT_GROUND_Z0, EXT_GROUND_X0, EXT_GROUND_Z1, -1.0, 0.0, serial)
+	serial = _drum_emit_edge_ramps(body, st, EXT_GROUND_X1, EXT_GROUND_Z0, DRUM_PLAZA_HALF_X, EXT_GROUND_Z0, 0.0, -1.0, serial)
+	serial = _drum_emit_edge_ramps(body, st, -DRUM_PLAZA_HALF_X, EXT_GROUND_Z0, EXT_GROUND_X0, EXT_GROUND_Z0, 0.0, -1.0, serial)
+	serial = _drum_emit_edge_ramps(body, st, DRUM_PLAZA_HALF_X, EXT_GROUND_Z0, DRUM_PLAZA_HALF_X, DRUM_PLAZA_Z_SOUTH, 1.0, 0.0, serial)
+	serial = _drum_emit_edge_ramps(body, st, -DRUM_PLAZA_HALF_X, DRUM_PLAZA_Z_SOUTH, -DRUM_PLAZA_HALF_X, EXT_GROUND_Z0, -1.0, 0.0, serial)
+	serial = _drum_emit_corner_fan(body, st, EXT_GROUND_X1, EXT_GROUND_Z0, -PI * 0.5, 0.0, serial)
+	# West corner wedge runs from west (pi) through southwest to south (-pi/2),
+	# which is the short way if we lerp downward across the wrap. Use -pi .. -pi/2.
+	serial = _drum_emit_corner_fan(body, st, EXT_GROUND_X0, EXT_GROUND_Z0, -PI, -PI * 0.5, serial)
+	st.generate_normals()
+	var built: ArrayMesh = st.commit()
+	if built != null and built.get_surface_count() > 0:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "DrumRampMesh"
+		mi.mesh = built
+		var ramp_mat: StandardMaterial3D = StandardMaterial3D.new()
+		ramp_mat.albedo_color = Color(0.40, 0.42, 0.46, 1.0)
+		ramp_mat.roughness = 0.62
+		ramp_mat.metallic = 0.18
+		ramp_mat.cull_mode = BaseMaterial3D.CULL_BACK
+		mi.material_override = ramp_mat
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		body.add_child(mi)
+	return serial
+
+
+func _drum_build_caps(root: Node3D) -> void:
+	var cap_mat: StandardMaterial3D = StandardMaterial3D.new()
+	cap_mat.albedo_color = Color(0.62, 0.64, 0.68, 1.0)
+	cap_mat.roughness = 0.55
+	cap_mat.metallic = 0.12
+	cap_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	# Local +Y rotates onto world -X, so the disc lies in the YZ plane.
+	var basis: Basis = Basis().rotated(Vector3(0.0, 0.0, 1.0), PI * 0.5)
+	var specs: Array[Dictionary] = [
+		{"name": "DrumEndCapNeg", "x": DRUM_X_MIN - DRUM_CAP_THICK * 0.5},
+		{"name": "DrumEndCapPos", "x": DRUM_X_MAX + DRUM_CAP_THICK * 0.5},
+	]
+	for spec: Dictionary in specs:
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = String(spec["name"])
+		body.collision_layer = 1
+		body.collision_mask = 1
+		body.transform = Transform3D(basis, Vector3(float(spec["x"]), DRUM_AXIS_Y, DRUM_AXIS_Z))
+		root.add_child(body)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.name = "CapDisc"
+		var shape: CylinderShape3D = CylinderShape3D.new()
+		shape.radius = DRUM_FLOOR_R + DRUM_CAP_EXTRA_R
+		shape.height = DRUM_CAP_THICK
+		cs.shape = shape
+		body.add_child(cs)
+		var cap_mi: MeshInstance3D = MeshInstance3D.new()
+		cap_mi.name = "CapMesh"
+		var cap_mesh: CylinderMesh = CylinderMesh.new()
+		cap_mesh.top_radius = shape.radius
+		cap_mesh.bottom_radius = shape.radius
+		cap_mesh.height = DRUM_CAP_THICK
+		cap_mesh.radial_segments = 48
+		cap_mi.mesh = cap_mesh
+		cap_mi.material_override = cap_mat
+		cap_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		body.add_child(cap_mi)
 
 
 # World triangle against the playable-map AABB.
@@ -4247,12 +4709,30 @@ func _physics_process(delta: float) -> void:
 		sprint = Input.is_action_pressed("sprint")
 		jump = Input.is_action_pressed("jump")
 
-	# [t34u] Local "up" = world up normally, or toward the cylinder axis inside the spin-gravity ring.
+	# [t34u] Local "up" = world up on the preface, toward the small-ring axis inside
+	# that ring, or toward the Hab-7 drum axis once the player leaves the footprint.
+	# The small ring is tested first so its gravity is unchanged.
 	var in_ring: bool = _in_gravity_ring(b.global_position)
-	var up_dir: Vector3 = _ring_up_at(b.global_position, b.global_basis.y) if in_ring else Vector3.UP
+	var up_dir: Vector3 = Vector3.UP
+	var g_vec: Vector3 = Vector3.DOWN * GRAVITY
+	if in_ring:
+		up_dir = _ring_up_at(b.global_position, b.global_basis.y)
+		g_vec = _ring_gravity_at(b.global_position)
+	else:
+		var world_w: float = _drum_world_weight(b.global_position)
+		if world_w < 0.999:
+			var up_r: Vector3 = _drum_up_at(b.global_position)
+			var g_r: Vector3 = _drum_gravity_at(b.global_position)
+			if world_w <= 0.001:
+				up_dir = up_r
+				g_vec = g_r
+			else:
+				up_dir = _drum_blend_up(Vector3.UP, up_r, 1.0 - world_w)
+				g_vec = (Vector3.DOWN * GRAVITY).lerp(g_r, 1.0 - world_w)
+				if g_vec.length_squared() > 0.0001:
+					g_vec = g_vec.normalized() * GRAVITY
 	_orient_node_to_up(b, up_dir, delta)
 	b.up_direction = up_dir
-	var g_vec: Vector3 = _ring_gravity_at(b.global_position) if in_ring else Vector3.DOWN * GRAVITY
 
 	var basis: Basis = b.global_transform.basis
 	var dir: Vector3 = basis.x * input_dir.x + basis.z * input_dir.y
@@ -4322,7 +4802,7 @@ func _physics_process(delta: float) -> void:
 			_land_dip = LAND_DIP_M * clampf(fall_speed / 8.0, 0.4, 1.0)
 	for sc_i: int in range(b.get_slide_collision_count()):
 		var scol: KinematicCollision3D = b.get_slide_collision(sc_i)
-		if _qa_egress:
+		if _qa_egress or _qa_ring:
 			var slide_n: Object = scol.get_collider()
 			if slide_n is Node:
 				_qa_last_slide_path = String((slide_n as Node).get_path())
@@ -9047,6 +9527,388 @@ func _run_qa_stairs() -> void:
 		_qa_key(KEY_W, false)
 		await _qa_idle(1)
 	print("[STAIRS-QA] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [DRUM] Walk the Hab-7 ring (`-- --qa-ring`). Real input only.
+# Leaves the preface on the proven door path, drops off the east lip onto the
+# drum, circuits all 10 strips, stops on both end caps, then walks back onto
+# the preface deck under world-up gravity.
+# ------------------------------------------------------------------------------
+func _qa_ring_release() -> void:
+	_qa_key(KEY_W, false)
+	_qa_key(KEY_SHIFT, false)
+	Input.action_release("look_left")
+	Input.action_release("look_right")
+	Input.action_release("move_left")
+	Input.action_release("move_right")
+	Input.action_release("move_forward")
+	Engine.time_scale = 1.0
+
+
+func _qa_ring_steer(desired: Vector3) -> void:
+	Input.action_release("look_left")
+	Input.action_release("look_right")
+	if _player_body == null:
+		return
+	var up: Vector3 = _player_body.global_transform.basis.y
+	var fwd: Vector3 = -_player_body.global_transform.basis.z
+	fwd = fwd - up * fwd.dot(up)
+	var want: Vector3 = desired - up * desired.dot(up)
+	if fwd.length_squared() < 0.0004 or want.length_squared() < 0.0004:
+		return
+	# Positive signed_angle_to around up is a left turn. Mouse +x yaws right
+	# (rotate_object_local by -dx * sens), so one event closes the whole error.
+	# Held look keys step ~8 deg at time_scale 4 and the old deadzone swallowed
+	# the axial correction, which walked the circuit into the plaza.
+	var signed: float = fwd.normalized().signed_angle_to(want.normalized(), up)
+	if absf(signed) < 0.01:
+		return
+	var dx: float = -signed / maxf(_mouse_sens, 0.0001)
+	_qa_mouse(Vector2(dx, 0.0))
+
+
+func _qa_ring_note_strip(prev_k: int, alpha: float, seen: int) -> Vector2i:
+	var k: int = _drum_strip_index(alpha)
+	if k != prev_k:
+		print("QA_RING STRIP %d" % k)
+		seen |= (1 << k)
+	return Vector2i(k, seen)
+
+
+func _qa_ring_popcount(mask: int) -> int:
+	var n: int = 0
+	for b: int in range(10):
+		if (mask & (1 << b)) != 0:
+			n += 1
+	return n
+
+
+func _qa_ring_lost(p: Vector3) -> bool:
+	if _drum_rho(p) > DRUM_FLOOR_R + 2.0:
+		return true
+	return p.distance_to(SPAWN_POS) < 1.5 and p.y > 3.0
+
+
+func _qa_ring_walk_flat(wps: Array[Dictionary]) -> bool:
+	await _qa_frames(30)
+	var holding_w: bool = false
+	var nudge: int = 0
+	var nudge_side: float = 1.0
+	for i: int in range(wps.size()):
+		var wp: Dictionary = wps[i]
+		var xz: Vector2 = wp["xz"] as Vector2
+		var door_id: String = String(wp["door"])
+		var ring_pt: bool = bool(wp.get("ring", false))
+		var budget: int = int(wp.get("budget", 900))
+		var door: Dictionary = _find_door(door_id) if door_id != "" else {}
+		if not holding_w:
+			_qa_key(KEY_W, true)
+			await _qa_idle(2)
+			holding_w = true
+		var frames: int = 0
+		var arrived: bool = false
+		var anchor: Vector3 = _player_body.global_position
+		var still: int = 0
+		while frames < budget:
+			var pos: Vector3 = _player_body.global_position
+			var horiz: float = Vector2(pos.x, pos.z).distance_to(xz)
+			var aim: Vector2 = xz
+			if door_id != "" and not door.is_empty():
+				var droot: Node3D = door.get("root") as Node3D
+				if droot != null:
+					aim = Vector2(droot.global_position.x, droot.global_position.z)
+			_qa_egress_steer(aim if door_id != "" else xz)
+			if door_id == "" and Vector2(pos.x, pos.z).distance_to(Vector2(anchor.x, anchor.z)) < 0.12:
+				still += 1
+			else:
+				anchor = pos
+				still = 0
+			if still >= 50 and nudge <= 0 and door_id == "":
+				nudge = 24
+				nudge_side = -nudge_side
+				still = 0
+			if nudge > 0:
+				if nudge_side > 0.0:
+					Input.action_press("move_right")
+					Input.action_release("move_left")
+				else:
+					Input.action_press("move_left")
+					Input.action_release("move_right")
+				nudge -= 1
+				if nudge == 0:
+					Input.action_release("move_left")
+					Input.action_release("move_right")
+			if ring_pt:
+				var rho: float = _drum_rho(pos)
+				if horiz < 4.0 and _player_body.is_on_floor() and absf(rho - DRUM_FLOOR_R) < 2.5:
+					arrived = true
+					break
+			elif door_id != "":
+				if _qa_egress_door_ready(door) or horiz < 0.8:
+					arrived = true
+					break
+			elif horiz < 1.0:
+				arrived = true
+				break
+			await get_tree().physics_frame
+			frames += 1
+		Input.action_release("move_left")
+		Input.action_release("move_right")
+		var ok: bool = false
+		if door_id != "":
+			_qa_key(KEY_W, false)
+			await _qa_idle(2)
+			holding_w = false
+			var faced: int = 0
+			while not _qa_egress_door_ready(door) and faced < 900:
+				var droot2: Node3D = door.get("root") as Node3D
+				if droot2 != null:
+					_qa_egress_steer(Vector2(droot2.global_position.x, droot2.global_position.z))
+				await get_tree().physics_frame
+				faced += 1
+			frames += faced
+			if _qa_egress_door_ready(door):
+				await _qa_tap(KEY_E)
+				await get_tree().create_timer(1.0).timeout
+				ok = bool(door.get("open", false))
+			else:
+				ok = false
+		else:
+			ok = arrived
+		var here: Vector3 = _player_body.global_position
+		print("QA_RING APPROACH | %s | %s | pos=%s frames=%d" % ["PASS" if ok else "FAIL", String(wp["label"]), str(here), frames])
+		if not ok:
+			if holding_w:
+				_qa_key(KEY_W, false)
+			return false
+	if holding_w:
+		_qa_key(KEY_W, false)
+		await _qa_idle(1)
+	return true
+
+
+func _qa_ring_circle(x_hold: float) -> Dictionary:
+	var probe_a: float = _drum_alpha(_player_body.global_position)
+	var probe_i: int = 0
+	while probe_i < 24:
+		_qa_ring_steer(_drum_tangent(_drum_alpha(_player_body.global_position)))
+		await get_tree().physics_frame
+		probe_i += 1
+	var flip: float = 1.0
+	if wrapf(_drum_alpha(_player_body.global_position) - probe_a, -PI, PI) < 0.0:
+		flip = -1.0
+	_qa_ring_flip = flip
+	var start_a: float = _drum_alpha(_player_body.global_position)
+	var start_strip: int = _drum_strip_index(start_a)
+	var noted: Vector2i = _qa_ring_note_strip(-1, start_a, 0)
+	var prev_k: int = noted.x
+	var seen: int = noted.y
+	var prev_a: float = start_a
+	var travelled: float = 0.0
+	var frames: int = 0
+	var air: int = 0
+	var max_rho: float = _drum_rho(_player_body.global_position)
+	var fell: bool = false
+	while frames < 8000:
+		var p: Vector3 = _player_body.global_position
+		var a: float = _drum_alpha(p)
+		var rho: float = _drum_rho(p)
+		max_rho = maxf(max_rho, rho)
+		if _qa_ring_lost(p):
+			fell = true
+			break
+		noted = _qa_ring_note_strip(prev_k, a, seen)
+		prev_k = noted.x
+		seen = noted.y
+		travelled += wrapf(a - prev_a, -PI, PI) * flip
+		prev_a = a
+		var desired: Vector3 = _drum_tangent(a) * flip + Vector3.RIGHT * clampf((x_hold - p.x) * 0.06, -0.4, 0.4)
+		_qa_ring_steer(desired)
+		if _player_body.is_on_floor():
+			air = 0
+		else:
+			air += 1
+			if air > 90:
+				fell = true
+				break
+		var back: bool = _drum_strip_index(a) == start_strip and absf(wrapf(a - start_a, -PI, PI)) < deg_to_rad(18.0)
+		if travelled >= deg_to_rad(345.0) and back and seen == 1023 and not fell:
+			return {"ok": true, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "start": start_strip}
+		await get_tree().physics_frame
+		frames += 1
+	return {"ok": false, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "fell": fell, "start": start_strip}
+
+
+func _qa_ring_to_alpha(x_hold: float, target_a: float) -> bool:
+	var frames: int = 0
+	while frames < 1000:
+		var p: Vector3 = _player_body.global_position
+		if _qa_ring_lost(p):
+			return false
+		var a: float = _drum_alpha(p)
+		var err: float = wrapf(target_a - a, -PI, PI)
+		if absf(err) < 0.06:
+			return true
+		var desired: Vector3 = _drum_tangent(a) * signf(err) * _qa_ring_flip + Vector3.RIGHT * clampf((x_hold - p.x) * 0.08, -0.5, 0.5)
+		_qa_ring_steer(desired)
+		await get_tree().physics_frame
+		frames += 1
+	return absf(wrapf(target_a - _drum_alpha(_player_body.global_position), -PI, PI)) < 0.12
+
+
+func _qa_ring_to_x(hold_alpha: float, sign: float, mode: int, goal_x: float) -> Dictionary:
+	var frames: int = 0
+	var air: int = 0
+	var max_rho: float = 0.0
+	while frames < 6000:
+		var p: Vector3 = _player_body.global_position
+		var rho: float = _drum_rho(p)
+		max_rho = maxf(max_rho, rho)
+		if _qa_ring_lost(p):
+			return {"ok": false, "why": "fell", "x": p.x, "rho": max_rho, "frames": frames}
+		if p.x > DRUM_X_MAX + 0.25 or p.x < DRUM_X_MIN - 0.25:
+			return {"ok": false, "why": "through", "x": p.x, "rho": max_rho, "frames": frames}
+		var a: float = _drum_alpha(p)
+		var err: float = wrapf(hold_alpha - a, -PI, PI)
+		var axial: float = sign
+		if mode == 0:
+			axial = clampf((goal_x - p.x) * 0.12, -1.0, 1.0)
+		# The chord facets slope toward the nadir, so a weak crab drifts into the
+		# east ramp. Back off the axis and steer hard until alpha is back on the lane.
+		var lat: float = clampf(err * 4.0, -1.5, 1.5) * _qa_ring_flip
+		if absf(err) > 0.10:
+			axial *= 0.2
+		var desired: Vector3 = Vector3(axial, 0.0, 0.0) + _drum_tangent(a) * lat
+		_qa_ring_steer(desired)
+		var stopped: bool = _player_body.is_on_floor() and absf(_player_body.velocity.x) < 1.8
+		var reached: bool = false
+		if mode == 1:
+			reached = stopped and p.x > DRUM_X_MAX - 3.0 and p.x <= DRUM_X_MAX + 0.2
+		elif mode == -1:
+			reached = stopped and p.x < DRUM_X_MIN + 3.0 and p.x >= DRUM_X_MIN - 0.2
+		else:
+			reached = absf(p.x - goal_x) < 2.2 and _player_body.is_on_floor()
+		if _player_body.is_on_floor():
+			air = 0
+		else:
+			air += 1
+			if air > 90:
+				return {"ok": false, "why": "air", "x": p.x, "rho": max_rho, "frames": frames}
+		if reached:
+			return {"ok": true, "why": "stop", "x": p.x, "rho": max_rho, "frames": frames}
+		await get_tree().physics_frame
+		frames += 1
+	return {"ok": false, "why": "timeout", "x": _player_body.global_position.x, "rho": max_rho, "frames": frames}
+
+
+func _qa_ring_return_deck() -> bool:
+	var frames: int = 0
+	var hold_x: float = 30.0
+	while frames < 2000:
+		var p: Vector3 = _player_body.global_position
+		var w: float = _drum_world_weight(p)
+		var up_dot: float = _player_body.up_direction.dot(Vector3.UP)
+		var sdf: float = _drum_footprint_sdf(p.x, p.z)
+		if sdf < -1.5 and p.y < 5.0 and p.y > -1.0 and _player_body.is_on_floor() and up_dot > 0.98 and w > 0.95:
+			print("QA_RING PASS | preface | pos=%s up=%.3f w=%.3f sdf=%.2f" % [str(p), up_dot, w, sdf])
+			return true
+		var a: float = _drum_alpha(p)
+		if w > 0.7 and p.y < 6.0:
+			Input.action_release("look_left")
+			Input.action_release("look_right")
+			_qa_egress_steer(Vector2(hold_x, 12.0))
+		else:
+			var desired: Vector3 = -_drum_tangent(a) * _qa_ring_flip + Vector3.RIGHT * clampf((hold_x - p.x) * 0.08, -0.5, 0.5)
+			_qa_ring_steer(desired)
+		await get_tree().physics_frame
+		frames += 1
+	var p2: Vector3 = _player_body.global_position
+	print("QA_RING FAIL | preface | pos=%s up=%.3f w=%.3f sdf=%.2f floor=%s" % [
+		str(p2), _player_body.up_direction.dot(Vector3.UP), _drum_world_weight(p2),
+		_drum_footprint_sdf(p2.x, p2.z), str(_player_body.is_on_floor())
+	])
+	return false
+
+
+func _run_qa_ring() -> void:
+	var failures: int = 0
+	var wps: Array[Dictionary] = [
+		{"label": "(-6.0, 4.5)", "xz": Vector2(-6.0, 4.5), "door": ""},
+		{"label": "(-3.0, 1.8)", "xz": Vector2(-3.0, 1.8), "door": "DOOR_APT201"},
+		{"label": "(-3.0, 0.0)", "xz": Vector2(-3.0, 0.0), "door": ""},
+		{"label": "(1.15, 0.0)", "xz": Vector2(1.15, 0.0), "door": ""},
+		{"label": "(1.15, -2.8)", "xz": Vector2(1.15, -2.8), "door": ""},
+		{"label": "(1.15, -4.88)", "xz": Vector2(1.15, -4.88), "door": ""},
+		{"label": "(1.15, -6.14)", "xz": Vector2(1.15, -6.14), "door": ""},
+		{"label": "(1.15, -7.4)", "xz": Vector2(1.15, -7.4), "door": ""},
+		{"label": "(1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": ""},
+		{"label": "(-1.15, -8.15)", "xz": Vector2(-1.15, -8.15), "door": ""},
+		{"label": "(-1.15, -5.3)", "xz": Vector2(-1.15, -5.3), "door": ""},
+		{"label": "(-1.15, -3.2)", "xz": Vector2(-1.15, -3.2), "door": ""},
+		{"label": "(-1.15, -2.0)", "xz": Vector2(-1.15, -2.0), "door": ""},
+		{"label": "(1.15, -2.0)", "xz": Vector2(1.15, -2.0), "door": ""},
+		{"label": "(1.15, -8.15)", "xz": Vector2(1.15, -8.15), "door": ""},
+		{"label": "DOOR_SECTOR4_EXIT (0.0, -7.9)", "xz": Vector2(0.0, -7.9), "door": "DOOR_SECTOR4_EXIT"},
+		{"label": "(0.0, -9.8)", "xz": Vector2(0.0, -9.8), "door": ""},
+		{"label": "(14.0, -12.0)", "xz": Vector2(14.0, -12.0), "door": ""},
+		{"label": "(16.5, -8.2)", "xz": Vector2(16.5, -8.2), "door": ""},
+		{"label": "(40.0, -8.0)", "xz": Vector2(40.0, -8.0), "door": ""},
+		{"label": "ring (120, -8)", "xz": Vector2(120.0, -8.0), "door": "", "ring": true, "budget": 2400},
+	]
+	if _player_body == null:
+		print("QA_RING FAIL | spawn | no player")
+		print("QA_RING DONE failures=1")
+		get_tree().quit(1)
+		return
+	var flat_ok: bool = await _qa_ring_walk_flat(wps)
+	if not flat_ok:
+		failures += 1
+		print("QA_RING FAIL | approach | pos=%s slide=%s" % [str(_player_body.global_position), _qa_last_slide_path])
+		_qa_ring_release()
+		print("QA_RING DONE failures=%d" % failures)
+		get_tree().quit(1)
+		return
+	Engine.time_scale = 4.0
+	_qa_key(KEY_SHIFT, true)
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	var x_hold: float = _player_body.global_position.x
+	var loop: Dictionary = await _qa_ring_circle(x_hold)
+	var loop_ok: bool = bool(loop["ok"]) and int(loop["seen"]) == 1023 and float(loop["rho"]) <= DRUM_FLOOR_R + 2.0
+	print("QA_RING %s | loop | strips=%d travelled_deg=%.1f max_rho=%.2f frames=%d" % [
+		"PASS" if loop_ok else "FAIL", _qa_ring_popcount(int(loop["seen"])),
+		rad_to_deg(float(loop["travelled"])), float(loop["rho"]), int(loop["frames"])
+	])
+	if not loop_ok:
+		failures += 1
+	# z = 110 is ~67 m north of the deck, clear of the east ramps if the lane drifts.
+	var safe_a: float = asin(clampf((110.0 - DRUM_AXIS_Z) / DRUM_FLOOR_R, -1.0, 1.0))
+	if not await _qa_ring_to_alpha(x_hold, safe_a):
+		failures += 1
+		print("QA_RING FAIL | align | alpha=%.2f pos=%s" % [rad_to_deg(_drum_alpha(_player_body.global_position)), str(_player_body.global_position)])
+	var hold_a: float = _drum_alpha(_player_body.global_position)
+	var pos_cap: Dictionary = await _qa_ring_to_x(hold_a, 1.0, 1, 0.0)
+	var pos_ok: bool = bool(pos_cap["ok"]) and float(pos_cap["rho"]) <= DRUM_FLOOR_R + 2.0
+	print("QA_RING %s | cap_pos | x=%.2f z=%.2f frames=%d %s" % ["PASS" if pos_ok else "FAIL", float(pos_cap["x"]), _player_body.global_position.z, int(pos_cap["frames"]), String(pos_cap["why"])])
+	if not pos_ok:
+		failures += 1
+	var neg_cap: Dictionary = await _qa_ring_to_x(hold_a, -1.0, -1, 0.0)
+	var neg_ok: bool = bool(neg_cap["ok"]) and float(neg_cap["rho"]) <= DRUM_FLOOR_R + 2.0
+	print("QA_RING %s | cap_neg | x=%.2f z=%.2f frames=%d %s" % ["PASS" if neg_ok else "FAIL", float(neg_cap["x"]), _player_body.global_position.z, int(neg_cap["frames"]), String(neg_cap["why"])])
+	if not neg_ok:
+		failures += 1
+	var back_x: Dictionary = await _qa_ring_to_x(hold_a, 1.0, 0, 30.0)
+	if not bool(back_x["ok"]):
+		failures += 1
+		print("QA_RING FAIL | return_x | x=%.2f %s" % [float(back_x["x"]), String(back_x["why"])])
+	Engine.time_scale = 1.0
+	_qa_key(KEY_SHIFT, false)
+	if not await _qa_ring_return_deck():
+		failures += 1
+	_qa_ring_release()
+	print("QA_RING DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
 

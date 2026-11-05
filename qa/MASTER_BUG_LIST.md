@@ -194,3 +194,11 @@ Project items found by the checker, not checker bugs: 2 deleted-script showcase 
 - Open, needs Jared: whether the Alcove 2C rails should contain sprint-jumps; kerb ramp 953 handrail (SYS-15); movement-code airborne wall-slide hang on rails/corners.
 - Non-walkability notes: navmesh mismatch (M-63); canal-edge props `Ext_46_ext_canal_edge_968/_986` float at y 1.245; stale `close_blocker` field on doors; fresh clones need `godot --import`; `Input.action_press` can't trigger E.
 - Follow-up 2026-11-03 (Jared): M-65 closed (lamp reseated on the floor, c597362); M-70 x 10.65 ramp-collider sub-item closed (already gone since 88e3c68).
+
+## Hab-7 drum ring walkable (2026-11-04)
+
+The five ExtGround bounds (West, East, North, SouthWest, SouthEast) are not rebuilt. The walkable drum and its ramps of at most 12 deg continue those edges. The preface deck, plaza rails, observation-window cut, and the green are unchanged.
+
+Axis parallel to world +X at (y, z) = (195.236187, -1.25), floor radius 200 m, caps at x = -232 and x = 488. The circle kisses the north lip and the plaza-south lip 0.04 m under the deck and stays below the deck inside the footprint. Strip 4 (Spin Street Residential) is the nadir under the preface. Strip k is centered at (k - 4) * 36 deg, with alpha 0 at the nadir and positive toward +Z. Strip 0 (Long Window) is solid glass on the window side, toward -Z; the window wedge is on that side and is not centered in the strip. Strip 5 (The Green) is grass. The other eight strips are bare grey deck. No props on the ring. Gravity stays world-down inside the preface footprint and is radial outside it. The small spin ring is unchanged.
+
+Verified headless (Godot 4.7.2): `--qa-ring` DONE failures=0 (all 10 strips, both caps, back on the preface with world-up), `--qa-egress` DONE failures=0, `--qa-stairs` DONE failures=0.
