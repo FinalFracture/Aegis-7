@@ -62,3 +62,10 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 - Where is the plinth actually exposed? Per §3.3 the W and E faces sit on raised terraces at +4.0 HD, so the building plinth is buried there and the S/N faces are at grade. The 4.0 m skirt therefore reads only on the terrace edges (West Arrival / East Plaza perimeters, the East Spine ramp sides) unless something else is meant. Please confirm the runs and the faces.
 - p(Z) varies 0..4.0 m along the W/E faces. The skirt is built as 4 x 1.0 m courses for trimming. Is a stepped trim acceptable, or is a sloped top / custom per-bay height needed?
 - Stepped variants (V1/V2) project 1.6-1.85 m from the face line. Does that fit the plaza edge and the 1:12 aprons?
+
+## Terrace decks + ramps (candidates, not promoted)
+- No guard/handrail rules in the spec. The kit assumes IBC 2021: 1.07 m guards with < 100 mm openings at every terrace edge and ramp side with a drop > 0.76 m; no handrails on the 1:20 East Spine (a walking surface); no handrail on the 1:12 aprons (rise < 0.15 m). Please confirm, or give the project rule.
+- S/N aprons: §3.3 says the Rim Promenade (z -45) and N arm (z 45) are +5.1 HD while F1 is +4.0, yet the aprons are "1:12 over ~1 m" (only 0.083 m of rise). These don't reconcile (1.1 m at 1:12 needs ~13 m). Which way does the apron fall, and how big is the level change?
+- Deck build-up: the deck tiles are 0.30 m deep (surface at +4.0, so the tiles sit at +3.70). Where the terrace edge is over the plinth skirt, the skirt top must be at +3.70, not +4.0 (trim 0.3 m off the top course, or a 3.7 m skirt variant). Also the spec says "deck on fill 1.4-4.0 m": confirm the retaining edge is the tt_plinth_skirt language.
+- The East Spine ramp: 12 m wide x 80 m at 1:20 = 20 x 4 m modules per half (mirrored halves). Do any intermediate landings or rest areas apply (not required at 1:20 under IBC)? What retains the sides of the ramp (fill + skirt, or open structure)?
+- The corner links (terrace to the loop arms, "+4.0..4.2, level") and the Fore Hub Station Walk steps + 1:12 switchback (§3.8) aren't covered by this kit yet. Do they need their own modules?
