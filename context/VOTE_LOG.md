@@ -1909,3 +1909,13 @@
 - **Candidates:** `assets/glb/tennis_tower/bench_nook/v1..v5.glb` (spec §3.11.6 item 8, 6 benches; all PASS, commit 046271a; crest fix in source).
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
 - **#70 WINNER:** `V5 Leaf Canopy` -> `godot/assets/models/tt_bench.glb` (1,504 tris). 2.6 x 1.8 m module, bbox h 2.84: 2.0 m bench (leaf-HDPE slats, seat +0.42, 15° back to +0.85, 25 mm gaps) on 3 gunmetal frames with leaf crests on the end back posts; steel-trunk leaf-canopy tree behind (z -0.75, canopy +2.2 fanning forward over the seat), 2 low tan berms + bush clusters, flowers, tufts; tan EPDM pad. Faces +Z. Colliders: slats, frames, back, trunk, berms (-convcolonly), pad (-colonly). Place x6 facing the play pieces (positions TBD, Vance).
+
+### #71 Tennis Tower playground fence + gates (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/fence/v1..v5_{panel,gate}.glb` (spec §3.11.6 item 9, 1.2 m fence with 3 gates; all PASS, commit 2f04f8d).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#71 WINNER:** `V4 Court Line`:
+  - `godot/assets/models/tt_fence_panel.glb` (576 tris): 2.0 m pitch along local X (tile every 2.0 m; one 80 mm alloy post at the -X end, the next panel's post closes the run), 1.2 m alloy frame, dark slate court-net screen with white net tape, ball finial (top 1.30), outside (-Z) moss strip + hedge bushes, amber court line inside (+Z). bbox 2.0 x 1.30 x 1.0.
+  - `godot/assets/models/tt_fence_gate.glb` (464 tris): 1.6 m module, 2 posts + 1.42 m single leaf (frame + screen + tape), hinge hardware on -X, latch on top at +1.2 (out of child reach). Gate parts `Gate_*` swing about a Y hinge at local x -0.72, z 0.
+  - Child-safe: solid screen (no openings), 40 mm bottom gap, no mid rails. Colliders: posts, rails, screen, frame (-convcolonly), strip floor (-colonly).
+- **Sightline trade-off (Vance/Jared):** the solid court-net screen blocks views into the playground from the terrace; if supervision sightlines matter, swap the screen for 80 mm pickets (V1/V2 infill) or lower the screen to a 0.6 m kick-plate with pickets above.
+- **Gate scripting for Gage:** open/close animation of `Gate_*` about the hinge (0..100°), self-closing spring return, child-proof latch at the top (requires adult reach / interact), gate collider must move with the leaf; 3 gate instances per spec (positions TBD, Vance).
