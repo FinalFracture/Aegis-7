@@ -67,7 +67,7 @@ def build(q):
     sm = q.get("slide", ALY); slide(p, XR - .046 + .002, YB, -1.9, 1, sm); slide(p, XL + .046 - .002, YA, .3, -1, sm)
     p.add("Canopy", q.get("roof", "tt_hdpe_leaf"), boxuv(box(XL - .25, XR + .25, CAN - .1, CAN, ZB0 - .25, ZB1 + .25), .5))
     if d == "leaf":   # Leaf Crest: leaf crests standing on the A posts, leaf canopy fringe
-        p.add("Leaf_Crests", LF, *[crest((x, YA + .95 + .17 - .003, z)) for x in (XL, XR) for z in (ZA0, ZA1)])
+        p.add("Leaf_Crests", LF, *[crest((x, YA + .95 - .003, z)) for x in (XL, XR) for z in (ZA0, ZA1)])
         p.add("Canopy_Leaves", LF, *[xf(leaf((0, 0, 0), .3, .14, t=.0125), R=trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]), t=(x, CAN - .1 + E, ZB1 + .25 - .1)) for x in np.linspace(-1.6, .1, 5)])
     elif d == "tree": # Tree House: Y-forks from the B posts into the canopy + foliage clumps on top
         p.add("Tree_Forks", ST, *[boxuv(tube((x + sx*.05, CAN - .8, z + sz*.05), (x + sx*.25, CAN - .1 - .002, z + sz*.25), .03, 6), .5) for x, sx in ((XL, -1), (XR, 1)) for z, sz in ((ZB0, -1), (ZB1, 1))])

@@ -40,7 +40,7 @@ def build(q):
     pick = lambda sel: [panel(P, f) for i, f in enumerate(Tr) if sel(i, P[f].mean(0))]
     if d == "leaf":    # Leaf Crest: leaf-green HDPE shade panels on the upper ring + leaf crest on the apex
         pans = pick(lambda i, c: c[1] > 1.6 and i % 2 == 0); p.add("Shade_Panels", "tt_hdpe_leaf", *[boxuv(m, .5) for m, _, _ in pans])
-        p.add("Leaf_Crest", LF, crest((0, top[1] + RN*.8 + .17 - .003, 0)))
+        p.add("Leaf_Crest", LF, crest((0, top[1] + RN*.8 - .003, 0)))
     elif d == "court": # Court Line: ball finial on the apex, yellow panels, amber court-line rings on the pad
         p.add("Ball_Finial", BA, node((0, top[1] + RN*.8 + .06 - E, 0), .07, 0))
         pans = pick(lambda i, c: .8 < c[1] < 1.6 and i % 3 == 0); p.add("Court_Panels", BA, *[boxuv(m, .5) for m, _, _ in pans])
@@ -54,7 +54,7 @@ def build(q):
             for m in (tr, so): m.apply_transform(trimesh.transformations.rotation_matrix(-a + np.pi/2, [0, 1, 0])); m.apply_translation((3.2*np.cos(a), 0, 3.2*np.sin(a)))
             sh = shrubs(-.4, .4, sy, 0, r=.12, seed=int(a*10)); sh.apply_transform(trimesh.transformations.rotation_matrix(-a + np.pi/2, [0, 1, 0])); sh.apply_translation((3.2*np.cos(a), 0, 3.2*np.sin(a)))
             p.add("Planters", G, boxuv(tr, .5)); p.add("Planter_Soil", SO, so); p.add("Foliage", LF2, U(sh))
-        p.add("Leaf_Crest", LF, crest((0, top[1] + RN*.8 + .17 - .003, 0)))
+        p.add("Leaf_Crest", LF, crest((0, top[1] + RN*.8 - .003, 0)))
     elif d == "holds":   # Court Holds: #60 slate climbing panels in the lower triangles with tennis-ball holds
         pans = pick(lambda i, c: c[1] < 1.0 and i % 2 == 1); p.add("Climb_Panels", SSL, *[boxuv(m, .5) for m, _, _ in pans])
         p.add("Ball_Holds", BA, *[node(c + n*(.01 + .035 - E), .035, 0) for _, c, n in pans])

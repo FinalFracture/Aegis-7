@@ -29,7 +29,7 @@ def one(p, i, z, q):
     if d == "court":
         p.add(f"Ball_Finials{i}", BA, *[node((s*1.0, .95, z + w*(.15 + .03 - E)), .03, 0) for s in (-1, 1) for w in (-1, 1)])
     elif d in ("leaf", "fern"):
-        p.add(f"Leaf_Crests{i}", LF, *[crest((0, YP + .08 + .17 - .003, z + w*.14)) for w in (-1, 1)])
+        p.add(f"Leaf_Crests{i}", LF, *[crest((0, YP + .08 - .003, z + w*.14)) for w in (-1, 1)])
     elif d == "racket":  # racket-head hoops on the handle crossbars
         p.add(f"Racket_Hoops{i}", AM, *[boxuv(xf(trimesh.creation.torus(.11, .012, 12, 6), R=trimesh.transformations.rotation_matrix(np.pi/2, [0, 1, 0]), t=(s*1.0, .95 + .02 + .11 + .012 - E, z)), .3) for s in (-1, 1)])
 def build(q):

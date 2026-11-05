@@ -108,7 +108,7 @@ class Scape:
         for k in range(n):
             a = 2*np.pi*k/n + .3; d = np.array([np.cos(a), lean*(1 if k % 2 else .4), np.sin(a)]); d /= np.linalg.norm(d)
             L.append(leaf_dir(np.array((x, h, z)) + d*(.14 - .006), d, leaf_len, .55, t=.025))
-        L.append(crest((x, h + .14 + .17 - .006, z))); s.add("Tree_Canopy", mat, *L, col=None)
+        L.append(crest((x, h + .14 - .006, z))); s.add("Tree_Canopy", mat, *L, col=None)
     def panel(s, x, z, yaw, kind, mat=HL, w=1.0, h=.7):
         M = Y(yaw)
         def T(m): m.apply_transform(M); m.apply_translation((x, 0, z)); return m

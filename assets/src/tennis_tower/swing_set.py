@@ -34,7 +34,7 @@ def build(q):
         p.add("Ball_Finials", BA, *[node((0, YB, s*(BL + .045 - E)), .045, 0) for s in (-1, 1)])
         p.add("Court_Line", AM, *[boxuv(box(-3.4, 3.4, PAD - .002, PAD + .002, z - .025, z + .025), .5) for z in (-1.05, 1.05)], *[boxuv(box(s*2.2 - .025, s*2.2 + .025, PAD - .002, PAD + .002, -PZ + .1, PZ - .1), .5) for s in (-1, 1)])
     elif d == "leaf":  # Leaf Crest: leaf crests on every A-frame apex, leaf-green seats
-        p.add("Leaf_Crests", LF, *[crest((0, YB + .06 + .17 - .003, z)) for z in ZA])
+        p.add("Leaf_Crests", LF, *[crest((0, YB + .06 - .003, z)) for z in ZA])
     elif d == "tree":  # Tree Swing: Y-fork branches off the end A-frames + foliage crowns over the beam ends
         p.add("Tree_Forks", ST, *[boxuv(tube((sx*.45, (YB + PAD)/2 + .45, s*1.5), (sx*.85, YB + .5, s*2.1), .03, 6), .5) for sx in (-1, 1) for s in (-1, 1)])
         p.add("Foliage_Crowns", LF2, *[clump((sx*.85, YB + .5 + .15 - E, s*2.1), .2, i) for i, (sx, s) in enumerate([(a, b) for a in (-1, 1) for b in (-1, 1)])])

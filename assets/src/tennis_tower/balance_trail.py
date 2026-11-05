@@ -18,7 +18,7 @@ def beam(s, pts, mat, w=.14, th=.1, post=SGM, part="Balance_Beam", finial=None):
     P = [box(x - .03, x + .03, PAD - E, y - th + .0045, z - .03, z + .03) for x, z, y in pts]
     s.add(part + "_Posts", post, *P)
     if finial == "ball": s.add(part + "_Finials", BA, *[node((x, y + .05 - E, z), .05, 0) for x, z, y in (pts[0], pts[-1])], col=None)
-    if finial == "leaf": s.add(part + "_Crests", LF, *[crest((x, y + .17 - .004, z)) for x, z, y in (pts[0], pts[-1])], col=None)
+    if finial == "leaf": s.add(part + "_Crests", LF, *[crest((x, y - .004, z)) for x, z, y in (pts[0], pts[-1])], col=None)
 def tufts(s, n, seed=0, mats=(LF, LF2), keep=.3):  # dense grass/fern tufts on open ground (clear of every solid footprint)
     for a, k in s.SQ: s._slide(*a, **k)
     s.SQ = []; rng = np.random.default_rng(seed); placed = 0; tries = 0

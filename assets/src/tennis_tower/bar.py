@@ -33,7 +33,7 @@ def build(q):
     p.add("Bar-convcolonly", G, *[U(trimesh.creation.box(bounds=c.bounds)) for c in cols])
     if d == "leaf":    # Leaf Crest: leaf-green counter front + leaf crests standing on the back bar
         p.add("Counter_Front_Leaf", LF, boxuv(box(-3.9, 3.9, .27, .95, 1.2 - E, 1.212), .6))
-        p.add("Leaf_Crests", LF, *[crest((x, .99 + .17, -1.575)) for x in np.linspace(-2.1, 2.1, 6)])
+        p.add("Leaf_Crests", LF, *[crest((x, .99 - .003, -1.575)) for x in np.linspace(-2.1, 2.1, 6)])
     elif d == "fin":   # Branch Fin gantry: fish-belly fins over the back bar carrying a glass shelf
         fs = [xf(fin(0, .99 - E, 2.6, .12, .04, 0, belly=.6), t=(x, 0, -1.42)) for x in np.linspace(-2.2, 2.2, 5)]
         p.add("Branch_Fins", ST, *[boxuv(U(f), .5) for f in fs]); p.add("Shelf_Glass", GL, box(-2.3, 2.3, 1.8, 1.812, -1.75, -1.6))
