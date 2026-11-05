@@ -1897,3 +1897,9 @@
 - **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
 - **#68 WINNER:** `V4 Forest Roots` -> `godot/assets/models/tt_balance_trail.glb` (5,152 tris). 8.0 x 5.0 m (bbox h 3.25 incl. canopy tree). 3 bark-colour EPDM root beams (2 wavy runs along z -1.5 / -1.4, 1 arc r 1.25 round the tree; tops 0.15-0.42, 0.14 wide, 0.06 posts), leaf-canopy tree (steel trunk, HDPE leaves, leaf crest), 4 mushroom stools (0.2 / 0.3), moss hills 0.25-0.5, fern + flower clusters, grass tufts. Colliders: beam segments, posts, mounds, stools, trunk (-convcolonly), zone floor (-colonly). No wood (bark = rubber).
 - **Footprint note for Vance:** spec gives no footprint for the beams; built 8 x 5 m.
+
+### #69 Tennis Tower playground soft-play pit (Rook, box pipeline, Nov 4)
+- **Candidates:** `assets/glb/tennis_tower/soft_play/v1..v5.glb` (spec §3.11.6 item 7; all PASS, commit fccbb1f).
+- **Deciding vote: Jared (Nov 4, 2026), relayed via Rook.**
+- **#69 WINNER:** `V4 Riverbed` -> `godot/assets/models/tt_soft_play.glb` (3,976 tris). 6.0 x 6.0 m, bbox h 0.90. Moss cushion berms 0.5 m all round (1.2 m entry gap on +Z), stone-rim ball pool (r 0.9, blue + white r 0.07 balls on a bed), blue foam river ribbon with 4 stone stepping pods, 0.7 m bank hill with HDPE sand slide (24°, toward -Z), fixed stone roller, foliage + tufts. Colliders: berms/hill/wedge/slide/pods/roller/pit bed (-convcolonly), pit rim (-colonly mesh), zone floor (-colonly).
+- **Sunken-pit option for Vance/Gage:** the model is built on y = 0 with raised berms (no below-floor geometry). If a true sunken pit is wanted, cut the floor locally under the ball pool (circle r 1.08 at local (-0.9, 0.3)) and drop the pool 0.3-0.4 m; the berms then read as the pit edge. Needs a level-floor change (Vance) and a collider/floor-mesh update (Gage).
