@@ -3506,20 +3506,16 @@ func _retrigger_reflection_probe() -> void:
 	_probe_rebake_frames = 2
 
 
-# [M-37] One 3.0 x 1.5 m card per apartment. Pivot is the window bottom-centre, 0.15 m
-# inside the glass, facing the street. QuadMesh local +Z is the outward normal.
-# 103/104/203/204/201 are the RevC_Window_*_Glass panes in the sector GLB
-# (preface_sector_rev_c_generator.py WIN). 101/102/202 have no cut: the window wall is
-# the north exterior (corridor door on z +0.8). Their X comes from the rev C.2 plan:
-#   101 between the bed (x -11.9) and the tool wall (x -8.0)
-#   102 in front of the reading chair and plants (x 9..11)
-#   202 in front of the window chairs (x 1.3..2.5) and planter marks (x 2.7..5.0)
-# The north glass plane is the wall centreline, measured from the shell at runtime.
+# [M-37] One 3.0 x 1.5 m card per windowed apartment. Pivot is the window bottom-centre,
+# 0.15 m inside the glass, facing the street. QuadMesh local +Z is the outward normal.
+# 103/104/201/203/204 are the RevC_Window_*_Glass panes in the sector GLB
+# (preface_sector_rev_c_generator.py WIN). 101/102/202 have no window in the Rev C shell.
+# If a glass pane is missing, the card falls back to the north exterior wall centreline,
+# measured from the shell at runtime.
 # Removal decals (decal_103/104/202/204) are not placed.
-const WINDOW_CARD_UNITS: PackedStringArray = ["101", "102", "103", "104", "201", "202", "203", "204"]
+const WINDOW_CARD_UNITS: PackedStringArray = ["103", "104", "201", "203", "204"]
 const WINDOW_CARD_SIZE := Vector2(3.0, 1.5)
 const WINDOW_CARD_GLASS_INSET := 0.15
-const WINDOW_CARD_NORTH_X: Dictionary = {"101": -9.95, "102": 10.0, "202": 3.15}
 
 
 func _place_window_cards() -> void:
@@ -3554,7 +3550,7 @@ func _window_card_placement(sector: Node, unit: String) -> Dictionary:
 		glass = _lookup_sector_node(sector, "RevC_Window_%s_Glass" % unit)
 	if glass is MeshInstance3D and (glass as MeshInstance3D).mesh != null:
 		return _placement_from_glass(glass as MeshInstance3D, inside)
-	return _placement_from_north_wall(sector, unit, inside, floor_y)
+	return _placement_from_north_wall(sector, inside, floor_y)
 
 
 func _placement_from_glass(mi: MeshInstance3D, inside: Vector3) -> Dictionary:
@@ -3595,10 +3591,8 @@ func _placement_from_glass(mi: MeshInstance3D, inside: Vector3) -> Dictionary:
 	return {"pos": pos, "normal": outward}
 
 
-func _placement_from_north_wall(sector: Node, unit: String, inside: Vector3, floor_y: float) -> Dictionary:
+func _placement_from_north_wall(sector: Node, inside: Vector3, floor_y: float) -> Dictionary:
 	var x: float = inside.x
-	if WINDOW_CARD_NORTH_X.has(unit):
-		x = float(WINDOW_CARD_NORTH_X[unit])
 	var inner_z := 8.9
 	var outer_z := 9.1
 	var shell_name := "RevC_Shell_L1" if floor_y < 2.0 else "RevC_Shell_L2"
