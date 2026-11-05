@@ -21,3 +21,9 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - Soft-play (#69): if Vance picks a sunken pit, cut the floor mesh and collider under the ball pool (r 1.08 at local (-0.9, 0.3)) and drop the pool 0.3-0.4 m.
 - Surface (#72): 6 m periodic tile, no rotation. Overlay top +0.038. Each piece has its own pad.
 - Toddler zone (#67): the colliders include the Zone-colonly floor at y 0.
+
+## Entrance bay (#74)
+- tt_entrance_bay.glb (4.0 m) / tt_entrance_bay_half.glb (2.0 m): tile along local X, pivot bottom centre, glass line local z 0, +Z = terrace. 42 m run = 10 full + 1 half (position of the half bay TBD, Vance).
+- Doors are modelled closed. If they should open (auto-sliding or swing), split the Glass_Door_* / Door_Stiles leaves and script them. Colliders still need adding (doors, canopy blade, bollards, kerb).
+- Door glass is BLEND for now. If Vance switches it to alpha-scissor (§3.11.9), change the material to dithered scissor with an opaque frit edge.
+- The canopy (2.6 m) and the kerb/hedge (to z 1.82) project onto the terrace, so keep the navmesh / egress clear.

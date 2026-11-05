@@ -46,3 +46,9 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 
 ## Deferred
 - Curtain wall moss + vine overlay (#52), deferred by Jared.
+
+## Entrance bay (#74 tt_entrance_bay / _half)
+- No F1/F2 façade definition: the spec only defines the F3 Glass Box wall (§3.11.1). Please define the F1/F2 elevation on all faces, including F2 (6.1..12.2) above the W doors (not built), and the S/N/E secondary entrances.
+- 42 m door run = 10.5 x 4.0 m bays: the run is built as 10 x 4.0 m + 1 x 2.0 m half bay. Where does the half bay go, and how does the run align with the 8 m façade columns (not modelled as separate assets)?
+- Door glass: built BLEND (envelope). §3.11.9 makes lobby / pool-hall glass opaque-frit alpha-scissor. Should the entrance doors switch to alpha-scissor (stacking with the Glass Box BLEND layer from the F3 terrace)?
+- Canopy reach: the canopy projects 2.6 m over the West Arrival terrace (+3.0..+3.16, fascia to ~+3.3), and the kerb, hedge and bollards reach z 1.82 m. Neither is in the spec. Check the terrace circulation and egress width (§5.3) in front of the doors.
