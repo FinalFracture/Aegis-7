@@ -7,7 +7,7 @@ TT_Gunmetal, TT_BrushedSteel, TT_CarbonSlate, Glass, TT_WhiteComposite, TT_Brush
 ## Needed
 - TT_Leaf / TT_LeafLight: leaf crests, foliage, vines and leaf relief (ridge crown #73, playground, benches). Tileable leaf-green albedo/normal.
 - TT_Soil: soil/berm mounds (playground).
-- TT_BallYellow: tennis-ball holds/finials, felt look (climbing #60, bar #62, fence #71, ridge #73 n/a).
+- TT_BallYellow: tennis-ball holds/finials, felt look (climbing #60, bar #62, fence #71).
 - TT_AmberLED / TT_CyanLED: emissive court-line strips (bar, climbing, fence).
 - TT_StairSlate: stair finish (check it matches the Rev C stair PBR).
 - TT_AccentViolet / TT_StatusGreen: status accents (emissive).
