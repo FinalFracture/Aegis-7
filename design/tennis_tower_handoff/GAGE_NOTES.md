@@ -38,3 +38,9 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 ## Terrace kit (#77)
 - Place tt_terrace_deck / tt_terrace_edge at y=+3.70 (deck top = +4.00). Under terrace edges use tt_plinth_skirt_terrace(_half) (top +3.70), NOT tt_plinth_skirt (top +4.00, for façade-only runs). Same footprint/pivot, same 4/2 m tiling.
 - Ramp tiles chain at 4 m X / -0.20 m Y; aprons 4 m wide, 1:12. Deck tiles have a medallion each; rotate/alternate if repetition reads.
+
+## Secondary entrances (#78)
+- Three face assets: tt_secondary_entrance_s.glb / _n.glb / _e.glb (not a single face-param GLB). Same 8.0 × 6.1 m module, pivot bottom centre, +Z out, BLEND glass. Pick the face that matches the wall; do not mirror to change the letter (mirroring would reverse the glyph).
+- Place S/N at grade on tt_terrace_apron; place E on the East Plaza terrace (module y = +3.70 with deck/edge). Flank with tt_facade_bay (4 m) — 1 m of each façade bay overlaps the 10 m lift gap as filler.
+- Skirt under E (and any terrace secondary): use tt_plinth_skirt_terrace as **2 + 4 + 2 m** centred on the door (half at x=−3, full at x=0, half at x=+3) so no skirt seam falls on the door centreline. Seams land at ±3 m.
+- Doors modelled closed. Clear opening per leaf pair ≈ 1.72 × 2.34 m. Script open/slide if needed; colliders: Wall / Jamb / DoorClear / Canopy / Scoreboard.

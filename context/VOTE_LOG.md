@@ -1958,3 +1958,9 @@
 - Promoted: godot/assets/models/tt_terrace_deck.glb (2408 tris), tt_terrace_edge.glb (3084), tt_terrace_ramp.glb (1924, 1:20.3 walk PASS), tt_terrace_apron.glb (752, 1:12.8 walk PASS); source assets/src/tennis_tower/terrace_final.py.
 - Sculpt: bevelled pavers +-3 mm with 10 mm recessed joints, joint moss + grass tufts, raised white/amber court-line strips, inset tennis-ball medallion (slate disc, amber ring, seams, service-box T) on the deck; grooved anti-slip nosing + court-line edges on the apron; stepped coping, court line, post base plates, kick panels with net relief on the edge; bevelled sloped pavers, court strips, kerb coping on the ramp.
 - Skirt height fix: new tt_plinth_skirt_terrace.glb (4908) + tt_plinth_skirt_terrace_half.glb (2622) top out at +3.70 under deck/edge (place deck/edge at y=3.70). Tiling, seams 4|4/4|2/2|4, clipping, validator, first_pass_check all PASS.
+
+## #78 — Tennis Tower S/N/E secondary entrances: V5 Rally Mark (Jared pick), densified + promoted (Rook, 2026-11-05)
+- Promoted three face assets (cleaner than a baked face-param single GLB): godot/assets/models/tt_secondary_entrance_s.glb (5480 tris), tt_secondary_entrance_n.glb (5608), tt_secondary_entrance_e.glb (5416). Source: assets/src/tennis_tower/secondary_entrance_final.py.
+- Density: sculpted bevelled S/N/E glyphs on twin plaques; racket-arch with throat + string-grid relief; ball finials with seam curves + leaf crests; layered scoreboard (back plate, recessed well, cell bezels, cyan cells, amber LEDs, court-line); net-pattern kick panels; seated mat moss + dense planted kerb (no planter boxes, no wood).
+- Skirt seam fix: under the 8 m module use plinth_skirt_terrace as 2+4+2 m (half + full + half) so seams sit at ±3 m, not at the door centreline. Documented in GAGE_NOTES.
+- Checks: clipping, validator, façade seams, door clearance (1.72 × 2.34 m per leaf pair), skirt 2+4+2, first_pass_check — all PASS.
