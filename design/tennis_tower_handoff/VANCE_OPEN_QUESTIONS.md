@@ -69,3 +69,10 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 - Deck build-up: the deck tiles are 0.30 m deep (surface at +4.0, so the tiles sit at +3.70). Where the terrace edge is over the plinth skirt, the skirt top must be at +3.70, not +4.0 (trim 0.3 m off the top course, or a 3.7 m skirt variant). Also the spec says "deck on fill 1.4-4.0 m": confirm the retaining edge is the tt_plinth_skirt language.
 - The East Spine ramp: 12 m wide x 80 m at 1:20 = 20 x 4 m modules per half (mirrored halves). Do any intermediate landings or rest areas apply (not required at 1:20 under IBC)? What retains the sides of the ramp (fill + skirt, or open structure)?
 - The corner links (terrace to the loop arms, "+4.0..4.2, level") and the Fore Hub Station Walk steps + 1:12 switchback (§3.8) aren't covered by this kit yet. Do they need their own modules?
+
+## Secondary entrances S/N/E (candidates, Rook 2026-11-05)
+- Spec gives S/N at grade and E on the East Plaza terrace, and a ~10 m lift-lobby gap (X 66.5..76.5 / Station Walk x 126.5..136.5), but no F1 door count, clear width, canopy reach or wayfinding for the secondary doors. Candidates are an 8.0 m module (2 × 4 m façade columns) with 1 m façade fillers each side. Confirm width (8 vs 10 m), door count (2 double pairs built) and whether S/N share one asset mirrored on X.
+- Canopy projects ~2.2 m over the apron / terrace (shorter than the W main's 2.6 m). Check Rim Promenade / East Plaza clear width and egress in front of the doors.
+- Face glyph (S/N/E) is a parameter on the wayfinding blade. Prefer one GLB + face param, or three promoted assets?
+- E sits on tt_terrace_* at +3.70; S/N sit on tt_terrace_apron at grade. Is a level-adjusted skirt / threshold needed under E, or does the terrace deck already cover it?
+- F2 above the secondary doors is not modelled (module is F1 6.1 m only, matching #74). Confirm F2 treatment.
