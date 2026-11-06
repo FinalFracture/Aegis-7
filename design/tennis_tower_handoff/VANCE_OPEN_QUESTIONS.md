@@ -76,3 +76,9 @@ Not sent. Kept as a file per Jared. Source: context/VOTE_LOG.md #52-#73.
 - Face glyph (S/N/E) is a parameter on the wayfinding blade. Prefer one GLB + face param, or three promoted assets?
 - E sits on tt_terrace_* at +3.70; S/N sit on tt_terrace_apron at grade. Is a level-adjusted skirt / threshold needed under E, or does the terrace deck already cover it?
 - F2 above the secondary doors is not modelled (module is F1 6.1 m only, matching #74). Confirm F2 treatment.
+
+## Foyer ticketing + lobby desk (candidates, Rook 2026-11-06)
+- Spec places ticketing in the W foyer (X −12..0, Z 10..69) under the F2 gallery but does not give desk length, station count, accessible bay rules, queue layout or kiosk count. Candidates use an 8.0 m desk (tileable) with a centred 1.0 m accessible bay (top 0.86 m, knee clear), standard top 1.05 m, freestanding kiosks, 1.2 m-centre stanchions (≈1.12 m aisle) and a 4 m backdrop wall. Confirm lengths, counts and placement relative to the 42 m doors and ST-AQS/AQN.
+- Guest face is modelled +Z (place with yaw so +Z faces the W doors). Confirm orientation vs the foyer long axis (Z).
+- Staff screens / ticket pads are props on the desk; are live ticket printers / RFID readers a Gage scripting concern or baked mesh only?
+- Backdrop screen band is BLEND cyan glass-like. Should foyer digital signage be opaque-frit alpha-scissor per §3.11.9?
