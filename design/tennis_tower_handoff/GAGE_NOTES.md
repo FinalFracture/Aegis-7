@@ -44,3 +44,9 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - Place S/N at grade on tt_terrace_apron; place E on the East Plaza terrace (module y = +3.70 with deck/edge). Flank with tt_facade_bay (4 m) — 1 m of each façade bay overlaps the 10 m lift gap as filler.
 - Skirt under E (and any terrace secondary): use tt_plinth_skirt_terrace as **2 + 4 + 2 m** centred on the door (half at x=−3, full at x=0, half at x=+3) so no skirt seam falls on the door centreline. Seams land at ±3 m.
 - Doors modelled closed. Clear opening per leaf pair ≈ 1.72 × 2.34 m. Script open/slide if needed; colliders: Wall / Jamb / DoorClear / Canopy / Scoreboard.
+
+## Foyer ticketing kit (#79)
+- Assets: tt_foyer_desk.glb (8 m, guest +Z), tt_foyer_kiosk.glb, tt_foyer_stanchion.glb (belt segment toward local +X; place on 1.2 m centres), tt_foyer_backdrop.glb (4 m). Pivot bottom centre. Place desk with +Z facing the W doors; backdrop on the staff side (−Z of the desk).
+- Heights: standard top 1.05 m; centred accessible bay 1.0 m wide at 0.86 m with knee clear under the guest face.
+- **Baked ticket hardware (no live devices):** guest RFID reader pads + ticket slot mouths on the top; staff-side ticket printer boxes with mouth + LED under each monitor. If printers / RFID should animate or print, replace or script over these meshes — do not add a second set.
+- Stanchion belt is a fixed 1.07 m segment from the cassette toward +X; tip is a separate alloy end. Chain by spacing posts 1.2 m on X.

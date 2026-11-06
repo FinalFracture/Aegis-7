@@ -1964,3 +1964,8 @@
 - Density: sculpted bevelled S/N/E glyphs on twin plaques; racket-arch with throat + string-grid relief; ball finials with seam curves + leaf crests; layered scoreboard (back plate, recessed well, cell bezels, cyan cells, amber LEDs, court-line); net-pattern kick panels; seated mat moss + dense planted kerb (no planter boxes, no wood).
 - Skirt seam fix: under the 8 m module use plinth_skirt_terrace as 2+4+2 m (half + full + half) so seams sit at ±3 m, not at the door centreline. Documented in GAGE_NOTES.
 - Checks: clipping, validator, façade seams, door clearance (1.72 × 2.34 m per leaf pair), skirt 2+4+2, first_pass_check — all PASS.
+
+## #79 — Tennis Tower W foyer ticketing kit: V4 River Queue (Jared pick), densified + promoted (Rook, 2026-11-06)
+- Promoted: godot/assets/models/tt_foyer_desk.glb (2116 tris), tt_foyer_kiosk.glb (504), tt_foyer_stanchion.glb (492), tt_foyer_backdrop.glb (2120). Source: assets/src/tennis_tower/foyer_desk_final.py.
+- Density: layered river-slate / gunmetal fascia with amber LED seams, pebble relief, sculpted counter edge, cable rings, seated moss; baked RFID readers + ticket slots on guest top and staff-side ticket printers under monitors (see GAGE_NOTES); kiosk slate base + pebble plinth + deep screen bezel; double cable-ring stanchions with clean belt segment; backdrop river-wave relief + sculpted TICKETS glyphs. No wood, no planter boxes.
+- Clearance: standard top 1.05 m, accessible bay 0.86 × 1.0 m with knee clear, stanchion aisle ≈1.12 m at 1.2 m centres — all PASS. Clipping, validator, first_pass_check PASS.
