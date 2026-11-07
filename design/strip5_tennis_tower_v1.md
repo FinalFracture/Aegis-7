@@ -583,3 +583,18 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 **Rev 3.1 (climbing band edges, raised by temp-Active):**
 1. **ST+S1 (X 57..64) and ST+S2 (X 86..92), both at Z 2.6..13.2, stay where they are.** They split the F2 band into zones: lead hall X 30..57, entry lobby + kids' wall X 64..86, and bouldering hall X 94..113. A **1.8 m clear spine at Z 13.2..15** runs X 30..94 behind both cores and links the zones. No climbing wall, mat or prop goes on a core face or in the spine. Climbing faces stay on X 30..56, the X 84.5 kids' face, and the bouldering hall.
 2. **Bouldering hall (X 94..113, Z 0..15):** the 19 m wall is the hall's **N wall, on Z 15, X 94..113**. It is 4.5 m high, its overhang reaches down to Z 13.5, and the mats run Z 9..15 under it. The X 94 training wall is cut to **13 m, Z 0..13** (10 panels + 0.25 m trim). That leaves a **2 m hall entry at X 94, Z 13..15** at the spine's E end. The spine stops at X 94; inside the hall, Z 9..15 is mats only. The X 113 wall stays 15 m. TC-S4 at X 101.5 stays a free-standing tree boulder, with its own 2 m mat ring.
+
+**Rev 3.2 (F1 leisure rooms, raised by temp-Leisure; Vance proposal unless noted):**
+1. **Axes:** Godot Y-up. Building X = Godot +X (axial), building Z = Godot +Z (across), heights = +Y above F1. Each asset's "front" is as stated in its own spec line (e.g. the §3.12.4 desks face −X).
+2. **Axe throwing:** bays are **3.4 m wide** (across Z), not 3.7 m. Four bays take Z 0.3..13.9 including 0.1 m partitions, with a 0.3 m frame zone at Z 0..0.3 and a **1.1 m spectator/aisle strip at Z 13.9..15**. The acoustic lining goes on the target walls and partitions. Throw length (7 m along X) is unchanged.
+3. **Food court (N band, Z 64..79):**
+   - **Vendors:** 6 stalls, each 6 × 5 m including its kitchen, against the N façade at Z 74..79: 4 at X 30..54 and 2 at X 66..78. ST+N1 (X 58..64) and ST+N2 (X 86..92) stay clear.
+   - **Seating:** about 300 seats on the open floor at Z 64..74 and X 78..113, between the cores. At least 5% of seats are accessible, with 0.9 m clear routes between tables.
+   - **Accessible counters:** every stall has a counter section at least 0.9 m long and 0.86 m high.
+   - **Waste:** out through a service door in the N façade at X 54..57, onto the N arm at grade.
+   - **F3 dining service:** carts go up lift W.
+4. **Arcade (E band, L1 + L2):**
+   - **Cabinet mix per floor:** about 40% video cabinets, 20% redemption games, 10% claw/prize machines, 10% sit-down racers, 6 air-hockey tables, a 4-machine pinball row and 4 VR pods.
+   - **Prize counter:** on L1, beside ST+E.
+   - **Feature stair:** an open 2.5 m-wide stair from L1 to L2 at X 126..139, Z 38..40.5, with a mid landing. It is decorative and not counted for egress.
+5. **Bowling (X 30..57):** keep 8 lanes across Z 0.6..15 (4 pairs at 3.6 m = 14.4 m). Because the sports are story decoration (Jared), lanes run 17 m to the head pin. In X that gives a 2.4 m settee and scoring zone at X 30..32.4, the 4.6 m approach at X 32.4..37, the lane to the head pin at X 54, and the pin deck at X 54..57. The pinsetters' machinery is in the SE plant stack.
