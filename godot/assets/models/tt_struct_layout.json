@@ -1,0 +1,82 @@
+{
+ "tt_struct_f1_slab": {
+  "world_offset": [
+   64.0,
+   -2.9,
+   39.5
+  ],
+  "note": "F1 slab, aquatic decks +2.0/+1.0, diving pit, deck steps"
+ },
+ "tt_struct_f2_slab": {
+  "world_offset": [
+   64.0,
+   5.0,
+   39.5
+  ],
+  "note": "F2 slab, gallery, view/slide bridge decks, downstands"
+ },
+ "tt_struct_f3_slab": {
+  "world_offset": [
+   64.0,
+   10.7,
+   39.5
+  ],
+  "note": "F3 slab, PT band beams, climbing-void trimmers"
+ },
+ "tt_struct_f1_walls": {
+  "world_offset": [
+   56.575,
+   -0.004,
+   39.5
+  ],
+  "note": "F1 partitions + openings"
+ },
+ "tt_struct_f2_walls": {
+  "world_offset": [
+   53.6,
+   6.096,
+   39.5
+  ],
+  "note": "F2 partitions + openings, scissor gallery windows"
+ },
+ "tt_struct_f3_walls": {
+  "world_offset": [
+   71.5,
+   12.196,
+   39.5
+  ],
+  "note": "F3 under-stand WC shells"
+ },
+ "tt_struct_columns": {
+  "world_offset": [
+   63.25,
+   -0.004,
+   39.5
+  ],
+  "note": "PT / runoff / aquatic / E-band columns + pads"
+ },
+ "tt_struct_climb_frame": {
+  "world_offset": [
+   46.0,
+   6.096,
+   8.42
+  ],
+  "note": "W-CL 20 x 11.5 m wall frame"
+ },
+ "tt_struct_void_guard": {
+  "world_offset": [
+   46.0,
+   12.196,
+   5.485
+  ],
+  "note": "F3 climbing-void guard 1.07 m, scissor panes"
+ },
+ "tt_struct_diving_coffer": {
+  "world_offset": [
+   15.0,
+   11.75,
+   26.0
+  ],
+  "note": "diving-well coffer plate, soffit +11.8"
+ }
+}

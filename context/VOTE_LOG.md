@@ -1975,3 +1975,11 @@
 - Density: kelp stipes + blades on moss-capped boulders, pebble/sand bed, kelp-silhouette relief on the opaque reef backdrop, two moss-capped backdrop ledges, alloy fish school, kelp crests on header + mullions; terrazzo with green + dark chips, flush pebble discs, leaf inlays; bench sub-slab + seated moss; plinth kelp side ribbons; double-crest AQUATICS blade (glyphs both faces); finned caustic projector. No wood, no planter boxes.
 - Transparency: Glass_Acrylic is the only BLEND; no other glass in the kit; signage / screens opaque emissive.
 - Checks: clipping, validator, first_pass_check (0 FAIL) PASS on all six; 2-bay tank seam PASS; corridor clear 7.3 m past rail, 6.8 m past bench row (≥ 6 m) PASS.
+
+## #81 — Tennis Tower structural blockout + room ownership + style guide (spec task, no vote; Rook, 2026-11-07)
+- Jared: "design roughly the entire Tower structure". Spec Rev 2.9 (1606573). Generators in `assets/src/tennis_tower/structure/` (tower_plan / struct_lib / build_structure / assemble_preview / render_preview.gd).
+- 21 GLBs `godot/assets/models/tt_struct_*.glb` (25,868 tris total, max 3,712), world offsets in `tt_struct_layout.json`: F1/F2/F3 slabs, F1/F2/F3 walls, columns + pads, aquatic truss (×9), diving coffer, climbing frame, void guard, plant stack (+mirror), roof bay4 / edge / closure / corner, F3 corner closure, ball net.
+- New materials: TT_GlassScissor / TT_NetScissor (MASK, embedded alpha), TT_StructConcrete, TT_PadTeal.
+- Preview: 1,478 placements of 73 GLBs, 38 Godot renders in `/workspace/renders/tennis_tower/structure_blockout/`.
+- Docs: `design/tennis_tower_handoff/ROOM_OWNERSHIP.md` (29 rooms, spec conflicts, bench check), `STYLE_GUIDE.md`.
+- Checks: clipping, validator PASS on all 21; first_pass_check --no-godot 0 FAIL.
