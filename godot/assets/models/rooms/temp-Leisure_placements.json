@@ -1,0 +1,2792 @@
+{
+ "owner": "temp-Leisure",
+ "spec": "design/strip5_tennis_tower_v1.md Rev 3.2 (cc7fd9a)",
+ "axes": "Y up, X axial, Z across; yaw deg about +Y",
+ "note": "p = building coords of the GLB pivot (bottom centre). Entrance scissor copies replace tt_secondary_entrance_n/e at the same spots.",
+ "stats": {
+  "food": {
+   "tables": 19,
+   "accessible_tables": 4,
+   "places": 76,
+   "chairs": 72
+  },
+  "arcade": {
+   "L1": {
+    "tt_arc_redemption": 20,
+    "tt_arc_claw": 10,
+    "tt_arc_video": 40,
+    "tt_arc_airhockey": 6,
+    "tt_arc_vr_pod": 4,
+    "tt_arc_pinball": 4,
+    "tt_arc_racer": 10,
+    "tt_arc_prize_counter": 1,
+    "slots": 489
+   },
+   "L2": {
+    "tt_arc_redemption": 20,
+    "tt_arc_claw": 10,
+    "tt_arc_video": 40,
+    "tt_arc_airhockey": 6,
+    "tt_arc_vr_pod": 4,
+    "tt_arc_pinball": 4,
+    "tt_arc_racer": 10,
+    "slots": 513
+   }
+  },
+  "entrances": {
+   "replaces": {
+    "tt_secondary_entrance_n": "tt_food_entrance_n_scissor",
+    "tt_secondary_entrance_e": "tt_arc_entrance_e_scissor"
+   }
+  }
+ },
+ "rooms": {
+  "F1-BOWL": [
+   {
+    "glb": "res://assets/models/tt_bowl_lane_pair.glb",
+    "asset": "tt_bowl_lane_pair",
+    "p": [
+     44.65,
+     0.0,
+     2.1
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_settee.glb",
+    "asset": "tt_bowl_settee",
+    "p": [
+     31.098,
+     0.0,
+     2.1
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_lane_pair.glb",
+    "asset": "tt_bowl_lane_pair",
+    "p": [
+     44.65,
+     0.0,
+     5.7
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_settee.glb",
+    "asset": "tt_bowl_settee",
+    "p": [
+     31.098,
+     0.0,
+     5.7
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_lane_pair.glb",
+    "asset": "tt_bowl_lane_pair",
+    "p": [
+     44.65,
+     0.0,
+     9.3
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_settee.glb",
+    "asset": "tt_bowl_settee",
+    "p": [
+     31.098,
+     0.0,
+     9.3
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_lane_pair.glb",
+    "asset": "tt_bowl_lane_pair",
+    "p": [
+     44.65,
+     0.0,
+     12.9
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_settee.glb",
+    "asset": "tt_bowl_settee",
+    "p": [
+     31.098,
+     0.0,
+     12.9
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_bowl_core_acoustic.glb",
+    "asset": "tt_bowl_core_acoustic",
+    "p": [
+     56.951,
+     0.0,
+     7.5
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   }
+  ],
+  "F1-AXE": [
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     80.601,
+     0.0,
+     2.0
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     80.601,
+     0.0,
+     5.4
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     80.601,
+     0.0,
+     8.8
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     80.601,
+     0.0,
+     12.2
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     80.575,
+     0.0,
+     3.8128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     80.575,
+     0.0,
+     7.2128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     80.575,
+     0.0,
+     10.6128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_spectator.glb",
+    "asset": "tt_axe_spectator",
+    "p": [
+     80.575,
+     -0.0213,
+     14.2176
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     97.601,
+     0.0,
+     2.0
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     97.601,
+     0.0,
+     5.4
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     97.601,
+     0.0,
+     8.8
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_bay.glb",
+    "asset": "tt_axe_bay",
+    "p": [
+     97.601,
+     0.0,
+     12.2
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     97.575,
+     0.0,
+     3.8128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     97.575,
+     0.0,
+     7.2128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_partition.glb",
+    "asset": "tt_axe_partition",
+    "p": [
+     97.575,
+     0.0,
+     10.6128
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_axe_spectator.glb",
+    "asset": "tt_axe_spectator",
+    "p": [
+     97.575,
+     -0.0213,
+     14.2176
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   }
+  ],
+  "F1-FOOD": [
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     51.0,
+     -0.0799,
+     75.7563
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     69.0,
+     -0.0799,
+     75.7563
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     75.0,
+     -0.0799,
+     75.7563
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     81.0,
+     -0.0799,
+     75.7563
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     98.8,
+     -0.0799,
+     75.7563
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
+    "p": [
+     47.2,
+     -0.0799,
+     66.8437
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     53.03,
+     -0.0008,
+     68.185
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     53.03,
+     -0.0008,
+     70.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     55.61,
+     -0.0008,
+     65.44
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     55.61,
+     -0.0008,
+     68.02
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     68.51,
+     -0.0008,
+     70.765
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     78.83,
+     -0.0008,
+     65.44
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     78.83,
+     -0.0008,
+     68.02
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     78.83,
+     -0.0008,
+     70.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     81.41,
+     -0.0008,
+     65.44
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     81.41,
+     -0.0008,
+     68.185
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     81.41,
+     -0.0008,
+     70.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     83.99,
+     -0.0008,
+     65.44
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     94.31,
+     -0.0008,
+     68.02
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     94.31,
+     -0.0008,
+     70.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     96.89,
+     -0.0008,
+     65.605
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     96.89,
+     -0.0008,
+     68.02
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     96.89,
+     -0.0008,
+     70.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     99.47,
+     -0.0008,
+     65.44
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     99.47,
+     -0.0008,
+     68.02
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_bin.glb",
+    "asset": "tt_food_bin",
+    "p": [
+     53.2,
+     0.0,
+     72.605
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_bin.glb",
+    "asset": "tt_food_bin",
+    "p": [
+     77.6,
+     0.0,
+     64.905
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_bin.glb",
+    "asset": "tt_food_bin",
+    "p": [
+     91.4,
+     0.0,
+     72.405
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_bin.glb",
+    "asset": "tt_food_bin",
+    "p": [
+     86.6,
+     0.0,
+     64.905
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_service_door.glb",
+    "asset": "tt_food_service_door",
+    "p": [
+     55.5,
+     0.0,
+     77.6
+    ],
+    "yaw": 180,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_tree_moss.glb",
+    "asset": "tt_food_tree_moss",
+    "p": [
+     65.5108,
+     -0.127,
+     70.7066
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_tree_moss.glb",
+    "asset": "tt_food_tree_moss",
+    "p": [
+     84.5108,
+     -0.127,
+     70.7066
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_entrance_n_scissor.glb",
+    "asset": "tt_food_entrance_n_scissor",
+    "p": [
+     72.0,
+     0,
+     79.98
+    ],
+    "yaw": 0,
+    "tag": "facade"
+   }
+  ],
+  "F1-ARC/F2-ARC": [
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     0.0,
+     56.25
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     0.0,
+     57.35
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     0.0,
+     58.45
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     0.0,
+     59.55
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     0.0,
+     60.65
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     130.452,
+     0.0,
+     62.6
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     130.452,
+     0.0,
+     63.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     130.452,
+     0.0,
+     64.8
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     130.452,
+     0.0,
+     65.9
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     130.452,
+     0.0,
+     67.0
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     0.0,
+     63.15
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     0.0,
+     64.25
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     0.0,
+     65.35
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     0.0,
+     66.45
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     0.0,
+     67.55
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     117.478,
+     0.0,
+     51.75
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     117.478,
+     0.0,
+     52.85
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     117.478,
+     0.0,
+     53.95
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     117.478,
+     0.0,
+     55.05
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     117.478,
+     0.0,
+     56.15
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     123.965,
+     0.0,
+     70.4
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     123.965,
+     0.0,
+     71.5
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     123.965,
+     0.0,
+     72.6
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     123.965,
+     0.0,
+     73.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     123.965,
+     0.0,
+     74.8
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     120.265,
+     0.0,
+     70.4
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     120.265,
+     0.0,
+     71.5
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     120.265,
+     0.0,
+     72.6
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     120.265,
+     0.0,
+     73.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     120.265,
+     0.0,
+     74.8
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     0.0,
+     45.15
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     0.0,
+     46.25
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     0.0,
+     47.35
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     0.0,
+     48.45
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     0.0,
+     49.55
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     138.938,
+     0.0,
+     49.65
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     138.938,
+     0.0,
+     50.75
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     138.938,
+     0.0,
+     51.85
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     138.938,
+     0.0,
+     52.95
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     138.938,
+     0.0,
+     54.05
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     121.167,
+     0.0,
+     40.2
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     121.167,
+     0.0,
+     41.3
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     121.167,
+     0.0,
+     42.4
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     121.167,
+     0.0,
+     43.5
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     121.167,
+     0.0,
+     44.6
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     0.0,
+     20.6
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     0.0,
+     21.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     0.0,
+     22.8
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     0.0,
+     23.9
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     0.0,
+     25.0
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     0.0,
+     21.3
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     0.0,
+     22.4
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     0.0,
+     23.5
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     0.0,
+     24.6
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     0.0,
+     25.7
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     0.0,
+     9.6
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     0.0,
+     10.7
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     0.0,
+     11.8
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     0.0,
+     12.9
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     0.0,
+     14.0
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     0.0,
+     7.4
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     0.0,
+     8.5
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     0.0,
+     9.6
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     0.0,
+     10.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     0.0,
+     11.8
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     0.0,
+     0.8
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     0.0,
+     1.9
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     0.0,
+     3.0
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     0.0,
+     4.1
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     0.0,
+     5.2
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     0.0,
+     23.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     0.0,
+     23.6
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     0.0,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     0.0,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     0.0,
+     32.8
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     0.0,
+     32.8
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     132.4,
+     0.0,
+     44.0
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     129.9,
+     0.0,
+     47.4
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     132.4,
+     0.0,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     129.9,
+     0.0,
+     54.2
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     0.0,
+     52.0
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     0.0,
+     52.8
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     0.0,
+     53.6
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     0.0,
+     54.4
+    ],
+    "yaw": 90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     1.2
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     2.45
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     3.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     4.95
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     6.2
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     7.45
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     8.7
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     9.95
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     11.2
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     0.0,
+     12.45
+    ],
+    "yaw": -90,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_prize_counter.glb",
+    "asset": "tt_arc_prize_counter",
+    "p": [
+     122.5,
+     0.0,
+     61.105
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     121.178,
+     6.1,
+     61.35
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     121.178,
+     6.1,
+     62.45
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     121.178,
+     6.1,
+     63.55
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     121.178,
+     6.1,
+     64.65
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     121.178,
+     6.1,
+     65.75
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     6.1,
+     62.85
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     6.1,
+     63.95
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     6.1,
+     65.05
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     6.1,
+     66.15
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     127.603,
+     6.1,
+     67.25
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     120.322,
+     6.1,
+     67.9
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     120.322,
+     6.1,
+     69.0
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     120.322,
+     6.1,
+     70.1
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     120.322,
+     6.1,
+     71.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     120.322,
+     6.1,
+     72.3
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     6.1,
+     63.15
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     6.1,
+     64.25
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     6.1,
+     65.35
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     6.1,
+     66.45
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_redemption.glb",
+    "asset": "tt_arc_redemption",
+    "p": [
+     113.783,
+     6.1,
+     67.55
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     117.535,
+     6.1,
+     51.75
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     117.535,
+     6.1,
+     52.85
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     117.535,
+     6.1,
+     53.95
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     117.535,
+     6.1,
+     55.05
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     117.535,
+     6.1,
+     56.15
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     138.87,
+     6.1,
+     48.55
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     138.87,
+     6.1,
+     49.65
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     138.87,
+     6.1,
+     50.75
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     138.87,
+     6.1,
+     51.85
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_claw.glb",
+    "asset": "tt_arc_claw",
+    "p": [
+     138.87,
+     6.1,
+     52.95
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     6.1,
+     27.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     6.1,
+     28.3
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     6.1,
+     29.4
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     6.1,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     124.033,
+     6.1,
+     31.6
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     6.1,
+     27.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     6.1,
+     28.3
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     6.1,
+     29.4
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     6.1,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     116.633,
+     6.1,
+     31.6
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     6.1,
+     27.9
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     6.1,
+     29.0
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     6.1,
+     30.1
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     6.1,
+     31.2
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     134.992,
+     6.1,
+     32.3
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     131.297,
+     6.1,
+     17.15
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     131.297,
+     6.1,
+     18.25
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     131.297,
+     6.1,
+     19.35
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     131.297,
+     6.1,
+     20.45
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     131.297,
+     6.1,
+     21.55
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     127.592,
+     6.1,
+     10.55
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     127.592,
+     6.1,
+     11.65
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     127.592,
+     6.1,
+     12.75
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     127.592,
+     6.1,
+     13.85
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     127.592,
+     6.1,
+     14.95
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     6.1,
+     7.4
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     6.1,
+     8.5
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     6.1,
+     9.6
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     6.1,
+     10.7
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     120.333,
+     6.1,
+     11.8
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     6.1,
+     0.8
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     6.1,
+     1.9
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     6.1,
+     3.0
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     6.1,
+     4.1
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     117.467,
+     6.1,
+     5.2
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     6.1,
+     0.8
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     6.1,
+     1.9
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     6.1,
+     3.0
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     6.1,
+     4.1
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_video.glb",
+    "asset": "tt_arc_video",
+    "p": [
+     113.772,
+     6.1,
+     5.2
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     6.1,
+     23.6
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     6.1,
+     23.6
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     6.1,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     6.1,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     129.85,
+     6.1,
+     32.8
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_airhockey.glb",
+    "asset": "tt_arc_airhockey",
+    "p": [
+     132.8,
+     6.1,
+     32.8
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     132.4,
+     6.1,
+     44.0
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     129.9,
+     6.1,
+     47.4
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     132.4,
+     6.1,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_vr_pod.glb",
+    "asset": "tt_arc_vr_pod",
+    "p": [
+     129.9,
+     6.1,
+     54.2
+    ],
+    "yaw": 0,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     6.1,
+     52.0
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     6.1,
+     52.8
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     6.1,
+     53.6
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_pinball.glb",
+    "asset": "tt_arc_pinball",
+    "p": [
+     128.06,
+     6.1,
+     54.4
+    ],
+    "yaw": 90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     1.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     2.45
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     3.7
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     4.95
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     6.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     7.45
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     8.7
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     9.95
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     11.2
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_racer.glb",
+    "asset": "tt_arc_racer",
+    "p": [
+     122.324,
+     6.1,
+     12.45
+    ],
+    "yaw": -90,
+    "tag": "f2"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_feature_stair.glb",
+    "asset": "tt_arc_feature_stair",
+    "p": [
+     132.7165,
+     -0.1095,
+     39.2764
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_arc_entrance_e_scissor.glb",
+    "asset": "tt_arc_entrance_e_scissor",
+    "p": [
+     140.98,
+     0,
+     37.5
+    ],
+    "yaw": 90,
+    "tag": "facade"
+   }
+  ]
+ }
+}

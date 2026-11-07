@@ -1,0 +1,127 @@
+"""F1-FOOD (X 44..102, Z 64..79). Rev 3.2 s3. Stall = 6 x 5 m incl. kitchen, local front +Z (place yaw 180 on the N facade).
+Only X44..102 is ours, so the 3 spec stalls at X30..48 (R1-NW, temp-Services) are relocated inside our room (reported).
+Facade inner line (tt_facade_bay fins) is Z78.38, so N stalls take Z73.3..78.3."""
+from lz_lib import *
+def stall():
+    it = It(); w, d = 6.0, 5.0; x0, x1, z0, z1 = -3, 3, -2.5, 2.5
+    it.b('Kitchen_Floor', RU, x0 + .14, x1 - .14, 0, .02, z0 + .16, 1.3, col=False)
+    it.b('Back_Wall', G, x0, x1, 0, 3.4, z0, z0 + .15, col=True)
+    for xa, xb in ((x0, x0 + .14), (x1 - .14, x1)): it.b('Side_Walls', SL, xa, xb, 0, 3.4, z0 + .152, 1.3, col=True)
+    for y in (.9, 1.8, 2.7): it.b('Back_Reveal', CY, x0 + .2, x1 - .2, y, y + .03, z0 + .146, z0 + .156)
+    # cook line + hood
+    it.b('Cook_Line', ST, x0 + .2, x1 - .2, .016, .9, z0 + .2, z0 + .85, col=True)
+    for k in range(4): it.b('Cook_Hobs', G, -2.3 + 1.2*k, -1.5 + 1.2*k, .896, .93, z0 + .3, z0 + .75)
+    it.a('Hood', ST, xf(prism([(2.75, 0), (-2.75, 0), (-2.75, -.9), (2.75, -.9)], 2.1, 2.6, [(2.1, .96, .8), (2.6, 1, 1)]), t=(0, 0, z0 + .152 + .9)))
+    it.b('Hood_LED', AM, -2.6, 2.6, 2.06, 2.104, z0 + .3, z0 + .34)
+    # service counter (front) + 0.9 m accessible section at 0.86 m (left end)
+    it.b('Counter_Body', WH, -1.55, 2.86, .016, 1.0, 1.32, 1.9, col=True)
+    it.b('Counter_Top', ST, -1.56, 2.9, .996, 1.05, 1.3, 1.98)
+    it.b('Counter_Acc_Body', WH, -2.62, -1.6, .016, .81, 1.32, 1.9, col=True)
+    it.b('Counter_Acc_Top', ST, -2.66, -1.58, .806, .86, 1.3, 1.98)
+    it.b('Acc_Marker', VIO, -2.3, -2.0, .4, .5, 1.896, 1.904)
+    it.b('Counter_Kick', SL, -2.6, 2.84, .016, .16, 1.896, 1.92)
+    for x in np.arange(-1.3, 2.7, .55): it.b('Counter_Flutes', G, x, x + .06, .2, .95, 1.896, 1.912)
+    it.b('Counter_CourtLine', BA, -1.5, 2.84, .6, .63, 1.908, 1.918)
+    it.b('Sneeze_Scissor', SCR, -1.4, 1.6, 1.046, 1.5, 1.5, 1.516)
+    for x in (-1.42, 1.62): it.a('Sneeze_Posts', ST, tube((x, 1.046, 1.508), (x, 1.52, 1.508), .012, 6))
+    for x in (-2.2, 1.9): it.b('POS', SL, x - .15, x + .15, 1.046 if x > 0 else .856, 1.3 if x > 0 else 1.1, 1.4, 1.6); it.b('POS_Screen', CY, x - .12, x + .12, (1.12 if x > 0 else .93), (1.27 if x > 0 else 1.07), 1.598, 1.606)
+    it.b('Tray_Rail', ALY, -1.5, 2.86, .8, .84, 1.98, 2.2)
+    for x in (-1.0, .5, 2.0): it.b('Tray_Brackets', ST, x, x + .04, .7, .804, 1.92, 2.18)
+    # canopy + menu boards (opaque emissive) + leaf crest + ball finials
+    it.b('Canopy', SL, x0, x1, 3.0, 3.4, 1.3, 2.5, col=True)
+    it.b('Canopy_Soffit_LED', CY, x0 + .2, x1 - .2, 2.996, 3.004, 1.5, 2.3)
+    for k in range(3):
+        xc = -2 + 2*k; it.b('Menu_Frames', G, xc - .9, xc + .9, 3.45, 4.25, 2.0, 2.1)
+        it.b('Menu_Screens', VIO if k == 1 else CY, xc - .84, xc + .84, 3.5, 4.2, 2.096, 2.104)
+    for x in (-2.0, 0, 2.0): it.a('Menu_Hangers', ST, tube((x, 3.396, 2.05), (x, 3.454, 2.05), .02, 6))
+    for k in range(9): it.a('Canopy_Leaves', LF2, zwall_leaf((-2.8 + .7*k, 3.05, 2.5), (k - 4)*.12, .55, .2, face=1))
+    for x in (x0 + .15, x1 - .15): it.a('Canopy_Balls', BA, node((x, 3.5, 2.3), .09, 1))
+    # moss mound bases at the stall corners (integrated greenery, no planter)
+    for x in (x0 + .5, x1 - .5): it.a('Moss_Base', LF, moss_mound((x, 0, 2.38), .2, int(abs(x)*7)))
+    it.col(x0, x1, 0, 3.4, z0, z0 + .15)
+    return emit('tt_food_stall', it, '6x5 m stall incl. kitchen; front +Z; accessible 0.9 m counter at 0.86 m')
+
+def table4(acc=False):
+    it = It()
+    it.b('Base', SL, -.3, .3, 0, .04, -.3, .3)
+    it.a('Pedestal', G, tube((0, .036, 0), (0, .72, 0), .05, 10)); it.col(-.06, .06, 0, .72, -.06, .06)
+    it.b('Top', WH, -.4, .4, .716, .75, -.4, .4, col=True)
+    it.a('Top_Ball', BA, cap((0, .751, 0), .1, .006, 16, 'y'))
+    for k in range(4):
+        m = xf(leaf((0, 0, 0), .26, .1, t=.01), R=trimesh.transformations.rotation_matrix(-math.pi/2, [1, 0, 0])); m.apply_translation((0, 0, -.12))
+        it.a('Top_Leaf', LF2, xf(xf(m, R=trimesh.transformations.rotation_matrix(k*math.pi/2 + .4, [0, 1, 0])), t=(0, .751, 0)))
+    for k, (dx, dz) in enumerate(((0, .62), (0, -.62), (.62, 0), (-.62, 0))):
+        if acc and k == 0: continue
+        R = trimesh.transformations.rotation_matrix(math.atan2(dx, dz), [0, 1, 0])
+        c = It()
+        for sx in (-.19, .19):
+            for sz in (-.19, .19): c.a('Chair_Legs', ALY, tube((sx, 0, sz), (sx*.9, .44, sz*.9), .014, 6))
+        c.b('Chair_Seat', FA, -.22, .22, .436, .48, -.22, .22)
+        c.b('Chair_Back', WH, -.21, .21, .5, .86, .22, .25)
+        c.a('Chair_BackPost', ALY, tube((0, .476, .235), (0, .504, .235), .012, 6))
+        for n, m, mesh in c: it.a(n, m, xf(mesh, R=R, t=(dx, 0, dz)))
+        cb = xf(box(-.22, .22, 0, .48, -.22, .22), R=R, t=(dx, 0, dz)); it.cols.append(cb)
+    if acc: it.a('Acc_Floor_Marker', VIO, box(-.35, .35, 0, .008, .5, 1.2))
+    return emit('tt_food_table4' + ('_acc' if acc else ''), it, '4-top (accessible: 3 chairs + wheelchair place, +Z side)')
+
+def bin_station():
+    it = It()
+    it.b('Bin_Plinth', G, -.6, .6, 0, .08, -.25, .25, col=True)
+    for k, mk in enumerate((GRN, CY, AM)):
+        x = -.39 + .39*k
+        it.b('Bin_Bodies', WH, x - .18, x + .18, .076, 1.0, -.22, .22, col=True)
+        it.b('Bin_Mouths', SL, x - .12, x + .12, .82, .9, .218, .226)
+        it.b('Bin_Stream_LED', mk, x - .14, x + .14, .7, .73, .218, .224)
+    it.b('Bin_Hood', SL, -.6, .6, .996, 1.06, -.25, .26)
+    it.a('Bin_Leaf', LF2, zwall_leaf((-.39, .4, .22), .3, .25, .12)); it.a('Bin_Ball', BA, cap((.39, .45, .222), .08, .01, 12, 'z'))
+    return emit('tt_food_bin', it, '3-stream waste station; waste route to the X54..57 service door')
+
+def service_door():
+    """inside face of the N facade at X54..57 (needs a facade door variant from the shared kit owner)."""
+    it = It()
+    it.b('Door_Frame', G, -1.5, 1.5, 0, 3.0, -.1, .0, col=True)
+    for xa, xb in ((-1.4, -.002), (.002, 1.4)):
+        it.b('Door_Leaves', SGM, xa, xb, .02, 2.7, .0 - D, .05, col=True)
+        it.b('Door_Kick', ST, xa + .05, xb - .05, .08, .4, .048, .056)
+        it.b('Door_Hazard', AM, xa + .05, xb - .05, 2.4, 2.45, .048, .056)
+    it.b('Door_Sign', CY, -.4, .4, 2.75, 2.9, -.004, .006)
+    it.b('Waste_Track', SL, -1.3, 1.3, 0, .01, .06, 1.5)
+    return emit('tt_food_service_door', it, 'waste door X54..57 on the N facade inner face (Rev 3.2 s3)')
+
+def tree_moss():
+    it = It()
+    for k in range(9):
+        a = k*2*math.pi/9; r = 1.45 + .15*(k % 2)
+        it.a('Moss_Ring', LF if k % 2 else LF2, moss_mound((r*math.cos(a), 0, r*math.sin(a)), .32, k))
+    for k in range(5):
+        a = k*2*math.pi/5 + .3; it.a('River_Stones', SL, clump((2.25*math.cos(a), .06, 2.25*math.sin(a)), .14, k + 20))
+    for k in range(9): a = k*2*math.pi/9 + .35; it.b('Edge_Inlay', BA, 1.9*math.cos(a) - .05, 1.9*math.cos(a) + .05, 0, .01, 1.9*math.sin(a) - .05, 1.9*math.sin(a) + .05)
+    return emit('tt_food_tree_moss', it, 'moss + river stone ring around a TC-N tree column base (r 1.0 flare kept clear)')
+
+TREES_N = [(57.5, 70.5), (65.5, 70.5), (84.5, 70.5), (101.5, 70.5)]
+EXCL = [(58, 64, 65.8, 76.4), (86, 92, 65.8, 76.4), (66.5, 70.5, 64, 68), (71, 76.5, 64, 69.5), (50, 53, 64, 66.2), (90, 93, 64, 66.2)]
+STALLS = [(51, 75.8, 180), (69, 75.8, 180), (75, 75.8, 180), (81, 75.8, 180), (98.8, 75.8, 180), (47.2, 66.8, 0)]
+def seats(H=.84, RT=.9, P=2.58):
+    """table sets (half-size H) on a P pitch = 0.9 m clear routes; 1.5 m queue/waste route Z71.8..73.3 kept clear."""
+    ex = EXCL + [(44.15, 50.25, 64.3, 69.3 + 1.2), (101.85, 102.2, 64, 79)]
+    out = []
+    for x in np.arange(44.15 + H + .3, 101.85 - H, P):
+        for z in np.arange(64.3 + H + .3, 71.8 - H + 1e-6, P):
+            if any(a - H - RT < x < b + H + RT and c - H - RT < z < d + H + RT for a, b, c, d in ex): continue
+            if any(math.hypot(x - tx, z - tz) < 1.0 + H + RT for tx, tz in TREES_N): continue
+            out.append((float(x), float(z)))
+    return out
+def build(PL):
+    st = stall(); t4 = table4(); ta = table4(True); bn = bin_station(); sd = service_door(); tm = tree_moss()
+    for x, z, yaw in STALLS: place(PL, st, x, 0, z, yaw)
+    pos = seats(); nacc = math.ceil(.05*len(pos)*4); step = len(pos)/nacc; accs = {int(k*step) for k in range(nacc)}
+    for i, (x, z) in enumerate(pos): place(PL, ta if i in accs else t4, x, 0, z, 0)
+    for x, z in ((53.2, 72.6), (77.6, 64.9), (91.4, 72.4), (86.6, 64.9)): place(PL, bn, x, 0, z, 0)
+    place(PL, sd, 55.5, 0, 78.3, 180)
+    for x, z in TREES_N[1:3]: place(PL, tm, x, 0, z, 0)
+    acc = sum(1 for p in PL if p['asset'] == 'tt_food_table4_acc'); tot = sum(1 for p in PL if p['asset'].startswith('tt_food_table4'))
+    return dict(tables=tot, accessible_tables=acc, places=tot*4, chairs=tot*4 - acc)
+if __name__ == '__main__':
+    PL = []; print(build(PL))
+    for r in REP:
+        if not r['passed']: print(r['asset'], r['bad'], r['coplanar'], r['open'], r['pivot'])

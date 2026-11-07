@@ -1,0 +1,80 @@
+"""F1-AXE (X 77..102, Z 0..15). Rev 3.2 s2: bays 3.4 m (BAY_W param) across Z 0.3..13.9 incl. 0.1 m partitions,
+0.3 m frame zone Z0..0.3, aisle Z13.9..15 (wall face 14.7 -> 0.8 m clear, reported). Throw +X axially.
+Row 1 X77.15..84 (target wall face X84), row 2 = same assets +17 m (X94.15..101, face X101).
+Targets stand on frames at X83.3 / 100.3 to clear the TC-S3 / TC-S4 trunk flare (r 1.0 at grade) in bay 3."""
+from lz_lib import *
+BAY_W = 3.4; X0, XF, XT = 77.2, 83.95, 83.3
+def bay(w=BAY_W):
+    it = It(); a, b = .3 + .05 + D, .3 + w - .05 - D; zc = (a + b)/2
+    it.b('Floor_Mat', RU, X0, XF, 0, .025, a, b, col=True)
+    for x in (XT - 3.66, XT - 4.88): it.b('Throw_Lines', AM, x, x + .05, .021, .03, a + .1, b - .1)
+    for z in (a + .06, b - .09): it.b('Court_Inlay', BA, X0 + .1, XF - .1, .021, .029, z, z + .03)
+    it.b('Wall_Lining', FA, 83.95 + D, 84.002, .1, 5.6, a, b)
+    for y in (1.0, 2.2, 3.4, 4.6): it.b('Lining_Reveal', CY, 83.947, 83.958, y, y + .03, a + .1, b - .1)
+    for z in (zc - 1.05, zc + 1.05):
+        it.a('Target_Posts', ST, tube((XT + .06, .056, z), (XT + .06, 2.75, z), .045, 8)); it.col(XT, XT + .12, 0, 2.75, z - .06, z + .06)
+        it.a('Target_Feet', G, box(XT - .2, XT + .32, .021, .06, z - .12, z + .12))
+    for k in range(5):
+        z0 = zc - 1.0 + k*.4; it.b('Target_Boards', WH, XT - .1, XT + .002, .6, 2.6, z0 + .002, z0 + .398, col=k == 2)
+    yc = 1.52
+    for k, (r, mk) in enumerate(((.62, SL), (.46, CY), (.3, WH), (.12, BA))):
+        xx = XT - .1 - .006 - k*.008; it.a('Target_Rings', mk, cap((xx + .004, yc, zc), r, .012, 24, 'x'))
+    for dz in (-.75, .75): it.a('Kill_Shots', VIO, cap((XT - .1 - .002, 2.32, zc + dz), .055, .012, 12, 'x'))
+    for k in range(7): it.a('Target_LeafCrown', LF2, wall_leaf((XT - .1, 2.55, zc - .9 + .3*k), (k - 3)*.3, .4, .15, face=-1))
+    it.a('Target_Ball', BA, node((XT - .05, 3.1, zc), .09, 1))
+    it.a('Target_Ball_Stem', ST, tube((XT - .05, 2.596, zc), (XT - .05, 3.016, zc), .018, 6))
+    # axe rack + score tablet
+    it.b('Rack_Post', G, 77.35, 77.45, .021, 1.5, a + .25, a + .35, col=True)
+    it.b('Rack_Bar', G, 77.45, 77.6, 1.25, 1.35, a + .1, a + .9)
+    for k in range(3):
+        z = a + .3 + k*.25; it.a('Axe_Handles', ALY, tube((77.62, .796, z), (77.62, 1.34, z), .018, 6))
+        it.b('Axe_Heads', SGM, 77.6, 77.82, .7, .8, z - .012, z + .012)
+    it.b('Tablet_Post', G, 77.35, 77.45, .021, 1.25, b - .35, b - .25, col=True)
+    it.b('Tablet', SL, 77.452, 77.5, 1.05, 1.45, b - .55, b - .05)
+    it.b('Tablet_Screen', CY, 77.498, 77.504, 1.09, 1.41, b - .51, b - .09)
+    return emit('tt_axe_bay', it, f'one axe bay {w} m wide, throw +X, target face X{XT}; place at Z offsets 3.4k, row 2 +17 m in X')
+
+def partition():
+    it = It(); z0, z1 = -.05, .05
+    it.b('Part_Sill', G, X0, XF, 0, .08, z0, z1, col=True)
+    xs = np.linspace(X0 + .03, XF - .03, 5)
+    for x in xs: it.b('Part_Posts', G, x - .03, x + .03, .076, 3.4, z0, z1)
+    for xa, xb in zip(xs[:-1], xs[1:]):
+        it.b('Part_Acoustic', FA, xa + .032, xb - .032, .084, 2.4, z0 + .01, z1 - .01, col=True)
+        it.b('Part_Net_Scissor', NET, xa + .032, xb - .032, 2.44, 3.36, -.008, .008)
+        for za, zb in ((z0 + .006, z0 + .014), (z1 - .014, z1 - .006)): it.b('Part_Reveal', CY, xa + .05, xb - .05, 1.2, 1.23, za, zb)
+        it.b('Part_MidRail', ST, xa + .034, xb - .034, 2.396, 2.444, z0 - .005, z1 + .005)
+    it.b('Part_TopRail', ST, X0, XF, 3.396, 3.46, z0 - .01, z1 + .01)
+    for x in xs[1:-1]:
+        st, lv = vine([(x, .1, z1 + .06), (x + .02, 1.2, z1 + .06), (x - .02, 2.3, z1 + .06)], seed=int(x*10), outward=True)
+        it.a('Vine_Stems', LF, st); it.a('Vine_Leaves', LF2, lv)
+    return emit('tt_axe_partition', it, 'bay partition 0.1 m (acoustic lined, net above 2.4); place at Z 3.7/7.1/10.5')
+
+def spectator():
+    """Z 13.9 screen + gate gaps (aisle side +Z): scissor guard 1.1 m, net to 2.4, lean rail."""
+    it = It(); z = 13.9
+    gaps = [(77.3, 78.3)]; segs = [(78.32, 83.9)]
+    it.b('Screen_Sill', G, X0, XF, 0, .06, z - .05, z + .05)
+    for x0, x1 in segs:
+        xs = np.linspace(x0, x1, 4)
+        for x in xs: it.b('Screen_Posts', G, x - .03, x + .03, .056, 2.4, z - .04, z + .04, col=True)
+        for xa, xb in zip(xs[:-1], xs[1:]):
+            it.b('Screen_Pane_Scissor', SCR, xa + .032, xb - .032, .08, 1.104, z - .008, z + .008); it.col(xa, xb, 0, 2.4, z - .02, z + .02)
+            it.b('Screen_Net_Scissor', NET, xa + .032, xb - .032, 1.16, 2.36, -.006 + z, z + .006)
+            it.b('Screen_Rail', ST, xa + .032, xb - .032, 1.1, 1.16, z - .03, z + .03)
+        it.b('Lean_Rail', ALY, x0, x1, 1.0, 1.05, z + .2, z + .3)
+        for x in xs[::2]: it.b('Lean_Brackets', ST, x - .02, x + .02, .99, 1.01, z + .042, z + .22)
+    it.b('Gate_Jamb', G, 77.27, 77.33, .056, 1.2, z - .04, z + .04, col=True); it.a('Gate_Balls', BA, node((77.3, 1.27, z), .07, 1)); it.a('Gate_Balls', BA, node((78.32, 2.466, z), .07, 1))
+    for k, x in enumerate(np.arange(78.6, 83.7, .9)): it.a('Kick_Moss', LF, moss_mound((x, 0.05, z + .5), .18, k))
+    return emit('tt_axe_spectator', it, 'aisle screen at Z13.9 (gate at X77.3..78.3); row 2 = +17 m')
+
+def build(PL):
+    bb = bay(); pt = partition(); sp = spectator()
+    for dx in (0, 17):
+        for k in range(4): place(PL, bb, dx, 0, BAY_W*k)
+        for k in range(1, 4): place(PL, pt, dx, 0, .3 + BAY_W*k)
+        place(PL, sp, dx, 0, 0)
+if __name__ == '__main__':
+    PL = []; build(PL)
+    for r in REP:
+        if not r['passed']: print(r['asset'], r['bad'], r['coplanar'], r['open'], r['pivot'])
