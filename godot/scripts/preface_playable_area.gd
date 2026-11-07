@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--shot-ring`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -80,6 +80,9 @@ const TEX_DIRS := [
 ]
 const OUT_DIRS := ["res://renders/preface"]
 const QA_DIR := "res://renders/qa"
+# Windowed --shot-ring writes here. Kept off res:// so the shots stay out of the repo.
+const SHOT_RING_DIR := "C:/Users/upchu/aegis_shots"
+const DRUM_SHOT_DIR := "C:/Users/upchu/source/Aegis-7/qa/screens"
 const EXT_PLACEMENTS_PATH := "res://data/exterior_placements_v1_3.json"
 const EXT_RENDER_DIR := "res://renders/queue_2026-10-31"
 const EXT_RENDER_SETTLE_FRAMES := 30
@@ -193,6 +196,15 @@ const CORE_PAD_RADIUS := 1.4
 const DRUM_AXIS_Y := 195.236187
 const DRUM_AXIS_Z := -1.25
 const DRUM_FLOOR_R := 200.0
+# Visual inner hull sits this far outside the walkable face (hidden behind the strips).
+const DRUM_HULL_BEHIND := 0.06
+# GLB spin axis in CylinderHab7_FullScale_Mesh local space.
+const DRUM_MESH_AXIS_Y := 200.0
+# Used only when the pivot-frame sample finds no inner-skin cells.
+const DRUM_HULL_R_FALLBACK := 188.5
+# --qa-drum-align grid. 72 angle bins x these 5 world-x stations. Do not change the count.
+const DRUM_ALIGN_ANGLE_BINS := 72
+const DRUM_ALIGN_STATION_X: Array[float] = [-120.0, 90.0, 210.0, 330.0, 400.0]
 const DRUM_X_MIN := -232.0
 const DRUM_X_MAX := 488.0
 const DRUM_FACETS := 360
@@ -388,8 +400,26 @@ var _qa_exit: bool = false
 var _qa_egress: bool = false
 var _qa_stairs: bool = false
 var _qa_ring: bool = false
+var _qa_drum_align: bool = false
+var _shot_ring: bool = false
 # +1 when steering toward +tangent increases alpha. The circle probe may flip it.
 var _qa_ring_flip: float = 1.0
+# YZ scale on CylinderHab7_DrumAxisPivot. World radius = pivot-frame radius * this. X scale stays 1.
+var _drum_radial_scale: float = 1.0
+# Inner-skin radii in the pivot frame (axis = pivot origin, local +X). Set by _align_drum_hull_to_ring.
+var _drum_skin_min: float = 0.0
+var _drum_skin_median: float = 0.0
+var _drum_skin_max: float = 0.0
+# World drum-alpha of the strip-0 observation window (36 deg wedge). Set when the hull is cut.
+var _drum_window_alpha: float = -2.094395102
+var _drum_window_half: float = 0.314159265
+# cyl_node-local radius that the pivot YZ scale lands on DRUM_FLOOR_R + DRUM_HULL_BEHIND.
+var _drum_skin_local_r: float = 200.06
+# Scratch for --qa-drum-align. Packed arrays stay on the instance so pushes are in place.
+var _align_verts: PackedVector3Array = PackedVector3Array()
+var _align_bins: Array = []
+var _align_stamp: PackedInt32Array = PackedInt32Array()
+var _align_gen: int = 0
 var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
 var _qa_drawcalls: bool = false
@@ -498,6 +528,12 @@ func _ready() -> void:
 		elif arg == "--qa-ring":
 			_qa_ring = true
 			_qa_hand = true
+		elif arg == "--qa-drum-align":
+			_qa_drum_align = true
+			_qa_hand = true
+		elif arg == "--shot-ring":
+			_shot_ring = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -571,6 +607,10 @@ func _ready() -> void:
 			_run_qa_stairs.call_deferred()
 		elif _qa_ring:
 			_run_qa_ring.call_deferred()
+		elif _qa_drum_align:
+			_run_qa_drum_align.call_deferred()
+		elif _shot_ring:
+			_run_shot_ring.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
 		else:
@@ -1274,13 +1314,11 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 	# Cylinder local X is the spin axis (authored axial span about [-368..+354]). No yaw: local +X stays world +X,
 	# the map's long axis (exterior x -47..47). Godot Euler order is YXZ, so a Z component would pitch the axis;
 	# the valley roll is a pure X rotation. Child offset y -200 cancels the GLB axis at y 200, so this pivot is the axis.
-	# Measured with raycasts against the cylinder mesh: rotation (43, 0, 0) pushes terrain up through the map;
-	# (-43, 0, 0) puts the Valley A floor (circular arc, R ~ 200) under the map, with its valley wall at z ~ -26
-	# (matching the canal edge at -25.8). Surface height is constant along X (axis parallel to the map's long axis).
-	# Axis y 187.2, lowered 0.5 m so the inner surface and glass stay below the deck; surface max y about -0.6.
-	# A flat 66 m footprint on an R 200 m arc cannot be fully tangent; the deck floats above the valley floor.
-	# The 135 m axial offset is along X, and Z = 0 holds the axis over the map centre line.
-	cyl_pivot.position = Vector3(135.0, 187.2, 0.0)
+	# Valley roll stays -43 deg so Valley A remains the nadir under the deck. The pivot YZ is the
+	# walkable drum axis. _align_drum_hull_to_ring scales this pivot in Y and Z (X stays 1) so the
+	# inner hull sits just behind the walkable ring. Axial length and end-cap planes stay put.
+	# Axial offset 135 keeps the GLB span [-368, +354] on world x [-233, +489].
+	cyl_pivot.position = Vector3(135.0, DRUM_AXIS_Y, DRUM_AXIS_Z)
 	cyl_pivot.rotation_degrees = Vector3(-43.0, 0.0, 0.0)
 	hab_root.add_child(cyl_pivot)
 
@@ -1289,7 +1327,7 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 		cyl_node.name = "CylinderHab7_FullScale_Mesh"
 		cyl_node.position = Vector3(0.0, -200.0, 0.0)
 		cyl_pivot.add_child(cyl_node)
-		# Mesh edit only. Pivot pose above is the drum axis; this never rotates CylinderHab7_DrumAxisPivot.
+		# Pivot YZ scale plus the window cut. This never rotates CylinderHab7_DrumAxisPivot.
 		_cut_observation_window(cyl_node, cyl_pivot)
 		# [M-04] Opaque drum hull casts shadows, so the sun reaches the interior only through the cut window.
 		_enable_hull_shadows(cyl_node)
@@ -1926,16 +1964,22 @@ func _add_facing_quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Ve
 # [M-17] Opaque ribs every 6° across the 36° wedge (5 interior + 2 edges), plus a 1.2 m cap ring.
 func _add_observation_mullions(cyl_node: Node3D, a0: float, cap_x_neg: float, cap_x_pos: float) -> void:
 	var half_rad: float = deg_to_rad(18.0)
-	var r_out: float = 199.0
-	var r_in: float = 198.8
-	var half_ang: float = 0.15 / r_out
+	# World radii. Vertices are authored in cyl_node space, then the pivot YZ scale
+	# brings them back out to these world radii so the ribs stay just behind the glass.
+	var world_in: float = DRUM_FLOOR_R + 0.02
+	var world_out: float = DRUM_FLOOR_R + 0.22
+	var r_in: float = _drum_mesh_r_for_world(world_in)
+	var r_out: float = _drum_mesh_r_for_world(world_out)
+	var half_ang: float = 0.15 / world_out
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i: int in range(7):
 		var ang: float = a0 - half_rad + deg_to_rad(6.0) * float(i)
 		_add_mullion_rib(st, ang - half_ang, ang + half_ang, r_in, r_out, cap_x_neg, cap_x_pos)
-	_add_cap_perimeter_ring(st, cap_x_neg, 1.0, 198.8, 200.0)
-	_add_cap_perimeter_ring(st, cap_x_pos, -1.0, 198.8, 200.0)
+	var ring_in: float = _drum_mesh_r_for_world(DRUM_FLOOR_R + 0.02)
+	var ring_out: float = _drum_mesh_r_for_world(DRUM_FLOOR_R + DRUM_HULL_BEHIND)
+	_add_cap_perimeter_ring(st, cap_x_neg, 1.0, ring_in, ring_out)
+	_add_cap_perimeter_ring(st, cap_x_pos, -1.0, ring_in, ring_out)
 	st.generate_normals()
 	var mi: MeshInstance3D = MeshInstance3D.new()
 	mi.name = "ObservationWindowMullions"
@@ -2034,13 +2078,153 @@ func _mesh_has_opaque_surface(mi: MeshInstance3D) -> bool:
 	return false
 
 
+# Mesh-local radius that lands on world_r after the pivot's uniform YZ scale.
+func _drum_mesh_r_for_world(world_r: float) -> float:
+	var k: float = _drum_radial_scale
+	if k < 0.001:
+		return world_r
+	return world_r / k
+
+
+# Outer-skin radius in CylinderHab7_FullScale_Mesh local space (axis at y = 200, z = 0).
+# x is the minimum per-angle outer radius, y is the median (0 if none). Tangential faces only.
+# The GLB cross-section is not a circle and some angles have no shell, so the median only
+# sets the pivot scale. A generated skin at the target radius covers every angle.
+func _measure_inner_skin_radius(cyl_node: Node3D) -> Vector2:
+	const ABINS := 72
+	var bins: PackedFloat32Array = PackedFloat32Array()
+	bins.resize(ABINS)
+	bins.fill(-1.0)
+	var meshes: Array[MeshInstance3D] = []
+	var stack: Array[Node] = [cyl_node]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is MeshInstance3D:
+			meshes.append(n as MeshInstance3D)
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	for mi: MeshInstance3D in meshes:
+		if mi.mesh == null:
+			continue
+		var to_cyl: Transform3D = Transform3D.IDENTITY
+		if mi.is_inside_tree() and cyl_node.is_inside_tree():
+			to_cyl = cyl_node.global_transform.affine_inverse() * mi.global_transform
+		for si: int in range(mi.mesh.get_surface_count()):
+			if mi.mesh.surface_get_primitive_type(si) != Mesh.PRIMITIVE_TRIANGLES:
+				continue
+			var arrays: Array = mi.mesh.surface_get_arrays(si)
+			if not (arrays[Mesh.ARRAY_VERTEX] is PackedVector3Array):
+				continue
+			var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var index_v: Variant = arrays[Mesh.ARRAY_INDEX]
+			var indexed: bool = index_v is PackedInt32Array and (index_v as PackedInt32Array).size() >= 3
+			var indices: PackedInt32Array = index_v as PackedInt32Array if indexed else PackedInt32Array()
+			var vcount: int = verts.size()
+			var tri_count: int = indices.size() / 3 if indexed else verts.size() / 3
+			for t: int in range(tri_count):
+				var i0: int = indices[t * 3] if indexed else t * 3
+				var i1: int = indices[t * 3 + 1] if indexed else t * 3 + 1
+				var i2: int = indices[t * 3 + 2] if indexed else t * 3 + 2
+				if i0 < 0 or i1 < 0 or i2 < 0 or i0 >= vcount or i1 >= vcount or i2 >= vcount:
+					continue
+				var p0: Vector3 = to_cyl * verts[i0]
+				var p1: Vector3 = to_cyl * verts[i1]
+				var p2: Vector3 = to_cyl * verts[i2]
+				var r0: float = Vector2(p0.y - DRUM_MESH_AXIS_Y, p0.z).length()
+				var r1: float = Vector2(p1.y - DRUM_MESH_AXIS_Y, p1.z).length()
+				var r2: float = Vector2(p2.y - DRUM_MESH_AXIS_Y, p2.z).length()
+				var rmin: float = minf(r0, minf(r1, r2))
+				var rmax: float = maxf(r0, maxf(r1, r2))
+				if rmax < 120.0 or rmax - rmin > 8.0:
+					continue
+				var c: Vector3 = (p0 + p1 + p2) / 3.0
+				var ang: float = atan2(c.z, c.y - DRUM_MESH_AXIS_Y)
+				var ai: int = int(floor(fposmod(ang + PI, TAU) / TAU * float(ABINS)))
+				if ai < 0 or ai >= ABINS:
+					ai = 0
+				var r_surf: float = (r0 + r1 + r2) / 3.0
+				if r_surf > bins[ai]:
+					bins[ai] = r_surf
+	var vals: Array[float] = []
+	for b: int in range(ABINS):
+		if bins[b] > 1.0:
+			vals.append(bins[b])
+	if vals.is_empty():
+		return Vector2(0.0, 0.0)
+	vals.sort()
+	return Vector2(vals[0], vals[vals.size() / 2])
+
+
+# Scale the drum pivot so the measured outer skin lands on DRUM_FLOOR_R + DRUM_HULL_BEHIND.
+# Y and Z only, so the axial length and the end-cap planes stay put. The pivot stays on the ring axis.
+func _align_drum_hull_to_ring(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
+	var measured: Vector2 = _measure_inner_skin_radius(cyl_node)
+	var r_lo: float = measured.x
+	var r_in: float = measured.y
+	if r_in < 50.0 or r_in > 500.0:
+		r_lo = DRUM_HULL_R_FALLBACK
+		r_in = DRUM_HULL_R_FALLBACK
+	var target: float = DRUM_FLOOR_R + DRUM_HULL_BEHIND
+	var k: float = target / r_in
+	_drum_radial_scale = k
+	_drum_skin_local_r = target / k
+	cyl_pivot.position = Vector3(cyl_pivot.position.x, DRUM_AXIS_Y, DRUM_AXIS_Z)
+	cyl_pivot.scale = Vector3(1.0, k, k)
+	print("[DRUM-HULL] r_in=%.2f..%.2f scale_yz=%.4f target=%.3f" % [r_lo, r_in, k, target])
+
+
+# Full-length cylinder on the walkable radius. The GLB shell does not cover every angle,
+# and its radius varies by metres, so the sampled rays need this skin. The window cut
+# removes the observation wedge afterwards; glass fills that wedge.
+func _add_drum_inner_skin(cyl_node: Node3D) -> void:
+	var radius: float = _drum_skin_local_r
+	var x_lo: float = -420.0
+	var x_hi: float = 420.0
+	var x_step: float = 24.0
+	var a_segs: int = 72
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var x_cursor: float = x_lo
+	while x_cursor < x_hi - 0.01:
+		var x_next: float = minf(x_cursor + x_step, x_hi)
+		for s: int in range(a_segs):
+			var ang0: float = -PI + TAU * float(s) / float(a_segs)
+			var ang1: float = -PI + TAU * float(s + 1) / float(a_segs)
+			var p00: Vector3 = _drum_shell_point(x_cursor, radius, ang0)
+			var p01: Vector3 = _drum_shell_point(x_cursor, radius, ang1)
+			var p10: Vector3 = _drum_shell_point(x_next, radius, ang0)
+			var p11: Vector3 = _drum_shell_point(x_next, radius, ang1)
+			var inward: Vector3 = Vector3(0.0, -cos((ang0 + ang1) * 0.5), -sin((ang0 + ang1) * 0.5))
+			_add_facing_quad(st, p00, p10, p11, p01, inward)
+		x_cursor = x_next
+	st.generate_normals()
+	var skin_mi: MeshInstance3D = MeshInstance3D.new()
+	skin_mi.name = "DrumInnerSkin"
+	skin_mi.mesh = st.commit()
+	var skin_mat: StandardMaterial3D = StandardMaterial3D.new()
+	skin_mat.resource_name = "Mat_DrumInnerSkin"
+	skin_mat.albedo_color = Color(0.32, 0.34, 0.38, 1.0)
+	skin_mat.metallic = 0.35
+	skin_mat.roughness = 0.62
+	skin_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	skin_mi.material_override = skin_mat
+	skin_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	cyl_node.add_child(skin_mi)
+
+
 # Observation window: 36 degree radial wedge, full length, plus glass end caps.
-# The drum pivot is not touched. GLB local +X is the spin axis; the axis sits at local (y = 200, z = 0)
-# because the mesh node is offset by (0, -200, 0). Centroids are measured in that cyl_node frame.
+# The pivot is scaled in Y and Z before this cut (X stays 1). GLB local +X is the spin axis;
+# the axis sits at local (y = 200, z = 0) because the mesh node is offset by (0, -200, 0).
+# Wedge tests stay in that cyl_node frame (uniform YZ scale does not change the angle).
+# The map-box test uses world positions, so it sees the scaled hull.
 func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
+	# Scale first, so the wedge cut and the map-box cut see the aligned surface.
+	_align_drum_hull_to_ring(cyl_node, cyl_pivot)
+	# Skin before the cut so the observation wedge and the map box still open.
+	_add_drum_inner_skin(cyl_node)
 	# World centre direction: overhead, 60 deg from +Y toward -Z, so the deck looks up through the wedge.
 	var d_w: Vector3 = Vector3(0.0, cos(deg_to_rad(60.0)), -sin(deg_to_rad(60.0)))
-	# Pivot rotation only. The GLB child is translated, not rotated, so this is the GLB direction.
+	# Pivot basis includes the uniform YZ scale. atan2 cancels that scale, so a0 stays the strip-0 side.
 	var d: Vector3 = cyl_pivot.global_transform.basis.inverse() * d_w
 	var a0: float = atan2(d.z, d.y)
 	var half_rad: float = deg_to_rad(18.0)
@@ -2132,6 +2316,12 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 				var c: Vector3 = (p0 + p1 + p2) / 3.0
 				var r: float = Vector2(c.y - 200.0, c.z).length()
 				var ang: float = atan2(c.z, c.y - 200.0)
+				# Anything closer to the axis than the skin sticks up through the walkable floor.
+				var poke0: float = Vector2(p0.y - 200.0, p0.z).length()
+				var poke1: float = Vector2(p1.y - 200.0, p1.z).length()
+				var poke2: float = Vector2(p2.y - 200.0, p2.z).length()
+				var poke_min: float = minf(poke0, minf(poke1, poke2)) * _drum_radial_scale
+				var drop_poke: bool = poke_min < DRUM_FLOOR_R + DRUM_HULL_BEHIND - 0.03
 				# angle_difference wraps, so the wedge stays correct across the +/- PI seam.
 				var drop_wedge: bool = r >= 120.0 and absf(angle_difference(ang, a0)) <= half_rad
 				var fn: Vector3 = (p1 - p0).cross(p2 - p0)
@@ -2164,7 +2354,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 						found_pos = true
 				if drop_map:
 					removed_map += 1
-				if drop_wedge or drop_cap or drop_map:
+				if drop_wedge or drop_cap or drop_map or drop_poke:
 					continue
 				kept[kept_n] = i0
 				kept_n += 1
@@ -2217,8 +2407,9 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 	# [M-17]/[M-18] Three single-sided glass meshes. Each origin sits on its own centroid.
 	# Normals face the habitat interior. From outside the hull the glass is not drawn.
 	var glass_mat: StandardMaterial3D = _make_observation_window_glass_material()
-	var wedge_segs: int = 12
-	var strip_r: float = 199.0
+	var wedge_segs: int = 36
+	# Walkable circle in world space. Local radius undoes the pivot YZ scale.
+	var strip_r: float = _drum_mesh_r_for_world(DRUM_FLOOR_R)
 	var strip_v: PackedVector3Array = PackedVector3Array()
 	var strip_n: PackedVector3Array = PackedVector3Array()
 	for seg: int in range(wedge_segs):
@@ -2235,7 +2426,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 		_append_facing_tri(strip_v, strip_n, p_n0, p_f0, p_n1, inward)
 		_append_facing_tri(strip_v, strip_n, p_n1, p_f0, p_f1, inward)
 	_spawn_centered_mesh(cyl_node, strip_v, strip_n, glass_mat, "ObservationWindowGlass_Strip", -1, -50.0)
-	var disc_r: float = 200.0
+	var disc_r: float = _drum_mesh_r_for_world(DRUM_FLOOR_R + DRUM_HULL_BEHIND)
 	var disc_segs: int = 48
 	var cap_xs: Array[float] = [cap_x_neg, cap_x_pos]
 	var cap_names: Array[String] = ["ObservationWindowGlass_CapA", "ObservationWindowGlass_CapB"]
@@ -2298,8 +2489,11 @@ func _add_recreation_grass_slab(cyl_node: Node3D, a0: float) -> void:
 	var segs: int = 24
 	var x0: float = -360.0
 	var x1: float = 350.0
-	var r_top: float = 198.0
-	var r_bot: float = 199.5
+	# World radii, stored in cyl_node space so the pivot scale lands them on the ring.
+	var r_top_world: float = DRUM_FLOOR_R + 0.04
+	var r_bot_world: float = DRUM_FLOOR_R + DRUM_HULL_BEHIND
+	var r_top: float = _drum_mesh_r_for_world(r_top_world)
+	var r_bot: float = _drum_mesh_r_for_world(r_bot_world)
 	_slab_uv_x0 = x0
 	_slab_uv_x1 = x1
 	_slab_uv_a0 = a_rec - half_rad
@@ -2350,7 +2544,7 @@ func _add_recreation_grass_slab(cyl_node: Node3D, a0: float) -> void:
 	grass_mi.mesh = st.commit()
 	var grass_mat: StandardMaterial3D = StandardMaterial3D.new()
 	# [M-35] 2 m tiles: mesh UVs are 0–1 across the arc and the axial width.
-	var arc_len: float = r_top * (half_rad * 2.0)
+	var arc_len: float = r_top_world * (half_rad * 2.0)
 	var slab_w: float = x1 - x0
 	grass_mat.albedo_color = Color(1, 1, 1, 1)
 	grass_mat.roughness = 1.0
@@ -6503,11 +6697,11 @@ func _make_procedural_starfield_texture() -> ImageTexture:
 
 func _build_starfield_outer_cylinder(parent: Node3D) -> void:
 	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7.
-	# Same axis as CylinderHab7_DrumAxisPivot: world +X through (135, 187.2, 0). No valley roll (a full shell).
+	# Same axis as CylinderHab7_DrumAxisPivot. No valley roll (a full shell).
 	# This shell spins about that axis in _process; the habitat drum stays stationary (no spin animation).
 	_starfield_cylinder = Node3D.new()
 	_starfield_cylinder.name = "StarfieldOuterCylinder"
-	_starfield_cylinder.position = Vector3(135.0, 187.2, 0.0)
+	_starfield_cylinder.position = Vector3(135.0, DRUM_AXIS_Y, DRUM_AXIS_Z)
 	parent.add_child(_starfield_cylinder)
 
 	var star_tex: ImageTexture = _make_procedural_starfield_texture()
@@ -8550,7 +8744,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	# Normal play: on the deck, looking through the observation window. The drum stays visible and does not spin.
 	# _qa_place yaw is body yaw (0 faces -Z: atan2(-dir.x, -dir.z)). Pitch is the camera-pivot X rotation.
 	# _apply_pitch clamps first person to PITCH_MIN_DEG..PITCH_MAX_DEG (-80..75). Eye is the camera pivot (1.62 m).
-	var axis_point: Vector3 = Vector3(0.0, 187.2, 0.0)
+	var axis_point: Vector3 = Vector3(0.0, DRUM_AXIS_Y, DRUM_AXIS_Z)
 	var win_dw: Vector3 = Vector3(0.0, cos(deg_to_rad(60.0)), -sin(deg_to_rad(60.0)))
 	var window_p: Vector3 = axis_point + win_dw * 200.0
 	var eye: Vector3 = Vector3(0.0, 0.25 + 1.50 + 0.12, -20.0)
@@ -9711,6 +9905,7 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 	var air: int = 0
 	var max_rho: float = _drum_rho(_player_body.global_position)
 	var fell: bool = false
+	var end_strip: int = start_strip
 	while frames < 8000:
 		var p: Vector3 = _player_body.global_position
 		var a: float = _drum_alpha(p)
@@ -9722,6 +9917,7 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 		noted = _qa_ring_note_strip(prev_k, a, seen)
 		prev_k = noted.x
 		seen = noted.y
+		end_strip = noted.x
 		travelled += wrapf(a - prev_a, -PI, PI) * flip
 		prev_a = a
 		var desired: Vector3 = _drum_tangent(a) * flip + Vector3.RIGHT * clampf((x_hold - p.x) * 0.06, -0.4, 0.4)
@@ -9734,11 +9930,12 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 				fell = true
 				break
 		var back: bool = _drum_strip_index(a) == start_strip and absf(wrapf(a - start_a, -PI, PI)) < deg_to_rad(18.0)
-		if travelled >= deg_to_rad(345.0) and back and seen == 1023 and not fell:
-			return {"ok": true, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "start": start_strip}
+		# Full turn, then the same strip we left (strip 4 at the deck side). Thresholds stay.
+		if rad_to_deg(travelled) >= 360.0 and back and seen == 1023 and not fell:
+			return {"ok": true, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "start": start_strip, "end": end_strip}
 		await get_tree().physics_frame
 		frames += 1
-	return {"ok": false, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "fell": fell, "start": start_strip}
+	return {"ok": false, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "fell": fell, "start": start_strip, "end": end_strip}
 
 
 func _qa_ring_to_alpha(x_hold: float, target_a: float) -> bool:
@@ -9806,13 +10003,16 @@ func _qa_ring_to_x(hold_alpha: float, sign: float, mode: int, goal_x: float) -> 
 func _qa_ring_return_deck() -> bool:
 	var frames: int = 0
 	var hold_x: float = 30.0
+	var crossed4: bool = false
 	while frames < 2000:
 		var p: Vector3 = _player_body.global_position
+		if _drum_strip_index(_drum_alpha(p)) == 4:
+			crossed4 = true
 		var w: float = _drum_world_weight(p)
 		var up_dot: float = _player_body.up_direction.dot(Vector3.UP)
 		var sdf: float = _drum_footprint_sdf(p.x, p.z)
-		if sdf < -1.5 and p.y < 5.0 and p.y > -1.0 and _player_body.is_on_floor() and up_dot > 0.98 and w > 0.95:
-			print("QA_RING PASS | preface | pos=%s up=%.3f w=%.3f sdf=%.2f" % [str(p), up_dot, w, sdf])
+		if crossed4 and sdf < -1.5 and p.y < 5.0 and p.y > -1.0 and _player_body.is_on_floor() and up_dot > 0.98 and w > 0.95:
+			print("QA_RING PASS | preface | pos=%s up=%.3f w=%.3f sdf=%.2f strip4=1" % [str(p), up_dot, w, sdf])
 			return true
 		var a: float = _drum_alpha(p)
 		if w > 0.7 and p.y < 6.0:
@@ -9825,9 +10025,9 @@ func _qa_ring_return_deck() -> bool:
 		await get_tree().physics_frame
 		frames += 1
 	var p2: Vector3 = _player_body.global_position
-	print("QA_RING FAIL | preface | pos=%s up=%.3f w=%.3f sdf=%.2f floor=%s" % [
+	print("QA_RING FAIL | preface | pos=%s up=%.3f w=%.3f sdf=%.2f floor=%s strip4=%d" % [
 		str(p2), _player_body.up_direction.dot(Vector3.UP), _drum_world_weight(p2),
-		_drum_footprint_sdf(p2.x, p2.z), str(_player_body.is_on_floor())
+		_drum_footprint_sdf(p2.x, p2.z), str(_player_body.is_on_floor()), 1 if crossed4 else 0
 	])
 	return false
 
@@ -9876,10 +10076,11 @@ func _run_qa_ring() -> void:
 	await _qa_idle(2)
 	var x_hold: float = _player_body.global_position.x
 	var loop: Dictionary = await _qa_ring_circle(x_hold)
-	var loop_ok: bool = bool(loop["ok"]) and int(loop["seen"]) == 1023 and float(loop["rho"]) <= DRUM_FLOOR_R + 2.0
-	print("QA_RING %s | loop | strips=%d travelled_deg=%.1f max_rho=%.2f frames=%d" % [
-		"PASS" if loop_ok else "FAIL", _qa_ring_popcount(int(loop["seen"])),
-		rad_to_deg(float(loop["travelled"])), float(loop["rho"]), int(loop["frames"])
+	var travelled_deg: float = rad_to_deg(float(loop["travelled"]))
+	var loop_ok: bool = bool(loop["ok"]) and int(loop["seen"]) == 1023 and int(loop["start"]) == 4 and int(loop["end"]) == 4 and travelled_deg >= 360.0 and float(loop["rho"]) <= DRUM_FLOOR_R + 2.0
+	print("QA_RING %s | loop | strips=%d start=%d end=%d travelled_deg=%.1f max_rho=%.2f frames=%d" % [
+		"PASS" if loop_ok else "FAIL", _qa_ring_popcount(int(loop["seen"])), int(loop["start"]), int(loop["end"]),
+		travelled_deg, float(loop["rho"]), int(loop["frames"])
 	])
 	if not loop_ok:
 		failures += 1
@@ -9909,6 +10110,344 @@ func _run_qa_ring() -> void:
 		failures += 1
 	_qa_ring_release()
 	print("QA_RING DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [DRUM] --qa-drum-align. Radial rays, 72 angles x 5 axial stations.
+# Deviation is visual rho minus collider rho. Positive means the hull is outside
+# the walkable face (hidden behind the floor strips). Pass when every sample is
+# within 0.05 m, or behind the floor by at most 0.10 m.
+# Visual hits are the inner skin only. A face counts when its vertices sit on the
+# walkable shell, or it faces the axis with its centroid on that shell. The kept
+# hit is the one whose rho is closest to DRUM_FLOOR_R + DRUM_HULL_BEHIND.
+# ------------------------------------------------------------------------------
+func _drum_align_prepare() -> void:
+	_align_verts = PackedVector3Array()
+	_align_gen = 0
+	if _align_bins.size() != 72:
+		_align_bins = []
+		_align_bins.resize(72)
+		for i: int in range(72):
+			_align_bins[i] = []
+	else:
+		for j: int in range(72):
+			(_align_bins[j] as Array).clear()
+	if _align_stamp.size() != 72:
+		_align_stamp = PackedInt32Array()
+		_align_stamp.resize(72)
+	_align_stamp.fill(0)
+
+
+func _drum_align_bin_of(p: Vector3) -> int:
+	var b: int = int(floor((_drum_alpha(p) + PI) / TAU * 72.0))
+	if b < 0:
+		return 0
+	if b > 71:
+		return 71
+	return b
+
+
+func _drum_align_note(bi: int, start: int) -> void:
+	for db: int in range(-1, 2):
+		var bj: int = (bi + db + 72) % 72
+		if _align_stamp[bj] == _align_gen:
+			continue
+		_align_stamp[bj] = _align_gen
+		var bucket: Array = _align_bins[bj]
+		bucket.append(start)
+
+
+func _drum_align_shell_band(rho: float) -> bool:
+	return rho >= DRUM_FLOOR_R - 1.0 and rho <= DRUM_FLOOR_R + DRUM_HULL_BEHIND + 0.5
+
+
+# Walkable skin, not the radial cut faces that run from the interior out to it.
+func _drum_align_is_shell(a: Vector3, b: Vector3, c: Vector3) -> bool:
+	var ra: float = _drum_rho(a)
+	var rb: float = _drum_rho(b)
+	var rc: float = _drum_rho(c)
+	if maxf(ra, maxf(rb, rc)) - minf(ra, minf(rb, rc)) > 2.5:
+		return false
+	if _drum_align_shell_band(ra) and _drum_align_shell_band(rb) and _drum_align_shell_band(rc):
+		return true
+	var centroid: Vector3 = (a + b + c) / 3.0
+	var target: float = DRUM_FLOOR_R + DRUM_HULL_BEHIND
+	if absf(_drum_rho(centroid) - target) > 1.0:
+		return false
+	var fn: Vector3 = (b - a).cross(c - a)
+	if fn.length_squared() < 0.0000001:
+		return false
+	var radial: Vector3 = _drum_offset(centroid)
+	if radial.length_squared() < 0.0001:
+		return false
+	return fn.normalized().dot(radial.normalized()) < -0.35
+
+
+func _drum_align_insert(a: Vector3, b: Vector3, c: Vector3) -> void:
+	if not _drum_align_is_shell(a, b, c):
+		return
+	_align_gen += 1
+	if _align_gen == 0:
+		_align_stamp.fill(0)
+		_align_gen = 1
+	var start: int = _align_verts.size()
+	_align_verts.push_back(a)
+	_align_verts.push_back(b)
+	_align_verts.push_back(c)
+	_drum_align_cover(a, b, c, start)
+
+
+# Stamp every 5 deg bin the triangle's short arc crosses, plus the neighbour bin.
+# A ray then tests one bin, not every triangle.
+func _drum_align_cover(a: Vector3, b: Vector3, c: Vector3, start: int) -> void:
+	var s0: float = fposmod(_drum_alpha(a) + PI, TAU)
+	var s1: float = fposmod(_drum_alpha(b) + PI, TAU)
+	var s2: float = fposmod(_drum_alpha(c) + PI, TAU)
+	var lo: float = minf(s0, minf(s1, s2))
+	var hi: float = maxf(s0, maxf(s1, s2))
+	var use_lo: float = lo
+	var use_hi: float = hi
+	if hi - lo > PI:
+		use_lo = hi
+		use_hi = lo + TAU
+	var b0: int = int(floor(use_lo / TAU * 72.0))
+	var b1: int = int(floor(use_hi / TAU * 72.0))
+	if b1 < b0:
+		b1 = b0
+	var steps: int = b1 - b0
+	if steps > 24:
+		steps = 24
+	for s: int in range(steps + 1):
+		_drum_align_note((b0 + s) % 72, start)
+
+
+func _drum_align_collect() -> int:
+	_drum_align_prepare()
+	var root: Node = find_child("CylinderHab7_FullScale_Mesh", true, false)
+	if root == null:
+		return 0
+	var stack: Array[Node] = [root]
+	var tris: int = 0
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is MeshInstance3D:
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if mi.mesh != null and mi.mesh.get_surface_count() > 0:
+				var xf: Transform3D = mi.global_transform
+				var faces: PackedVector3Array = mi.mesh.get_faces()
+				var fi: int = 0
+				var fn: int = faces.size()
+				var rho_lo: float = DRUM_FLOOR_R - 4.0
+				var rho_hi: float = DRUM_FLOOR_R + DRUM_HULL_BEHIND + 1.5
+				while fi + 2 < fn:
+					var pa: Vector3 = xf * faces[fi]
+					var pb: Vector3 = xf * faces[fi + 1]
+					var pc: Vector3 = xf * faces[fi + 2]
+					fi += 3
+					tris += 1
+					var cr: float = _drum_rho((pa + pb + pc) * 0.3333333)
+					if cr < rho_lo or cr > rho_hi:
+						continue
+					_drum_align_insert(pa, pb, pc)
+		for ch: Node in n.get_children():
+			stack.append(ch)
+	return tris
+
+
+func _drum_align_visual(origin: Vector3, outward: Vector3) -> Dictionary:
+	var target: float = DRUM_FLOOR_R + DRUM_HULL_BEHIND
+	# Inside the skin, outside the rho-160 clutter. Only shell-band hits compete,
+	# and the one closest to the walkable circle wins — not the first face on the ray.
+	var ray_from: Vector3 = origin + outward * (DRUM_FLOOR_R - 6.0)
+	var ray_to: Vector3 = origin + outward * (target + 1.5)
+	var bi: int = _drum_align_bin_of(origin + outward * target)
+	var bucket: Array = _align_bins[bi]
+	var best_score: float = 1.0e20
+	var best: Vector3 = Vector3.ZERO
+	var found: bool = false
+	for start_v: Variant in bucket:
+		var start: int = int(start_v)
+		if start < 0 or start + 2 >= _align_verts.size():
+			continue
+		var hv: Variant = Geometry3D.segment_intersects_triangle(ray_from, ray_to, _align_verts[start], _align_verts[start + 1], _align_verts[start + 2])
+		if hv == null:
+			continue
+		var hp: Vector3 = hv as Vector3
+		var rho: float = _drum_rho(hp)
+		if not _drum_align_shell_band(rho):
+			continue
+		var score: float = absf(rho - target)
+		if score < best_score:
+			best_score = score
+			best = hp
+			found = true
+	if not found:
+		return {}
+	return {"p": best}
+
+
+func _drum_align_collider(space: PhysicsDirectSpaceState3D, origin: Vector3, outward: Vector3) -> Dictionary:
+	var ray_from: Vector3 = origin + outward * (DRUM_FLOOR_R - 40.0)
+	var ray_to: Vector3 = origin + outward * (DRUM_FLOOR_R + 1.5)
+	var exclude: Array[RID] = []
+	if _player_body != null:
+		exclude.append(_player_body.get_rid())
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ray_from, ray_to, 1, exclude)
+	rq.hit_from_inside = false
+	var hit: Dictionary = space.intersect_ray(rq)
+	if hit.is_empty():
+		return {}
+	return {"p": hit["position"] as Vector3}
+
+
+func _drum_align_ok(dev: float) -> bool:
+	if absf(dev) <= 0.05:
+		return true
+	return dev > 0.0 and dev <= 0.10
+
+
+func _run_qa_drum_align() -> void:
+	await _qa_frames(8)
+	var angles: int = 72
+	var axial: Array[float] = [-120.0, 90.0, 210.0, 330.0, 400.0]
+	var samples: int = angles * axial.size()
+	if _player_body == null or _player_body.get_world_3d() == null:
+		print("[DRUM-ALIGN] angles=%d axial=%d samples=%d max=0.0000 mean=0.0000 FAIL" % [angles, axial.size(), samples])
+		print("[DRUM-ALIGN] DONE failures=1")
+		get_tree().quit(1)
+		return
+	var space: PhysicsDirectSpaceState3D = _player_body.get_world_3d().direct_space_state
+	var tris: int = _drum_align_collect()
+	var sum_abs: float = 0.0
+	var max_abs: float = 0.0
+	var hits: int = 0
+	var failures: int = 0
+	var worst: String = ""
+	for along_x: float in axial:
+		for ai: int in range(angles):
+			var alpha: float = -PI + (float(ai) + 0.5) * TAU / float(angles)
+			var outward: Vector3 = _drum_outward(alpha)
+			var origin: Vector3 = Vector3(along_x, DRUM_AXIS_Y, DRUM_AXIS_Z)
+			var cv: Dictionary = _drum_align_collider(space, origin, outward)
+			var vv: Dictionary = _drum_align_visual(origin, outward)
+			if cv.is_empty() or vv.is_empty():
+				failures += 1
+				if worst == "":
+					worst = "miss x=%.0f deg=%.1f col=%s vis=%s" % [along_x, rad_to_deg(alpha), str(not cv.is_empty()), str(not vv.is_empty())]
+				continue
+			var dev: float = _drum_rho(vv["p"] as Vector3) - _drum_rho(cv["p"] as Vector3)
+			var ad: float = absf(dev)
+			sum_abs += ad
+			hits += 1
+			if ad >= max_abs:
+				max_abs = ad
+				worst = "x=%.0f deg=%.1f dev=%.4f" % [along_x, rad_to_deg(alpha), dev]
+			if not _drum_align_ok(dev):
+				failures += 1
+	var mean_abs: float = sum_abs / float(hits) if hits > 0 else 0.0
+	var passed: bool = failures == 0 and hits == samples
+	print("[DRUM-ALIGN] angles=%d axial=%d samples=%d tris=%d hits=%d max=%.4f mean=%.4f %s" % [
+		angles, axial.size(), samples, tris, hits, max_abs, mean_abs, "PASS" if passed else "FAIL"
+	])
+	if not passed and worst != "":
+		print("[DRUM-ALIGN] worst %s" % worst)
+	print("[DRUM-ALIGN] DONE failures=%d" % failures)
+	_align_verts = PackedVector3Array()
+	_align_bins.clear()
+	get_tree().quit(0 if passed else 1)
+
+
+# ------------------------------------------------------------------------------
+# [DRUM] --shot-ring. Windowed. Three stands on the ring, then PNGs outside the repo.
+# ------------------------------------------------------------------------------
+func _shot_ring_basis(fwd: Vector3, up: Vector3) -> Basis:
+	var z_axis: Vector3 = -fwd.normalized()
+	var x_axis: Vector3 = up.cross(z_axis)
+	if x_axis.length_squared() < 0.000001:
+		x_axis = Vector3.FORWARD.cross(z_axis)
+	x_axis = x_axis.normalized()
+	var y_axis: Vector3 = z_axis.cross(x_axis).normalized()
+	return Basis(x_axis, y_axis, z_axis)
+
+
+func _shot_ring_place(alpha: float, along_x: float, look_bias: Vector3) -> void:
+	var up: Vector3 = -_drum_outward(alpha)
+	var fwd: Vector3 = (_drum_tangent(alpha) + look_bias)
+	if fwd.length_squared() < 0.0001:
+		fwd = _drum_tangent(alpha)
+	fwd = fwd.normalized()
+	var feet: Vector3 = Vector3(along_x, DRUM_AXIS_Y, DRUM_AXIS_Z) + _drum_outward(alpha) * DRUM_FLOOR_R + up * 0.08
+	_player_body.velocity = Vector3.ZERO
+	_player_body.global_transform = Transform3D(_shot_ring_basis(fwd, up), feet)
+	_player_body.up_direction = up
+
+
+func _shot_ring_aim() -> void:
+	var p: Vector3 = _player_body.global_position
+	var basis: Basis = _player_body.global_transform.basis
+	var up: Vector3 = basis.y
+	var fwd: Vector3 = -basis.z
+	var cam: Vector3 = p - fwd * 5.4 + up * 2.3 + basis.x * 1.3
+	var look: Vector3 = p + fwd * 11.0 + up * 0.9
+	_qa_free_cam(cam, look, up, 58.0)
+	_camera.current = true
+
+
+func _shot_ring_save(path: String) -> bool:
+	for _s: int in range(4):
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var tex: ViewportTexture = get_viewport().get_texture()
+	if tex == null:
+		push_warning("[SHOT-RING] no viewport texture")
+		return false
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		push_warning("[SHOT-RING] empty image")
+		return false
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var err: Error = img.save_png(path)
+	if err != OK:
+		push_warning("[SHOT-RING] save error %s" % err)
+		return false
+	print("[SHOT-RING] saved %s" % path)
+	return true
+
+
+func _run_shot_ring() -> void:
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(Vector2i(1280, 720))
+	if _hud != null:
+		_hud.visible = false
+	_third_person = true
+	_apply_view_mode()
+	await _qa_frames(10)
+	var shots: Array[Dictionary] = [
+		{"file": "ring_1.png", "drum": "drum_strip4.png", "alpha": deg_to_rad(-4.0), "x": 86.0, "bias": Vector3(-0.65, 0.0, 0.0), "label": "strip4_ramp"},
+		{"file": "ring_2.png", "drum": "drum_strip0.png", "alpha": deg_to_rad(-144.0), "x": 210.0, "bias": Vector3.ZERO, "label": "strip0_glass"},
+		{"file": "ring_3.png", "drum": "drum_strip5.png", "alpha": deg_to_rad(36.0), "x": 210.0, "bias": Vector3.ZERO, "label": "strip5_grass"},
+	]
+	var failures: int = 0
+	if _player_body == null or _camera == null:
+		print("[SHOT-RING] FAIL | no player")
+		print("[SHOT-RING] DONE failures=1")
+		get_tree().quit(1)
+		return
+	for shot: Dictionary in shots:
+		var alpha: float = float(shot["alpha"])
+		_shot_ring_place(alpha, float(shot["x"]), shot["bias"] as Vector3)
+		await _qa_frames(25)
+		_shot_ring_aim()
+		var path: String = SHOT_RING_DIR + "/" + String(shot["file"])
+		print("[SHOT-RING] %s strip=%d pos=%s" % [String(shot["label"]), _drum_strip_index(alpha), str(_player_body.global_position)])
+		if not await _shot_ring_save(path):
+			failures += 1
+		var drum_path: String = DRUM_SHOT_DIR + "/" + String(shot["drum"])
+		if not await _shot_ring_save(drum_path):
+			failures += 1
+	print("[SHOT-RING] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
 
@@ -10377,8 +10916,21 @@ func _ext_has_collision_relation(mi: Node) -> bool:
 	return false
 
 
+func _node_under_named(n: Node, ancestor_name: String) -> bool:
+	var p: Node = n
+	while p != null:
+		if String(p.name) == ancestor_name:
+			return true
+		p = p.get_parent()
+	return false
+
+
 func _ext_ground_mesh_ok(mi: MeshInstance3D) -> bool:
 	if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
+		return false
+	# Habitat backdrop and the starfield are not promenade ground. A sliver left by the
+	# window cut used to pick up a trimesh and stop the ring walk.
+	if _node_under_named(mi, "CylinderHab7_FullScale_Mesh") or _node_under_named(mi, "StarfieldOuterCylinder") or _node_under_named(mi, "HabDrumSpinGravityRing"):
 		return false
 	if _ext_has_collision_relation(mi):
 		return false
