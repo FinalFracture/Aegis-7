@@ -50,3 +50,12 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - Heights: standard top 1.05 m; centred accessible bay 1.0 m wide at 0.86 m with knee clear under the guest face.
 - **Baked ticket hardware (no live devices):** guest RFID reader pads + ticket slot mouths on the top; staff-side ticket printer boxes with mouth + LED under each monitor. If printers / RFID should animate or print, replace or script over these meshes — do not add a second set.
 - Stanchion belt is a fixed 1.07 m segment from the cassette toward +X; tip is a separate alloy end. Chain by spacing posts 1.2 m on X.
+
+## Aquarium corridor kit (#80)
+- Assets: tt_aquarium_tank / _floor / _bench / _plinth / _sign / _caustic. Pivot bottom centre, local +Z = corridor side.
+- tt_aquarium_tank (5.5 m, tiles on X): place 4 at X = 3.75, 9.25, 14.75, 20.25 with the acrylic centre on Z 42.5 (local z 0) → tank X 1..23. The bay is 2.0 m deep behind the acrylic and includes the 1.2 m terrazzo strip in front (cyan inlay at Z 41.5, lean rail at Z 41.9), so the asset spans Z 40.5..44.5 (bbox centre is not the acrylic line; offset accordingly). Water top +3.2; header/catwalk lip to +3.68. Bays carry half-mullions, so the joints read as full mullions.
+- tt_aquarium_floor (5.5 × 6.8 m): tile on X from X 0, centred on Z 37.9 (covers Z 34.5..41.3 up to the tank strip).
+- Benches: 4 at X 5.0 / 10.5 / 16.0 / 21.5, Z 40.9, facing +Z (backs to the corridor; rotate 180° to face the tank). Plinths: X 2.5 and X 23.5, Z 36.0, screen +Z.
+- tt_aquarium_sign: y 0 = blade bottom, rods 1.0 m up; hang at X 1 and X 24 rotated 90° about Y, bottom ≥ 2.6 m. AQUATICS glyphs on both faces.
+- tt_aquarium_caustic: ceiling mount; y 0 = lens, plate at +0.48; 3 at X 6 / 12 / 18, Z 40, aimed down.
+- Keep the 8.0 m corridor (Z 34.5..42.5) ≥ 6 m clear past the bench row. The X 0 / Z 39.5 portal pier cladding is not in the kit.
