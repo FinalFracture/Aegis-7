@@ -570,3 +570,12 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 
 
 **Rev 2.9 (Jared via Rook):** programme furnishings (gym, arcade, bowling, etc.) reuse existing shared game assets where they fit; bespoke otherwise. Kiosks moved to X 0 wall, see-saws turned to rock along Z, benches moved outside the W fence, Fore cap portal fixed at +4.0 HD.
+
+**Rev 3.0 (blockout d7a72f2 conflicts, Vance calls):**
+1. Playground benches move inside the W fence as 4 fence-mounted perch seats (1.8 × 0.3 m, X 128.3..128.6, centres Z 25/33/41/46). The accessible path becomes X 128.6..129.8 (1.2 m clear, ≥ 0.915 m min). Nothing goes into the track's outer lane.
+2. The slide bridge lands at the gallery door Z 56..58.4, as in the blockout. Bridge neck centred on the door; ST-AQN is untouched.
+3. Confirmed: omit the 3 pool-hall columns at X30/Z39.5, X0/Z12.5 and X0/Z66.5. Core walls carry the load; truss T-W5 bears on a 0.6 m pilaster thickening in the LW wall.
+4. Bowling acoustic wall: no separate wall where it overlaps ST+S1. The acoustic lining (50 mm panels) is applied to the core's W face; the free-standing wall runs only where there's no core.
+5. Accepted: the F3 slab is cut back to Z 9.1, with a 1.07 m guard on the new slab edge.
+6. Accepted: cutouts in the 4 corner roof tiles for the plant stacks (to +28), each with a 0.3 m flashing collar.
+7. New asset: `tt_roof_ridge_12`, a 12 m ridge cap for the X 128–140 strip, using the same profile as the main ridge.
