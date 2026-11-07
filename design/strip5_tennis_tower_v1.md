@@ -253,7 +253,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 | Cross walks x 50 / 150 | 50 / 150 | −62.8..−50, 50..62.8 | 6 m | end at the loop arms |
 - **Area (m², Rev 2.4):** terraces 3,744 + E ramp 960 + N arm 1,672 + corner links 816 + Station Walks 942 ≈ **8,130 m² (0.81 ha)** excluding the existing Rim Promenade (the W ramp is gone).
 - C5 Arena block: **deferred, Jared will revisit**.
-- **Spine at the Fore cap (Vance proposal, needs a Fore Cap map tie):** the cap portal (x 0, z −6..6) lands **level at +4.0 HD** on the terrace. If the Fore Cap map fixes the portal at grade (0 HD), the fallback is grand steps + 2 lifts + a 1:12 switchback ramp (48 m in 4 legs) inside the terrace's W 12 m; an 80 m 1:20 ramp does not fit between the cap and the building.
+- **Spine at the Fore cap (Vance proposal, needs a Fore Cap map tie):** the cap portal (x 0, z −6..6) lands **level at +4.0 HD** on the terrace. **Rev 2.9 decision: build to +4.0 HD; the Fore Cap map must set the portal floor at +4.0 HD. The fallback below is not built.** If the Fore Cap map fixes the portal at grade (0 HD), the fallback is grand steps + 2 lifts + a 1:12 switchback ramp (48 m in 4 legs) inside the terrace's W 12 m; an 80 m 1:20 ramp does not fit between the cap and the building.
 - **Recreation layout:** `recreation_slice_36deg_layout_v1.md` §8 C5 was updated in 2bef23c. Tower complex x 0..310; parks + Dome x 310..520; River x 530..740 unchanged.
 
 ### 3.9 F3 open areas (Jared Rev 2.4; layout Vance proposal)
@@ -321,7 +321,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
   1. combo tower (2 decks at 1.2 / 2.0 m, 2 slides running axially), 8 × 6 m;
   2. 2-bay swing set (4 seats, swinging along X), 7 × 3 m;
   3. climbing dome Ø 4 m;
-  4. 2 see-saws (axial);
+  4. 2 see-saws (rocking across, along Z);
   5. **Meadow Hills** toddler zone, 8 × 8 m (hills, tunnel, mini slide, pods, balance path; Rev 2.8);
   6. 3 balance beams;
   7. soft-play 4 × 4 m, **not sunken** (0.35 m raised rim on the overlay; Rev 2.8);
@@ -386,7 +386,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 - **Secondary:** one 8.0 m module (2 double pairs, 3.6 m clear), mirrored S/N at **X 68..76**, rotated for **E at Z 33.5..41.5**. Canopy 2.2 m; 3 m clear in front. The E threshold is flush on the terrace deck (+4.0). Glyph = a parameter on one asset.
 #### 3.12.4 Foyer ticketing
 - **Desks:** two 8 m desks against X 0 at **Z 22..30 and 49..57**, desk front X −2.5. Each has 1 accessible bay (0.86 m) + 4 stations (1.05 m): **10 stations** in all.
-- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** at X −8.5 (Z 24..28.5, 50.5..55).
+- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** (Rev 2.9) against the X 0 wall, X −1.0..0, faces −X: 4 at Z 30.5..34.0 and 4 at Z 43.0..46.5 (0.875 m pitch), between the desks and clear of the aquarium corridor mouth (Z 34.5..42.5). Use zone X −2.5..−1.0; nothing in the 6 m passage.
 - **Clearances:** a 6 m clear passage (X −12..−6) runs the full foyer length.
 - Model +Z faces −X. Screens are opaque emissive; printers and RFID are baked mesh (any live behaviour is a later Gage item).
 #### 3.12.5 Terraces, ramps, plinth (project rule)
@@ -408,13 +408,13 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
   |---|---|---|
   | Toddler Meadow Hills | 130..138 | 21.5..29.5 |
   | Soft-play | 130..134 | 30.5..34.5 |
-  | See-saws | 135..138 | 30.5..35.5 |
+  | See-saws (Rev 2.9: 2 boards, rocking along **Z**, 3.6 m long × 0.4 m, at X 135.8 and 137.2) | 135..138 | 31.2..34.8 (+0.7 m fall zone each end) |
   | Swing set (swings along X) | 130..134.45 | 37..44 |
   | Balance beams | 134.8..139.8 | 36.5..44.5 |
   | Climbing dome, Ø 7 m pad | centre 134 | centre 48.4 |
   | Combo tower 8 × 6 m | 130..138 | 52.4..58.4 |
 
-  - Benches: 6 on the path facing +X, at Z 23, 29, 35, 41, 47, 53.
+  - Benches (Rev 2.9): 4 benches, 1.8 × 0.5 m, long axis along Z, **outside the W fence** at X 127.2..127.7 facing +X, centres Z 25, 33, 41, 46 (W gate Z 50..51.5 kept clear). The 1.5 m path stays fully clear.
   - Fence: 0.6 m kick-plate + 80 mm pickets.
   - Gates: S (Z 20.6, X 128.5..130), N (Z 58.4, X 128.5..130), W (X 128.3, Z 50..51.5).
   - Surface: rubber overlay at +0.038, with the humps kept off the path.
@@ -567,3 +567,6 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 
 **(Superseded) Rev 2.1 recommendation: R4 Diagrid Lens.** It covers the court and all four stands, has no thrust into the 2-floor band, brings the short-side stands back (+2,084 seats), sits lowest in the skyline (crown +29.3 m), and its oculus gives the building a single story beat. R5 Iris is the story alternative if Jared wants an opening roof.
 - Gravity notes: crown heights give 0.853 g (R4) to 0.775 g (R2 mast tips). Coriolis: a ball or tool dropped from the R4 crown (17.1 m above the court) lands ~0.3 m spinward of plumb (physics, (2/3)ω√(2h³/g)), so hang scoreboards on the lens centre line.
+
+
+**Rev 2.9 (Jared via Rook):** programme furnishings (gym, arcade, bowling, etc.) reuse existing shared game assets where they fit; bespoke otherwise. Kiosks moved to X 0 wall, see-saws turned to rock along Z, benches moved outside the W fence, Fore cap portal fixed at +4.0 HD.
