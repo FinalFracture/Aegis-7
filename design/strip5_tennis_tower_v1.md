@@ -579,3 +579,7 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 5. Accepted: the F3 slab is cut back to Z 9.1, with a 1.07 m guard on the new slab edge.
 6. Accepted: cutouts in the 4 corner roof tiles for the plant stacks (to +28), each with a 0.3 m flashing collar.
 7. New asset: `tt_roof_ridge_12`, a 12 m ridge cap for the X 128–140 strip, using the same profile as the main ridge.
+
+**Rev 3.1 (climbing band edges, raised by temp-Active):**
+1. **ST+S1 (X 57..64) and ST+S2 (X 86..92), both at Z 2.6..13.2, stay where they are.** They split the F2 band into zones: lead hall X 30..57, entry lobby + kids' wall X 64..86, and bouldering hall X 94..113. A **1.8 m clear spine at Z 13.2..15** runs the full band behind both cores and links the zones. No climbing wall, mat or prop goes on a core face or in the spine. Climbing faces stay on X 30..56, the X 84.5 kids' face, and the bouldering hall.
+2. **Bouldering hall (X 94..113, Z 0..15):** the 19 m wall is the hall's **N wall, on Z 15, X 94..113**. It is 4.5 m high, its overhang reaches down to Z 13.5, and the mats run Z 9..13.5. The X 94 training wall is cut to **13 m, Z 0..13** (10 panels + 0.25 m trim). That leaves a **2 m hall entry at X 94, Z 13..15** off the spine, and the spine runs along the foot of the 19 m wall's mat zone. The X 113 wall stays 15 m. TC-S4 at X 101.5 stays a free-standing tree boulder, with its own 2 m mat ring.
