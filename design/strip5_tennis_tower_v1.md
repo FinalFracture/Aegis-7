@@ -1,11 +1,16 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.7**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 2.8**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
 
 ## 0. Revision log
+- **Rev 2.8 (2026-11-06, Vance answers to Rook's base-kit questions, `design/tennis_tower_handoff/VANCE_OPEN_QUESTIONS.md`):**
+  - New **§3.12**: aquarium corridor, foyer ticketing, F1/F2 façade, entrances, terrace edges, playground plan.
+  - W doors realigned to the grid: **Z 17.5..61.5 = 44 m** (11 × 4 m).
+  - S/N apron level resolved; transparency rule restated; kids' wall face corrected to X 84.5.
+  - Toddler zone = Meadow Hills; soft-play not sunken; stand bays 12 seats; ridge ornament to +26.4.
 - **Rev 2.7 (2026-11-03, Rook stair finding; Vance decision):**
   - Stair cores enlarged for code landings: **Type A 5.5 × 10.2 m, Type B 6.0 × 10.6 m**; flight widths unchanged.
   - All 17 cores re-fitted (§4.6). Zone trims:
@@ -140,7 +145,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 - F1 must clear the highest hull point under the footprint, the S face (z −40, h 4.00), so **F1 = +4.0 HD** and **p(Z) = 4.0 − (Z − 40)²/400** (Z = building local).
   - Rev 2.2's p(Z) = 3.9 − (Z − 39.5)²/400 and QA-04's 3.9 − (39.5 − Z)²/400 are **the same function** (the square makes the sign irrelevant); both centre on the building, not the strip, and are ~0.1 m low. The correct reading: **the plinth is deepest (4.0 m) at the centreline, Z 40, and zero at the long S/N faces**, because the floor curves *up* to meet the building there. Rev 2.2 had this backwards ("deepest at the long faces").
   - Values: Z 0 → 0.00; Z 10 → 1.75; Z 22 → 3.19; Z 34 → 3.91; Z 40 → 4.00; Z 79 → 0.20.
-- **Consequence:** the S and N faces are **at grade** (Rim Promenade z −45 is +5.1 HD, N arm z 45 is +5.1: 1:12 aprons over ~1 m). The **W and E faces are 4.0 m above the centreline plazas**: QA-04's level problem is real but it sits on the W/E faces, not S/N.
+- **Consequence:** the S and N faces are **at grade** (Rev 2.8: the +5.1 HD of the Rim Promenade / N arm centrelines is just the hull curve, which is the walking surface. **S face: hull +4.00 = F1, flush threshold. N face: hull +3.80, so a 1:12 apron rises 0.20 m over 2.4 m to F1, falling away from the building**). The **W and E faces are 4.0 m above the centreline plazas**: QA-04's level problem is real but it sits on the W/E faces, not S/N.
 - **Fix (Vance proposal, Jared OK Rev 2.4):** the West Arrival terrace and East Plaza are **raised terraces at +4.0 HD** (structural deck on fill over the hull, 1.4–4.0 m), so the W and E entrances are level. Rev 2.4: the W terrace is fed directly by the Fore cap portal (§3.8), so there is no W ramp; the Spine leaves the East Plaza on a **1:20 ramp** (80 m, x 230..310). The Fore Hub Station Walk descends from the stop tower foot (z −56, +7.8 HD) to the terrace (+4.0) by steps + a 1:12 switchback ramp inside its 12 m width.
 - **Main entrance = W face** (level terrace, 42 m of doors, §5.3); secondary entrances S (x 100 Station Walk side, at grade), N (at grade) and E (terrace).
 - Plinth drawn in `section.png`.
@@ -183,7 +188,7 @@ Field lacrosse (110 × 55 m) needs a 186 × 104 m building, wider than the ~101 
 ### 3.6 Aquatic center (W band X −12..30, F1–F2; Vance proposal)
 | Element | X | Z | Size | Water depth | Deck / note |
 |---|---|---|---|---|---|
-| **W foyer (main entrance hall)** | −12..0 | 10..69 | 12 × 59 | — | F1; doors along the W face Z 18.5..60.5 (**42 m**); ticketing, F2 gallery above |
+| **W foyer (main entrance hall)** | −12..0 | 10..69 | 12 × 59 | — | F1; doors along the W face **Z 17.5..61.5 (44 m, Rev 2.8; was 18.5..60.5 / 42 m)**; ticketing, F2 gallery above |
 | Lobby / aquarium corridor | 0..30 | 34.5..44.5 | 30 × 10 | — | foyer → W lift + stair → F1 concourse; **no slide tube crosses it** |
 | **Lap pool** | 2.5..27.5 | 0.5..21.5 | 25 × 21 (8 lanes) | 2.0 | tank on the F1 slab, deck +2.0 |
 | **Diving well** | 15..28 | 22..34 | 13 × 12 | **4.5** | **3 m + 1 m boards confirmed (Jared, Rev 2.4)**; 2.5 m pit in the plinth (p ≥ 3.19 here) + 2.0 m deck; boards face +X (axial): 3 m board at Z 25 (under the +11.8 coffer), 1 m boards at Z 28.5 and 31.5 |
@@ -310,16 +315,16 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 - **Cabanas (8):** 4 × 4 m. Post-and-beam frame 3.0 m to the eave, fabric hip roof with its **peak at 3.4 m**, 3 sides with roll-down fabric, open toward the glass.
 - **Climbing panels:** module **1.25 m wide**.
   - Lead wall: 20 m = 16 panels, 11.5 m tall in 2.3 m courses (5 courses).
-  - Kids' wall (Z 15 m face): 12 panels × 5.0 m.
+  - Kids' wall: on the **X 84.5 face** (15 m along Z), 12 panels × 5.0 m (Rev 2.8 clarification).
   - Bouldering: 15 m wall = 12 panels; the 19 m wall = 15 panels + a 0.25 m trim; 4.5 m tall, with 1.5 m faceted overhang segments.
 - **Playground (E terrace, 12 × 45 m):**
   1. combo tower (2 decks at 1.2 / 2.0 m, 2 slides running axially), 8 × 6 m;
   2. 2-bay swing set (4 seats, swinging along X), 7 × 3 m;
   3. climbing dome Ø 4 m;
   4. 2 see-saws (axial);
-  5. 4 spring riders + toddler deck in an 8 × 8 m toddler zone;
+  5. **Meadow Hills** toddler zone, 8 × 8 m (hills, tunnel, mini slide, pods, balance path; Rev 2.8);
   6. 3 balance beams;
-  7. soft-play pit 6 × 6 m;
+  7. soft-play 4 × 4 m, **not sunken** (0.35 m raised rim on the overlay; Rev 2.8);
   8. 6 benches;
   9. 1.2 m fence with 3 gates; poured-rubber surface in 3 colours (decals).
   - No spinning pieces (Coriolis).
@@ -351,7 +356,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
   - So no view looks through more than one BLEND layer.
 #### 3.11.10 Rook's questions, answered
 1. **Roof crown: faceted.** Two flat planes meeting at a ridge along X at Z 39.5, not a curved surface.
-2. **2% fall:** **model the roof flat** at top +25.5 for instancing. The crown is shown only as a **ridge cap** (one bay each side of Z 39.5, peak +26.3). The physical fall stays a design note.
+2. **2% fall:** **model the roof flat** at top +25.5 for instancing. The crown is shown only as a **ridge cap** (one bay each side of Z 39.5, peak +26.3; Rev 2.8: leaf ornament may reach +26.4, eaves 0.2 m reveal OK). The physical fall stays a design note.
 3. **Ball net: a separate asset** (alpha-scissor, hung 1.0 m under the space-frame soffit over the F3 play area, plus the F1 court nets).
 4. **Court glass lower: yes**, 3.0 m + net (§3.11.5).
 #### 3.11.11 Column clashes — **DECIDED (Jared, 2026-11-03), applied in Rev 2.6**
@@ -361,6 +366,58 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 | **TC-S3** (84.5, 8.5) vs kids' wall (X 77..85) | trunk inside the kids' wall zone near its E edge | set the kids' wall's E face on **X 84.5** and build the trunk into the wall (clad as a climbable pillar); no zone change |
 | **TC-S2** (65.5, 8.5) vs front desk (X 58..66.5, Z 9..15) | trunk 0.5 m in front of the desk | move the desk front back to **Z 9.5** and leave the trunk free-standing in the lobby as a clad feature column |
 | **TC-S1** (57.5, 8.5) vs ST+S1 (X 58..64, Z 2.6..8.6) and W-CL end (X 56) | trunk 0.5 m from the stair corner, 1.5 m from the wall end | wrap the trunk in a thickened W wall of ST+S1 (core outer face to X 57.0); W-CL stays ending at X 56 |
+
+### 3.12 Base-kit decisions (Rev 2.8; Vance proposal unless marked; full Q&A in `tennis_tower_handoff/VANCE_OPEN_QUESTIONS.md`)
+#### 3.12.1 Lobby / aquarium corridor (X 0..30, Z 34.5..44.5)
+- **Tank:** X 1..23, Z 42.5..44.5, water 2.8 m deep, top +3.2. **Acrylic line on Z 42.5**, 4 × 5.5 m panels, 0.2 m thick. Opaque reef backdrop behind; service catwalk at +3.4 via a hatch from the F2 view bridge. Load ≈ 39.5 kPa ✓.
+- **Corridor:** clear width 8.0 m (Z 34.5..42.5), walk X 0..24.5. The X 0 / Z 39.5 column is clad as a portal pier.
+- **Finish and props:** slate terrazzo floor, a cyan inlay at Z 41.5, a lean rail at Z 41.9, 4 benches, 2 info plinths, 3 caustic projectors.
+- **Wayfinding:** blades at X 1 and X 24; AQUATICS signs at the deck doorways.
+- **Transparency:** the acrylic is the **single BLEND layer** in its view (allowed).
+#### 3.12.2 F1/F2 façade (all faces; 4.0 m bays, 8 m columns)
+- **F1:** 4.0 m storefront (2 × 2.0 m panes) + a 2.1 m slate spandrel.
+  - **Opaque slate bays:** bowling (X 30..57 S), axe (X 77..102 S), WC R1-S/NW/NE, stair cores on the façade (ARS/ARN), and the 1.5 m corner closure panels in front of the plant.
+- **F2:** slate with a 2.4 m ribbon window (+1.2..+3.6) and a cyan LED reveal at each floor line; opaque at WC R2 and the climbing changing rooms.
+  - **Above the W doors:** slate + 0.6 m clerestory, with a **10 m glazed viewing window at Z 34.5..44.5**.
+  - **Above the S/N/E entrances:** a 1.2 m illuminated glyph band.
+- **Façade bay asset:** used on all S/N/E runs and on the W face outside the doors. Tree pedestals may stand 0.12 m into the Rim Promenade (≥ 9.38 m clear).
+#### 3.12.3 Entrances
+- **W main:** doors **Z 17.5..61.5 = 44 m** (11 × 4.0 m bays on grid lines; the 8 m columns sit on bay joints). Canopy 2.6 m. A **6 m egress zone in front of the doors stays clear** (no kerb or hedge; bollards at ≥ 1.5 m spacing).
+- **Secondary:** one 8.0 m module (2 double pairs, 3.6 m clear), mirrored S/N at **X 68..76**, rotated for **E at Z 33.5..41.5**. Canopy 2.2 m; 3 m clear in front. The E threshold is flush on the terrace deck (+4.0). Glyph = a parameter on one asset.
+#### 3.12.4 Foyer ticketing
+- **Desks:** two 8 m desks against X 0 at **Z 22..30 and 49..57**, desk front X −2.5. Each has 1 accessible bay (0.86 m) + 4 stations (1.05 m): **10 stations** in all.
+- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** at X −8.5 (Z 24..28.5, 50.5..55).
+- **Clearances:** a 6 m clear passage (X −12..−6) runs the full foyer length.
+- Model +Z faces −X. Screens are opaque emissive; printers and RFID are baked mesh (any live behaviour is a later Gage item).
+#### 3.12.5 Terraces, ramps, plinth (project rule)
+- **Guards:** 1.07 m, < 100 mm openings, wherever the drop is > 0.76 m. That covers terrace edges, corner-link outer edges, and the East Spine ramp sides from x 230 to ≈ 295 (a 0.15 m kerb below that). No handrails on the 1:20 ramp or the aprons; no ramp landings.
+- **Skirt:** exposed only on terrace / ramp / corner-link edges and a 0.2 m course on the N face.
+  - Stepped 1.0 m course trim is OK.
+  - A 3.7 m variant goes under the 0.30 m deck tiles.
+  - Stepped V1/V2 variants only off circulation.
+- Corner links reuse the deck + skirt. The Fore Hub Station Walk steps get a later small kit.
+#### 3.12.6 Other
+- **Transparency rule (supersedes §3.11.9 wording):** **at most one BLEND layer in any line of sight.** BLEND = the F3 Glass Box envelope/roof and the aquarium acrylic only. Alpha-scissor = all F1/F2 glass (doors, storefront, ribbon, gallery window), court glass, the F3 ball guard and nets. Signage and screens are opaque emissive.
+- **Stands:** 7.5 m bay = **12 seats + a 1.2 m aisle**. Long runs 26.3 m = 3 bays + a 3.8 m cut bay (corner-stair end); short runs 14.0 m = 1 bay + a 6.5 m cut bay (lift-gap end). V6 hybrid finish.
+- **Slides:** island datum F1 + 1.0. The 2.4 m bridge necks to a 1.1 m gate at T2; a 1.0 m link deck at +7.0 joins T2 to T1.
+- **Cabanas:** 8 at X −11..−7, centres at Z 20 + 5.5k, open to −X. **Bar:** staff opening at the +X end (toward lift W); 1.5 m accessible section (0.86 m) at the W end of the S face.
+- **Climbing:** the 19 m bouldering wall is on Z 15 (overhang kick toward −Z); the 15 m walls are on X 113 and X 94 (training). The kids' wall is on the X 84.5 face, with a 2.0 m mat zone.
+- **Playground plan** (zone X 128.3..140, Z 20.6..58.4; flat accessible path X 128.3..129.8):
+
+  | Piece | X | Z |
+  |---|---|---|
+  | Toddler Meadow Hills | 130..138 | 21.5..29.5 |
+  | Soft-play | 130..134 | 30.5..34.5 |
+  | See-saws | 135..138 | 30.5..35.5 |
+  | Swing set (swings along X) | 130..134.45 | 37..44 |
+  | Balance beams | 134.8..139.8 | 36.5..44.5 |
+  | Climbing dome, Ø 7 m pad | centre 134 | centre 48.4 |
+  | Combo tower 8 × 6 m | 130..138 | 52.4..58.4 |
+
+  - Benches: 6 on the path facing +X, at Z 23, 29, 35, 41, 47, 53.
+  - Fence: 0.6 m kick-plate + 80 mm pickets.
+  - Gates: S (Z 20.6, X 128.5..130), N (Z 58.4, X 128.5..130), W (X 128.3, Z 50..51.5).
+  - Surface: rubber overlay at +0.038, with the humps kept off the path.
 
 ## 4. Floor-by-floor plans
 ### 4.1 Summary
@@ -437,7 +494,7 @@ Factors (IBC Table 1004.5): fixed seats as counted; unconcentrated assembly (foo
 - Common path (A: 23 m): the playground has 3 gates, worst common path ≈ 12 m ✓; the climbing belay floor opens at both ends (C-SW side and the S lobby), ≈ 14 m ✓. F2 gallery now has stairs at both ends (ST-AQS/ST-AQN, 47 m apart, plus the W lift/LW via the bridge), so the worst common path ≈ 15 m ✓ (DQ-07).
 - Doc rule 2 exits per building (`strip4_plan.md` §6): exits on all 4 faces.
 ### 5.3 Main exit (DQ-05)
-IBC §1030.2: the main exit must take ≥ ½ the building load. Rev 2.7: ½ × (4,940 + 3,960 + 6,830) × 3.8 mm = **29.9 m** ≤ 42 m ✓. Rev 2.4: ½ × 16,380 (F1 5,120 + F2 4,140 + F3 7,120) × 3.8 mm = **31.1 m**. W face doors **Z 18.5..60.5 = 42 m ✓** onto the +4.0 HD West Arrival terrace (a public way via the Fore cap portal, the Fore Hub Station Walk and the corner links to both loop arms).
+IBC §1030.2: the main exit must take ≥ ½ the building load. Rev 2.7: ½ × (4,940 + 3,960 + 6,830) × 3.8 mm = **29.9 m** ≤ 44 m ✓ (Rev 2.8 door run). Rev 2.4: ½ × 16,380 (F1 5,120 + F2 4,140 + F3 7,120) × 3.8 mm = **31.1 m**. W face doors **Z 18.5..60.5 = 42 m ✓** onto the +4.0 HD West Arrival terrace (a public way via the Fore cap portal, the Fore Hub Station Walk and the corner links to both loop arms).
 ### 5.4 Circulation
 Lift → concourse → stands (front/radial/rear aisles); bands open off the rear aisles and outside; lift speed cap 1.0–1.6 m/s (Coriolis, §2.3).
 
