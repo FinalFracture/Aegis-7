@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 2.8**, 2026-11-03 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.0**, 2026-11-07 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
