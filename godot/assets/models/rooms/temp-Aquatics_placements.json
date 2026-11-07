@@ -1,0 +1,639 @@
+{
+  "spec_revision": "3.2",
+  "axis": "Y-up; +Z front; building coordinates",
+  "water_shader": "res://assets/models/rooms/temp-Aquatics_water.gdshader",
+  "water_material_name": "TT_OpaquePoolWater",
+  "placements": [
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_a.glb",
+      "p": [
+        6.892,
+        0.0,
+        11.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_b.glb",
+      "p": [
+        15.0,
+        0.0,
+        11.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_c.glb",
+      "p": [
+        20.325,
+        1.916,
+        11.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_d.glb",
+      "p": [
+        25.628,
+        0.0,
+        11.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_diving_tank.glb",
+      "p": [
+        21.5,
+        -2.5,
+        28.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "4.5m depth; floor y=-2.5, water y=1.92"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_a.glb",
+      "p": [
+        7.57,
+        1.92,
+        17.26
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "finish on existing +2 deck; stair opening X4..7 kept clear"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_b.glb",
+      "p": [
+        15.0,
+        1.92,
+        17.273
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "finish on existing +2 deck; stair opening X4..7 kept clear"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_c.glb",
+      "p": [
+        25.492,
+        1.92,
+        17.25
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "finish on existing +2 deck; stair opening X4..7 kept clear"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_d.glb",
+      "p": [
+        28.68,
+        1.996,
+        17.25
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "finish on existing +2 deck; stair opening X4..7 kept clear"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_start_blocks.glb",
+      "p": [
+        1.41,
+        2.008,
+        11.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "8 blocks face +X; mount on deck finish at +2.012"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_board_3m.glb",
+      "p": [
+        12.53,
+        2.008,
+        25.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Axial +X board; stairs .1667m rise x.28m; top measured above finish"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_board_1m_285.glb",
+      "p": [
+        14.21,
+        2.008,
+        28.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Axial +X board; stairs .1667m rise x.28m; top measured above finish"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_board_1m_315.glb",
+      "p": [
+        14.21,
+        2.008,
+        31.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Axial +X board; stairs .1667m rise x.28m; top measured above finish"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_nature_relief.glb",
+      "p": [
+        0.3064,
+        2.2,
+        25.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "X0 pool wall sport/nature sculpture, no planter boxes"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_lifeguard_chair.glb",
+      "p": [
+        28.7,
+        2.0081,
+        12.0822
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "East deck +2; seat faces -X across lap pool; >.02m wall gap"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_lockers_a.glb",
+      "p": [
+        -11.475,
+        6.108,
+        37.8
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "40 stacked HDPE/alloy lockers, X-12 wall, no wood"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_lockers_b.glb",
+      "p": [
+        -11.172,
+        6.168,
+        37.8175
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "40 stacked HDPE/alloy lockers, X-12 wall, no wood"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_benches.glb",
+      "p": [
+        -9.525,
+        6.108,
+        39.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "Five composite changing benches; >1.3m locker aisle"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_changing.glb",
+      "p": [
+        -10.4,
+        6.108,
+        15.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "Four private changing cabins; door interaction remains a Gage task"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_showers.glb",
+      "p": [
+        -10.565,
+        6.108,
+        63.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "Four shower bays; dry preview; floor drainage pending"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_floor.glb",
+      "p": [
+        -6.0,
+        6.096,
+        39.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "12mm terrazzo finish, lockers and benches rest on top"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_nature_relief.glb",
+      "p": [
+        -5.7593,
+        6.708,
+        38.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "Sculpted leaf and sport relief on gallery partition, clear of doors"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_gallery_window_frames.glb",
+      "p": [
+        -0.19,
+        7.104,
+        38.75
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-GAL",
+      "note": "Frames reuse existing TT_GlassScissor window panes; 4mm wall embeds"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_bridges_view_guards.glb",
+      "p": [
+        12.235,
+        6.1,
+        39.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-BRG",
+      "note": "Existing view deck +6.1, 1.12m scissor guards; corridor soffit +5.7 untouched"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_bridges_slide_guards.glb",
+      "p": [
+        10.95,
+        6.1,
+        59.2
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-BRG",
+      "note": "Blockout dogleg; gallery landing Z56..58.4. T2 gate and .9m rise still pending"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_services.glb",
+      "p": [
+        12.15,
+        0.02,
+        42.381
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC",
+      "note": "Opaque tank-end closures clad; clear public corridor maintained"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_deck_portal_sign.glb",
+      "p": [
+        5.5,
+        3.08,
+        34.5305
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC",
+      "note": "AQUATICS above X4..7 deck door, 4mm embed in existing header"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_direction_courts.glb",
+      "p": [
+        0.991,
+        2.6,
+        38.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC",
+      "note": "Directional blade replaces generic AQUATICS blade; 2.6m head clearance"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_direction_foyer.glb",
+      "p": [
+        24.009,
+        2.6,
+        38.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC",
+      "note": "Directional blade replaces generic AQUATICS blade; 2.6m head clearance"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_floor_closure.glb",
+      "p": [
+        23.25,
+        0.0,
+        37.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC",
+      "note": "Closes final 2.5m after four reused 5.5m floor bays"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_river.glb",
+      "p": [
+        15.0,
+        0.0,
+        61.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Open continuous 3m rectangular river, 1m deep; no corner dams"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_splash.glb",
+      "p": [
+        11.0,
+        0.4,
+        56.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Opaque water, axial runout reserved; slides remain pending"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_runout.glb",
+      "p": [
+        14.0,
+        0.0,
+        67.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Opaque water, axial runout reserved; slides remain pending"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_deck.glb",
+      "p": [
+        15.0,
+        0.996,
+        61.74
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Finish on existing +1m deck, clear of water channels"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_footbridges.glb",
+      "p": [
+        9.0,
+        1.008,
+        61.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "North/south island footbridges: 0.168m deck step, 1.1m scissor guards"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_splash_sprays.glb",
+      "p": [
+        11.0,
+        0.435,
+        56.5
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Sports ball spray crowns; stylized opaque streams, no alpha blending"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_nature_mounds.glb",
+      "p": [
+        14.5067,
+        1.008,
+        76.7806
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Sculpted river-stone/moss crests integrated into deck, no planter boxes"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_tank.glb",
+      "p": [
+        3.75,
+        0,
+        42.9
+      ],
+      "yaw": 180,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_tank.glb",
+      "p": [
+        9.25,
+        0,
+        42.9
+      ],
+      "yaw": 180,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_tank.glb",
+      "p": [
+        14.75,
+        0,
+        42.9
+      ],
+      "yaw": 180,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_tank.glb",
+      "p": [
+        20.25,
+        0,
+        42.9
+      ],
+      "yaw": 180,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_floor.glb",
+      "p": [
+        2.75,
+        0,
+        37.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_floor.glb",
+      "p": [
+        8.25,
+        0,
+        37.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_floor.glb",
+      "p": [
+        13.75,
+        0,
+        37.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_floor.glb",
+      "p": [
+        19.25,
+        0,
+        37.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_bench.glb",
+      "p": [
+        5,
+        0.02,
+        40.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_bench.glb",
+      "p": [
+        10.5,
+        0.02,
+        40.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_bench.glb",
+      "p": [
+        16,
+        0.02,
+        40.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_bench.glb",
+      "p": [
+        21.5,
+        0.02,
+        40.9
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_plinth.glb",
+      "p": [
+        2.5,
+        0.02,
+        36
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_plinth.glb",
+      "p": [
+        23.5,
+        0.02,
+        36
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_caustic.glb",
+      "p": [
+        6,
+        5.22,
+        40
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_caustic.glb",
+      "p": [
+        12,
+        5.22,
+        40
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_aquarium_caustic.glb",
+      "p": [
+        18,
+        5.22,
+        40
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-AQC"
+    }
+  ]
+}
