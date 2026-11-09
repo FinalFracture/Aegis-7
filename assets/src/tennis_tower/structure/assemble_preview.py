@@ -59,7 +59,7 @@ def envelope():
     for j in range(19):
         z = 3.5 + 4*j
         put("tt_curtain_wall_panel", -12 + .285, 12.2, z, -90, "env"); put("tt_curtain_wall_panel", 140 - .285, 12.2, z, 90, "env")
-        if 17.5 < z < 61.5: put("tt_entrance_bay", -12 - 1.07, 0, z, -90, "facade")
+        if 17.5 < z < 61.5: put("tt_entrance_bay", -12 - 1.07, 0, z, -90, "facade")  # 11 x 4 m, covers Z 17.5..61.5; no half bay
         else: put("tt_facade_bay", -12 - .21, 0, z, -90, "facade")
         if 33.5 < z < 41.5:
             if abs(z - 35.5) < .1: put("tt_secondary_entrance_e", 140 + .98, 0, 37.5, 90, "facade")
@@ -91,12 +91,16 @@ def interiors():
     for y, t in ((0, "f1"), (6.1, "f2")):                                  # 5-row stands
         for x in (62.75, 55.25, 47.75, 80.25, 87.75, 95.25): put("tt_stand_module", x, y, 17.6, 0, t); put("tt_stand_module", x, y, 61.4, 180, t)
         for z in (30.75, 48.25): put("tt_stand_module", 32.6, y, z, 90, t); put("tt_stand_module", 110.4, y, z, -90, t)
-    for x in (62.75, 55.25, 47.75, 80.25, 87.75, 95.25): put("tt_stand_module_f3", x, 12.2, 14.8, 0, "f3"); put("tt_stand_module_f3", x, 12.2, 64.2, 180, "f3")
-    for z in (30.75, 48.25): put("tt_stand_module_f3", 29.8, 12.2, z, 90, "f3"); put("tt_stand_module_f3", 113.2, 12.2, z, -90, "f3")
-    for x0, x1, z0, z1 in COURTS:                                          # F1 court boxes (2 m panels, door mid long side)
+    for x in (62.75, 55.25, 47.75, 80.25, 87.75, 95.25):
+        for z, yaw in ((14.8, 0), (64.2, 180)):
+            put("tt_stand_module_f3", x, 12.2, z, yaw, "f3"); put("tt_stand_module_f3_seats", x, 12.2, z, yaw, "f3")
+    for z in (30.75, 48.25):
+        for x, yaw in ((29.8, 90), (113.2, -90)):
+            put("tt_stand_module_f3", x, 12.2, z, yaw, "f3"); put("tt_stand_module_f3_seats", x, 12.2, z, yaw, "f3")
+    for x0, x1, z0, z1 in COURTS:                                          # F1 court boxes (2 m panels, door mid each long side)
         for k in range(10):
             x = x0 + 1 + 2*k; d = "tt_court_partition_door" if k == 4 else "tt_court_partition"
-            put(d, x, 0, z0, 180, "f1"); put("tt_court_partition", x, 0, z1, 0, "f1")
+            put(d, x, 0, z0, 180, "f1"); put(d, x, 0, z1, 0, "f1")
         for k in range(5): z = z0 + 1 + 2*k; put("tt_court_partition", x0, 0, z, -90, "f1"); put("tt_court_partition", x1, 0, z, 90, "f1")
     # aquarium corridor kit (#80)
     for x in (3.75, 9.25, 14.75, 20.25): put("tt_aquarium_tank", x, 0, 42.9, 180, "f1")
@@ -105,13 +109,13 @@ def interiors():
     for x in (2.5, 23.5): put("tt_aquarium_plinth", x, 0, 36.0, 0, "f1")
     for x in (1.0, 24.0): put("tt_aquarium_sign", x, 2.6, 38.5, 90, "f1")
     for x in (6, 12, 18): put("tt_aquarium_caustic", x, 5.22, 40, 0, "f1")
-    # foyer ticketing (#79, Rev 2.9)
+    # foyer ticketing (#79 / Arrival 1bdac4f, §3.12.4): 2 desks, 2 staff-side backdrops, 8 kiosks, 30 stanchions
     for zc in (26, 53):
-        put("tt_foyer_desk", -1.8, 0, zc, -90, "f1"); put("tt_foyer_backdrop", -.3, 0, zc - 2, -90, "f1"); put("tt_foyer_backdrop", -.3, 0, zc + 2, -90, "f1")
-        for xl in (-3.3, -4.4, -5.5):
-            for k in range(5): put("tt_foyer_stanchion", xl, 0, zc - 3 + 1.2*k, -90, "f1")
-    for z0 in (30.94, 43.44):
-        for k in range(4): put("tt_foyer_kiosk", -.4, 0, z0 + .875*k, -90, "f1")
+        put("tt_foyer_desk", -1.8036, 0, zc, -90, "f1"); put("tt_foyer_backdrop", -0.25, 0, zc, -90, "f1")
+        for xl in (-5.5, -4.25, -3.0):
+            for k in range(5): put("tt_foyer_stanchion", xl, 0, zc - 2.5 + 1.25*k, -90, "f1")
+    for z0 in (30.5, 43.0):
+        for k in range(4): put("tt_foyer_kiosk", -0.3495, 0, z0 + 0.875*k, -90, "f1")
     # aquatic slides
     put("tt_slide_tower", 22.5, 1.0, 53.5, 0, "f1"); put("tt_slide_tower", 22.5, 1.0, 59.5, 0, "f1")
     # restrooms (stall rows) per block
