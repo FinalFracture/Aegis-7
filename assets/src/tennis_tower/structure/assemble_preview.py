@@ -26,22 +26,72 @@ def structure():
     for nm, d in LAYOUT.items():
         t = next((v for k, v in tags.items() if k in nm), "struct"); put(nm, *d["world_offset"], tag=t)
     for z in AQ_Z: put("tt_struct_aquatic_truss", 15, 9.7, z, tag="f2", grid=True)
-    put("tt_struct_plant_stack", -6, 0, 5, 0, "plant", True); put("tt_struct_plant_stack", 134, 0, 74, 180, "plant", True)
-    put("tt_struct_plant_stack_m", 134, 0, 5, 0, "plant", True); put("tt_struct_plant_stack_m", -6, 0, 74, 180, "plant", True)
+    # Services 4e634a0 shells at recorded transforms (not the old tt_struct_plant_stack kit)
+    put("tt_services_plant_stack_sw", -5.7275, 0, 5.27, 0, "plant")
+    put("tt_services_plant_stack_m", 133.7275, 0, 5.27, 0, "plant")
+    put("tt_services_plant_stack_m_nw", -5.7275, 0, 73.73, 180, "plant")
+    put("tt_services_plant_stack", 133.7275, 0, 73.73, 180, "plant")
+
+# 481b64b plant apertures: collar inner 5.9 x 4.9 about cutout centres (SW/SE/NW/NE)
+PLANT_APERTURES = (
+    (-11.9, -0.1, 0.1, 9.9),
+    (128.1, 139.9, 0.1, 9.9),
+    (-11.9, -0.1, 69.1, 78.9),
+    (128.1, 139.9, 69.1, 78.9),
+)
+# Visible-mesh XZ half-extents of roof tiles, used only to skip tiles that cover an aperture
+ROOF_XZ = {
+    "tt_roof_bay": (10.0558, 10.0629),
+    "tt_struct_roof_bay4": (2.1204, 2.1231),
+    "tt_struct_roof_closure": (2.0875, 1.04),
+    "tt_struct_roof_closure_chord": (2.0875, 1.10),
+}
+
+def roof_hits_aperture(asset, x, y, z, yaw=0, grid=False, min_area=0.25):
+    """True if this roof tile's XZ footprint overlaps a plant aperture by min_area m²."""
+    if grid:
+        o = off(asset); a = math.radians(yaw)
+        x += o[0]*math.cos(a) + o[2]*math.sin(a)
+        z += -o[0]*math.sin(a) + o[2]*math.cos(a)
+    hx, hz = ROOF_XZ[asset]
+    if abs(yaw) % 180 == 90:
+        hx, hz = hz, hx
+    xmin, xmax, zmin, zmax = x - hx, x + hx, z - hz, z + hz
+    for x0, x1, z0, z1 in PLANT_APERTURES:
+        ox0, ox1 = max(xmin, x0), min(xmax, x1)
+        oz0, oz1 = max(zmin, z0), min(zmax, z1)
+        if ox1 > ox0 and oz1 > oz0 and (ox1 - ox0) * (oz1 - oz0) >= min_area:
+            return True
+    return False
+
+def put_roof(asset, x, y, z, yaw=0, grid=False):
+    if asset in ROOF_XZ and roof_hits_aperture(asset, x, y, z, yaw, grid):
+        return
+    put(asset, x, y, z, yaw, "roof", grid)
 
 def roof():
     Y = 22.325
     for i in range(7):
-        for j in range(3): put("tt_roof_bay", -2 + 20*i, Y, 11.5 + 20*j, tag="roof")
+        for j in range(3): put_roof("tt_roof_bay", -2 + 20*i, Y, 11.5 + 20*j)
         put("tt_roof_ridge_crown", -2 + 20*i + .075, Y + 3.346, 31.5 + .112 + 8, tag="roof")
+    # The skipped SW 20 m bay is refilled with 4 m bays around the aperture
+    for x in (-10, -6, -2, 2, 6):
+        for z in (3.5, 7.5, 11.5, 15.5, 19.5):
+            put_roof("tt_struct_roof_bay4", x, Y, z, grid=True)
     for x in (130, 134, 138):
-        for j in range(15): put("tt_struct_roof_bay4", x, Y, 3.5 + 4*j, tag="roof", grid=True)
+        for j in range(15): put_roof("tt_struct_roof_bay4", x, Y, 3.5 + 4*j, grid=True)
     for i in range(38):
-        for z in (63.5, 67.5, 71.5, 75.5): put("tt_struct_roof_bay4", -10 + 4*i, Y, z, tag="roof", grid=True)
-        put("tt_struct_roof_closure", -10 + 4*i, Y, .75, 180, "roof", True); put("tt_struct_roof_closure_chord", -10 + 4*i, Y, 78.25, 0, "roof", True)
+        for z in (63.5, 67.5, 71.5, 75.5): put_roof("tt_struct_roof_bay4", -10 + 4*i, Y, z, grid=True)
+        put_roof("tt_struct_roof_closure", -10 + 4*i, Y, .75, 180, True)
+        put_roof("tt_struct_roof_closure_chord", -10 + 4*i, Y, 78.25, 0, True)
     for j in range(19):
         put("tt_struct_roof_edge", -12, Y, 3.5 + 4*j, -90, "roof", True); put("tt_struct_roof_edge_chord", 140, Y, 3.5 + 4*j, 90, "roof", True)
     for x, z, yaw in ((-12, .75, -90), (-12, 78.25, -90), (140, .75, 90), (140, 78.25, 90)): put("tt_struct_roof_corner", x, Y, z, yaw, "roof", True)
+    # Rooftop 481b64b collars, pivot Y 25.245 so collar top sits at +25.5
+    put("tt_roof_plant_cutout", -6, 25.245, 5, 0, "roof")
+    put("tt_roof_plant_cutout", 134, 25.245, 5, 0, "roof")
+    put("tt_roof_plant_cutout", -6, 25.245, 74, 180, "roof")
+    put("tt_roof_plant_cutout", 134, 25.245, 74, 180, "roof")
     for x, yaw, s in ((-12, -90, 1), (140, 90, -1)):
         for z in (.75, 78.25): put("tt_struct_f3_corner_closure", x + s*.285, 12.2, z, yaw, "env", True)
     for i in range(4):
