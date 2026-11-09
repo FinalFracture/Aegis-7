@@ -29,6 +29,8 @@ This applies to every room owner and to every temp agent. Spec: `design/strip5_t
 | TT_Leaf / TT_LeafLight / TT_Soil | foliage, crests, moss, vines, berms | never in a box |
 | TT_PaverStone | terraces, ramps, aprons | site only |
 | TT_PlayRubber_* / TT_PlayPanel_HDPE_* / TT_PlaySand | playground and soft surfaces | playground, toddler areas, gym floors |
+| TT_RinkRubber_Slate `#2B383D` | rink surface panels (`tt_rink_surface_*`) | dark slate rubber; albedo (0.17, 0.22, 0.26), metallic 0, roughness 0.85. Distinct from TT_PlayRubber_* (playground EPDM). Untextured is fine for first pass. |
+| TT_MirrorOpaque | gym and restroom wall mirrors | opaque reflective only, no BLEND; albedo (0.93, 0.95, 0.96), metallic 1, roughness 0.03. The 0.9 dielectric albedo cap does not apply. Official TT_ name for legacy `Mirror`. |
 | TT_CabanaCanvas_White / TT_Upholstery_FabricSlate / TT_Cushion_Button | soft goods | cabanas, lounges, stools |
 | TT_StatusGreen / TT_AccentViolet (emissive) | status lights, accessible-route markers | small accents only |
 | TT_StructConcrete (new, blockout) | slabs, beams, coffer plate | Sloane: concrete/terrazzo albedo needed |
@@ -37,7 +39,7 @@ This applies to every room owner and to every temp agent. Spec: `design/strip5_t
 | TT_NetScissor (new, MASK) | ball nets, court nets | 0.1 m cord mesh alpha (embedded) |
 | Glass (BLEND) | **only** the F3 Glass Box envelope / roof and the aquarium acrylic | §3.12.6 |
 
-Legacy names `Gunmetal`, `WhiteComposite`, `Mirror` and `StatusGreen` (restroom pods) should be renamed to the TT_ set when those assets are next touched.
+Legacy names `Gunmetal`, `WhiteComposite` and `StatusGreen` (restroom pods) should be renamed to the TT_ set when those assets are next touched. Legacy `Mirror` renames to `TT_MirrorOpaque`.
 
 ## 3. Transparency rule (§3.12.6)
 - **At most one BLEND layer in any line of sight.** BLEND is used only for the F3 Glass Box envelope / roof (tt_curtain_wall_panel, tt_roof_bay, tt_struct_roof_bay4 / closure, tt_struct_f3_corner_closure) and the aquarium acrylic (tt_aquarium_tank `Glass_Acrylic`).

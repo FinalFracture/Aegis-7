@@ -16,3 +16,7 @@ TT_Gunmetal, TT_BrushedSteel, TT_CarbonSlate, Glass, TT_WhiteComposite, TT_Brush
 - Restrooms (#58): bath-pod white/mirror/cyan albedo exceeds 0.9 (first-pass warning). Needs a tuned albedo.
 - Ridge crown (#73): slate roof facet texture (TT_CarbonSlate scale at 20 m), weathered gunmetal ridge/glazing caps.
 - Roof bay / curtain wall (#52/#55): roof glass tint consistency across the Glass Box (single BLEND layer).
+
+## Official names assigned (Sloane, 2026-11-09)
+- TT_MirrorOpaque: gym / restroom wall mirrors. Opaque reflective, no BLEND. Albedo (0.93, 0.95, 0.96), metallic 1, roughness 0.03. Confirmed as official; no rename needed. A subtle scratch normal can come later.
+- TT_RinkRubber_Slate: rink surface panels. Dark slate rubber, albedo (0.17, 0.22, 0.26), metallic 0, roughness 0.85. Distinct from TT_PlayRubber_*. Untextured is fine for first pass; a tileable rubber albedo/normal/ORM can come later.
