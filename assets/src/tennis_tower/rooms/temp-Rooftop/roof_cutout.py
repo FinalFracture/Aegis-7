@@ -35,7 +35,7 @@ def _cutout():
 
 def build(PL):
     A = emit('tt_roof_plant_cutout', _cutout(), '12x10 corner cutout +0.3m flashing collar; open aperture')
-    RY = 22.325
+    RY = 25.285
     places = [(-6.0, 5.0, 0), (134.0, 5.0, 0), (-6.0, 74.0, 180), (134.0, 74.0, 180)]
     for x, z, yaw in places:
         place(PL, A, x, RY, z, yaw)
