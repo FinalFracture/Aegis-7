@@ -463,18 +463,6 @@
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_corridor_tank_bay.glb",
       "p": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "yaw": 0,
-      "tag": "finish",
-      "room": "F1-AQC",
-      "note": "Carved Tank-colonly walk prism clear; visuals from tt_aquarium_tank"
-    },
-    {
-      "glb": "/workspace/game-project/godot/assets/models/tt_corridor_tank_bay.glb",
-      "p": [
         3.75,
         0,
         42.9

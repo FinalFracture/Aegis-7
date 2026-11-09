@@ -16,6 +16,7 @@ def put(asset,pos,yaw=0,tag='finish',room='',**extra):
 def placements():
     layout=json.load(open(OUT/'layout.json'))
     for asset,d in layout.items():
+        if asset in ('tt_corridor_tank_bay','tt_aquarium_tank'): continue  # placed explicitly below (four bays, yaw 180); never at the layout origin
         room={'pool':'F1-POOL','gallery':'F2-GAL','bridges':'F2-BRG','corridor':'F1-AQC','leisure':'F1-LEIS'}[asset.split('_')[1]]
         put(asset,d['world_offset'],room=room,note=d['note'])
     # Existing aquarium assets, not remodelled. Recentered tank acrylic line = local z+.4.

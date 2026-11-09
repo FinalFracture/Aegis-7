@@ -116,3 +116,19 @@ was invented or changed. The exact owned files were then unstaged with
 `git restore --staged -- <owned paths>` only, leaving their working files intact
 and leaving other agents' index entries untouched. The 45-file inventory above
 is ready for the parent to commit with the approved identity; no hash exists.
+
+## Nov 9 evening pass (placement fix landed; room finishes held)
+- `assemble_rooms.py` no longer places `tt_corridor_tank_bay` / `tt_aquarium_tank` from the
+  generic layout loop. That loop had put a stray fifth tank bay (BLEND acrylic) at the origin.
+  The placements now have exactly four bays (X 3.75/9.25/14.75/20.25, Z 42.9, yaw 180) and no
+  `tt_aquarium_tank`; the room `.tscn` was regenerated to match.
+- `tt_corridor_tank_bay` is a copy of Rook's `tt_aquarium_tank`. Its only change is a carved
+  `Tank-colonly`; the aquarium-acrylic BLEND exception is unchanged.
+- Held, not committed (the team weekly-usage soft cap was reached): slide tubes + NE helices,
+  bridge canopy, landing guards and the T2 gate, the gallery wet floor/drains and the accessible
+  cabin/shower/thresholds. They are generated and mostly validated off-repo. The gate still needs
+  a 6 mm finial lift.
+- Still blocked:
+  - The shared tower datum (local +6.1/+7.0/+9.4 on the +1.0 island) needs Rook.
+  - The T1 +Z / T2 -Z link openings and the T2 bridge-opening Z offset need Rook.
+  - The +2.0 deck has no space for 1:12 ramps without a structural cut (Rook/Vance).
