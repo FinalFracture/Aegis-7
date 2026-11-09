@@ -59,6 +59,37 @@
      "yaw": 180
     }
    ]
+  },
+  "dining": {
+   "bar": 1,
+   "bar_yaw": -90,
+   "bar_p": [
+    14.0,
+    12.2,
+    39.5
+   ],
+   "stools": 20,
+   "acc_counter": 1,
+   "tables_S_std": 54,
+   "tables_S_acc": 4,
+   "tables_N_std": 54,
+   "tables_N_acc": 4,
+   "seats_tables": 464,
+   "min_clear": 0.0208
+  },
+  "lounges": {
+   "S": {
+    "seats": 21,
+    "mounds": 24,
+    "vines": 27
+   },
+   "N": {
+    "seats": 28,
+    "mounds": 34,
+    "vines": 35
+   },
+   "skipped": 53,
+   "min_clear": 0.4518152277203591
   }
  },
  "rooms": {
@@ -1207,6 +1238,3387 @@
      134.0,
      25.245,
      74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   }
+  ],
+  "F3-DINE": [
+   {
+    "glb": "res://assets/models/tt_bar.glb",
+    "asset": "tt_bar",
+    "p": [
+     14.0,
+     12.2,
+     39.5
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     35.925
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     36.575
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     37.225
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     37.875
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     38.525
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     39.175
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     39.825
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     40.475
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     41.125
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     41.775
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     42.425
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     12.12,
+     12.2,
+     43.075
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     15.25,
+     12.2,
+     34.85
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     14.6,
+     12.2,
+     34.85
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     13.95,
+     12.2,
+     34.85
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     13.3,
+     12.2,
+     34.85
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     15.25,
+     12.2,
+     44.15
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     14.6,
+     12.2,
+     44.15
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     13.95,
+     12.2,
+     44.15
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_bar_stool.glb",
+    "asset": "tt_bar_stool",
+    "p": [
+     13.3,
+     12.2,
+     44.15
+    ],
+    "yaw": -90,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_dine_bar_acc.glb",
+    "asset": "tt_dine_bar_acc",
+    "p": [
+     12.3,
+     12.2,
+     34.946
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     7.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     10.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     13.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     16.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     19.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     22.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     25.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     28.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     31.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     7.4,
+     12.2,
+     31.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     10.3,
+     12.2,
+     31.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     16.1,
+     12.2,
+     31.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     19.0,
+     12.2,
+     31.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     74.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     71.1
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     68.2
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     65.3
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     62.4
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     59.5
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     56.6
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     21.9,
+     12.2,
+     53.7
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     7.4,
+     12.2,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     10.3,
+     12.2,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     16.1,
+     12.2,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     19.0,
+     12.2,
+     50.8
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     4.5,
+     12.2,
+     47.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     7.4,
+     12.2,
+     47.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     10.3,
+     12.2,
+     47.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     16.1,
+     12.2,
+     47.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4_acc.glb",
+    "asset": "tt_food_table4_acc",
+    "p": [
+     19.0,
+     12.2,
+     47.9
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   }
+  ],
+  "F3-SLNG": [
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     25.8,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     24.6,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     27.0,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     27.8,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     27.8,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     27.8,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     29.8,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     28.6,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     31.0,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     31.8,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     31.8,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     31.8,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     33.8,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     32.6,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     64.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     66.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     67.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     67.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     67.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     69.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     68.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     70.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     71.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     71.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     71.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     73.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     72.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     74.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     75.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     75.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     75.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     76.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     81.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     80.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     82.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     92.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     97.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     96.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     98.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     99.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     99.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     99.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     100.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     102.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     103.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     103.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     107.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     107.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     109.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     108.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     110.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     111.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     111.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     111.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     113.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     112.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     114.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     115.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     115.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     115.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     117.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     116.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     118.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     119.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     119.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     119.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     121.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     120.12,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     122.52,
+     12.2,
+     8.75
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     123.32,
+     12.2,
+     7.85
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     123.32,
+     12.2,
+     5.0
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     123.32,
+     12.2,
+     6.45
+    ],
+    "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     25.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     24.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     27.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     27.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     27.8,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     27.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     29.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     28.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     31.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     31.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     31.8,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     31.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     33.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     32.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     35.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     35.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     35.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     39.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     39.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     41.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     40.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     43.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     43.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     43.8,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     43.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     45.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     44.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     47.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     47.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     47.8,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     47.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     49.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     48.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     51.0,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     51.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     51.8,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     51.8,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     53.8,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     52.6,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     64.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     66.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     67.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     67.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     67.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     69.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     68.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     70.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     71.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     71.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     71.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     73.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     72.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     74.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     75.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     75.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     75.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     76.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     81.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     80.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     82.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     92.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     97.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     96.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     98.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     99.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     99.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     99.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     100.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     102.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     103.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     103.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     107.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     107.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     109.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     108.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     110.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     111.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     111.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     111.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     113.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     112.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     114.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     115.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     115.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     115.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     117.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     116.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     118.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     119.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     119.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     119.32,
+     12.2,
+     72.55
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     121.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     120.12,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_vine.glb",
+    "asset": "tt_cab_dress_vine",
+    "p": [
+     122.52,
+     12.2,
+     70.25
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     123.32,
+     12.2,
+     71.15
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_lounge_seat.glb",
+    "asset": "tt_cab_lounge_seat",
+    "p": [
+     123.32,
+     12.2,
+     74.0
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_cab_dress_mound.glb",
+    "asset": "tt_cab_dress_mound",
+    "p": [
+     123.32,
+     12.2,
+     72.55
     ],
     "yaw": 180,
     "tag": "f3"

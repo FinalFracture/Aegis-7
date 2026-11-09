@@ -1,16 +1,18 @@
-"""temp-Rooftop: build F3 cabanas, playground, roof cutouts; write placements + check reports.
+"""temp-Rooftop: build F3 cabanas, playground, roof cutouts, dining/bar, S/N lounges; write placements + check reports.
 Usage: python3 build_rooftop.py"""
 import subprocess, sys
 from rt_lib import *
-import cabanas, playground, roof_cutout
+import cabanas, playground, roof_cutout, dining, lounges
 OUT = Path('/workspace/renders/tennis_tower/rooms/temp-Rooftop'); OUT.mkdir(parents=True, exist_ok=True)
 ROOT = TT.parent.parent.parent
 
 def main():
     PL = []; stats = {}
-    stats['cabanas'] = cabanas.build(PL)
-    stats['playground'] = playground.build(PL)
-    stats['roof'] = roof_cutout.build(PL)
+    n = len(PL); stats['cabanas'] = cabanas.build(PL); s_cab = PL[n:]
+    n = len(PL); stats['playground'] = playground.build(PL); s_play = PL[n:]
+    n = len(PL); stats['roof'] = roof_cutout.build(PL); s_roof = PL[n:]
+    n = len(PL); stats['dining'] = dining.build(PL); s_dine = PL[n:]
+    n = len(PL); stats['lounges'] = lounges.build(PL); s_lng = PL[n:]
     for p in PL:
         if 'glb' not in p or not str(p['glb']).startswith('res://'):
             p['glb'] = 'res://assets/models/' + p['asset'] + '.glb'
@@ -19,9 +21,11 @@ def main():
                note='p = building coords of GLB pivot (bottom centre). F3_Y=12.2. Rook owns slab cutback/guard/ridge12.',
                stats=stats,
                rooms={
-                   'F3-CAB': [p for p in PL if p['asset'].startswith('tt_cab') or p['asset'] == 'tt_cabana'],
-                   'F3-PLAY': [p for p in PL if p['asset'].startswith('tt_play') or p['asset'] in ('tt_see_saw','tt_swing_set','tt_dome_climber','tt_toddler_zone','tt_balance_trail','tt_play_tower','tt_play_surface')],
-                   'F3-ROOF-CUT': [p for p in PL if p['asset'].startswith('tt_roof_plant')],
+                   'F3-CAB': [p for p in s_cab if p['asset'].startswith('tt_cab') or p['asset'] == 'tt_cabana'],
+                   'F3-PLAY': [p for p in s_play if p['asset'].startswith('tt_play') or p['asset'] in ('tt_see_saw','tt_swing_set','tt_dome_climber','tt_toddler_zone','tt_balance_trail','tt_play_tower','tt_play_surface')],
+                   'F3-ROOF-CUT': [p for p in s_roof if p['asset'].startswith('tt_roof_plant')],
+                   'F3-DINE': s_dine,
+                   'F3-SLNG': s_lng,
                })
     pp = GM / 'rooms' / 'temp-Rooftop_placements.json'; pp.parent.mkdir(exist_ok=True)
     json.dump(doc, open(pp, 'w'), indent=1)
