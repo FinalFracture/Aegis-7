@@ -1,6 +1,6 @@
-"""F1-BOWL (X 30..57, Z 0.3..14.7). Rev 3.2 s5: 4 lane pairs x 3.6 m, settees X30..32.4, approach X32.4..37,
+"""F1-BOWL (X 30..57, Z 0.25..14.65). Rev 3.2 s5: 4 lane pairs x 3.6 m, settees X30..32.4, approach X32.4..37,
 head pin X54, pin deck X54..57 (masking only; pinsetter machinery is in the SE plant stack, not ours).
-Rev 3.0 #4: no free-standing acoustic wall over ST+S1; 50 mm panels on the core W face X57 (Z2.6..13.2) + the stubs."""
+50 mm clear of stand face Z14.7. Rev 3.0 #4: 50 mm panels on ST+S1 W face X57 (Z2.6..13.2) + stubs."""
 from lz_lib import *
 LZ = [(.14, .38, 'G'), (.38, 1.446, 'L'), (1.446, 1.686, 'G'), (1.686, 1.914, 'C'), (1.914, 2.154, 'G'), (2.154, 3.22, 'L'), (3.22, 3.46, 'G')]
 def lane_pair():
@@ -54,8 +54,13 @@ def lane_pair():
     it.col(33.15, 33.85, .05, .9, 1.62, 1.98)
     # overhead scoring screen above the approach (opaque emissive)
     it.b('Score_Housing', G, 33.6, 33.8, 3.0, 3.9, .25, 3.35)
-    it.b('Score_Screen', CY, 33.55, 33.604, 3.06, 3.84, .32, 3.28)
-    it.b('Score_Ticker', AM, 33.548, 33.556, 3.1, 3.14, .4, 3.2)
+    it.b('Score_Plate', SL, 33.55, 33.604, 3.06, 3.84, .32, 3.28)
+    for i in range(5):
+        yy = 3.12 + i * 0.13
+        it.b('Score_Rows', CY if i % 2 == 0 else AM, 33.54, 33.546, yy, yy + 0.06, .45, 1.55)
+    it.b('Score_Border', BA, 33.54, 33.546, 3.08, 3.1, .4, 3.2)
+    it.b('Score_Ticker', AM, 33.54, 33.546, 3.78, 3.82, .45, 3.15)
+    it.a('Score_Ball', BA, cap((33.532, 3.45, 2.6), 0.05, 0.012, 10, 'x'))
     for z in (.6, 3.0): it.a('Score_Hangers', ST, tube((33.7, 3.896, z), (33.7, 5.71, z), .025, 6))
     return emit('tt_bowl_lane_pair', it, 'one lane pair (2 lanes, 3.6 m); place at Z0.3+3.6k; pin deck masking only')
 
@@ -70,7 +75,11 @@ def settee():
     it.b('Settee_LED', CY, 30.8, 31.2, .02, .04, .298, .302)
     it.b('Console_Pedestal', G, 31.6, 31.9, 0, .7, 1.65, 1.95, col=True)
     it.b('Console_Top', WH, 31.4, 32.1, .696, .74, 1.4, 2.2)
-    it.b('Console_Screen', CY, 31.55, 31.95, .738, .748, 1.55, 2.05)
+    it.b('Console_Plate', SL, 31.55, 31.95, .738, .748, 1.55, 2.05)
+    for i in range(3):
+        zz = 1.6 + i * 0.12
+        it.b('Console_Rows', CY if i % 2 == 0 else AM, 31.62, 31.88, .752, .758, zz, zz + 0.05)
+    it.b('Console_Tick', AM, 31.64, 31.86, .752, .758, 1.98, 2.02)
     it.a('Console_Ball', BA, node((31.75, .85, 2.12), .06, 1))
     # ball rack
     it.b('Rack_Frame', ST, 31.5, 32.2, 0, .06, .4, 1.2)
@@ -100,7 +109,7 @@ def acoustic():
 def build(PL):
     lp = lane_pair(); st = settee(); ac = acoustic()
     for k in range(4):
-        place(PL, lp, 0, 0, .3 + 3.6*k); place(PL, st, 0, 0, .3 + 3.6*k)
+        place(PL, lp, 0, 0, .25 + 3.6*k); place(PL, st, 0, 0, .25 + 3.6*k)
     place(PL, ac, 0, 0, 0, local=True)
 if __name__ == '__main__':
     PL = []; build(PL)

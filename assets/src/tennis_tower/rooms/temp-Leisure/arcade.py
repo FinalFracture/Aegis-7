@@ -3,16 +3,55 @@ yaw 90 = facing +X. Mix per floor: ~40 video, 20 redemption, 10 claw, 10 sit-dow
 Prize counter on L1 north of ST+E. Feature stair X126..139, Z38..40.5 (decorative, mid landing). No slab cuts are made here."""
 from lz_lib import *
 def _buttons(it, y, z, xs, mk=BA): [it.a('Buttons', mk, cap((x, y, z), .022, .012, 8, 'y')) for x in xs]
+def paint_screen(it, x0, x1, y0, y1, z0, z1, kind='court'):
+    """Readable opaque-emissive screen art (sports/nature). Art offset clear of plate; ball clear of bars."""
+    dx, dy, dz = abs(x1 - x0), abs(y1 - y0), abs(z1 - z0)
+    it.b('Screen_Plate', SL, x0, x1, y0, y1, z0, z1)
+    if dz <= dx and dz <= dy:  # face in Z
+        zf = max(z0, z1) + 0.004
+        def hbar(ya, yb, mk=CY): it.b('Scr_Art', mk, x0 + .06, x1 - .06, ya, yb, zf, zf + .003)
+        def vbar(xa, xb, mk=CY): it.b('Scr_Art', mk, xa, xb, y0 + .08, y1 - .08, zf, zf + .003)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        if kind == 'court':
+            hbar(y0 + .08, y0 + .1); hbar(y1 - .1, y1 - .08)
+            vbar(x0 + .08, x0 + .1); vbar(x1 - .1, x1 - .08)
+            it.a('Scr_Ball', BA, cap((cx, cy, zf + .014), min(.05, dy * .18), .012, 12, 'z'))
+            it.a('Scr_Leaf', LF2, zwall_leaf((cx + dy * .22, y1 - .14, zf + .01), .2, .26, .1))
+        elif kind == 'track':
+            for i, mk in enumerate((AM, BA, AM)):
+                yy = y0 + .12 + i * (dy - .28) / 2.5; hbar(yy, yy + .025, mk)
+            hbar(y1 - .12, y1 - .08, CY)
+            it.a('Scr_Ball', BA, cap((cx, y0 + dy * .55, zf + .014), .04, .012, 10, 'z'))
+        elif kind == 'score':
+            for i in range(4):
+                yy = y0 + .1 + i * (dy - .28) / 3.5; hbar(yy, yy + .035, CY if i % 2 == 0 else AM)
+            for i in range(3): it.b('Scr_Dot', VIO, x0 + .1 + i * .12, x0 + .14 + i * .12, y1 - .12, y1 - .08, zf + .002, zf + .005)
+        else:
+            hbar(y0 + .12, y0 + .14, CY)
+            for i in range(3): it.a('Scr_Leaf', LF2, zwall_leaf((x0 + .18 + i * .18, cy, zf + .01), (i - 1) * .3, .3, .11))
+            it.a('Scr_Ball', BA, cap((cx, y1 - .14, zf + .014), .04, .012, 10, 'z'))
+    elif dy <= dx:
+        yf = max(y0, y1) + 0.004
+        it.b('Scr_Art', CY, x0 + .08, x1 - .08, yf, yf + .003, z0 + .08, z1 - .08)
+        it.a('Scr_Ball', BA, cap(((x0 + x1) / 2, yf + .014, (z0 + z1) / 2), .05, .012, 10, 'y'))
+    else:
+        xf = max(x0, x1) + 0.004
+        def hbar(ya, yb, mk=CY): it.b('Scr_Art', mk, xf, xf + .003, ya, yb, z0 + .06, z1 - .06)
+        def vbar(za, zb, mk=CY): it.b('Scr_Art', mk, xf, xf + .003, y0 + .08, y1 - .08, za, zb)
+        cz, cy = (z0 + z1) / 2, (y0 + y1) / 2
+        hbar(y0 + .08, y0 + .1); hbar(y1 - .1, y1 - .08, AM if kind == 'track' else CY)
+        vbar(z0 + .08, z0 + .1); vbar(z1 - .1, z1 - .08)
+        it.a('Scr_Ball', BA, cap((xf + .014, cy, cz), min(.05, dy * .18), .012, 12, 'x'))
 def video():
     it = It(); w = .72
     it.b('Cab_Plinth', G, -w/2, w/2, 0, .1, -.42, .4, col=True)
-    it.b('Cab_Body', SL, -w/2 + .02, w/2 - .02, .096, 1.9, -.42, .1, col=True)
-    it.b('Cab_Deck', G, -w/2 + .02, w/2 - .02, .096, .92, .1 - D, .4, col=True)
+    it.b('Cab_Body', SL, -w/2 + .02, w/2 - .02, .1 + D, 1.9, -.42, .1, col=True)
+    it.b('Cab_Deck', G, -w/2 + .02, w/2 - .02, .1 + D, .92, .1 + D, .4, col=True)
     it.b('Cab_Panel', WH, -w/2 + .06, w/2 - .06, .916, .96, .12, .38)
     _buttons(it, .962, .25, (-.18, -.1, .1, .18, .26))
     it.a('Joystick', ST, tube((-.2, .956, .3), (-.2, 1.072, .3), .01, 6)); it.a('Joystick_Ball', BA, node((-.2, 1.095, .3), .025, 1))
     it.b('Screen_Bezel', G, -w/2 + .05, w/2 - .05, 1.05, 1.62, .098, .14)
-    it.b('Screen', CY, -w/2 + .09, w/2 - .09, 1.09, 1.58, .136, .146)
+    paint_screen(it, -w/2 + .09, w/2 - .09, 1.09, 1.58, .136, .146, 'court')
     it.b('Marquee', AM, -w/2 + .05, w/2 - .05, 1.68, 1.86, .096, .108)
     for s in (-1, 1): it.b('Side_LED', VIO, min(s*(w/2 - .024), s*(w/2 - .014)), max(s*(w/2 - .024), s*(w/2 - .014)), .2, 1.85, -.05, .08)
     for k in range(3): it.a('Side_Leaf', LF2, wall_leaf((w/2 - .02, .5 + .35*k, -.2), .3*(k - 1), .3, .12))
@@ -44,7 +83,7 @@ def claw():
         it.b('Claw_Pane_Scissor', SCR, s*(w/2 - .03) - .006, s*(w/2 - .03) + .006, .99, 1.95, -w/2 + .045, w/2 - .045)
     it.col(-w/2, w/2, .95, 2.0, -w/2, w/2)
     it.b('Claw_Top', WH, -w/2, w/2, 1.996, 2.2, -w/2, w/2)
-    it.b('Claw_Sign', VIO, -w/2 + .05, w/2 - .05, 2.05, 2.15, w/2 - .004, w/2 + .008)
+    paint_screen(it, -w/2 + .05, w/2 - .05, 2.05, 2.15, w/2 - .004, w/2 + .008, 'nature')
     it.a('Claw_Cable', ST, tube((.05, 1.5, 0), (.05, 1.996, 0), .006, 6)); it.b('Claw_Head', ALY, -.0, .1, 1.4, 1.5, -.05, .05)
     it.b('Claw_Controls', G, -w/2 + .05, w/2 - .05, .8, .9, w/2 - D, w/2 + .12)
     _buttons(it, .896, w/2 + .06, (.2, .3))
@@ -59,7 +98,7 @@ def racer():
     it.a('Wheel', ST, cap((0, 1.0, -.05), .16, .03, 16, 'z')); it.a('Wheel_Hub', BA, cap((0, 1.0, -.022), .04, .03, 8, 'z'))
     it.a('Wheel_Column', G, tube((0, .946, -.105), (0, 1.0, -.07), .03, 6))
     it.b('Screen_Housing', G, -.53, .53, .946, 1.75, -.95, -.55, col=True)
-    it.b('Racer_Screen', CY, -.48, .48, 1.05, 1.65, -.552, -.544)
+    paint_screen(it, -.48, .48, 1.05, 1.65, -.552, -.544, 'track')
     it.b('Pedals', ALY, -.15, .15, .118, .2, -.08, .1)
     for k in range(4):
         for sx in (-1, 1): it.b('Track_Stripes', AM if k % 2 else BA, min(sx*.32, sx*.5), max(sx*.32, sx*.5), .118, .124, .1 + .2*k, .2 + .2*k)
@@ -86,7 +125,7 @@ def pinball():
     it.b('PB_Body', SL, -.36, .36, .716, .86, -.62, .7)
     it.b('PB_Playfield', CY, -.32, .32, .856, .866, -.58, .66)
     it.b('PB_Backbox', G, -.36, .36, .856, 1.75, -.78, -.6, col=True)
-    it.b('PB_Backbox_Art', VIO, -.32, .32, 1.0, 1.7, -.602, -.594)
+    paint_screen(it, -.32, .32, 1.0, 1.7, -.602, -.594, 'nature')
     for k in range(3): it.a('PB_Bumpers', BA, cap((-.15 + .15*k, .882, -.2), .045, .05, 10, 'y'))
     return emit('tt_arc_pinball', it, 'pinball 0.72 x 1.45 m, player at +Z')
 def vr_pod():
@@ -102,7 +141,7 @@ def vr_pod():
     it.a('Pod_Tether', ST, tube((0, 2.58, 0), (0, 1.9, 0), .012, 6)); it.a('Pod_Headset', SL, box(-.1, .1, 1.8, 1.9, -.06, .06))
     it.a('Pod_Ball', BA, node((0, 2.78, 0), .1, 1))
     it.b('Pod_Ped', G, R*.92 - .2, R*.92 + .05, .076, 1.1, -.12, .12)
-    it.b('Pod_Ped_Screen', CY, R*.92 + .048, R*.92 + .056, .8, 1.05, -.1, .1)
+    paint_screen(it, R*.92 + .048, R*.92 + .056, .8, 1.05, -.1, .1, 'score')
     return emit('tt_arc_vr_pod', it, 'VR pod 2.2 m dia, open cage')
 def prize_counter():
     it = It(); L = 6.0
@@ -117,7 +156,7 @@ def prize_counter():
     for k in range(18):
         x = -L/2 + .4 + .3*k
         for j, y in enumerate((.63, 1.23, 1.83)): it.a('PC_Plush', (LF, BA, LF2)[(k + j) % 3], clump((x, y + .1 - .004, -.15), .1, k*3 + j))
-    it.b('PC_Sign', CY, -2.0, 2.0, 2.9, 3.3, -.35, -.33)
+    paint_screen(it, -2.0, 2.0, 2.9, 3.3, -.35, -.33, 'court')
     it.b('PC_Sign_Back', G, -2.05, 2.05, 2.85, 3.35, -.4, -.354)
     for k in range(9): it.a('PC_Sign_Leaves', LF2, zwall_leaf((-2 + .5*k, 3.36, -.37), (k - 4)*.2, .35, .14))
     it.a('PC_Ball', BA, node((2.3, 3.1, -.37), .16, 1))

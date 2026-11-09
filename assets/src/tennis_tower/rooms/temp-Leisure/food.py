@@ -2,6 +2,22 @@
 Stall = 6 x 5 m incl. kitchen, local front +Z (place yaw 180 on the N facade).
 Facade inner line (tt_facade_bay fins) is Z78.38, so N stalls take Z73.3..78.3."""
 from lz_lib import *
+def paint_menu(it, x0, x1, y0, y1, z0, z1, variant=0):
+    """Opaque menu board art: slate plate + cyan rows + amber price ticks + ball/leaf accent."""
+    it.b('Menu_Plate', SL, x0, x1, y0, y1, z0, z1)
+    zf = max(z0, z1) + 0.005
+    rows = 4
+    for i in range(rows):
+        yy = y0 + 0.1 + i * (abs(y1 - y0) - 0.28) / (rows - 0.5)
+        it.b('Menu_Row', CY if i % 2 == 0 else WH, x0 + 0.1, x1 - 0.28, yy, yy + 0.04, zf, zf + 0.003)
+        it.b('Menu_Price', AM, x1 - 0.24, x1 - 0.1, yy, yy + 0.04, zf, zf + 0.003)
+    it.b('Menu_Header', BA, x0 + 0.1, x1 - 0.1, y1 - 0.1, y1 - 0.06, zf + 0.002, zf + 0.005)
+    cx = (x0 + x1) / 2
+    if variant % 2 == 0:
+        it.a('Menu_Ball', BA, cap((cx, y0 + 0.08, zf + 0.014), 0.035, 0.01, 10, 'z'))
+    else:
+        it.a('Menu_Leaf', LF2, zwall_leaf((cx, y0 + 0.1, zf + 0.01), 0.15, 0.22, 0.08))
+
 def stall():
     it = It(); w, d = 6.0, 5.0; x0, x1, z0, z1 = -3, 3, -2.5, 2.5
     it.b('Kitchen_Floor', RU, x0 + .14, x1 - .14, 0, .02, z0 + .16, 1.3, col=False)
@@ -19,12 +35,17 @@ def stall():
     it.b('Counter_Acc_Body', WH, -2.62, -1.6, .016, .81, 1.32, 1.9, col=True)
     it.b('Counter_Acc_Top', ST, -2.66, -1.58, .806, .86, 1.3, 1.98)
     it.b('Acc_Marker', VIO, -2.3, -2.0, .4, .5, 1.896, 1.904)
-    it.b('Counter_Kick', SL, -2.6, 2.84, .016, .16, 1.896, 1.92)
+    it.b('Counter_Kick', SL, -2.6, 2.84, .016, .16, 1.904, 1.92)
     for x in np.arange(-1.3, 2.7, .55): it.b('Counter_Flutes', G, x, x + .06, .2, .95, 1.896, 1.912)
     it.b('Counter_CourtLine', BA, -1.5, 2.84, .6, .63, 1.908, 1.918)
     it.b('Sneeze_Scissor', SCR, -1.4, 1.6, 1.046, 1.5, 1.5, 1.516)
     for x in (-1.42, 1.62): it.a('Sneeze_Posts', ST, tube((x, 1.046, 1.508), (x, 1.52, 1.508), .012, 6))
-    for x in (-2.2, 1.9): it.b('POS', SL, x - .15, x + .15, 1.046 if x > 0 else .856, 1.3 if x > 0 else 1.1, 1.4, 1.6); it.b('POS_Screen', CY, x - .12, x + .12, (1.12 if x > 0 else .93), (1.27 if x > 0 else 1.07), 1.598, 1.606)
+    for x in (-2.2, 1.9):
+        it.b('POS', SL, x - .15, x + .15, 1.046 if x > 0 else .856, 1.3 if x > 0 else 1.1, 1.4, 1.6)
+        ys0, ys1 = (1.12, 1.27) if x > 0 else (.93, 1.07)
+        it.b('POS_Screen', SL, x - .12, x + .12, ys0, ys1, 1.598, 1.606)
+        it.b('POS_Bar', CY, x - .09, x + .03, ys0 + .03, ys0 + .055, 1.608, 1.612)
+        it.b('POS_Bar', CY, x - .09, x + .09, ys0 + .07, ys0 + .095, 1.608, 1.612)
     it.b('Tray_Rail', ALY, -1.5, 2.86, .8, .84, 1.98, 2.2)
     for x in (-1.0, .5, 2.0): it.b('Tray_Brackets', ST, x, x + .04, .7, .804, 1.92, 2.18)
     # canopy + menu boards (opaque emissive) + leaf crest + ball finials
@@ -32,7 +53,7 @@ def stall():
     it.b('Canopy_Soffit_LED', CY, x0 + .2, x1 - .2, 2.996, 3.004, 1.5, 2.3)
     for k in range(3):
         xc = -2 + 2*k; it.b('Menu_Frames', G, xc - .9, xc + .9, 3.45, 4.25, 2.0, 2.1)
-        it.b('Menu_Screens', VIO if k == 1 else CY, xc - .84, xc + .84, 3.5, 4.2, 2.096, 2.104)
+        paint_menu(it, xc - .84, xc + .84, 3.5, 4.2, 2.096, 2.104, k)
     for x in (-2.0, 0, 2.0): it.a('Menu_Hangers', ST, tube((x, 3.396, 2.05), (x, 3.454, 2.05), .02, 6))
     for k in range(9): it.a('Canopy_Leaves', LF2, zwall_leaf((-2.8 + .7*k, 3.05, 2.5), (k - 4)*.12, .55, .2, face=1))
     for x in (x0 + .15, x1 - .15): it.a('Canopy_Balls', BA, node((x, 3.5, 2.3), .09, 1))
