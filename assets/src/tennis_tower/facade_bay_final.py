@@ -1,21 +1,28 @@
 """Rook: #75 generic F1-F2 façade bay, final (Jared pick V1 Branch Glass, thickened). 4.0 m x 12.2 m + 2.0 m half bay.
-Layers (out from the glass line z 0): recessed glass with deep gunmetal reveal frames (z to +0.15) | slate spandrel band + gunmetal
+Layers (out from the glass line z 0): recessed TT_GlassScissor panes with deep gunmetal reveal frames (z to +0.15) | slate spandrel band + gunmetal
 soffit/header with cyan downlight at +6.1 | stepped slate plinth ledge + slate sill | free-standing Branch Fin trunk (z +0.55) with
 sculpted Y-forks onto the reveal frames, leaf clusters seated on the fork nodes, Leaf Capital. Inside: heavy fin + light fin (-Z, #52).
 Colliders: Wall-colonly (glass/frame plane) + Plinth-colonly + Trunk-convcolonly. Run: python3 facade_bay_final.py"""
 from modlib import *
 from restroom_extras import crest
+from structure.struct_lib import SCR, finish_scissor
 H = 12.2; ROWS = [(.7, 3.05), (3.05, 5.42), (6.62, 9.15), (9.15, 12.05)]
+def _fin(x, y0, y1, depth, t, z0=0.0, belly=0.0):
+    # Closed box for belly=0 (facade fins). Avoids loft end-cap zero-area faces that become zero-length normals.
+    if belly > 0:
+        m = fin(x, y0, y1, depth, t, z0=z0, belly=belly); uv = np.array(m.metadata["uv"], copy=True)
+        m.update_faces(m.nondegenerate_faces()); m.remove_unreferenced_vertices(); m.metadata["uv"] = m.vertices[:, [0, 1]]; return m
+    return box(x - t/2, x + t/2, y0, y1, z0 - depth, z0)
 def build(q):
     w = q.get("width", 4.0); h = w/2; X0, X1 = -h + .001, h - .001; p = Part(); F = []
-    F += [box(X0, X1, H - .15, H, -.65, .1), fin(-h + .06, .6 - E, H - .15 + E, .6, .05, z0=.03), box(h - .045, h - .01, .6 - E, H - .15 + E, -.04, .04)]
+    F += [box(X0, X1, H - .15, H, -.65, .1), _fin(-h + .06, .6 - E, H - .15 + E, .6, .05, z0=.03), box(h - .045, h - .01, .6 - E, H - .15 + E, -.04, .04)]
     cols = [(-h + .085, -.0125), (.0125, h - .045)] if w > 3 else [(-h + .085, h - .045)]
-    if w > 3: F.append(fin(0, .6 - E, H - .15 + E, .45, .025, z0=.03))
-    # recessed glass + deep reveal frames (4 bars per cell, standing proud to z +0.15)
+    if w > 3: F.append(_fin(0, .6 - E, H - .15 + E, .45, .025, z0=.03))
+    # recessed alpha-scissor panes + deep reveal frames (4 bars per cell, standing proud to z +0.15)
     R = []
     for r, (y0, y1) in enumerate(ROWS):
         for c, (a, b) in enumerate(cols):
-            p.add(f"Glass_{r}{c}", GL, pane(a + .002, b - .002, y0 + .008, y1 - .008, -.045, t=.02))
+            p.add(f"Pane_Scissor_{r}{c}", SCR, pane(a + .002, b - .002, y0 + .008, y1 - .008, -.045, t=.02))
             R += [box(a + .004, a + .07, y0 + .004, y1 - .004, -.04, .15), box(b - .07, b - .004, y0 + .004, y1 - .004, -.04, .15),
                   box(a + .07 - E, b - .07 + E, y0 + .004, y0 + .07, -.04, .15), box(a + .07 - E, b - .07 + E, y1 - .07, y1 - .004, -.04, .12)]
     F += R
@@ -59,21 +66,29 @@ def seam_check(widths):
     near = {k: v for k, v in A.items() if v[1].bounds[1][0] > edge - .6 and v[1].bounds[0][0] < edge + .6}
     chk = cc.check(near, n_samp=300); bad = [o for o in chk["overlap"] if not o[3] and o[0][:2] != o[1][:2]]; cop = [c for c in chk["coplanar"] if c[0][:2] != c[1][:2]]
     return dict(bad=bad[:3], coplanar=cop[:3], pass_=not bad and not cop)
+def promote():
+    for prm, fn in ((VARIANTS[0], "tt_facade_bay.glb"), (VARIANTS[1], "tt_facade_bay_half.glb")):
+        p = recenter(build(prm)); gp = os.path.join(ROOT, "godot/assets/models", fn)
+        tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+        V = np.vstack([m.vertices for _, m in p.P.values()]); lo, hi = V.min(0), V.max(0)
+        print(fn, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
 if __name__ == "__main__":
-    rep = run("facade_bay_final", build, VARIANTS, title="F1-F2 facade bay final", sheet="facade_bay_final_run_sheet.png")
+    rep = run("facade_bay_final", build, VARIANTS, title="F1-F2 facade bay final", sheet="facade_bay_final_run_sheet.png", post=finish_scissor)
     seams = {str(w): seam_check(w) for w in ([4, 4], [4, 2], [2, 4])}; print("SEAMS", seams)
     rdir = os.path.join(RENDER_OUT, "facade_bay_final"); os.makedirs(rdir, exist_ok=True)
     Ry = lambda el, az: (lambda a, b: np.array([[1, 0, 0], [0, np.cos(b), -np.sin(b)], [0, np.sin(b), np.cos(b)]]) @ np.array([[np.cos(a), 0, np.sin(a)], [0, 1, 0], [-np.sin(a), 0, np.cos(a)]]))(np.radians(az), np.radians(el))
     fig = plt.figure(figsize=(26, 17), facecolor="#F4F2EC"); gs = fig.add_gridspec(2, 4)
     shots = [(0, (6, 40), "4.0 m bay, low 3/4"), (0, (20, -75), "4.0 m bay, raking side (depth)"), (0, (-10, 60), "4.0 m bay, from below (soffit, forks)"), (1, (6, 40), "2.0 m half bay")]
     for j, (vi, (el, az), t) in enumerate(shots):
-        p = recenter(build(VARIANTS[vi])); _, geo = export_final(p.P, [f"/tmp/fbf_{j}.glb"]); geo = {k: v for k, v in geo.items() if "colonly" not in k}
+        p = recenter(build(VARIANTS[vi])); gp = f"/tmp/fbf_{j}.glb"; _, geo = export_final(p.P, [gp]); finish_scissor(gp)
+        geo = {k: v for k, v in geo.items() if "colonly" not in k}
         im = crop(render_view(geo, Ry(el, az), size=800, shadow=False, glass_alpha=.35))
         ax = fig.add_subplot(gs[0, j]); ax.imshow(np.clip(im, 0, 1)); ax.axis("off"); ax.set_title(f"{t}\n{rep[vi]['tris']} tris | {'PASS' if rep[vi]['passed'] else 'FAIL'}", fontsize=11)
     Pt = Part()
     for n, (mk, m) in run_layout([4, 4, 2, 4, 4]).items():
         if "colonly" not in n: Pt.add(n, mk, m)
-    _, g2 = export_final(Pt.P, ["/tmp/fbf_run.glb"]); im = crop(render_view(g2, Ry(10, 28), size=1400, shadow=False, glass_alpha=.35))
+    _, g2 = export_final(Pt.P, ["/tmp/fbf_run.glb"]); finish_scissor("/tmp/fbf_run.glb"); im = crop(render_view(g2, Ry(10, 28), size=1400, shadow=False, glass_alpha=.35))
     ax = fig.add_subplot(gs[1, :]); ax.imshow(np.clip(im, 0, 1)); ax.axis("off"); ax.set_title(f"run 4+4+2+4+4 m | seams 4|4, 4|2, 2|4: {'PASS' if all(s['pass_'] for s in seams.values()) else 'FAIL'}", fontsize=12)
     fig.suptitle("Rook | #75 tt_facade_bay (V1 Branch Glass, thickened) + tt_facade_bay_half | FINAL", fontsize=15)
     plt.tight_layout(rect=(0, 0, 1, .95)); sp = os.path.join(rdir, "facade_bay_final_sheet.png"); fig.savefig(sp, dpi=85, facecolor="#F4F2EC"); print("SHEET", sp)
+    promote()
