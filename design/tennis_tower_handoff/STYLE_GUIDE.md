@@ -64,7 +64,7 @@ Legacy names `Gunmetal`, `WhiteComposite`, `Mirror` and `StatusGreen` (restroom 
   - `tt_stand_module.glb`, `tt_stand_module_f3.glb` (node `Guard_Glass`);
   - `tt_stair_core_a.glb`, `tt_stair_core_b.glb` (node `Guard_Glass`);
   - `tt_slide_tower.glb` (node `Enclosure_Glass`).
-  Scope owners for the conversion, when assigned: Courts (`court_partition.py`, `stand_module.py`, and the four GLBs above that those generators own); Arrival (entrance-bay sources and `tt_entrance_bay.glb` / `tt_entrance_bay_half.glb`); Rook (`slide_tower.py`, `tt_slide_tower.glb`). Owners are unresolved for the secondary entrances, the facade bays and both stair cores. Room-local files `tt_food_entrance_n_scissor.glb` and `tt_arc_entrance_e_scissor.glb` are not the canonical entrances.
+  Scope owners, coordinated on this baseline: Courts retains `court_partition.py`, `stand_module.py`, `tt_court_partition.glb`, `tt_court_partition_door.glb`, `tt_stand_module.glb`, and `tt_stand_module_f3.glb`. Arrival owns `entrance_bay.py`, `entrance_bay_final.py`, `tt_entrance_bay.glb`, `tt_entrance_bay_half.glb`, plus `secondary_entrance.py`, `secondary_entrance_final.py`, `tt_secondary_entrance_s.glb`, `tt_secondary_entrance_n.glb`, and `tt_secondary_entrance_e.glb`. Rook's structural run owns `facade_bay.py`, `facade_bay_final.py`, `tt_facade_bay.glb`, `tt_facade_bay_half.glb`, `stair_core.py`, `tt_stair_core_a.glb`, `tt_stair_core_b.glb`, `slide_tower.py`, and the canonical `tt_slide_tower.glb`. On origin/main `3218906`, `tt_food_entrance_n_scissor.glb` and `tt_arc_entrance_e_scissor.glb` are room-local copies, not Arrival's three canonical secondary GLBs.
 - Signage and screens are **opaque emissive**.
 
 ## 4. Reuse

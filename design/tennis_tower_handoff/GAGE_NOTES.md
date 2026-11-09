@@ -25,7 +25,7 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 ## Entrance bay (#74)
 - tt_entrance_bay.glb (4.0 m) / tt_entrance_bay_half.glb (2.0 m): tile along local X, pivot bottom centre, glass line local z 0, +Z = terrace. 42 m run = 10 full + 1 half (position of the half bay TBD, Vance).
 - Doors are modelled closed. If they should open (auto-sliding or swing), split the Glass_Door_* / Door_Stiles leaves and script them. Colliders still need adding (doors, canopy blade, bollards, kerb).
-- Door glass is BLEND for now. If Vance switches it to alpha-scissor (§3.11.9), change the material to dithered scissor with an opaque frit edge.
+- On origin/main `3218906`, door glass in `tt_entrance_bay.glb` and `tt_entrance_bay_half.glb` is material `Glass`, `alphaMode` BLEND (baseColorFactor alpha 0.251; embedded 256px image; no external URI). Spec §3.12.6 requires alpha-scissor for this F1 door glass. This sentence records that baseline only. It is not a pending Vance switch, and it does not describe later unmerged edits. The shared material for that glass is `TT_GlassScissor` (MASK, cutoff 0.5) with baseColorFactor alpha 1. An alpha of 0.3 is not 30% coverage.
 - The canopy (2.6 m) and the kerb/hedge (to z 1.82) project onto the terrace, so keep the navmesh / egress clear.
 
 ## Façade bay (#75)
@@ -40,7 +40,7 @@ Not sent. Kept as a file per Jared. All GLBs are in godot/assets/models/. Collid
 - Ramp tiles chain at 4 m X / -0.20 m Y; aprons 4 m wide, 1:12. Deck tiles have a medallion each; rotate/alternate if repetition reads.
 
 ## Secondary entrances (#78)
-- Three face assets: tt_secondary_entrance_s.glb / _n.glb / _e.glb (not a single face-param GLB). Same 8.0 × 6.1 m module, pivot bottom centre, +Z out, BLEND glass. Pick the face that matches the wall; do not mirror to change the letter (mirroring would reverse the glyph).
+- Three face assets: tt_secondary_entrance_s.glb / _n.glb / _e.glb (not a single face-param GLB). Same 8.0 × 6.1 m module, pivot bottom centre, +Z out. On origin/main `3218906` those three promoted files use material `Glass`, `alphaMode` BLEND (same GLB check as the entrance bays: factor alpha 0.251, embedded 256px image, no URI). Spec §3.12.6 requires alpha-scissor. On that same baseline, `tt_food_entrance_n_scissor.glb` and `tt_arc_entrance_e_scissor.glb` are room-local copies, not these canonical files. This sentence does not describe later unmerged edits. Pick the face that matches the wall; do not mirror to change the letter (mirroring would reverse the glyph).
 - Place S/N at grade on tt_terrace_apron; place E on the East Plaza terrace (module y = +3.70 with deck/edge). Flank with tt_facade_bay (4 m) — 1 m of each façade bay overlaps the 10 m lift gap as filler.
 - Skirt under E (and any terrace secondary): use tt_plinth_skirt_terrace as **2 + 4 + 2 m** centred on the door (half at x=−3, full at x=0, half at x=+3) so no skirt seam falls on the door centreline. Seams land at ±3 m.
 - Doors modelled closed. Clear opening per leaf pair ≈ 1.72 × 2.34 m. Script open/slide if needed; colliders: Wall / Jamb / DoorClear / Canopy / Scoreboard.
