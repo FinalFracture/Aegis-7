@@ -11,7 +11,7 @@ def main():
     for p in PL: p['glb'] = 'res://assets/models/' + p['asset'] + '.glb'
     rooms = {'F1-BOWL': 'tt_bowl_', 'F1-AXE': 'tt_axe_', 'F1-FOOD': 'tt_food_', 'F1-ARC/F2-ARC': 'tt_arc_'}
     doc = dict(owner='temp-Leisure', spec='design/strip5_tennis_tower_v1.md Rev 3.2 (cc7fd9a)', axes='Y up, X axial, Z across; yaw deg about +Y',
-               note='p = building coords of the GLB pivot (bottom centre). Entrance scissor copies replace tt_secondary_entrance_n/e at the same spots.',
+               note='p = building coords of the GLB pivot (bottom centre). N/E secondary entrances use Arrival canonical tt_secondary_entrance_n/e (no room-local forks).',
                stats=stats, rooms={r: [p for p in PL if p['asset'].startswith(k)] for r, k in rooms.items()})
     pp = GM / 'rooms' / 'temp-Leisure_placements.json'; pp.parent.mkdir(exist_ok=True); json.dump(doc, open(pp, 'w'), indent=1)
     # independent re-validation + first-pass checks on every GLB we wrote

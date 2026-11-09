@@ -2,7 +2,7 @@
  "owner": "temp-Leisure",
  "spec": "design/strip5_tennis_tower_v1.md Rev 3.2 (cc7fd9a)",
  "axes": "Y up, X axial, Z across; yaw deg about +Y",
- "note": "p = building coords of the GLB pivot (bottom centre). Entrance scissor copies replace tt_secondary_entrance_n/e at the same spots.",
+ "note": "p = building coords of the GLB pivot (bottom centre). N/E secondary entrances use Arrival canonical tt_secondary_entrance_n/e (no room-local forks).",
  "stats": {
   "food": {
    "tables": 8,
@@ -34,10 +34,10 @@
    }
   },
   "entrances": {
-   "replaces": {
-    "tt_secondary_entrance_n": "tt_food_entrance_n_scissor",
-    "tt_secondary_entrance_e": "tt_arc_entrance_e_scissor"
-   }
+   "canonical": [
+    "tt_secondary_entrance_n",
+    "tt_secondary_entrance_e"
+   ]
   }
  },
  "rooms": {
@@ -553,8 +553,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_food_entrance_n_scissor.glb",
-    "asset": "tt_food_entrance_n_scissor",
+    "glb": "res://assets/models/tt_secondary_entrance_n.glb",
+    "asset": "tt_secondary_entrance_n",
     "p": [
      72.0,
      0,
@@ -2656,8 +2656,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_arc_entrance_e_scissor.glb",
-    "asset": "tt_arc_entrance_e_scissor",
+    "glb": "res://assets/models/tt_secondary_entrance_e.glb",
+    "asset": "tt_secondary_entrance_e",
     "p": [
      140.98,
      0,
