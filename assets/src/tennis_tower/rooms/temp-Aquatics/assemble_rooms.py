@@ -17,16 +17,14 @@ def placements():
     layout=json.load(open(OUT/'layout.json'))
     for asset,d in layout.items():
         room={'pool':'F1-POOL','gallery':'F2-GAL','bridges':'F2-BRG','corridor':'F1-AQC','leisure':'F1-LEIS'}[asset.split('_')[1]]
-        # Service catwalk is a candidate only until shared tank collider/access is resolved.
-        if asset=='tt_corridor_catwalk': continue
         put(asset,d['world_offset'],room=room,note=d['note'])
     # Existing aquarium assets, not remodelled. Recentered tank acrylic line = local z+.4.
-    for x in (3.75,9.25,14.75,20.25): put('tt_aquarium_tank',[x,0,42.9],180,room='F1-AQC')
+    for x in (3.75,9.25,14.75,20.25): put('tt_corridor_tank_bay',[x,0,42.9],180,room='F1-AQC')
     for x in (2.75,8.25,13.75,19.25): put('tt_aquarium_floor',[x,0,37.9],room='F1-AQC')
     for x in (5,10.5,16,21.5): put('tt_aquarium_bench',[x,.02,40.9],room='F1-AQC')
     for x in (2.5,23.5): put('tt_aquarium_plinth',[x,.02,36],room='F1-AQC')
     for x in (6,12,18): put('tt_aquarium_caustic',[x,5.22,40],room='F1-AQC')
-    write_scene()
+    if '--placements-only' not in sys.argv: write_scene()
     json.dump(dict(spec_revision='3.2',axis='Y-up; +Z front; building coordinates',
         water_shader='res://assets/models/rooms/temp-Aquatics_water.gdshader',
         water_material_name='TT_OpaquePoolWater',placements=PL),open(MD/'rooms/temp-Aquatics_placements.json','w'),indent=2)
@@ -86,6 +84,8 @@ def render():
     json.dump(dict(placements=base+PL,shots=shots),open(tmp/'job.json','w'))
     cmd=['xvfb-run','-a','-s','-screen 0 1600x900x24','godot','--rendering-driver','opengl3','--resolution','1600x900','--path',str(tmp),'-s','render_preview.gd']
     subprocess.run(cmd,check=True,timeout=180)
-if __name__=='__main__':
+def main():
     placements()
+    if '--placements-only' in sys.argv: return
     if '--no-render' not in sys.argv: render()
+if __name__=='__main__': main()

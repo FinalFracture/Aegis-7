@@ -14,7 +14,6 @@ OUT=Path('/workspace/renders/tennis_tower/rooms/temp-Aquatics'); MD=ROOT/'godot/
 layout=json.load(open(OUT/'layout.json'))
 rooms={}; solids=[]; audit={}; contacts=[]
 for name,entry in layout.items():
-    if name=='tt_corridor_catwalk': continue
     scene=trimesh.load(MD/(name+'.glb'),force='scene',process=True)
     room=name.split('_')[1]
     for gn,m in scene.geometry.items():

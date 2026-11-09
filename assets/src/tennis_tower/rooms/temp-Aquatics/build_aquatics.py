@@ -8,6 +8,7 @@ HERE=Path(__file__).resolve().parent; TT=HERE.parent.parent
 sys.path[:0]=[str(TT),str(TT/'structure')]
 from struct_lib import *
 import modlib as ml
+import corridor_access as ca
 OUT=Path('/workspace/renders/tennis_tower/rooms/temp-Aquatics'); OUT.mkdir(parents=True,exist_ok=True)
 ml._m('aq_tile','TT_PoolCeramic',(.64,.75,.78),0,.45)
 ml._m('aq_water','TT_OpaquePoolWater',(.025,.31,.37),0,.19)
@@ -31,9 +32,6 @@ def emit(n,it,note=''):
     if n=='tt_pool_start_blocks' or n.startswith('tt_pool_board_') or n in ('tt_leisure_footbridges','tt_leisure_nature_mounds'):
         for _,_,m in it:
             uv=m.metadata['uv']; m.apply_translation((0,-.004,0)); m.metadata['uv']=uv
-    if n=='tt_corridor_catwalk':
-        for _,_,m in it:
-            uv=m.metadata['uv']; m.apply_translation((0,-.05,0)); m.metadata['uv']=uv
     for _,_,m in it: m.fix_normals()
     ITEMS[n]=it
     # Pack includes actual ceramic/rubber solid colliders, but excludes water/foliage.
@@ -49,9 +47,6 @@ def emit(n,it,note=''):
         cols=[m.copy() for pn,mk,m in ch if mk in solid]
         out=export_chunk(name,[(pn,mk,ms) for (pn,mk),ms in groups.items()],[("Solid-colonly",cols)],REP,layout=LAY,note=note)
         ALL.append(out)
-        if n=='tt_corridor_catwalk':
-            candidate=OUT/'candidates'; candidate.mkdir(exist_ok=True)
-            (Path(GODOT_MODELS)/(name+'.glb')).replace(candidate/(name+'.glb'))
 def finish(it,rect,holes,y):
     for a,b,c,d in rect_minus(rect,holes): B(it,'Deck_Terrazzo',SL,a,b,y-E,y+.012,c,d)
 def rim(it,r,y):
@@ -254,12 +249,7 @@ def signs():
     emit('tt_corridor_floor_closure',it,'Closes final 2.5m after four reused 5.5m floor bays')
 
 def corridor():
-    it=[]
-    B(it,'Catwalk_Grating',ST,1.08,22.92,3.4,3.45,43.72,44.32)
-    for x in np.arange(1.4,22.9,1.5): B(it,'Catwalk_Post',ST,x-.025,x+.025,3.446,4.47,43.73,43.78)
-    B(it,'Catwalk_Handrail',ST,1.08,22.92,4.466,4.51,43.72,43.79)
-    for x in np.arange(2,23,3): B(it,'Catwalk_Bracket',G,x-.06,x+.06,3.16,3.404,43.85,44.316)
-    emit('tt_corridor_catwalk',it,'Service catwalk +3.4; shared F2 slab hatch deliberately not cut')
+    it=ca.catwalk_items(); emit('tt_corridor_catwalk',it,ca.catwalk_note())
     it=[]
     for x in (.65,23.65):
         skin=subtract(box(x-.25,x+.25,.02,5.62,42.34,42.47),[box(x-.2,x+.2,3.78,4.75,42.33,42.48)])
@@ -322,6 +312,7 @@ def leisure():
 
 def main():
     pool(); gallery(); bridges(); corridor(); signs(); leisure()
+    ca.export_tank_bay(REP,LAY,ALL)
     json.dump(LAY,open(OUT/'layout.json','w'),indent=2)
     json.dump(REP,open(OUT/'model_report.json','w'),indent=2)
     assert all(r['passed'] for r in REP),'Clip/validator failure: see model_report.json'

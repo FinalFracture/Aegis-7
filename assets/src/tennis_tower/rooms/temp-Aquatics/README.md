@@ -50,7 +50,7 @@ Every new GLB is below 6,000 triangles including its collision mesh.
 | Leisure water | +1 island/deck and cutouts; legacy slide-tower asset | Continuous open river lining/water (no corner dams), splash/runout, 2 guarded island footbridges, ball-crown sprays, sculpted moss/stone crests | Corrected T1/T2, enclosed slide tubes, +7 link and axial slide finishes; tower is deliberately not placed in this pass |
 | Aquatic gallery | Partition and viewing panes + stair cores | 40 lockers with actual ventilation apertures, 5 composite benches, 4 changing cabins, 4 shower bays, floor finish, sculpted relief, frames reusing existing scissor panes | Shower drains/wet-floor details, accessible changing fitout, exterior F2 facade closure by envelope owner, player/door QA |
 | Slide / view bridges | Structural slab decks and gallery landing | Scissor view-deck and main slide-span guards, keeping existing slab dogleg | T2 1.1m gate, canopy, +6.1 to +7 transition and complete dogleg edge closure |
-| Aquarium corridor | `aquarium_corridor.py` + `aquarium_corridor_final.py`: full promoted #80 Kelp Forest kit | Reused tank/floor/bench/plinth/projector; true life-support grille apertures/end cladding, final 2.5m floor closure, FOYER/COURTS blades replacing generic blades, AQUATICS deck-door sign | Service hatch/slab cut and accessible catwalk connection; catwalk model is withheld from placements |
+| Aquarium corridor | `aquarium_corridor.py` + `aquarium_corridor_final.py`: full promoted #80 Kelp Forest kit | Reused tank visuals via `tt_corridor_tank_bay` (Tank-colonly carved for walk prism); life-support grilles/end cladding; FOYER/COURTS blades; AQUATICS sign; **service catwalk placed** (headroom 2.10 m, width 0.67 m, hatch X11..14 north bypass; F2 hatch still on hold) | Genuine F2 hatch cut (Rook/Vance); widen aisle if wall moves; player traversal QA |
 
 ## Neighbour / Vance / Rook questions
 1. Rev 3.0 moves the **gallery landing to Z56..58.4**, leaves ST-AQN untouched.
@@ -65,10 +65,12 @@ Every new GLB is below 6,000 triangles including its collision mesh.
    still uses BLEND and some variants use planter boxes. Do not instance it
    unchanged. A shared-generator parameter variant, not a copied/forked tower,
    is needed before tube routing and the T2 gate can be finalised.
-4. Aquarium service catwalk model is at +3.4 top, but the reused aquarium
-   `Tank-colonly` fills the tank/header volume to +3.68. The maintenance route
-   therefore needs that shared collider split and a real F2 hatch cut-out.
-   The candidate GLB is saved outside Git under `candidates/`. Catwalk stays out of the room placements rather than shipping a blocked path.
+4. Aquarium service catwalk is now placed at walk Y 3.55..3.60 (headroom 2.10 m to
+   soffit +5.7). `tt_corridor_tank_bay` keeps Tank-colonly but carves the walk prism
+   (local Y>=3.55, Z -1.60..-0.80). Clear width is 0.67 m (tank back wall at Z 44.5).
+   F2 hatch remains on hold; path uses the north bypass around X 11..14.
+   Gallery 0.0246 m worst overlap is the Changing_HardwareHinge embed (r=0.022 into
+   door; hardware exception ≤0.030 m).
 5. Gallery external F2 wall behind the west lockers is not present in Rook's
    structural preview. Envelope owner should close it before final room lighting.
 6. Need Gage's swim-volume/contact policy before adding invisible pool barriers;
