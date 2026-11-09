@@ -18,7 +18,7 @@ const SKIP_NAMES := {
 	"CylinderHab7_DrumAxisPivot": true,
 	"CylinderHab7_FullScale_Mesh": true,
 	"HabDrumSpinGravityRing": true,
-	"StarfieldOuterCylinder": true,
+	"StarfieldOuterSphere": true,
 	"CylinderSpinGravityTestRing": true,
 }
 

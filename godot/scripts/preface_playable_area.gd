@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--shot-ring`, `--shot-curve`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -83,6 +83,7 @@ const QA_DIR := "res://renders/qa"
 # Windowed --shot-ring writes here. Kept off res:// so the shots stay out of the repo.
 const SHOT_RING_DIR := "C:/Users/upchu/aegis_shots"
 const SHOT_CURVE_DIR := "C:/Users/upchu/aegis_shots/curve"
+const SHOT_SKY_DIR := "C:/Users/upchu/aegis_shots/sky"
 const _DeckCurveBend := preload("res://scripts/deck_curve_bend.gd")
 const DRUM_SHOT_DIR := "C:/Users/upchu/source/Aegis-7/qa/screens"
 const EXT_PLACEMENTS_PATH := "res://data/exterior_placements_v1_3.json"
@@ -126,12 +127,15 @@ const EXT_RENDER_VIEWS: Array[Dictionary] = [
 const SPAWN_POS := Vector3(-9.35, 4.25, 6.20)
 const SPAWN_YAW_DEG := 28.0  # Spawn stays. APT 201's door is the Rev C face at (-3.0, 4.2, 0.8).
 const WALK_SPEED := 5.2
-const SPRINT_SPEED := 8.2
+# 2*pi*200 / 20 s. One drum lap in about 20 seconds while Shift is held.
+const SPRINT_SPEED := 63.0
 const JUMP_VELOCITY := 4.8
 const GRAVITY := 9.8
 const STEP_HEIGHT := 0.32
 # [QA-05] Accel / friction, coyote + jump buffer, step-up camera ease, landing dip. No head bob.
 const GROUND_ACCEL := 45.0
+# Sprint only. 63 m/s^2 reaches SPRINT_SPEED from rest in 1.0 s. Walk stays on GROUND_ACCEL.
+const SPRINT_GROUND_ACCEL := 63.0
 const GROUND_FRICTION := 35.0
 const AIR_ACCEL := 8.0
 const JUMP_BUFFER_S := 0.10
@@ -218,10 +222,18 @@ const DRUM_BLEND_OUT := 4.0
 const DRUM_PREFACE_Y0 := 22.0
 const DRUM_PREFACE_Y1 := 25.0
 
-# [t38u] Rotating distant outer starfield cylinder & RFID doors ([t45u] force-field)
-const STARFIELD_CYL_RADIUS := 2200.0
-const STARFIELD_CYL_LENGTH := 4800.0
-const STARFIELD_ROT_SPEED := TAU / 240.0  # rad/s, one revolution per 4 minutes, about the world +X cylinder axis
+# [t38u] Rotating distant outer starfield sphere & RFID doors ([t45u] force-field)
+# Old barrel, kept only so the density print can name the previous field.
+const STARFIELD_OLD_RADIUS := 2200.0
+const STARFIELD_OLD_LENGTH := 4800.0
+const STARFIELD_OLD_TILES := 27
+const STARFIELD_OLD_PER_TILE := 2600 + 420 + 95
+const STARFIELD_SPHERE_RADIUS := 2400.0
+const STARFIELD_CELL_COUNT := 48
+const STARFIELD_DENSITY_RATIO := 0.05
+# One pixel at the player camera (fov 70, 1080 tall). Star radius is one of these, so a dot is 1-2 px.
+const STARFIELD_PX_ANGLE := PI * 70.0 / 180.0 / 1080.0
+const STARFIELD_ROT_SPEED := TAU / 240.0  # rad/s, one revolution per 4 minutes, about the world +X axis
 const SCAN_ZONE_RANGE := 2.0          # [QA-HUB-01] max horizontal (XZ) metres, player body -> doorway centre at body height
 const SCAN_FACING_DOT := 0.7          # [QA-HUB-01] min flattened camera-forward . dir-to-ScanZone
 const DOOR_DISSOLVE_TIME := 0.8
@@ -397,6 +409,8 @@ var _qa_ring: bool = false
 var _qa_drum_align: bool = false
 var _shot_ring: bool = false
 var _shot_curve: bool = false
+var _shot_sky: bool = false
+var _qa_sprint_lap: bool = false
 var _curve_bend = null
 # +1 when steering toward +tangent increases alpha. The circle probe may flip it.
 var _qa_ring_flip: float = 1.0
@@ -435,7 +449,7 @@ var _interior_detached_records: Array[Dictionary] = []
 var _collected_pickup_ids: Dictionary = {}
 var _pickup_templates: Dictionary = {}
 var _ring_root: Node3D
-var _starfield_cylinder: Node3D
+var _starfield_sphere: Node3D
 var _rfid_doors: Array[Dictionary] = []
 var _hatch_link: NavigationLink3D = null
 var _hatch_open: bool = false
@@ -533,6 +547,12 @@ func _ready() -> void:
 		elif arg == "--shot-curve":
 			_shot_curve = true
 			_qa_hand = true
+		elif arg == "--shot-sky":
+			_shot_sky = true
+			_qa_hand = true
+		elif arg == "--qa-sprint-lap":
+			_qa_sprint_lap = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -612,6 +632,10 @@ func _ready() -> void:
 			_run_shot_ring.call_deferred()
 		elif _shot_curve:
 			_run_shot_curve.call_deferred()
+		elif _shot_sky:
+			_run_shot_sky.call_deferred()
+		elif _qa_sprint_lap:
+			_run_qa_sprint_lap.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
 		else:
@@ -1336,7 +1360,7 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 		# [M-04] Opaque drum hull casts shadows, so the sun reaches the interior only through the cut window.
 		_enable_hull_shadows(cyl_node)
 
-	_build_starfield_outer_cylinder(hab_root)
+	_build_starfield_outer_sphere(hab_root)
 
 	# 2. Walkable Exterior Sector-4 Promenade Plaza Deck (Z = -9.0m..-45.0m, X = -18.0m..+18.0m, Y = 0.0m)
 	var plaza_root: Node3D = Node3D.new()
@@ -3666,6 +3690,7 @@ func _update_first_person_arm(delta: float) -> void:
 	_arm_raise_blend = move_toward(_arm_raise_blend, target_raise, delta * ARM_RAISE_SPEED)
 
 	# Sinusoidal walk swing (State B) driven by real horizontal ground speed.
+	# Frequency tops out at 8.6 rad/s. 63 m/s must not flail the arm.
 	var hv: Vector3 = _player_body.velocity
 	hv -= _player_body.up_direction * hv.dot(_player_body.up_direction)
 	var hs: float = hv.length()
@@ -4879,6 +4904,44 @@ func _step_rise_ahead(b: CharacterBody3D, dir: Vector3, up_dir: Vector3, walk_co
 			return -1.0
 		return rise
 	return -1.0
+
+
+func _move_body_swept(b: CharacterBody3D, delta: float, up_dir: Vector3) -> void:
+	# move_and_slide sweeps, but a concave drum floor can still drop a 63 m/s body when one
+	# tick's chord is long. Split the tick so each sweep stays under 0.40 m. Walk ticks
+	# (about 0.09 m) stay a single move_and_slide.
+	var dist: float = b.velocity.length() * delta
+	var max_step: float = 0.40
+	var n: int = clampi(int(ceil(dist / max_step)), 1, 16)
+	var rho: float = _drum_rho(b.global_position)
+	if _in_gravity_ring(b.global_position):
+		rho = _ring_rho(b.global_position)
+	var sag: float = 0.0
+	if rho > 1.0 and dist > 0.0:
+		sag = dist * dist / (2.0 * rho)
+	if n > 1:
+		b.floor_snap_length = maxf(0.35, sag + 0.15)
+		b.safe_margin = 0.03
+	else:
+		b.floor_snap_length = 0.35
+		b.safe_margin = 0.001
+	if n == 1:
+		b.move_and_slide()
+		return
+	var true_vel: Vector3 = b.velocity
+	for _step_i: int in range(n):
+		b.velocity = true_vel / float(n)
+		b.move_and_slide()
+		true_vel = b.velocity * float(n)
+		var into: float = true_vel.dot(up_dir)
+		if into < 0.0 and b.is_on_floor():
+			true_vel -= up_dir * into
+		if true_vel.length_squared() < 0.0004:
+			true_vel = Vector3.ZERO
+			break
+	b.velocity = true_vel
+
+
 func _physics_process(delta: float) -> void:
 	# Stall flicker has to tick on physics frames: --qa-forcefield-door awaits physics_frame,
 	# and a physics catch-up burst can run those frames before the next idle _process.
@@ -4965,9 +5028,11 @@ func _physics_process(delta: float) -> void:
 	_coyote_t = maxf(_coyote_t - delta, -1.0)
 	var h: Vector3 = b.velocity - up_dir * b.velocity.dot(up_dir)
 	var target: Vector3 = dir * speed
+	# Walk accel is unchanged. Sprint accel covers 0 -> 63 m/s in about 1 s.
+	var ground_accel: float = SPRINT_GROUND_ACCEL if sprint else GROUND_ACCEL
 	if b.is_on_floor():
 		if dir != Vector3.ZERO:
-			h = h.move_toward(target, GROUND_ACCEL * delta)
+			h = h.move_toward(target, ground_accel * delta)
 		else:
 			h = h.move_toward(Vector3.ZERO, GROUND_FRICTION * delta)
 	elif dir != Vector3.ZERO:
@@ -4996,7 +5061,16 @@ func _physics_process(delta: float) -> void:
 
 	var was_on_floor: bool = b.is_on_floor()
 	var up_vel_before: float = v_up
-	b.move_and_slide()
+	_move_body_swept(b, delta, up_dir)
+	# Orient ran at the pre-move position. On the 10 m ring a 63 m/s step is about 6 deg,
+	# so the basis would still lag the radial up when the frame is sampled.
+	var up_after: Vector3 = up_dir
+	if _in_gravity_ring(b.global_position):
+		up_after = _ring_up_at(b.global_position, b.global_basis.y)
+	else:
+		up_after = _drum_up_at(b.global_position)
+	_orient_node_to_up(b, up_after, delta)
+	b.up_direction = up_after
 	# [SYS-18] Ease the camera by the rise actually gained after the slide settles, not STEP_HEIGHT.
 	if not is_nan(step_pre_up):
 		var rise: float = clampf(b.global_position.dot(up_dir) - step_pre_up, 0.0, STEP_HEIGHT + 0.10)
@@ -5027,6 +5101,7 @@ func _physics_process(delta: float) -> void:
 	if _rostov_root != null:
 		var ap: AnimationPlayer = _find_anim_player(_rostov_root)
 		if ap != null and moving:
+			# Walk cycle stays at 1.0. Sprint clamps at 1.45 so 63 m/s does not play the clip at ~12x.
 			ap.speed_scale = 1.45 if sprint else 1.0
 
 
@@ -5372,11 +5447,11 @@ func _show_toast(msg: String, dur: float) -> void:
 func _process(delta: float) -> void:
 	_frame_counter += 1
 	_time += delta
-	if _starfield_cylinder != null and is_instance_valid(_starfield_cylinder):
-		_starfield_cylinder.rotate_x(STARFIELD_ROT_SPEED * delta)
+	if _starfield_sphere != null and is_instance_valid(_starfield_sphere):
+		_starfield_sphere.rotate_x(STARFIELD_ROT_SPEED * delta)
 		# [CYL-02] The sun rides the backdrop. The habitat drum is not rotated.
 		if is_instance_valid(_sun):
-			_sun.basis = Basis(Vector3.RIGHT, _starfield_cylinder.rotation.x) * _sun_base_basis
+			_sun.basis = Basis(Vector3.RIGHT, _starfield_sphere.rotation.x) * _sun_base_basis
 			# Elevation fade. Emergency and its tween own the energy while they run.
 			if not _lighting_tween_active and not _emergency:
 				_apply_daylight_sun_fill()
@@ -5852,21 +5927,41 @@ func _run_hand_controls_qa() -> void:
 	_qa_check("stop_swing_eases_out", _walk_swing_amp < 0.001 and absf(hl_stop.origin.z - ARM_LOWERED_POS.z) < 0.002, "amp=%.3f z=%.3f" % [_walk_swing_amp, hl_stop.origin.z])
 
 	# --- 5. Shift sprint, A / S / D strafe ---
-	# Same open promenade point as the neutral walk. The clearance search was landing on
-	# paving corners and the guideway curb, where a 1 m strafe hits a lip.
+	# Strafe stays on the open promenade. Sprint is measured on strip 4 at x=180, facing +X.
+	# The promenade rail is only ~32 m ahead, and 63 m/s needs that just to finish accelerating.
 	var move_spot: Vector3 = bend_point(Vector3(0.0, 0.25, -12.0))
-	_qa_place(move_spot, 0.0, -4.0)
-	await _qa_frames(10)
+	_shot_ring_place(0.0, 180.0, Vector3.ZERO)
+	var lane_up: Vector3 = _player_body.up_direction
+	_player_body.global_transform = Transform3D(_shot_ring_basis(Vector3.RIGHT, lane_up), _player_body.global_position)
+	_player_body.up_direction = lane_up
+	_pitch = deg_to_rad(-4.0)
+	_apply_pitch()
+	await _qa_frames(12)
+	if not _player_body.is_on_floor():
+		await _qa_frames(20)
 	_qa_key(KEY_SHIFT, true)
 	_qa_key(KEY_W, true)
-	await _qa_frames(20)
+	# 63 m/s at 63 m/s^2 needs about 1 s. Sample after the accel, not on the first ticks.
+	var sprint_wait: int = 0
+	var sp: float = 0.0
+	while sprint_wait < 150:
+		await _qa_frames(1)
+		sprint_wait += 1
+		var hv_s: Vector3 = _player_body.velocity
+		hv_s -= _player_body.up_direction * hv_s.dot(_player_body.up_direction)
+		sp = hv_s.length()
+		if sp >= SPRINT_SPEED - 0.4:
+			break
+	await _qa_frames(4)
 	var ph_a: float = _walk_phase
 	await _qa_frames(1)
-	var dph: float = fposmod(_walk_phase - ph_a, TAU) * 60.0
-	var sp: float = Vector2(_player_body.velocity.x, _player_body.velocity.z).length()
+	var dph: float = fposmod(_walk_phase - ph_a, TAU) * float(Engine.physics_ticks_per_second)
+	var hv_s2: Vector3 = _player_body.velocity
+	hv_s2 -= _player_body.up_direction * hv_s2.dot(_player_body.up_direction)
+	sp = hv_s2.length()
 	_qa_key(KEY_W, false)
 	_qa_key(KEY_SHIFT, false)
-	_qa_check("shift_sprint", absf(sp - SPRINT_SPEED) < 0.1 and absf(dph - 8.6) < 0.2, "speed=%.2f m/s swing_freq=%.2f rad/s" % [sp, dph])
+	_qa_check("shift_sprint", absf(sp - SPRINT_SPEED) < 0.35 and absf(dph - 8.6) < 0.2, "speed=%.2f m/s swing_freq=%.2f rad/s after %d frames" % [sp, dph, sprint_wait])
 	for kd: Array in [[KEY_A, Vector3(-1, 0, 0), "A_strafe_left"], [KEY_D, Vector3(1, 0, 0), "D_strafe_right"], [KEY_S, Vector3(0, 0, 1), "S_backpedal"]]:
 		# parse_input_event lands on the next idle frame. A physics-only settle still
 		# sees the previous key, so the body drifts and the next strafe starts diagonal.
@@ -6088,7 +6183,17 @@ func _orient_node_to_up(n: Node3D, up: Vector3, delta: float) -> float:
 	if axis.length_squared() < 1e-10:
 		axis = RING_AXIS  # exact 180 deg flip at the core: roll around the cylinder axis
 	var ang: float = acos(d)
-	var step: float = minf(ang, RING_ORIENT_RATE * delta) if delta > 0.0 else ang
+	# Small ring at 63 m/s needs v/R ≈ 6.3 rad/s. The drum at that speed needs 0.32,
+	# still under RING_ORIENT_RATE, so hab reorientation does not change.
+	var rate: float = RING_ORIENT_RATE
+	if n == _player_body and delta > 0.0:
+		var hv_o: Vector3 = _player_body.velocity
+		hv_o -= up * hv_o.dot(up)
+		var spd_o: float = hv_o.length()
+		var rho_o: float = _ring_rho(_player_body.global_position) if _in_gravity_ring(_player_body.global_position) else _drum_rho(_player_body.global_position)
+		if rho_o > 0.5 and spd_o > 1.0:
+			rate = maxf(rate, spd_o / rho_o * 1.5)
+	var step: float = minf(ang, rate * delta) if delta > 0.0 else ang
 	n.global_basis = (Basis(axis.normalized(), step) * gb).orthonormalized()
 	return step
 
@@ -6502,6 +6607,10 @@ func _run_cylinder_gravity_qa() -> void:
 	var min_align: float = 1.0
 	var max_rho_err: float = 0.0
 	var next_ms: int = 90
+	# 63 m/s coasts ~57 m under walk friction (35 m/s^2). Sample the lap at the
+	# crossing, before that coast carries the body around the 10 m ring.
+	var arrive_th: float = 999.0
+	var arrive_floor: bool = false
 	while travelled < 366.0 and frames < 1500:
 		await _qa_frames(1)
 		frames += 1
@@ -6509,6 +6618,9 @@ func _run_cylinder_gravity_qa() -> void:
 		var th_now: float = _ring_theta_deg(pp)
 		travelled += wrapf(th_now - last_th, -180.0, 180.0)
 		last_th = th_now
+		if arrive_th > 900.0 and travelled >= 360.0:
+			arrive_th = th_now
+			arrive_floor = _player_body.is_on_floor()
 		var align: float = _player_body.global_basis.y.dot(_ring_up_at(pp, Vector3.UP))
 		min_align = minf(min_align, align)
 		if _player_body.is_on_floor():
@@ -6527,7 +6639,7 @@ func _run_cylinder_gravity_qa() -> void:
 	_qa_cyl_check("step1_full_360_traversed", travelled >= 360.0, "travelled=%.1f deg (%.1f m) in %d physics frames, sprint W" % [travelled, deg_to_rad(travelled) * R, frames])
 	_qa_cyl_check("step1_stays_on_local_floor", float(floor_frames) / float(maxi(frames, 1)) > 0.98 and max_rho_err < 0.08, "on_floor %d/%d frames, max |rho - %.3f| = %.4f m" % [floor_frames, frames, foot_rho, max_rho_err])
 	_qa_cyl_check("step1_basis_tracks_radial_up", min_align > 0.995, "min dot(basis.y, -radial_outward) = %.5f over the loop" % min_align)
-	_qa_cyl_check("step1_back_at_start_on_floor", _player_body.is_on_floor() and absf(wrapf(_ring_theta_deg(_player_body.global_position), -180.0, 180.0)) < 25.0, "theta=%.1f on_floor=%s" % [_ring_theta_deg(_player_body.global_position), _player_body.is_on_floor()])
+	_qa_cyl_check("step1_back_at_start_on_floor", arrive_floor and absf(wrapf(arrive_th, -180.0, 180.0)) < 25.0, "theta=%.1f on_floor=%s at the 360 crossing" % [arrive_th, arrive_floor])
 	_qa_grid(shots, "gravity_step1_360_walk_angles.png")
 
 	# ---------------- STEP 2: boxes at 0..315 deg stay planted on their local floor ----------------
@@ -6677,156 +6789,84 @@ func _sync_reticle_to_viewport_center() -> void:
 		_reticle_box.grow_vertical = Control.GROW_DIRECTION_BOTH
 
 
-func _make_procedural_starfield_texture() -> ImageTexture:
-	if _tex_cache.has("__procedural_starfield__"):
-		return _tex_cache["__procedural_starfield__"] as ImageTexture
-	var w: int = 1024
-	var h: int = 512
-	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0.008, 0.011, 0.018, 1.0))
-
-	# Subtle galactic dust / nebula band undulating across the cylinder sky
-	for y: int in range(h):
-		var v: float = float(y) / float(h)
-		var band_dist: float = absf(v - 0.50)
-		if band_dist < 0.24:
-			var w_band: float = 1.0 - (band_dist / 0.24)
-			w_band = w_band * w_band
-			for x: int in range(w):
-				var u: float = float(x) / float(w)
-				var wave: float = 0.5 + 0.5 * sin(u * TAU * 2.0 + sin(u * TAU * 5.0) * 0.6)
-				var neb: float = w_band * (0.35 + 0.65 * wave)
-				var base_c: Color = img.get_pixel(x, y)
-				var tint: Color = Color(0.045, 0.085, 0.145, 1.0) if int(x + y) % 2 == 0 else Color(0.075, 0.055, 0.130, 1.0)
-				img.set_pixel(x, y, base_c.lerp(tint, neb * 0.55))
-
-	# Deterministic PRNG for multi-scale stars (pinpoint field stars + medium stars + bright navigational beacons)
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = 704192026
-	var palette: Array[Color] = [
-		Color(0.96, 0.98, 1.00, 1.0),
-		Color(0.78, 0.90, 1.00, 1.0),
-		Color(1.00, 0.92, 0.78, 1.0),
-		Color(0.68, 0.86, 1.00, 1.0),
-		Color(1.00, 0.80, 0.62, 1.0),
-		Color(0.86, 0.78, 1.00, 1.0)
-	]
-	# 2600 stars, each at least 2 px wide so the mips keep them.
-	for i: int in range(2600):
-		var sx: int = rng.randi_range(0, w - 2)
-		var sy: int = rng.randi_range(0, h - 2)
-		var b: float = rng.randf_range(0.55, 1.0)
-		var col: Color = palette[i % palette.size()] * b
-		col.a = 1.0
-		for ox: int in range(2):
-			for oy: int in range(2):
-				img.set_pixel(sx + ox, sy + oy, col)
-	# 420 medium 2x2 / cross stars
-	for i: int in range(420):
-		var mx: int = rng.randi_range(2, w - 3)
-		var my: int = rng.randi_range(2, h - 3)
-		var mc: Color = palette[i % palette.size()]
-		img.set_pixel(mx, my, Color(1.0, 1.0, 1.0, 1.0))
-		for off: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-			var p: Vector2i = Vector2i(mx, my) + off
-			img.set_pixel(p.x, p.y, img.get_pixel(p.x, p.y).lerp(mc, 0.82))
-	# 95 bright navigational cluster beacons with soft glow & diffraction cross
-	for i: int in range(95):
-		var bx: int = rng.randi_range(4, w - 5)
-		var by: int = rng.randi_range(4, h - 5)
-		var bc: Color = palette[i % palette.size()]
-		for dy: int in range(-3, 4):
-			for dx: int in range(-3, 4):
-				var dist: float = sqrt(float(dx * dx + dy * dy))
-				if dist <= 3.2:
-					var falloff: float = clampf(1.0 - dist / 3.2, 0.0, 1.0)
-					if dx == 0 or dy == 0:
-						falloff = maxf(falloff, 0.65 * (1.0 - dist / 3.5))
-					var px: int = clampi(bx + dx, 0, w - 1)
-					var py: int = clampi(by + dy, 0, h - 1)
-					img.set_pixel(px, py, img.get_pixel(px, py).lerp(bc, falloff))
-		img.set_pixel(bx, by, Color(1.0, 1.0, 1.0, 1.0))
-
-	img.generate_mipmaps()
-	var tex: ImageTexture = ImageTexture.create_from_image(img)
-	_tex_cache["__procedural_starfield__"] = tex
-	return tex
+func _starfield_jacobian_sum(cells: int) -> float:
+	# Cube-face cell centers. jacobian = (u^2+v^2+1)^-1.5, six faces.
+	var n: float = float(cells)
+	var sum_j: float = 0.0
+	for i: int in range(cells):
+		var u: float = ((float(i) + 0.5) / n) * 2.0 - 1.0
+		for j: int in range(cells):
+			var v: float = ((float(j) + 0.5) / n) * 2.0 - 1.0
+			var r2: float = u * u + v * v + 1.0
+			sum_j += 1.0 / (r2 * sqrt(r2))
+	return sum_j * 6.0
 
 
-func _build_starfield_outer_cylinder(parent: Node3D) -> void:
-	# [t38u] Massive far-offset outer starfield cylinder coaxial with Cylinder Hab-7.
-	# Same axis as CylinderHab7_DrumAxisPivot. No valley roll (a full shell).
-	# This shell spins about that axis in _process; the habitat drum stays stationary (no spin animation).
-	_starfield_cylinder = Node3D.new()
-	_starfield_cylinder.name = "StarfieldOuterCylinder"
-	_starfield_cylinder.position = Vector3(135.0, DRUM_AXIS_Y, DRUM_AXIS_Z)
-	parent.add_child(_starfield_cylinder)
+func _starfield_density() -> Dictionary:
+	# Old barrel, seen from its centre. theta from the axis hits the barrel while |cot theta| <= (L/2)/R.
+	var half_l: float = STARFIELD_OLD_LENGTH * 0.5
+	var hyp: float = sqrt(STARFIELD_OLD_RADIUS * STARFIELD_OLD_RADIUS + half_l * half_l)
+	var cos_edge: float = half_l / hyp
+	var barrel_sr: float = 4.0 * PI * cos_edge
+	var old_stars: float = float(STARFIELD_OLD_TILES * STARFIELD_OLD_PER_TILE)
+	var before_per_sr: float = old_stars / barrel_sr
+	var sphere_sr: float = 4.0 * PI
+	var after_per_sr: float = before_per_sr * STARFIELD_DENSITY_RATIO
+	var after_stars: float = after_per_sr * sphere_sr
+	var jac_sum: float = _starfield_jacobian_sum(STARFIELD_CELL_COUNT)
+	var density_scale: float = after_stars / maxf(jac_sum, 0.001)
+	return {
+		"barrel_sr": barrel_sr,
+		"old_stars": old_stars,
+		"before_per_sr": before_per_sr,
+		"sphere_sr": sphere_sr,
+		"after_per_sr": after_per_sr,
+		"after_stars": after_stars,
+		"jac_sum": jac_sum,
+		"density_scale": density_scale,
+	}
 
-	var star_tex: ImageTexture = _make_procedural_starfield_texture()
-	var smat: StandardMaterial3D = StandardMaterial3D.new()
-	smat.resource_name = "Mat_StarfieldOuterCylinder"
-	smat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	smat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	smat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
-	smat.albedo_texture = star_tex
-	# 9 tiles around the circumference (~1536 m) and 3 along the length (1600 m).
-	smat.uv1_scale = Vector3(9.0, 3.0, 1.0)
-	smat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 
-	var barrel: MeshInstance3D = MeshInstance3D.new()
-	barrel.name = "StarfieldOuterBarrelMesh"
-	var cm: CylinderMesh = CylinderMesh.new()
-	cm.top_radius = STARFIELD_CYL_RADIUS
-	cm.bottom_radius = STARFIELD_CYL_RADIUS
-	cm.height = STARFIELD_CYL_LENGTH
-	cm.radial_segments = 96
-	cm.rings = 1
-	cm.cap_top = false
-	cm.cap_bottom = false
-	barrel.mesh = cm
-	# CylinderMesh height is along local Y. -90 deg about Z maps that axis onto parent +X (world +X).
-	# Parent then spins about X, so the shell stays coaxial with the habitat drum.
-	barrel.rotation_degrees = Vector3(0.0, 0.0, -90.0)
-	barrel.material_override = smat
-	barrel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	barrel.extra_cull_margin = 16384.0
-	_starfield_cylinder.add_child(barrel)
+func _build_starfield_outer_sphere(parent: Node3D) -> void:
+	# One inward sphere around the hab, centred on the drum axis. Stars are procedural
+	# in the mesh local frame (see starfield_sphere.gdshader) so the field has no tile
+	# seam and no end cap. The node still spins about world +X; the sun rides that spin.
+	var dens: Dictionary = _starfield_density()
+	print("[STARFIELD] before %.1f stars/sr (%.0f stars / %.3f sr, %d tiles x %d)" % [
+		float(dens["before_per_sr"]), float(dens["old_stars"]), float(dens["barrel_sr"]),
+		STARFIELD_OLD_TILES, STARFIELD_OLD_PER_TILE])
+	print("[STARFIELD] after %.1f stars/sr (%.0f stars / %.3f sr, %.2f%% of before) radius=%.1f density_scale=%.4f cells=%d" % [
+		float(dens["after_per_sr"]), float(dens["after_stars"]), float(dens["sphere_sr"]),
+		STARFIELD_DENSITY_RATIO * 100.0, STARFIELD_SPHERE_RADIUS, float(dens["density_scale"]), STARFIELD_CELL_COUNT])
 
-	# [M-33] Separate planar caps. CylinderMesh caps shared the barrel UV scale and smeared the stars.
-	var cap_mat: StandardMaterial3D = smat.duplicate() as StandardMaterial3D
-	cap_mat.resource_name = "Mat_StarfieldOuterCap"
-	cap_mat.cull_mode = BaseMaterial3D.CULL_BACK
-	cap_mat.uv1_triplanar = false
-	cap_mat.uv1_scale = Vector3(4.0, 4.0, 1.0)
-	cap_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
-	var cap_size: float = STARFIELD_CYL_RADIUS * 2.0
-	var half_len: float = STARFIELD_CYL_LENGTH * 0.5
-	# Negative end: PlaneMesh FACE_X normal is +X, which faces back into the cylinder.
-	var cap_neg: MeshInstance3D = MeshInstance3D.new()
-	cap_neg.name = "StarfieldOuterCap_NegX"
-	var pm_neg: PlaneMesh = PlaneMesh.new()
-	pm_neg.size = Vector2(cap_size, cap_size)
-	pm_neg.orientation = PlaneMesh.FACE_X
-	cap_neg.mesh = pm_neg
-	cap_neg.position = Vector3(-half_len, 0.0, 0.0)
-	cap_neg.material_override = cap_mat
-	cap_neg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	cap_neg.extra_cull_margin = 16384.0
-	_starfield_cylinder.add_child(cap_neg)
-	# Positive end: flip the normal to -X so this face also points inward.
-	var cap_pos: MeshInstance3D = MeshInstance3D.new()
-	cap_pos.name = "StarfieldOuterCap_PosX"
-	var pm_pos: PlaneMesh = PlaneMesh.new()
-	pm_pos.size = Vector2(cap_size, cap_size)
-	pm_pos.orientation = PlaneMesh.FACE_X
-	cap_pos.mesh = pm_pos
-	cap_pos.position = Vector3(half_len, 0.0, 0.0)
-	cap_pos.rotation_degrees = Vector3(0.0, 180.0, 0.0)
-	cap_pos.material_override = cap_mat
-	cap_pos.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	cap_pos.extra_cull_margin = 16384.0
-	_starfield_cylinder.add_child(cap_pos)
+	_starfield_sphere = Node3D.new()
+	_starfield_sphere.name = "StarfieldOuterSphere"
+	_starfield_sphere.position = Vector3(135.0, DRUM_AXIS_Y, DRUM_AXIS_Z)
+	parent.add_child(_starfield_sphere)
 
+	var sh: Shader = load("res://shaders/starfield_sphere.gdshader") as Shader
+	var mat: ShaderMaterial = ShaderMaterial.new()
+	mat.resource_name = "Mat_StarfieldOuterSphere"
+	mat.shader = sh
+	mat.set_shader_parameter("cell_count", float(STARFIELD_CELL_COUNT))
+	mat.set_shader_parameter("density_scale", float(dens["density_scale"]))
+	# Radius of a 2 px star at fov 70 / 1080. Dim stars use ~0.55 of this (about 1 px).
+	mat.set_shader_parameter("star_radius", STARFIELD_PX_ANGLE)
+	mat.set_shader_parameter("nebula_strength", 0.16)
+
+	var shell: MeshInstance3D = MeshInstance3D.new()
+	shell.name = "StarfieldOuterSphereMesh"
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = STARFIELD_SPHERE_RADIUS
+	sm.height = STARFIELD_SPHERE_RADIUS * 2.0
+	sm.radial_segments = 128
+	sm.rings = 64
+	shell.mesh = sm
+	shell.material_override = mat
+	shell.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	shell.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+	shell.extra_cull_margin = 16384.0
+	_starfield_sphere.add_child(shell)
 
 # ------------------------------------------------------------------------------
 # [t39u]-[t40u] Dynamic interior despawn / respawn streaming (no loading screens)
@@ -8765,28 +8805,27 @@ func _run_reticle_stars_doors_qa() -> void:
 
 	# ---------------- 2. ROTATING DISTANT STARFIELD CYLINDER vs STATIONARY VESSEL ----------------
 	var hab_world: Node3D = _arch_container.get_node_or_null("CylinderHab7_FullScale_World") as Node3D
-	var star_barrel: MeshInstance3D = _starfield_cylinder.get_node_or_null("StarfieldOuterBarrelMesh") as MeshInstance3D if _starfield_cylinder != null else null
-	var star_cyl_mesh: CylinderMesh = star_barrel.mesh as CylinderMesh if star_barrel != null else null
-	var star_r: float = star_cyl_mesh.top_radius if star_cyl_mesh != null else 0.0
-	var star_l: float = star_cyl_mesh.height if star_cyl_mesh != null else 0.0
-	_qa_t38_check("starfield_outer_cylinder_geometry", _starfield_cylinder != null and star_r >= 1800.0 and star_l >= 4000.0 and _camera.far >= 5000.0,
-		"exists=%s R=%.1f m L=%.1f m camera_far=%.1f m" % [_starfield_cylinder != null, star_r, star_l, _camera.far])
+	var star_shell: MeshInstance3D = _starfield_sphere.get_node_or_null("StarfieldOuterSphereMesh") as MeshInstance3D if _starfield_sphere != null else null
+	var star_sphere_mesh: SphereMesh = star_shell.mesh as SphereMesh if star_shell != null else null
+	var star_r: float = star_sphere_mesh.radius if star_sphere_mesh != null else 0.0
+	_qa_t38_check("starfield_outer_cylinder_geometry", _starfield_sphere != null and star_r >= 1800.0 and _camera.far > star_r,
+		"sphere exists=%s R=%.1f m camera_far=%.1f m" % [_starfield_sphere != null, star_r, _camera.far])
 
 	# Promenade deck, looking along the cylinder axis (world +X, yaw -90) toward the end-cap starfield vista.
 	_qa_place_flat(Vector3(0.0, 0.25, -32.0), -90.0, 12.0)
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
-	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
+	var star_rot0: float = _starfield_sphere.rotation.x if _starfield_sphere != null else 0.0
 	var star_t0: float = _time
 	var img_star1: Image = await _qa_capture("qa_outer_starfield_rotating_1.png")
 	await _qa_frames(90)
 	var hab_xf1: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
-	var star_rot1: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
+	var star_rot1: float = _starfield_sphere.rotation.x if _starfield_sphere != null else 0.0
 	var star_elapsed: float = _time - star_t0  # real accumulated _process delta over the wait
 	var star_expected: float = STARFIELD_ROT_SPEED * star_elapsed
 	# Advance starfield rotation by an extra visual arc so the two screenshots clearly show star rotation
-	if _starfield_cylinder != null:
-		_starfield_cylinder.rotate_x(deg_to_rad(14.0))
+	if _starfield_sphere != null:
+		_starfield_sphere.rotate_x(deg_to_rad(14.0))
 	var img_star2: Image = await _qa_capture("qa_outer_starfield_rotating_2.png")
 	var d_star_rot: float = absf(star_rot1 - star_rot0)
 	var d_hab_pos: float = hab_xf0.origin.distance_to(hab_xf1.origin)
@@ -8794,11 +8833,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_t38_check("starfield_rotates_while_vessel_stationary", star_expected > 0.0 and absf(d_star_rot - star_expected) <= 0.10 * star_expected and d_hab_pos < 0.0001 and d_hab_rot < 0.0001,
 		"star_drot=%.4f rad (%.2f deg) expected=%.4f rad over %.3f s hab_dpos=%.6f hab_drot=%.6f" % [d_star_rot, rad_to_deg(d_star_rot), star_expected, star_elapsed, d_hab_pos, d_hab_rot])
 	if img_star1 != null and img_star2 != null:
-		var star_diff: int = 0
-		for py: int in range(60, 420, 8):
-			for px: int in range(560, 1360, 8):
-				if img_star1.get_pixel(px, py).to_abgr32() != img_star2.get_pixel(px, py).to_abgr32():
-					star_diff += 1
+		var star_diff: int = _qa_sky_pixel_diff(img_star1, img_star2, 40, 1000, 160, 1760, 2)
 		_qa_t38_check("starfield_pixels_visible_and_moving", star_diff > 15, "changed_sky_sample_pixels=%d" % star_diff)
 
 	# Normal play: on the deck, looking through the observation window. The drum stays visible and does not spin.
@@ -8818,20 +8853,11 @@ func _run_reticle_stars_doors_qa() -> void:
 	await _qa_frames(15)
 	var img_win1: Image = await _qa_capture("qa_window_starfield_1.png")
 	await _qa_frames(120)
-	if _starfield_cylinder != null:
-		_starfield_cylinder.rotate_x(deg_to_rad(6.0))
+	if _starfield_sphere != null:
+		_starfield_sphere.rotate_x(deg_to_rad(6.0))
 	var img_win2: Image = await _qa_capture("qa_window_starfield_2.png")
 	if img_win1 != null and img_win2 != null and img_win1.get_width() > 0 and img_win1.get_height() > 0 and img_win2.get_width() > 0 and img_win2.get_height() > 0:
-		var ww: int = mini(img_win1.get_width(), img_win2.get_width())
-		var wh: int = mini(img_win1.get_height(), img_win2.get_height())
-		var win_diff: int = 0
-		# Central band of a 1920x1080 frame (x 560..1360, y 160..760, step 8). Smaller images use the same fractions.
-		for y_ref: int in range(160, 760, 8):
-			var pyw: int = clampi(int(round(float(y_ref) * float(wh) / 1080.0)), 0, wh - 1)
-			for x_ref: int in range(560, 1360, 8):
-				var pxw: int = clampi(int(round(float(x_ref) * float(ww) / 1920.0)), 0, ww - 1)
-				if img_win1.get_pixel(pxw, pyw).to_abgr32() != img_win2.get_pixel(pxw, pyw).to_abgr32():
-					win_diff += 1
+		var win_diff: int = _qa_sky_pixel_diff(img_win1, img_win2, 80, 980, 240, 1680, 2)
 		_qa_t38_check("window_starfield_visible_and_moving", win_diff > 15, "changed_window_pixels=%d" % win_diff)
 
 	# ---------------- 3. [t45u] ALL 6 RFID FORCE-FIELD DOORS ----------------
@@ -10582,6 +10608,173 @@ func _run_shot_curve() -> void:
 	get_tree().quit(0 if failures == 0 else 1)
 
 
+func _qa_sky_pixel_diff(a: Image, b: Image, y0: int, y1: int, x0: int, x1: int, step: int) -> int:
+	# Counts bright samples that moved. Step is in a 1920x1080 reference frame so a
+	# sparser star field is still measured, without dropping the pass bar to zero.
+	if a == null or b == null:
+		return 0
+	var w: int = mini(a.get_width(), b.get_width())
+	var h: int = mini(a.get_height(), b.get_height())
+	if w < 8 or h < 8:
+		return 0
+	var diff: int = 0
+	var y: int = y0
+	while y < y1:
+		var py: int = clampi(int(round(float(y) * float(h) / 1080.0)), 0, h - 1)
+		var x: int = x0
+		while x < x1:
+			var px: int = clampi(int(round(float(x) * float(w) / 1920.0)), 0, w - 1)
+			var ca: Color = a.get_pixel(px, py)
+			var cb: Color = b.get_pixel(px, py)
+			var bright: float = maxf(ca.r, maxf(ca.g, maxf(ca.b, maxf(cb.r, maxf(cb.g, cb.b)))))
+			if bright > 0.22 and ca.to_abgr32() != cb.to_abgr32():
+				diff += 1
+			x += step
+		y += step
+	return diff
+
+
+func _shot_sky_save(path: String) -> bool:
+	for _s: int in range(4):
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var tex: ViewportTexture = get_viewport().get_texture()
+	if tex == null:
+		push_warning("[SHOT-SKY] no viewport texture")
+		return false
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		push_warning("[SHOT-SKY] empty image")
+		return false
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var err: Error = img.save_png(path)
+	if err != OK:
+		push_warning("[SHOT-SKY] save error %s" % err)
+		return false
+	print("[SHOT-SKY] saved %s" % path)
+	return true
+
+
+# Windowed. Sky through the observation window, and along +X where the end caps were.
+func _run_shot_sky() -> void:
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 600:
+		await get_tree().physics_frame
+		guard += 1
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if _hud != null:
+		_hud.visible = false
+	if _reticle_box != null:
+		_reticle_box.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(8)
+	if _player_body == null or _camera == null:
+		print("[SHOT-SKY] FAIL | no player")
+		print("[SHOT-SKY] DONE failures=1")
+		get_tree().quit(1)
+		return
+	var failures: int = 0
+	# Spawn-area deck, outside the building, under the observation window.
+	var eye: Vector3 = bend_point(Vector3(2.0, 1.65, -18.0))
+	var up: Vector3 = _drum_up_at(eye)
+	var window_dir: Vector3 = Vector3(0.0, cos(deg_to_rad(60.0)), -sin(deg_to_rad(60.0)))
+	var window_at: Vector3 = Vector3(eye.x, DRUM_AXIS_Y, DRUM_AXIS_Z) + window_dir * (DRUM_FLOOR_R + 12.0)
+	_qa_free_cam(eye, window_at, up, 70.0)
+	_camera.current = true
+	await _qa_frames(30)
+	if not await _shot_sky_save(SHOT_SKY_DIR + "/sky_up.png"):
+		failures += 1
+	# In the observation wedge, clear of the preface building, looking along +X.
+	# The old planar caps closed this end of the drum.
+	var slot_eye: Vector3 = Vector3(80.0, DRUM_AXIS_Y, DRUM_AXIS_Z) + window_dir * (DRUM_FLOOR_R + 48.0)
+	var axis_aim: Vector3 = Vector3(1.0, 0.0, 0.0) + window_dir * 0.22
+	_qa_free_cam(slot_eye, slot_eye + axis_aim, window_dir, 70.0)
+	_camera.current = true
+	await _qa_frames(16)
+	if not await _shot_sky_save(SHOT_SKY_DIR + "/sky_axis.png"):
+		failures += 1
+	print("[SHOT-SKY] eye=%s strip=%d" % [str(eye), _drum_strip_index(_drum_alpha(eye))])
+	print("[SHOT-SKY] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# Hold W+Shift on strip 4 and time one full drum circuit. Game-time seconds, not wall clock.
+func _run_qa_sprint_lap() -> void:
+	if _player_body == null:
+		print("QA_SPRINT_LAP FAIL | setup | no player")
+		print("QA_SPRINT_LAP DONE failures=1")
+		get_tree().quit(1)
+		return
+	_shot_ring_place(0.0, 160.0, Vector3.ZERO)
+	_player_body.velocity = Vector3.ZERO
+	await _qa_frames(25)
+	var start_strip: int = _drum_strip_index(_drum_alpha(_player_body.global_position))
+	var probe_a: float = _drum_alpha(_player_body.global_position)
+	_qa_key(KEY_W, true)
+	var probe_i: int = 0
+	while probe_i < 15:
+		_qa_ring_steer(_drum_tangent(_drum_alpha(_player_body.global_position)))
+		await get_tree().physics_frame
+		probe_i += 1
+	var flip: float = 1.0
+	if wrapf(_drum_alpha(_player_body.global_position) - probe_a, -PI, PI) < 0.0:
+		flip = -1.0
+	_qa_key(KEY_W, false)
+	await _qa_idle(2)
+	_shot_ring_place(0.0, 160.0, Vector3.ZERO)
+	var up0: Vector3 = _drum_up_at(_player_body.global_position)
+	var fwd0: Vector3 = _drum_tangent(0.0) * flip
+	_player_body.velocity = Vector3.ZERO
+	_player_body.global_transform = Transform3D(_shot_ring_basis(fwd0, up0), _player_body.global_position)
+	_player_body.up_direction = up0
+	await _qa_frames(12)
+	if not _player_body.is_on_floor():
+		await _qa_frames(20)
+	_qa_key(KEY_SHIFT, true)
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	var prev_a: float = _drum_alpha(_player_body.global_position)
+	var travelled: float = 0.0
+	var lap_s: float = 0.0
+	var frames: int = 0
+	var air: int = 0
+	var fell: bool = false
+	var max_rho: float = _drum_rho(_player_body.global_position)
+	var x_hold: float = _player_body.global_position.x
+	while frames < 4000 and travelled < TAU:
+		await get_tree().physics_frame
+		frames += 1
+		lap_s += get_physics_process_delta_time()
+		var p: Vector3 = _player_body.global_position
+		var a: float = _drum_alpha(p)
+		var rho: float = _drum_rho(p)
+		max_rho = maxf(max_rho, rho)
+		travelled += absf(wrapf(a - prev_a, -PI, PI))
+		prev_a = a
+		if rho > DRUM_FLOOR_R + 2.0 or p.y < -6.0:
+			fell = true
+			break
+		if _player_body.is_on_floor():
+			air = 0
+		else:
+			air += 1
+			if air > 90:
+				fell = true
+				break
+		var desired: Vector3 = _drum_tangent(a) * flip + Vector3.RIGHT * clampf((x_hold - p.x) * 0.06, -0.4, 0.4)
+		_qa_ring_steer(desired)
+	_qa_ring_release()
+	var end_strip: int = _drum_strip_index(_drum_alpha(_player_body.global_position))
+	var ok: bool = (not fell) and travelled >= TAU * 0.985 and lap_s >= 18.0 and lap_s <= 24.0 and start_strip == 4 and max_rho <= DRUM_FLOOR_R + 2.0
+	print("QA_SPRINT_LAP %s | lap_s=%.2f travelled_deg=%.1f frames=%d fell=%s start_strip=%d end_strip=%d max_rho=%.2f" % [
+		"PASS" if ok else "FAIL", lap_s, rad_to_deg(travelled), frames, str(fell), start_strip, end_strip, max_rho])
+	print("QA_SPRINT_LAP DONE failures=%d" % (0 if ok else 1))
+	get_tree().quit(0 if ok else 1)
+
+
 func _run_qa_drawcalls() -> void:
 	await _qa_frames(60)
 	var poses: Array[Dictionary] = [
@@ -11062,7 +11255,7 @@ func _ext_ground_mesh_ok(mi: MeshInstance3D) -> bool:
 		return false
 	# Habitat backdrop and the starfield are not promenade ground. A sliver left by the
 	# window cut used to pick up a trimesh and stop the ring walk.
-	if _node_under_named(mi, "CylinderHab7_FullScale_Mesh") or _node_under_named(mi, "StarfieldOuterCylinder") or _node_under_named(mi, "HabDrumSpinGravityRing"):
+	if _node_under_named(mi, "CylinderHab7_FullScale_Mesh") or _node_under_named(mi, "StarfieldOuterSphere") or _node_under_named(mi, "HabDrumSpinGravityRing"):
 		return false
 	if _ext_has_collision_relation(mi):
 		return false
