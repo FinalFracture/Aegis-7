@@ -266,9 +266,20 @@ func _ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, exclude:
 	return space.intersect_ray(rq)
 
 
+func _deck_up(p: Vector3) -> Vector3:
+	if _scene != null and _scene.has_method("deck_up_at"):
+		return _scene.call("deck_up_at", p) as Vector3
+	return Vector3.UP
+
+
+func _bend_pt(p: Vector3) -> Vector3:
+	if _scene != null and _scene.has_method("bend_point"):
+		return _scene.call("bend_point", p) as Vector3
+	return p
+
+
 func _check_floor(prop: Node3D, aabb: AABB, world_bb: AABB, space: PhysicsDirectSpaceState3D, exclude: Array[RID]) -> void:
 	var id: String = String(prop.name)
-	var prop_min_y: float = world_bb.position.y
 	var bmin: Vector3 = aabb.position
 	var bmax: Vector3 = aabb.position + aabb.size
 	var yb: float = bmin.y
@@ -279,28 +290,29 @@ func _check_floor(prop: Node3D, aabb: AABB, world_bb: AABB, space: PhysicsDirect
 	pts.append(Vector3(bmax.x - FOOT_INSET, yb, bmax.z - FOOT_INSET))
 	pts.append(Vector3((bmin.x + bmax.x) * 0.5, yb, (bmin.z + bmax.z) * 0.5))
 	var hit_n: int = 0
-	var floor_y: float = -INF
 	var max_abs: float = 0.0
 	var dev_ok: bool = true
+	var sunk: bool = false
+	var floor_h: float = 0.0
 	for lp: Vector3 in pts:
 		var wp: Vector3 = prop.global_transform * lp
-		var hit: Dictionary = _ray(space, wp + Vector3(0.0, FLOOR_UP, 0.0), wp + Vector3(0.0, -FLOOR_DOWN, 0.0), exclude)
+		var up: Vector3 = _deck_up(wp)
+		var hit: Dictionary = _ray(space, wp + up * FLOOR_UP, wp - up * FLOOR_DOWN, exclude)
 		if hit.is_empty():
 			continue
 		hit_n += 1
-		var hy: float = (hit["position"] as Vector3).y
-		floor_y = maxf(floor_y, hy)
-		var dev: float = absf(prop_min_y - hy)
+		var hy: Vector3 = hit["position"] as Vector3
+		var along: float = (wp - hy).dot(up)
+		var dev: float = absf(along)
+		floor_h = along
 		max_abs = maxf(max_abs, dev)
 		if dev > FLOOR_EPS:
 			dev_ok = false
-	var sunk: bool = hit_n > 0 and prop_min_y < floor_y - FLOOR_EPS
+		if along < -FLOOR_EPS:
+			sunk = true
 	var ok: bool = hit_n >= 3 and dev_ok and not sunk
-	var fy_txt: String = "none"
-	if hit_n > 0:
-		fy_txt = _fmt(floor_y)
-	_report(ok, id, "floor", "prop_min_y=%s floor_y=%s hits=%d/5 max_abs=%s sunk=%d local_min=%s local_max=%s" % [
-		_fmt(prop_min_y), fy_txt, hit_n, _fmt(max_abs), 1 if sunk else 0, _v(bmin), _v(bmax)
+	_report(ok, id, "floor", "radial_gap=%s hits=%d/5 max_abs=%s sunk=%d world_bb_y=%s local_min=%s local_max=%s" % [
+		_fmt(floor_h), hit_n, _fmt(max_abs), 1 if sunk else 0, _fmt(world_bb.position.y), _v(bmin), _v(bmax)
 	])
 
 
@@ -777,16 +789,21 @@ func _run_seam_audit(space: PhysicsDirectSpaceState3D) -> void:
 			heights = spec["heights"]
 		for hoff: float in heights:
 			var height: float = corner.y + hoff
-			var at: Vector3 = Vector3(corner.x, height, corner.z)
-			var start: Vector3 = at + Vector3(sx * 0.5, 0.0, sz * 0.5)
-			var direction: Vector3 = (at - start).normalized()
-			var hit: Dictionary = _seam_ray(space, start, start + direction * ray_len)
+			var at: Vector3 = _bend_pt(Vector3(corner.x, height, corner.z))
+			var start: Vector3 = _bend_pt(Vector3(corner.x + sx * 0.5, height, corner.z + sz * 0.5))
+			var to_at: Vector3 = at - start
+			var span: float = to_at.length()
+			if span < 0.0001:
+				_seam_line(false, corner, height, "degenerate", "")
+				continue
+			var direction: Vector3 = to_at / span
+			var hit: Dictionary = _seam_ray(space, start, start + direction * (span + 0.3))
 			if hit.is_empty():
 				_seam_line(false, corner, height, "no hit", "")
 				continue
 			var hit_pos: Vector3 = hit["position"] as Vector3
 			var hit_distance: float = (hit_pos - start).dot(direction)
-			var past: float = hit_distance - to_corner
+			var past: float = hit_distance - span
 			_seam_line(past <= SEAM_PAST_MAX, corner, height, _fmt(past), _seam_collider_path(hit))
 
 

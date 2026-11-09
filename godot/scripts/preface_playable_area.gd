@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--shot-ring`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--shot-ring`, `--shot-curve`.
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -82,6 +82,8 @@ const OUT_DIRS := ["res://renders/preface"]
 const QA_DIR := "res://renders/qa"
 # Windowed --shot-ring writes here. Kept off res:// so the shots stay out of the repo.
 const SHOT_RING_DIR := "C:/Users/upchu/aegis_shots"
+const SHOT_CURVE_DIR := "C:/Users/upchu/aegis_shots/curve"
+const _DeckCurveBend := preload("res://scripts/deck_curve_bend.gd")
 const DRUM_SHOT_DIR := "C:/Users/upchu/source/Aegis-7/qa/screens"
 const EXT_PLACEMENTS_PATH := "res://data/exterior_placements_v1_3.json"
 const EXT_RENDER_DIR := "res://renders/queue_2026-10-31"
@@ -179,23 +181,15 @@ const CORE_PAD_RADIUS := 1.4
 # _load_glb_scene(..., 0.85) is an emission multiplier, not a scale, so the GLB
 # local span [-368, +354] maps 1:1 through the pivot at x = 135.
 # World axial ends are -233 and +489. Floor and caps sit 1 m inside those ends.
-# A circle cannot sit within 0.05 m of every outer edge of a 98 m x 87.5 m
-# footprint unless R is tens of kilometres, which cannot be walked. This circle
-# kisses the two farthest lips (plaza south z = -45 and ExtGround north z = 42.5)
-# 0.04 m under the deck top (y = 0.12) and stays below the deck inside the
-# footprint. East/west edges and the z = -28 bay lips are lower; ramps at
-# <= 12 deg close those drops. Lips already within 0.10 m are left flush.
-#   AXIS_Z = (-45 + 42.5) / 2 = -1.25, half-chord H = 43.75, R = 200
-#   AXIS_Y = 0.08 + sqrt(R^2 - H^2) = 195.236187
-#   nadir y = AXIS_Y - R = -4.763
-# Strip angle alpha = 0 at the nadir (outward world -Y), positive toward +Z.
-# Strip k is centered at alpha = (k - 4) * 36 deg. Positive alpha is away from
-# the observation window, so strip 0 at -144 deg lies toward -Z, the same side
-# as _cut_observation_window (60 deg from +Y toward -Z, about 120 deg from the
-# nadir). The window wedge is not centered in the strip; it is the window side.
-const DRUM_AXIS_Y := 195.236187
-const DRUM_AXIS_Z := -1.25
+# The preface deck is bent onto this circle (deck_curve_bend.gd). The nadir
+# (alpha 0, outward world -Y) is flush with the walkable deck top.
+#   AXIS_Z = -1.25, R = 200, AXIS_Y = EXT_GROUND_TOP_Y + R, nadir y = deck top
+# Strip k is centered at alpha = (k - 4) * 36 deg. Strip 4 is the nadir.
+# Positive alpha is away from the observation window, so strip 0 at -144 deg
+# lies toward -Z, the same side as _cut_observation_window.
 const DRUM_FLOOR_R := 200.0
+const DRUM_AXIS_Z := -1.25
+const DRUM_AXIS_Y := EXT_GROUND_TOP_Y + DRUM_FLOOR_R
 # Visual inner hull sits this far outside the walkable face (hidden behind the strips).
 const DRUM_HULL_BEHIND := 0.06
 # GLB spin axis in CylinderHab7_FullScale_Mesh local space.
@@ -402,6 +396,8 @@ var _qa_stairs: bool = false
 var _qa_ring: bool = false
 var _qa_drum_align: bool = false
 var _shot_ring: bool = false
+var _shot_curve: bool = false
+var _curve_bend = null
 # +1 when steering toward +tangent increases alpha. The circle probe may flip it.
 var _qa_ring_flip: float = 1.0
 # YZ scale on CylinderHab7_DrumAxisPivot. World radius = pivot-frame radius * this. X scale stays 1.
@@ -534,6 +530,9 @@ func _ready() -> void:
 		elif arg == "--shot-ring":
 			_shot_ring = true
 			_qa_hand = true
+		elif arg == "--shot-curve":
+			_shot_curve = true
+			_qa_hand = true
 		elif arg == "--qa-door-hub-shot":
 			_qa_hub_shot = true
 			_qa_hand = true
@@ -611,6 +610,8 @@ func _ready() -> void:
 			_run_qa_drum_align.call_deferred()
 		elif _shot_ring:
 			_run_shot_ring.call_deferred()
+		elif _shot_curve:
+			_run_shot_curve.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
 		else:
@@ -639,7 +640,10 @@ func _ready() -> void:
 	if _qa_nav_reach:
 		_run_qa_nav_reach.call_deferred()
 	# After sector and prop setup. Both playable scenes use this script.
+	# Ground strips are added before the first await; bend them with the sector.
+	# Placements finish later and bend again from _ext_mark_spawned.
 	_spawn_exterior_placements()
+	_bend_preface("sector")
 
 
 func _add_forcefield_nav_links() -> void:
@@ -1463,6 +1467,37 @@ func _drum_gravity_at(p: Vector3) -> Vector3:
 	return (d / rho) * GRAVITY * clampf(rho / DRUM_FLOOR_R, 0.0, 1.2)
 
 
+func _curve():
+	if _curve_bend == null:
+		_curve_bend = _DeckCurveBend.new()
+		_curve_bend.setup(DRUM_AXIS_Y, DRUM_AXIS_Z, DRUM_FLOOR_R, EXT_GROUND_TOP_Y)
+	return _curve_bend
+
+
+## Flat preface point -> point on the drum. Do not call this on an already-bent world point.
+func bend_point(p: Vector3) -> Vector3:
+	return _curve().bend_point(p)
+
+
+## Radial up at a world point (bent or already on the drum).
+func deck_up_at(p: Vector3) -> Vector3:
+	return _drum_up_at(p)
+
+
+func _bend_stand_basis(world_pos: Vector3, yaw_deg: float) -> Basis:
+	var th: float = _drum_alpha(world_pos)
+	return _curve().bend_basis(th) * Basis.from_euler(Vector3(0.0, deg_to_rad(yaw_deg), 0.0))
+
+
+func _bend_preface(pass_name: String) -> void:
+	var stats: Dictionary = _curve().run(self)
+	print("[BEND] ms=%d meshes=%d verts=%d shapes=%d" % [int(stats["ms"]), int(stats["meshes"]), int(stats["verts"]), int(stats["shapes"])])
+	if _player_body != null:
+		var p: Vector3 = _player_body.global_position
+		var alpha: float = _drum_alpha(p)
+		print("[BEND] player=%s strip=%d alpha_deg=%.2f pass=%s" % [str(p), _drum_strip_index(alpha), rad_to_deg(alpha), pass_name])
+
+
 func _drum_blend_up(a: Vector3, b: Vector3, t: float) -> Vector3:
 	var from_u: Vector3 = a.normalized()
 	var to_u: Vector3 = b.normalized()
@@ -1543,8 +1578,10 @@ func _drum_world_weight(p: Vector3) -> float:
 	return (1.0 - edge) * (1.0 - high)
 
 
-# -1 means a full-length floor. Only the lower valley can sit under the deck;
-# the overhead arc crosses the same z and stays solid.
+# -1 means a full-length floor. z0/z1 are flat arc-length coordinates
+# (z = AXIS_Z + alpha * R), not chord z, so the hole matches the bent footprint.
+# Tuck is 0: the drum floor ends on the footprint edge instead of running under it.
+# Only the lower valley can sit under the deck; the overhead arc stays solid.
 func _drum_hole_half(alpha: float, z0: float, z1: float) -> float:
 	if cos(alpha) <= 0.0:
 		return -1.0
@@ -1555,8 +1592,8 @@ func _drum_hole_half(alpha: float, z0: float, z1: float) -> float:
 	if lo < DRUM_PLAZA_Z_SOUTH or hi > EXT_GROUND_Z1:
 		return -1.0
 	if lo >= EXT_GROUND_Z0:
-		return EXT_GROUND_X1 - DRUM_TUCK
-	return DRUM_PLAZA_HALF_X - DRUM_TUCK
+		return EXT_GROUND_X1
+	return DRUM_PLAZA_HALF_X
 
 
 func _drum_grass_material() -> StandardMaterial3D:
@@ -1641,9 +1678,10 @@ func _build_drum_walkable_ring(parent: Node3D) -> void:
 		var alpha: float = -PI + (float(i) + 0.5) * TAU / float(DRUM_FACETS)
 		var outward: Vector3 = _drum_outward(alpha)
 		var tangent: Vector3 = _drum_tangent(alpha)
-		var z_lo: float = DRUM_AXIS_Z + outward.z * DRUM_FLOOR_R - tangent.z * half_w
-		var z_hi: float = DRUM_AXIS_Z + outward.z * DRUM_FLOOR_R + tangent.z * half_w
-		var hole: float = _drum_hole_half(alpha, z_lo, z_hi)
+		var half_ang: float = atan(half_w / DRUM_FLOOR_R)
+		var z_arc_lo: float = DRUM_AXIS_Z + (alpha - half_ang) * DRUM_FLOOR_R
+		var z_arc_hi: float = DRUM_AXIS_Z + (alpha + half_ang) * DRUM_FLOOR_R
+		var hole: float = _drum_hole_half(alpha, z_arc_lo, z_arc_hi)
 		var spans: Array[Vector2] = []
 		if hole < 0.0:
 			spans.append(Vector2(DRUM_X_MIN, DRUM_X_MAX))
@@ -2181,7 +2219,9 @@ func _add_drum_inner_skin(cyl_node: Node3D) -> void:
 	var x_lo: float = -420.0
 	var x_hi: float = 420.0
 	var x_step: float = 24.0
-	var a_segs: int = 72
+	# 72 segments chord ~19 cm inside the circle and cut through the ground floor
+	# once the skin sits 6 cm outside the walkable face. 360 keeps that sagitta ~8 mm.
+	var a_segs: int = 360
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var x_cursor: float = x_lo
@@ -2246,19 +2286,9 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 		for ch: Node in n.get_children():
 			stack.append(ch)
 
-	# World AABB x -60..60, y -1..40, z -45..45. Twelve edges, four along each axis.
-	var map_box: AABB = AABB(Vector3(-60.0, -1.0, -45.0), Vector3(120.0, 41.0, 90.0))
-	var map_e0: PackedVector3Array = PackedVector3Array([
-		Vector3(-60.0, -1.0, -45.0), Vector3(-60.0, 40.0, -45.0), Vector3(-60.0, -1.0, 45.0), Vector3(-60.0, 40.0, 45.0),
-		Vector3(-60.0, -1.0, -45.0), Vector3(60.0, -1.0, -45.0), Vector3(-60.0, -1.0, 45.0), Vector3(60.0, -1.0, 45.0),
-		Vector3(-60.0, -1.0, -45.0), Vector3(-60.0, 40.0, -45.0), Vector3(60.0, -1.0, -45.0), Vector3(60.0, 40.0, -45.0),
-	])
-	var map_e1: PackedVector3Array = PackedVector3Array([
-		Vector3(60.0, -1.0, -45.0), Vector3(60.0, 40.0, -45.0), Vector3(60.0, -1.0, 45.0), Vector3(60.0, 40.0, 45.0),
-		Vector3(-60.0, 40.0, -45.0), Vector3(60.0, 40.0, -45.0), Vector3(-60.0, 40.0, 45.0), Vector3(60.0, 40.0, 45.0),
-		Vector3(-60.0, -1.0, 45.0), Vector3(-60.0, 40.0, 45.0), Vector3(60.0, -1.0, 45.0), Vector3(60.0, 40.0, 45.0),
-	])
-
+	# The old map-box cut (world x -60..60, y -1..40, z -45..45) punched rectangular
+	# starfield holes through the hull behind the start deck. Wedge, caps, and
+	# poke-through still drop. The skin stays continuous behind the bent deck.
 	for mi: MeshInstance3D in meshes:
 		if mi.mesh == null or mi.mesh.get_surface_count() <= 0:
 			continue
@@ -2332,14 +2362,7 @@ func _cut_observation_window(cyl_node: Node3D, cyl_pivot: Node3D) -> void:
 					fn = Vector3.ZERO
 				# End caps face along the spin axis. r >= 20 leaves the tiny hub at the axis.
 				var drop_cap: bool = absf(c.x) >= 330.0 and absf(fn.x) > 0.85 and r >= 20.0
-				# Drum skin through the playable map is a flat ceiling over the deck and hides the window.
-				# local_verts are cyl_node-local; world = cyl_node.global_transform * local_vertex.
-				# Drop the face when it meets the map volume: a vertex inside, a triangle edge through the
-				# box, or a box edge through the triangle.
-				var w0: Vector3 = cyl_node.global_transform * p0
-				var w1: Vector3 = cyl_node.global_transform * p1
-				var w2: Vector3 = cyl_node.global_transform * p2
-				var drop_map: bool = _world_triangle_hits_map_box(w0, w1, w2, map_box, map_e0, map_e1)
+				var drop_map: bool = false
 				if drop_wedge:
 					removed_wedge += 1
 				if drop_cap:
@@ -4728,9 +4751,9 @@ func _return_to_player() -> void:
 func _respawn() -> void:
 	if _player_body == null:
 		return
-	_player_body.global_position = SPAWN_POS
+	var p: Vector3 = bend_point(SPAWN_POS)
 	_player_body.velocity = Vector3.ZERO
-	_player_body.rotation_degrees = Vector3(0.0, SPAWN_YAW_DEG, 0.0)
+	_player_body.global_transform = Transform3D(_bend_stand_basis(p, SPAWN_YAW_DEG), p)
 	_show_toast("TELEMETRY LOST — RESPAWNED IN APT 201", 2.0)
 
 
@@ -4903,9 +4926,8 @@ func _physics_process(delta: float) -> void:
 		sprint = Input.is_action_pressed("sprint")
 		jump = Input.is_action_pressed("jump")
 
-	# [t34u] Local "up" = world up on the preface, toward the small-ring axis inside
-	# that ring, or toward the Hab-7 drum axis once the player leaves the footprint.
-	# The small ring is tested first so its gravity is unchanged.
+	# [t34u] The small ring is tested first so its gravity is unchanged.
+	# Everywhere else, including the bent start deck, up is radial (toward the drum axis).
 	var in_ring: bool = _in_gravity_ring(b.global_position)
 	var up_dir: Vector3 = Vector3.UP
 	var g_vec: Vector3 = Vector3.DOWN * GRAVITY
@@ -4913,18 +4935,8 @@ func _physics_process(delta: float) -> void:
 		up_dir = _ring_up_at(b.global_position, b.global_basis.y)
 		g_vec = _ring_gravity_at(b.global_position)
 	else:
-		var world_w: float = _drum_world_weight(b.global_position)
-		if world_w < 0.999:
-			var up_r: Vector3 = _drum_up_at(b.global_position)
-			var g_r: Vector3 = _drum_gravity_at(b.global_position)
-			if world_w <= 0.001:
-				up_dir = up_r
-				g_vec = g_r
-			else:
-				up_dir = _drum_blend_up(Vector3.UP, up_r, 1.0 - world_w)
-				g_vec = (Vector3.DOWN * GRAVITY).lerp(g_r, 1.0 - world_w)
-				if g_vec.length_squared() > 0.0001:
-					g_vec = g_vec.normalized() * GRAVITY
+		up_dir = _drum_up_at(b.global_position)
+		g_vec = _drum_gravity_at(b.global_position)
 	_orient_node_to_up(b, up_dir, delta)
 	b.up_direction = up_dir
 
@@ -5578,16 +5590,20 @@ func _qa_check(nm: String, ok: bool, detail: String) -> void:
 
 
 func _qa_place(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
-	_player_body.global_position = pos
 	_player_body.velocity = Vector3.ZERO
-	_player_body.rotation_degrees = Vector3(0.0, yaw_deg, 0.0)
+	_player_body.global_transform = Transform3D(_bend_stand_basis(pos, yaw_deg), pos)
 	_pitch = deg_to_rad(pitch_deg)
 	_apply_pitch()
 	_update_interior_streaming(pos)
 
 
+## Authored flat preface coordinate. Already-bent world points must use _qa_place.
+func _qa_place_flat(pos: Vector3, yaw_deg: float, pitch_deg: float) -> void:
+	_qa_place(bend_point(pos), yaw_deg, pitch_deg)
+
+
 ## Exterior deck spot that is not embedded in a prop. Rings of 1 m out to 12 m from preferred.
-## Y is the downward-ray hit + 0.05. The capsule must be clear, with 3 m on +X/-X/+Z/-Z and 2.5 m headroom.
+## The capsule feet sit 2 cm above the hit so the cast sees the curb the floor snap lands on.
 func _qa_find_clear_spot(preferred: Vector3) -> Vector3:
 	if _player_body == null:
 		return preferred
@@ -5596,9 +5612,13 @@ func _qa_find_clear_spot(preferred: Vector3) -> Vector3:
 		return preferred
 	var world: World3D = _player_body.get_world_3d()
 	if world == null or world.direct_space_state == null:
-		return preferred
+		return bend_point(preferred)
+	preferred = bend_point(preferred)
 	var space: PhysicsDirectSpaceState3D = world.direct_space_state
 	var exclude: Array[RID] = [_player_body.get_rid()]
+	var feet_lift: float = cs.position.y
+	if cs.shape is CapsuleShape3D:
+		feet_lift = cs.position.y - (cs.shape as CapsuleShape3D).height * 0.5
 	for ring: int in range(0, 13):
 		var radius: float = float(ring)
 		var steps: int = 1 if ring == 0 else maxi(8, ceili(TAU * radius))
@@ -5609,17 +5629,34 @@ func _qa_find_clear_spot(preferred: Vector3) -> Vector3:
 			# Stay on the promenade deck, inside the rails (x ±18, z -45) and outside the interior floor.
 			if x < -17.0 or x > 17.0 or z < -44.0 or z > -9.6:
 				continue
-			var down: Dictionary = _qa_deck_ray(space, Vector3(x, 8.0, z), Vector3(x, -1.0, z), exclude)
+			var up: Vector3 = _qa_radial_up_at_xz(x, z)
+			var on_circle: Vector3 = _qa_circle_at_xz(x, z)
+			var down: Dictionary = _qa_deck_ray(space, on_circle + up * 6.0, on_circle - up * 3.0, exclude)
 			if down.is_empty():
 				continue
-			var hy: float = (down["position"] as Vector3).y
-			# Reject roofs and tall props. Deck, platform, and the low guideway are in this band.
-			if hy < -0.05 or hy > 0.80:
+			var hit_p: Vector3 = down["position"] as Vector3
+			# Height above the walkable circle, toward the axis. Reject roofs and tall props.
+			var above: float = DRUM_FLOOR_R - _drum_rho(hit_p)
+			# Deck and 5 cm paving only. A curb or planter top (0.3 m) is not a strafe pad.
+			if above < -0.05 or above > 0.20:
 				continue
-			var spot: Vector3 = Vector3(x, hy + 0.05, z)
+			var up_hit: Vector3 = _drum_up_at(hit_p)
+			var spot: Vector3 = hit_p + up_hit * (0.02 - feet_lift)
 			if _qa_spot_clear(space, cs, spot, exclude):
 				return spot
 	return preferred
+
+
+func _qa_circle_at_xz(x: float, z: float) -> Vector3:
+	var dz: float = z - DRUM_AXIS_Z
+	var disc: float = DRUM_FLOOR_R * DRUM_FLOOR_R - dz * dz
+	if disc <= 1.0:
+		return Vector3(x, DRUM_AXIS_Y, z)
+	return Vector3(x, DRUM_AXIS_Y - sqrt(disc), z)
+
+
+func _qa_radial_up_at_xz(x: float, z: float) -> Vector3:
+	return _drum_up_at(_qa_circle_at_xz(x, z))
 
 
 func _qa_deck_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, exclude: Array[RID]) -> Dictionary:
@@ -5631,20 +5668,33 @@ func _qa_deck_ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, 
 	return space.intersect_ray(rq)
 
 
+func _qa_yaw_about_up(yaw_rad: float, kill_velocity: bool = true) -> void:
+	# rotation_degrees.y wipes the drum tilt and shoves the capsule into the frame.
+	if _player_body == null:
+		return
+	_player_body.global_basis = _bend_stand_basis(_player_body.global_position, rad_to_deg(yaw_rad))
+	if kill_velocity:
+		_player_body.velocity = Vector3.ZERO
+
+
 func _qa_spot_clear(space: PhysicsDirectSpaceState3D, cs: CollisionShape3D, spot: Vector3, exclude: Array[RID]) -> bool:
 	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 	q.shape = cs.shape
-	q.transform = Transform3D(Basis.IDENTITY, spot) * cs.transform
+	# Stand the capsule on the drum. A world-up capsule and a flat ±Z cast hit the rising floor.
+	var stand: Basis = _bend_stand_basis(spot, 0.0)
+	q.transform = Transform3D(stand, spot) * cs.transform
 	q.exclude = exclude
 	q.collide_with_bodies = true
 	q.collide_with_areas = false
 	if not space.intersect_shape(q, 1).is_empty():
 		return false
-	# cast_motion moves the player's capsule. -Z is the yaw-0 sprint (~2.7 m over 20 frames).
+	# Casts match the checks: strafe is ~1.4 m, the sprint sample needs ~2.7 m of local -Z.
+	# A 3 m cast in every direction rejected the open tile centers (guide inlay at x=±3.2,
+	# planters at z=-10) and left the body on a paving corner.
 	var motions: Array[Vector3] = [
-		Vector3(3.0, 0.0, 0.0), Vector3(-3.0, 0.0, 0.0),
-		Vector3(0.0, 0.0, 3.0), Vector3(0.0, 0.0, -3.0),
-		Vector3(0.0, 2.5, 0.0),
+		stand * Vector3(1.6, 0.0, 0.0), stand * Vector3(-1.6, 0.0, 0.0),
+		stand * Vector3(0.0, 0.0, 1.6), stand * Vector3(0.0, 0.0, -3.0),
+		stand * Vector3(0.0, 2.5, 0.0),
 	]
 	for motion: Vector3 in motions:
 		q.motion = motion
@@ -5666,9 +5716,10 @@ func _qa_aim_at(target: Vector3) -> void:
 	if horiz < 0.00001 and absf(dir.y) < 0.00001:
 		return
 	# forward = (-sin(yaw), 0, -cos(yaw)); yaw 0 is -Z, yaw 180 is +Z.
+	# Yaw is about radial up so the body stays planted on the bent deck.
 	var yaw: float = atan2(-dir.x, -dir.z)
 	var pitch: float = atan2(dir.y, maxf(horiz, 0.00001))
-	_player_body.rotation_degrees = Vector3(0.0, rad_to_deg(yaw), 0.0)
+	_player_body.global_basis = _bend_stand_basis(_player_body.global_position, rad_to_deg(yaw))
 	_player_body.velocity = Vector3.ZERO
 	_pitch = pitch
 	_apply_pitch()
@@ -5707,7 +5758,7 @@ func _run_hand_controls_qa() -> void:
 	await _qa_frames(10)
 
 	# --- 1. Neutral straight-ahead: hand 100% out of view (Promenade deck, open space) ---
-	_qa_place(Vector3(0.0, 0.25, -12.0), 0.0, -4.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -12.0), 0.0, -4.0)
 	await _qa_frames(30)
 	_qa_check("floor_contact", _player_body.is_on_floor(), "is_on_floor=%s y=%.3f" % [_player_body.is_on_floor(), _player_body.global_position.y])
 	var vis_neutral: int = _hand_points_in_view()
@@ -5733,7 +5784,7 @@ func _run_hand_controls_qa() -> void:
 	_qa_mouse(Vector2(0.0, 12000.0))
 	await _qa_idle(3)
 	_qa_check("mouse_pitch_clamp_down", absf(rad_to_deg(_pitch) - PITCH_MIN_DEG) < 0.05, "pitch=%.2f" % rad_to_deg(_pitch))
-	_qa_place(Vector3(0.0, 0.25, -11.0), 0.0, -4.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -11.0), 0.0, -4.0)
 	await _qa_frames(10)
 	_qa_mouse(Vector2(0.0, deg_to_rad(48.0) / MOUSE_SENS))
 	await _qa_idle(3)
@@ -5801,7 +5852,9 @@ func _run_hand_controls_qa() -> void:
 	_qa_check("stop_swing_eases_out", _walk_swing_amp < 0.001 and absf(hl_stop.origin.z - ARM_LOWERED_POS.z) < 0.002, "amp=%.3f z=%.3f" % [_walk_swing_amp, hl_stop.origin.z])
 
 	# --- 5. Shift sprint, A / S / D strafe ---
-	var move_spot: Vector3 = _qa_find_clear_spot(Vector3(-4.0, 0.12, -12.0))
+	# Same open promenade point as the neutral walk. The clearance search was landing on
+	# paving corners and the guideway curb, where a 1 m strafe hits a lip.
+	var move_spot: Vector3 = bend_point(Vector3(0.0, 0.25, -12.0))
 	_qa_place(move_spot, 0.0, -4.0)
 	await _qa_frames(10)
 	_qa_key(KEY_SHIFT, true)
@@ -5815,10 +5868,15 @@ func _run_hand_controls_qa() -> void:
 	_qa_key(KEY_SHIFT, false)
 	_qa_check("shift_sprint", absf(sp - SPRINT_SPEED) < 0.1 and absf(dph - 8.6) < 0.2, "speed=%.2f m/s swing_freq=%.2f rad/s" % [sp, dph])
 	for kd: Array in [[KEY_A, Vector3(-1, 0, 0), "A_strafe_left"], [KEY_D, Vector3(1, 0, 0), "D_strafe_right"], [KEY_S, Vector3(0, 0, 1), "S_backpedal"]]:
+		# parse_input_event lands on the next idle frame. A physics-only settle still
+		# sees the previous key, so the body drifts and the next strafe starts diagonal.
 		_qa_place(move_spot, 0.0, -4.0)
-		await _qa_frames(8)
+		await _qa_idle(1)
+		_qa_place(move_spot, 0.0, -4.0)
+		await _qa_frames(4)
 		var q0: Vector3 = _player_body.global_position
 		_qa_key(kd[0] as Key, true)
+		await _qa_idle(1)
 		await _qa_frames(20)
 		_qa_key(kd[0] as Key, false)
 		var dq: Vector3 = _player_body.global_position - q0
@@ -5844,7 +5902,7 @@ func _run_hand_controls_qa() -> void:
 
 	# --- 7. [F] wrist raise + RFID PulseRings (APT 201 open floor) ---
 	# [REV-C2] The workbench objective is gone. This spot stays on open floor east of the dust outline.
-	_qa_place(Vector3(-8.50, 4.30, 6.35), 180.0, -14.0)
+	_qa_place_flat(Vector3(-8.50, 4.30, 6.35), 180.0, -14.0)
 	await _qa_frames(30)
 	_qa_check("apt201_lowered_out_of_view", _hand_points_in_view() == 0 and not _pulse_rings_root.visible, "pts_in_frustum=%d rings=%s" % [_hand_points_in_view(), _pulse_rings_root.visible])
 	await _qa_capture("hand_qa_00_apt201_lowered_reference.png")
@@ -6882,6 +6940,8 @@ func _respawn_building_interiors() -> int:
 	_interiors_loaded = true
 	# [M-19] The probe is UPDATE_ONCE. Rebake for two frames after interiors stream back in.
 	_retrigger_reflection_probe()
+	# New pickups and props are authored flat. Nodes bent on the first pass stay marked.
+	_bend_preface("interiors")
 	print("[InteriorStreaming] RESPAWNED %d interior nodes (collected pickups preserved: %d)" % [restored, _collected_pickup_ids.size()])
 	return restored
 
@@ -8698,7 +8758,7 @@ func _run_reticle_stars_doors_qa() -> void:
 			"vp=%s reticle_center=%s expected=%s err=%.4f px ray_dot=%.8f" % [str(vp_sz), str(box_center), str(expected_c), err_px, dot_align])
 
 	# [REV-C2] Aim inside APT 201 at the open floor (workbench removed) and capture reticle centered check
-	_qa_place(Vector3(-8.50, 4.30, 6.10), 180.0, -10.0)
+	_qa_place_flat(Vector3(-8.50, 4.30, 6.10), 180.0, -10.0)
 	await _qa_frames(15)
 	_sync_reticle_to_viewport_center()
 	await _qa_capture("qa_reticle_centered_check.png")
@@ -8713,7 +8773,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		"exists=%s R=%.1f m L=%.1f m camera_far=%.1f m" % [_starfield_cylinder != null, star_r, star_l, _camera.far])
 
 	# Promenade deck, looking along the cylinder axis (world +X, yaw -90) toward the end-cap starfield vista.
-	_qa_place(Vector3(0.0, 0.25, -32.0), -90.0, 12.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -32.0), -90.0, 12.0)
 	await _qa_frames(15)
 	var hab_xf0: Transform3D = hab_world.global_transform if hab_world != null else Transform3D.IDENTITY
 	var star_rot0: float = _starfield_cylinder.rotation.x if _starfield_cylinder != null else 0.0
@@ -8754,7 +8814,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	var win_yaw: float = rad_to_deg(atan2(-aim.x, -aim.z))
 	var win_pitch: float = rad_to_deg(asin(clampf(aim.y, -1.0, 1.0)))
 	win_pitch = clampf(win_pitch, PITCH_MIN_DEG, PITCH_MAX_DEG)
-	_qa_place(Vector3(0.0, 0.25, -20.0), win_yaw, win_pitch)
+	_qa_place_flat(Vector3(0.0, 0.25, -20.0), win_yaw, win_pitch)
 	await _qa_frames(15)
 	var img_win1: Image = await _qa_capture("qa_window_starfield_1.png")
 	await _qa_frames(120)
@@ -9006,7 +9066,7 @@ func _run_reticle_stars_doors_qa() -> void:
 	var ob_root: Node3D = ob_door["root"] as Node3D
 	var ob_cs: CollisionShape3D = ob_door["field_collider"] as CollisionShape3D
 	var bot: Node3D = _actors_container.get_node_or_null("Hammerhead05_Kelvin_0204_Science") as Node3D
-	_qa_place(Vector3(0.0, 0.25, -6.0), 0.0, 0.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -6.0), 0.0, 0.0)
 	await _qa_frames(4)
 	if bot != null:
 		var bot_home: Vector3 = bot.global_position
@@ -9118,7 +9178,7 @@ func _run_reticle_stars_doors_qa() -> void:
 		print("[T38-QA] Saved qa_rfid_door_closed_vs_opened.png")
 
 	# ---------------- 4. [t39u]-[t40u] DYNAMIC INTERIOR DESPAWN / RESPAWN ----------------
-	_qa_place(Vector3(-6.0, 0.25, -2.0), 0.0, 0.0)
+	_qa_place_flat(Vector3(-6.0, 0.25, -2.0), 0.0, 0.0)
 	await _qa_frames(6)
 	_qa_t38_check("interior_loaded_at_start", _interiors_loaded, "status=%s" % str(get_interior_streaming_status()))
 	# Rev C.2 removed the APT 201 workbench pickups. Collect the 202 desk cell so it stays collected across the stream.
@@ -9149,11 +9209,11 @@ func _run_reticle_stars_doors_qa() -> void:
 	# Exit door open -> interiors must stay loaded even beyond the despawn line
 	var exit_d: Dictionary = _find_door("DOOR_SECTOR4_EXIT")
 	_set_door_dissolve_immediate(exit_d, 1.0)
-	_qa_place(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
 	await _qa_frames(8)
 	_qa_t38_check("qa_ff_02_stays_loaded_while_exit_open", _interiors_loaded, "z=-16.0 exit_open=%s loaded=%s" % [exit_d["open"], _interiors_loaded])
 	_set_door_dissolve_immediate(exit_d, 0.0)
-	_qa_place(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -16.0), 0.0, 0.0)
 	await _qa_frames(8)
 	var st_out: Dictionary = get_interior_streaming_status()
 	var props_left: int = 0
@@ -9167,10 +9227,10 @@ func _run_reticle_stars_doors_qa() -> void:
 	_qa_t38_check("interior_despawn_on_promenade_exit", not _interiors_loaded and _interior_managed_count > 0 and props_left == 0 and actors_in == 0 and wb_retired and _rfid_doors.size() == 6,
 		"z=-16.0 (exit closed) loaded=%s managed=%d props_left=%d interior_actors_left=%d workbench_hidden_or_absent=%s doors=%d" % [_interiors_loaded, _interior_managed_count, props_left, actors_in, wb_retired, _rfid_doors.size()])
 	await _qa_capture("qa_interior_despawned_promenade.png")
-	_qa_place(Vector3(0.0, 0.25, -13.5), 180.0, 0.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -13.5), 180.0, 0.0)
 	await _qa_frames(6)
 	_qa_t38_check("qa_ff_02_hysteresis_band_stays_despawned", not _interiors_loaded, "z=-13.5 loaded=%s" % _interiors_loaded)
-	_qa_place(Vector3(0.0, 0.25, -12.5), 180.0, 0.0)
+	_qa_place_flat(Vector3(0.0, 0.25, -12.5), 180.0, 0.0)
 	await _qa_frames(8)
 	var st_in: Dictionary = get_interior_streaming_status()
 	var bci_respawned: bool = _props_container.get_node_or_null("Apt202_Desk_Battery_Cell") != null
@@ -9375,7 +9435,7 @@ func _run_qa_player_exit() -> void:
 		print("[EXIT-QA] DONE failures=5")
 		get_tree().quit(1)
 		return
-	_qa_place(SPAWN_POS, 0.0, -4.0)
+	_qa_place_flat(SPAWN_POS, 0.0, -4.0)
 	await _qa_frames(20)
 	var start_pos: Vector3 = _player_body.global_position
 	print("[EXIT-QA] PASS | spawn | start=%s" % str(start_pos))
@@ -9395,7 +9455,7 @@ func _run_qa_player_exit() -> void:
 	# of the door: inside the 2 m flat scan, clear of the closed field and the z=1.0 wall.
 	var stand: Vector3 = Vector3(root_pos.x, root_pos.y, root_pos.z + 1.15)
 	var dir: Vector3 = stand - _player_body.global_position
-	_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+	_qa_yaw_about_up(atan2(-dir.x, -dir.z))
 	_qa_key(KEY_W, true)
 	await _qa_idle(2)
 	var walked: int = 0
@@ -9410,7 +9470,7 @@ func _run_qa_player_exit() -> void:
 		dir = aim - pos_now
 		dir.y = 0.0
 		if dir.length() > 0.02:
-			_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+			_qa_yaw_about_up(atan2(-dir.x, -dir.z), false)
 		await get_tree().physics_frame
 		walked += 1
 		horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
@@ -9421,7 +9481,7 @@ func _run_qa_player_exit() -> void:
 	dir = root_pos - _player_body.global_position
 	dir.y = 0.0
 	if dir.length() > 0.05:
-		_player_body.rotation_degrees.y = rad_to_deg(atan2(-dir.x, -dir.z))
+		_qa_yaw_about_up(atan2(-dir.x, -dir.z))
 	horiz = Vector2(_player_body.global_position.x, _player_body.global_position.z).distance_to(Vector2(root_pos.x, root_pos.z))
 	if horiz <= 1.3:
 		print("[EXIT-QA] PASS | walk_to_door | horiz=%.2f m frames=%d pos=%s" % [horiz, walked, str(_player_body.global_position)])
@@ -9435,10 +9495,10 @@ func _run_qa_player_exit() -> void:
 	else:
 		failures += 1
 		print("[EXIT-QA] FAIL | press_e | open=false dist3=%.2f pos=%s" % [_player_probe_point().distance_to(door["center"] as Vector3), str(_player_body.global_position)])
-	_player_body.rotation_degrees.y = 0.0
+	_qa_yaw_about_up(0.0)
 	var fwd: Vector3 = (-_camera.global_transform.basis.z) if _camera != null else Vector3(0.0, 0.0, -1.0)
 	if fwd.z >= 0.0:
-		_player_body.rotation_degrees.y = 180.0
+		_qa_yaw_about_up(PI)
 		if _camera != null:
 			fwd = -_camera.global_transform.basis.z
 	_qa_key(KEY_W, true)
@@ -10010,16 +10070,17 @@ func _qa_ring_return_deck() -> bool:
 		if _drum_strip_index(_drum_alpha(p)) == 4:
 			crossed4 = true
 		var w: float = _drum_world_weight(p)
-		var up_dot: float = _player_body.up_direction.dot(Vector3.UP)
+		var up_dot: float = _player_body.up_direction.dot(_drum_up_at(p))
 		var sdf: float = _drum_footprint_sdf(p.x, p.z)
-		if crossed4 and sdf < -1.5 and p.y < 5.0 and p.y > -1.0 and _player_body.is_on_floor() and up_dot > 0.98 and w > 0.95:
+		if crossed4 and sdf < -1.5 and p.y < 5.0 and p.y > -1.0 and _player_body.is_on_floor() and up_dot > 0.98:
 			print("QA_RING PASS | preface | pos=%s up=%.3f w=%.3f sdf=%.2f strip4=1" % [str(p), up_dot, w, sdf])
 			return true
 		var a: float = _drum_alpha(p)
 		if w > 0.7 and p.y < 6.0:
 			Input.action_release("look_left")
 			Input.action_release("look_right")
-			_qa_egress_steer(Vector2(hold_x, 12.0))
+			var hold_b: Vector3 = bend_point(Vector3(hold_x, EXT_GROUND_TOP_Y, 12.0))
+			_qa_egress_steer(Vector2(hold_b.x, hold_b.z))
 		else:
 			var desired: Vector3 = -_drum_tangent(a) * _qa_ring_flip + Vector3.RIGHT * clampf((hold_x - p.x) * 0.08, -0.5, 0.5)
 			_qa_ring_steer(desired)
@@ -10027,7 +10088,7 @@ func _qa_ring_return_deck() -> bool:
 		frames += 1
 	var p2: Vector3 = _player_body.global_position
 	print("QA_RING FAIL | preface | pos=%s up=%.3f w=%.3f sdf=%.2f floor=%s strip4=%d" % [
-		str(p2), _player_body.up_direction.dot(Vector3.UP), _drum_world_weight(p2),
+		str(p2), _player_body.up_direction.dot(_drum_up_at(p2)), _drum_world_weight(p2),
 		_drum_footprint_sdf(p2.x, p2.z), str(_player_body.is_on_floor()), 1 if crossed4 else 0
 	])
 	return false
@@ -10452,6 +10513,75 @@ func _run_shot_ring() -> void:
 	get_tree().quit(0 if failures == 0 else 1)
 
 
+func _shot_curve_save(path: String) -> bool:
+	for _s: int in range(4):
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var tex: ViewportTexture = get_viewport().get_texture()
+	if tex == null:
+		push_warning("[SHOT-CURVE] no viewport texture")
+		return false
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		push_warning("[SHOT-CURVE] empty image")
+		return false
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var err: Error = img.save_png(path)
+	if err != OK:
+		push_warning("[SHOT-CURVE] save error %s" % err)
+		return false
+	print("[SHOT-CURVE] saved %s" % path)
+	return true
+
+
+# Windowed. Three views of the bent start deck, then quit.
+func _run_shot_curve() -> void:
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 600:
+		await get_tree().physics_frame
+		guard += 1
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(Vector2i(1280, 720))
+	if _hud != null:
+		_hud.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(8)
+	if _player_body == null or _camera == null:
+		print("[SHOT-CURVE] FAIL | no player")
+		print("[SHOT-CURVE] DONE failures=1")
+		get_tree().quit(1)
+		return
+	var failures: int = 0
+	# South of the deck, low, looking across the start area with the drum behind it.
+	var ext_pos: Vector3 = bend_point(Vector3(22.0, 2.2, -62.0))
+	var ext_at: Vector3 = bend_point(Vector3(0.0, 6.0, 8.0))
+	_qa_free_cam(ext_pos, ext_at, Vector3.UP, 55.0)
+	await _qa_frames(20)
+	if not await _shot_curve_save(SHOT_CURVE_DIR + "/curve_exterior.png"):
+		failures += 1
+	# Eye height on the north lip, looking +Z from the deck onto the drum floor.
+	var edge_pos: Vector3 = bend_point(Vector3(0.0, 1.7, 40.0))
+	var edge_at: Vector3 = bend_point(Vector3(0.0, 1.2, 55.0))
+	_qa_free_cam(edge_pos, edge_at, _drum_up_at(edge_pos), 60.0)
+	await _qa_frames(12)
+	if not await _shot_curve_save(SHOT_CURVE_DIR + "/curve_edge.png"):
+		failures += 1
+	# Apt 201 spawn, eye along the spawn yaw.
+	var spawn: Vector3 = bend_point(SPAWN_POS)
+	var stand: Basis = _bend_stand_basis(spawn, SPAWN_YAW_DEG)
+	var eye: Vector3 = spawn + stand * Vector3(0.0, 1.62, 0.15)
+	var look: Vector3 = spawn + stand * Vector3(0.0, 1.35, -3.5)
+	_qa_free_cam(eye, look, stand.y, 70.0)
+	await _qa_frames(12)
+	if not await _shot_curve_save(SHOT_CURVE_DIR + "/curve_spawn.png"):
+		failures += 1
+	print("[SHOT-CURVE] spawn=%s strip=%d" % [str(spawn), _drum_strip_index(_drum_alpha(spawn))])
+	print("[SHOT-CURVE] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
 func _run_qa_drawcalls() -> void:
 	await _qa_frames(60)
 	var poses: Array[Dictionary] = [
@@ -10782,6 +10912,7 @@ func _ext_mark_spawned(spawned: int) -> void:
 		_ext_batch_multimesh(ext_root)
 	print("[EXT] spawned=%d" % spawned)
 	print("[GEO-17] ext shapes clipped at shell z -8.90: %d" % _ext_shell_clipped)
+	_bend_preface("exterior")
 	exterior_spawned.emit()
 
 
