@@ -9753,13 +9753,14 @@ func _qa_ring_steer(desired: Vector3) -> void:
 	if fwd.length_squared() < 0.0004 or want.length_squared() < 0.0004:
 		return
 	# Positive signed_angle_to around up is a left turn. Mouse +x yaws right
-	# (rotate_object_local by -dx * sens), so one event closes the whole error.
+	# (rotate_object_local by -dx * sens). Clamp dx so a near-180 error cannot
+	# overshoot in one event under time_scale 4 + cylinder reorient.
 	# Held look keys step ~8 deg at time_scale 4 and the old deadzone swallowed
 	# the axial correction, which walked the circuit into the plaza.
 	var signed: float = fwd.normalized().signed_angle_to(want.normalized(), up)
 	if absf(signed) < 0.01:
 		return
-	var dx: float = -signed / maxf(_mouse_sens, 0.0001)
+	var dx: float = clampf(-signed / maxf(_mouse_sens, 0.0001), -40.0, 40.0)
 	_qa_mouse(Vector2(dx, 0.0))
 
 
