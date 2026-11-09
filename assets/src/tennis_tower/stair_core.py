@@ -2,15 +2,21 @@
 (2 cars per stack, 2 x 2.0 x 2.8 m shafts, car 1.6 x 2.4 x 2.5 m, centre-opening doors 1.1 x 2.1 m).
 REUSE (preface residential sector, Rev C): the stair is a parameterized port of stair_set_generator.py (switchback: flight 1 cast /
 flight 2 bolted modules, 15 mm slate tread finish, 30 mm amber emergency nosing, 0.25 / 0.30 m landing slabs, violet stringer LEDs,
-wall anchor plates), the centre guard + wall handrails follow stair_guard_generator.py (glass guard, alloy posts / cap rail / standoffs),
+wall anchor plates), the centre guard + wall handrails follow stair_guard_generator.py (scissor guard, alloy posts / cap rail / standoffs),
 colliders use stair_core_colliders_rev_c.slab_between (Flight*_Ramp-colonly through the nosings, *_Landing-colonly flush, GEO-22
 understair closure), materials are the stair_pbr_materials.py texture sets (white cladding, qa03 gunmetal, qa03 brushed titanium,
-atrium glass), the lift follows lift_generator.py (white shaft, two-skin door wall + cavity, gunmetal jambs, alloy sills, guide rails,
+alpha-scissor guards), the lift follows lift_generator.py (white shaft, two-skin door wall + cavity, gunmetal jambs, alloy sills, guide rails,
 call panel with amber glyph, green/amber status lamps). Rise per module: half a 6.1 m storey (18 R x 0.1694, T 0.28) -> stack 2 per storey.
 ground=True: flight 1 cast solid + understair closure (module on F1/F2/F3 floor); ground=False: both flights modular (stacked half).
 Run: python3 stair_core.py"""
 from modlib import *
 from stair_core_colliders_rev_c import slab_between
+from structure.struct_lib import SCR, finish_scissor
+def _scrub(p):  # zero-area loft/slice caps become zero-length shade_split normals; drop them and keep UVs
+    for k, (mk, m) in list(p.P.items()):
+        n = len(m.vertices); uv = m.metadata.get("uv"); uv = np.array(uv, float, copy=True) if uv is not None and len(uv) == n else np.zeros((n, 2))
+        m.update_faces(m.nondegenerate_faces()); ref = m.remove_unreferenced_vertices(); m.metadata["uv"] = uv if ref is None else uv[np.asarray(ref)]; p.P[k] = (mk, m)
+    return p
 ST_H = 6.1; RISE = ST_H / 2; N = 9; R = RISE / (2*N); T = .28; FW = 2.5; WT = .25; FIN, NOSE = .015, .03
 XI = (-2.5, 2.5); ZS, ZN = -2.5, 2.5; F1, F2 = (-2.5, -.001), (.001, 2.5)
 ZL = ZS + 1.38; Z1b = ZL + (N-1)*T; Z2t = ZL + (N-1)*T; YL = N*R
@@ -32,7 +38,7 @@ def stair(q):
     if g:  # GEO-22: flight 2 + mid landing closed below on the F2 side (visual screen + collider)
         p.add("Understair_Screen", WH, box(F2[0] + .01, F2[1] - .01, 0, YL + (N-1)*R - .25 + E, Z2t - .05 - E*0, Z2t - .05 + .04)) if False else \
         p.add("Understair_Screen", WH, box(F2[0] + .01, F2[1] - .01, 0, YL + (N-2)*R - .25 + E, ZL + (N-1)*T - .04 - .28, ZL + (N-1)*T - .28))
-    # guard: centre glass on the F2 edge (F2 is up to 1.5 m above F1), alloy posts + cap rail; wall handrails both sides
+    # guard: centre scissor panel on the F2 edge (F2 is up to 1.5 m above F1), alloy posts + cap rail; wall handrails both sides
     gl, po, cap = [], [], []
     for j in range(1, N):
         za = ZL + (j-1)*T; yt = YL + j*R
@@ -40,7 +46,7 @@ def stair(q):
         gl.append(box(.03, .042, yt + .06, yt + .85, za + .015, za + T - .015))
     a, b = np.array([.04, YL + R + 1.0, ZL + .12]), np.array([.04, YL + (N-1)*R + 1.0, ZL + (N-2)*T + .12])
     cap.append(tube(a - [0, 0, .3*0], b, .025, 6))
-    p.add("Guard_Glass_Centre", GL, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, *cap)
+    p.add("Guard_Scissor_Centre", SCR, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, *cap)
     hr = []
     for x, (y0, z0, y1, z1) in ((XI[0] + .07, (R + .9, Z1b - .5*T, (N-1)*R + .9, ZL + .5*T)), (XI[1] - .07, (YL + R + .9, ZL + .5*T, YL + (N-1)*R + .9, Z2t - .5*T))):
         hr.append(tube((x, y0, z0), (x, y1, z1), .022, 6))
@@ -56,7 +62,7 @@ def stair(q):
         if "colonly" in k:  # trim collider slabs at the floor so min Y = 0 (pivot rule); flat face at y 0 stays walkable
             if m.bounds[0][1] < 0: m = m.slice_plane([0, 0, 0], [0, 1, 0], cap=True); p.P[k] = (mk, m)
             m.metadata["uv"] = np.zeros((len(m.vertices), 2))
-    dress_stair(p, q); return p
+    dress_stair(p, q); return _scrub(p)
 
 def dress_stair(p, q):
     d = q["dress"]
@@ -106,7 +112,7 @@ def lift(q):
     p.add("Lift_Car", ALY, box(c - .85, c + .85, PIT - .1, PIT, cz - 1.25, cz + 1.2), box(c - .85, c + .85, PIT + 2.5, PIT + 2.6, cz - 1.25, cz + 1.2),
           box(c - .85, c - .8, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c + .8, c + .85, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c - .8 + E, c + .8 - E, PIT - E, PIT + 2.5 + E, cz - 1.25, cz - 1.2))
     p.add("Car_Floor_Slate", SSL, box(c - .8 + E, c + .8 - E, PIT - .003, PIT + .0, cz - 1.2 + E, cz + 1.2 - .002)) if False else None
-    dress_lift(p, q, xs, Zf + .24, DH, DW); return p
+    dress_lift(p, q, xs, Zf + .24, DH, DW); return _scrub(p)
 
 def dress_lift(p, q, xs, zf, DH, DW):
     d = q["dress"]; cs = [(a + b)/2 for a, b in xs]
@@ -161,7 +167,7 @@ def stair_full(q):
     # front wall (corridor side) with the storey door opening on the flight-1 side (2.2 m high); next storey's opening sits on this top landing
     p.add("Front_Wall", WH, box(-xi + E*0 - E, f1[0] + .3, 0, H - .002, zn, zn + WT2 - .002), box(f1[1] - .3, xi + E, 0, H - .002, zn, zn + WT2 - .002), box(f1[0] + .3 - E, f1[1] - .3 + E, 2.2, H - .002, zn, zn + WT2 - .002))
     p.add("Door_Jambs", SGM, box(f1[0] + .28, f1[0] + .3 + E, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01), box(f1[1] - .3 - E, f1[1] - .28, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01))
-    # well guards (glass + alloy posts + cap rail) on both flight edges, Rev C stair_guard language
+    # well guards (closed scissor boxes + alloy posts + cap rail) on both flight edges, Rev C stair_guard language
     for fx, (zfun, yfun, ks) in ((f1[1], (lambda k: z1b - (k - .5)*t, lambda k: k*r, range(1, n))), (f2[0], (lambda j: zl + (j - .5)*t, lambda j: yl + j*r, range(1, n)))):
         s = 1 if fx > 0 else -1; gx = fx + s*.04; gl, po = [], []
         for k in ks:
@@ -169,7 +175,7 @@ def stair_full(q):
             gl.append(box(gx - .006, gx + .006, yt + .06, yt + .85, zc - t/2 + .015, zc + t/2 - .015))
             if k % 4 == 1: po.append(box(*sorted((gx + s*.015, gx + s*.045)), yt - E, yt + .966 - .012 + E - .02, zc - .02, zc + .02))
         a, b = np.array([gx + s*.03, yfun(ks[0]) + 1.0, zfun(ks[0])]), np.array([gx + s*.03, yfun(ks[-1]) + 1.0, zfun(ks[-1])])
-        p.add("Guard_Glass", GL, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, tube(a, b, .025, 6))
+        p.add("Guard_Scissor", SCR, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, tube(a, b, .025, 6))
     hr = []
     for x, (y0, z0, y1, z1) in ((-xi + .07, (r + .9, z1b - .5*t, (n-1)*r + .9, zl + .5*t)), (xi - .07, (yl + r + .9, zl + .5*t, yl + (n-1)*r + .9, z2t - .5*t))):
         hr.append(tube((x, y0, z0), (x, y1, z1), .022, 6)); s = -1 if x < 0 else 1
@@ -190,11 +196,16 @@ def stair_full(q):
             if m.bounds[0][1] < 0: m = m.slice_plane([0, 0, 0], [0, 1, 0], cap=True); p.P[k] = (mk, m)
             m.metadata["uv"] = np.zeros((len(m.vertices), 2))
     p.walk = [(f1[0] + FWc/2, zn - .3), (f1[0] + FWc/2, zl - .3), (0, zs + .6), (f2[0] + FWc/2, zs + .6), (f2[0] + FWc/2, zl), (f2[0] + FWc/2, zn - .3)]
-    return p
+    return _scrub(p)
 
 def final():
     rep = run("stair_core", stair_full, [dict(type="A", label="Type A 5.5 x 10.2: V5 Court Wayfinding, full storey"), dict(type="B", label="Type B 6.0 x 10.6: V5 Court Wayfinding, full storey")],
-              names=["final_a", "final_b"], suffix="_final", sheet="final_ab_sheet.png", title="Rev 2.7 full-storey cores")
+              names=["final_a", "final_b"], suffix="_final", sheet="final_ab_sheet.png", title="Rev 2.7 full-storey cores", post=finish_scissor)
+    for ty, fn in (("A", "tt_stair_core_a.glb"), ("B", "tt_stair_core_b.glb")):
+        p = recenter(stair_full(dict(type=ty))); gp = os.path.join(ROOT, "godot/assets/models", fn)
+        tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+        V = np.vstack([m.vertices for _, m in p.P.values()]); lo, hi = V.min(0), V.max(0)
+        print(fn, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
     W = {}
     for ty in ("A", "B"):
         pp = stair_full(dict(type=ty)); c = CORE[ty]; zi = c["L"]/2 - .2
@@ -206,9 +217,9 @@ def final():
 if __name__ == "__main__" and sys.argv[1:] == ["final"]:
     final()
 elif __name__ == "__main__":
-    rs = run("stair_core", stair, VARIANTS, title="Type A 5.5 x 5.5 m, half-storey switchback (stack 2 per 6.1 m storey) | ground module")
-    ru = run("stair_core", stair, [dict(v, ground=False) for v in VARIANTS], title="Type A upper half (modular flights)", suffix="_upper")
-    rl = run("stair_core", lift, VARIANTS, title="lift core: 2 shafts 2.0 x 2.8, car 1.6 x 2.4 x 2.5, doors 1.1 x 2.1", suffix="_lift")
+    rs = run("stair_core", stair, VARIANTS, title="Type A 5.5 x 5.5 m, half-storey switchback (stack 2 per 6.1 m storey) | ground module", post=finish_scissor)
+    ru = run("stair_core", stair, [dict(v, ground=False) for v in VARIANTS], title="Type A upper half (modular flights)", suffix="_upper", post=finish_scissor)
+    rl = run("stair_core", lift, VARIANTS, title="lift core: 2 shafts 2.0 x 2.8, car 1.6 x 2.4 x 2.5, doors 1.1 x 2.1", suffix="_lift", post=finish_scissor)
     W = {}
     for i, v in enumerate(VARIANTS, 1):
         for tag, q in (("ground", v), ("upper", dict(v, ground=False))):
