@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import build_batch1 as B1, build_batch2 as B2, build_batch3 as B3
+import build_batch4 as B4
 HERE=Path(__file__).resolve().parent; ROOT=HERE.parents[4]; MD=ROOT/'godot'/'assets'/'models'
 REPO = "/workspace/game-project"; F2 = 6.1
 def raw_pivot(builder, prm):
@@ -55,6 +56,14 @@ GL = {  # candidate -> (glb path, builder, params)
  "tt_gym_cycle":          (str(MD / "tt_gym_cycle.glb"), B1.cycle, B1.SETS["tt_gym_cycle"][1][0]),
  "tt_gym_squat_rack":     (str(MD / "tt_gym_squat_rack.glb"), B2.squat, B2.SETS["tt_gym_squat_rack"][1][0]),
  "tt_gym_plate_tree":     (str(MD / "tt_gym_plate_tree.glb"), B2.platetree, B2.SETS["tt_gym_plate_tree"][1][0]),
+ "tt_climb_entry_guard":  (str(MD / "tt_climb_entry_guard.glb"), B4.entry_guard, B4.SETS["tt_climb_entry_guard"][1][0]),
+ "tt_climb_train_board":  (str(MD / "tt_climb_train_board.glb"), B4.train_board, B4.SETS["tt_climb_train_board"][1][0]),
+ "tt_climb_train_board_spray": (str(MD / "tt_climb_train_board_spray.glb"), B4.train_board, B4.SETS["tt_climb_train_board"][1][1]),
+ "tt_climb_train_trim":   (str(MD / "tt_climb_train_trim.glb"), B4.train_trim, B4.SETS["tt_climb_train_trim"][1][0]),
+ "tt_climb_locker_bay":   (str(MD / "tt_climb_locker_bay.glb"), B4.locker_bay, B4.SETS["tt_climb_locker_bay"][1][0]),
+ "tt_climb_change_bench": (str(MD / "tt_climb_change_bench.glb"), B4.change_bench, B4.SETS["tt_climb_change_bench"][1][0]),
+ "tt_climb_hook_rail":    (str(MD / "tt_climb_hook_rail.glb"), B4.hook_rail, B4.SETS["tt_climb_hook_rail"][1][0]),
+ "tt_gym_kb_rack":        (str(MD / "tt_gym_kb_rack.glb"), B4.kb_rack, B4.SETS["tt_gym_kb_rack"][1][0]),
 }
 REUSE = {"tt_climbing_panel_kids": REPO + "/godot/assets/models/tt_climbing_panel_kids.glb", "tt_climbing_panel": REPO + "/godot/assets/models/tt_climbing_panel.glb",
          "tt_climbing_panel_trim": REPO + "/godot/assets/models/tt_climbing_panel_trim.glb"}
@@ -128,13 +137,35 @@ for x in [97 + 2*i for i in range(8)]:   # covers X96..112; rows shifted to end 
         if x in (99, 101, 103, 105) and z < 12: continue   # TC-S4 ring-dependent tiles withheld, not placed
         put("F2-CLIMB", nm, x, z, yw, src="Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
             note="field X96..112; corridor X94..96 Z13..15 kept hard floor")
-# Do not place boulder panels/holds whose fall would land in the entry corridor. No tt_climb_entry_guard asset in GL/REUSE.
+# Do not place boulder panels/holds whose fall would land in the entry corridor.
 WITHHELD.append(dict(room="F2-CLIMB", asset="boulder N-wall panels/holds", would_be=[94.0, 15.0, 180],
     reason="Not placed on X94..96: fall landing would be in the entry corridor X94..96 Z13..15 (hard floor). No holds placed that require a landing there. "
     "Whether N wall panels start at X94 (fall envelope) or X96 is still a Vance question."))
-WITHHELD.append(dict(room="F2-CLIMB", asset="tt_climb_entry_guard", would_be=[96.0, 14.1, 90],
-    note="delineates protected entry corridor from mat field; in hall not spine",
-    reason="asset pending; corridor kept clear by mat keepout X94..96 Z13..15"))
+# r6 placements. Spine keepout stays Z13.2..15 X30..94; entry corridor X94..96 Z13..15 stays hard floor.
+put("F2-CLIMB", "tt_climb_entry_guard", 96.10, 13.75, -90, src="r6 entry corridor delineator", note="yaw -90: mat face (+Z) points +X into hall/mats; raw_X 96.10 -> pivot ~96.05, corridor face ~96.00 outside X94..96 interior; Z 13.75 (L 1.90, north=14.70 exact, meets Z15 stand-back); corridor X94..96 Z13..15 hard floor")
+# Training wall X94 Z0..13. put() adds rot(yaw, raw_center) and the exported GLB is recentered,
+# so pass raw X = 94.0 + 0.005 + 0.118 = 94.123 (wall + 5 mm gap + full depth).
+# raw_X 94.123 -> pivot ~94.064; back ~94.005.
+for i in range(10):
+    zc = 0.625 + 1.25*i   # panels cover Z0..12.5
+    nm = "tt_climb_train_board_spray" if i % 2 == 0 and "tt_climb_train_board_spray" in GL else "tt_climb_train_board"
+    put("F2-CLIMB", nm, 94.123, zc, -90, src="r6 training wall X94 Z0..13", note="raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i" if i % 2 == 0 else "raw_X 94.123 -> pivot ~94.064; back ~94.005")
+put("F2-CLIMB", "tt_climb_train_trim", 94.123, 12.625, -90, src="r6 training wall X94 Z0..13", note="end trim zc 12.625 covers Z12.5..13.0; raw_X 94.123 -> pivot ~94.064; back ~94.005")
+# Fall mats for the training wall only, Z0..13. 2 m tiles centred X95. Skip any tile that enters Z13..15.
+for z in (1, 3, 5, 7, 9, 11):
+    c, size = piv("tt_climb_mat_300", GL["tt_climb_mat_300"][1], GL["tt_climb_mat_300"][2])
+    zmid = z + float(rot(0, c)[2]); hz = float(size[2]) / 2
+    if zmid + hz > 13.0 and zmid - hz < 15.0: continue
+    put("F2-CLIMB", "tt_climb_mat_300", 95.0, z, 0, src="r6 training wall fall mats Z0..13", note="centred X95; not into Z13..15")
+# Changing room X30..57 Z10.5..13.2 only (off spine). Lockers at Z=10.70 so the bay stays Z<=13.0.
+# Door clear X40..42: skip centers in 39.5..42.5 (40.1 and 41.4 overlap that clear).
+for x in (31.0, 32.3, 33.6, 34.9, 36.2, 37.5, 38.8, 42.7, 44.0, 45.3, 46.6, 47.9, 49.2, 50.5, 51.8, 53.1, 54.4, 55.7):
+    if 39.5 <= x <= 42.5: continue
+    put("F2-CLIMB", "tt_climb_locker_bay", x, 10.70, 0, src="r6 changing room X30..57 Z10.5..13.2", note="front +Z; stop before ST+S1 X57; lockers Z<=13.0; door clear X40..42 skipped")
+for x in (33, 36, 39, 42, 45, 48, 51, 54):
+    put("F2-CLIMB", "tt_climb_change_bench", x, 11.8, 0, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 0")
+for x in (32.5, 36.5, 40.5, 44.5, 48.5, 52.5, 55.5):
+    put("F2-CLIMB", "tt_climb_hook_rail", x, 12.95, 180, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2")
 for z in (1, 3, 5, 7):
     put("F2-CLIMB", "tt_climb_mat_300", 112.0, z, 0, src="Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)", note="")
 tx, tz, h = 101.5, 8.5, .62
@@ -169,6 +200,7 @@ for z in (72.0, 74.4, 76.8):
     for x in (77.6, 78.8, 80.0, 81.2, 82.4): put("F2-GYM", "tt_gym_cycle", x, z, 180, src=SG)
 put("F2-GYM", "tt_gym_dumbbell_rack_s", 96.5, 78.65, 180, src=SG)
 for x in (94.5, 97.5): put("F2-GYM", "tt_gym_bench_flat", x, 74.0, 180, src=SG)
+put("F2-GYM", "tt_gym_kb_rack", 96.5, 70.0, 0, src=SG + "; E functional zone X92.5..101 Z64.5..79", note="clear of TC-N4 X101.5; one rack")
 
 LEAD_WITHHELD = [dict(room="F2-CLIMB", asset="tt_climbing_panel (x80, 16 x 5 courses) + tt_climbing_panel_trim", reason="Face basis not unambiguous: climbing_panel.py says face at +Z, pivot = bbox bottom-centre incl. holds (0.17 m deep), "
   "spec W-CL face Z 8 vs tt_struct_climb_frame front ~Z 8.17; back-plane offset from pivot depends on hold depth. Not placed until Rook confirms the authored face plane.")]
@@ -200,6 +232,9 @@ for it in items:
     for nm, b0, b1, c0, c1 in KO:
         ov = min(a[1], b1) - max(a[0], b0), min(a[3], c1) - max(a[2], c0)
         if "soft" in nm and ("mat" in it["asset"] or "panel" in it["asset"]): continue
+        # Train board/trim/spray may embed in the backing keepout X93.7..94. Wall-mounted mount is OK to 15 mm;
+        # allow 60 mm so residual embed from measurement slack does not HIT.
+        if "training backing" in nm and it["asset"].startswith("tt_climb_train_") and ov[0] <= 0.060: continue
         if ov[0] > .005 and ov[1] > .005: hits.append(dict(asset=it["asset"], room=it["room"], pos=it["pos"], keepout=nm, overlap_xz=[round(ov[0], 3), round(ov[1], 3)]))
 # mat-on-mat overlaps (ring vs boulder N field)
 mats = [it for it in items if "mat" in it["asset"]]
