@@ -9,6 +9,7 @@ from restroom_extras import crest
 import secondary_entrance as SE
 import facade_bay_final as FB
 from secondary_entrance import canopy_base, doors, frame_base, planted_edge, door_clear, seam_with_facade, H, W0
+from structure.struct_lib import SCR, finish_scissor
 H, W0 = SE.H, SE.W0
 def stroke(x0, x1, y0, y1, z0, z1, bev=.006):
     """Bevelled rectangular stroke: core + raised face inset by bev (holds up close)."""
@@ -168,6 +169,14 @@ def skirt_layout_check():
     cop = [c for c in chk["coplanar"] if c[0].split("_")[0] != c[1].split("_")[0]]
     # also confirm no part straddles x=0 seam (centre tile owns |x|<2)
     return dict(pass_=not bad and not cop, bad=bad[:3], cop=cop[:3], layout="2+4+2", seams_at=(-3.0, 3.0))
+def promote():
+    for face in FACES:
+        p = recenter(build(dict(face=face, seed=17)))
+        gp = os.path.join(ROOT, "godot/assets/models", f"tt_secondary_entrance_{face.lower()}.glb")
+        tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+        V = np.vstack([m.vertices for n, (mk, m) in p.P.items() if "colonly" not in n])
+        lo, hi = V.min(0), V.max(0)
+        print(f"tt_secondary_entrance_{face.lower()}.glb", "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
 if __name__ == "__main__":
     import terrace_final as TF, plinth_skirt_final as PS
     from terrace_final import place
@@ -175,7 +184,7 @@ if __name__ == "__main__":
     SE.build = build
     REP = run("secondary_entrance_final", build, VARIANTS, title="secondary entrance final",
               names=[f"tt_secondary_entrance_{f.lower()}" for f in FACES],
-              sheet="secondary_entrance_final_run_sheet.png")
+              sheet="secondary_entrance_final_run_sheet.png", post=finish_scissor)
     WK = {f: door_clear(dict(face=f, seed=17)) for f in FACES}
     SEAM = {f: seam_with_facade(dict(face=f, seed=17))[0] for f in FACES}
     SK = skirt_layout_check()

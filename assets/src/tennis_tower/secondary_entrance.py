@@ -1,12 +1,13 @@
 """Rook: S/N/E secondary entrances (candidates). Spec Rev 2.6/2.7: S/N at grade on 1:12 aprons,
 E on East Plaza terrace (+4.0). Lift-lobby gap ~10 m; module is 8.0 m (2 × 4 m façade columns)
 with 1 m façade fillers each side to fill the gap. Reuses #74 Court Wayfinding + #75 Branch Glass
-language. 5 themes. Each: F1 height 6.1 m, BLEND glass, pivot bottom centre, +Z out, colliders,
+language. 5 themes. Each: F1 height 6.1 m, alpha-scissor TT_GlassScissor (MASK cutoff 0.5, factor alpha 1 via finish_scissor), pivot bottom centre, +Z out, colliders,
 door-clearance walk. Run: python3 secondary_entrance.py"""
 from modlib import *
 from restroom_extras import crest
 import facade_bay_final as FB
 import entrance_bay_final as EB
+from structure.struct_lib import SCR, finish_scissor
 H, W0 = 6.1, 8.0
 THEMES = [
     ("court", "Court Wayfinding Secondary", "Scaled V3 Court Wayfinding: deep soffit canopy, S/N/E blade, planted kerb, ball bollards"),
@@ -42,12 +43,12 @@ def doors(p, cols, TD=2.6):
         S += [box(a + .07 - E, b - .07 + E, u, v, -.028, .028) for (u, v) in ((.06, .18), (TD - .2, TD - .08))]
         p.add("Door_Stiles", ALY, *S)
         for k, (u, v) in enumerate(((a + .07, m - .035), (m + .035, b - .07))):
-            p.add(f"Glass_Door_{i}{k}", GL, pane(u + .002, v - .002, .18 - E, TD - .2 + E, 0, t=.016))
+            p.add(f"Door_Scissor_{i}{k}", SCR, pane(u + .002, v - .002, .18 - E, TD - .2 + E, 0, t=.016))
             p.add("Push_Bars", ALY, tube((u + .12, 1.05, .07), (v - .12, 1.05, .07), .02, 8),
                   tube((u + .12, 1.05, .03 - E), (u + .12, 1.05, .07), .012, 6),
                   tube((v - .12, 1.05, .03 - E), (v - .12, 1.05, .07), .012, 6))
         for r, (y0, y1) in enumerate(((TD + .075, 4.35 - .075), (4.35 + .075, H - .15))):
-            p.add(f"Glass_Upper_{i}{r}", GL, pane(a0 + .002, b0 - .002, y0 - E, y1 + E, 0))
+            p.add(f"Upper_Scissor_{i}{r}", SCR, pane(a0 + .002, b0 - .002, y0 - E, y1 + E, 0))
 def canopy_base(p, X0, X1, zt=2.2, y0=3.0, y1=3.16, deep=True):
     h = (X1 - X0)/2 + .001
     cx0, cx1 = X0 + .02, X1 - .02
@@ -97,7 +98,7 @@ def planted_edge(p, X0, X1, rng, z_mat=1.25, dense=False):
 def frame_base(p, X0, X1, cols):
     h = (X1 - X0)/2 + .001
     F = [box(X0, X1, 0, .05, -.65, .12), box(X0, X1, H - .15, H, -.65, .08),
-         fin(X0 + .06, .05 - E, H - .15 + E, .6, .05, z0=.03),
+         box((X0 + .06) - .05/2, (X0 + .06) + .05/2, .05 - E, H - .15 + E, .03 - .6, .03),
          box(X1 - .045, X1 - .01, .05 - E, H - .15 + E, -.04, .04)]
     # mid mullions between door pairs + end
     for x in [c[1] for c in cols[:-1]] + [c[0] for c in cols[1:]]:
@@ -264,7 +265,7 @@ if __name__ == "__main__":
     import terrace_final as TF, plinth_skirt_final as PS
     from terrace_final import place
     REP = run("secondary_entrance", build, V(), title="secondary entrance", sheet="secondary_entrance_run_sheet.png",
-              names=[f"v{i+1}_{THEMES[i][0]}" for i in range(5)])
+              names=[f"v{i+1}_{THEMES[i][0]}" for i in range(5)], post=finish_scissor)
     WK = {i: door_clear(V()[i]) for i in range(5)}
     SE = {i: seam_with_facade(V()[i])[0] for i in range(5)}
     print("CLEAR", {i: dict(pass_=WK[i]["pass_"], opens=WK[i]["opens"], approach_pass=WK[i]["approach"]["pass"]) for i in range(5)})
