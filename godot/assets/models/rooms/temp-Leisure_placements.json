@@ -5,10 +5,10 @@
  "note": "p = building coords of the GLB pivot (bottom centre). Entrance scissor copies replace tt_secondary_entrance_n/e at the same spots.",
  "stats": {
   "food": {
-   "tables": 19,
-   "accessible_tables": 4,
-   "places": 76,
-   "chairs": 72
+   "tables": 8,
+   "accessible_tables": 2,
+   "places": 32,
+   "chairs": 30
   },
   "arcade": {
    "L1": {
@@ -325,29 +325,7 @@
     "glb": "res://assets/models/tt_food_stall.glb",
     "asset": "tt_food_stall",
     "p": [
-     51.0,
-     -0.0799,
-     75.7563
-    ],
-    "yaw": 180,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_stall.glb",
-    "asset": "tt_food_stall",
-    "p": [
-     69.0,
-     -0.0799,
-     75.7563
-    ],
-    "yaw": 180,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_stall.glb",
-    "asset": "tt_food_stall",
-    "p": [
-     75.0,
+     49.5,
      -0.0799,
      75.7563
     ],
@@ -369,7 +347,7 @@
     "glb": "res://assets/models/tt_food_stall.glb",
     "asset": "tt_food_stall",
     "p": [
-     98.8,
+     98.5,
      -0.0799,
      75.7563
     ],
@@ -380,53 +358,31 @@
     "glb": "res://assets/models/tt_food_stall.glb",
     "asset": "tt_food_stall",
     "p": [
-     47.2,
+     47.8,
      -0.0799,
-     66.8437
+     67.2437
     ],
     "yaw": 0,
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_food_table4_acc.glb",
-    "asset": "tt_food_table4_acc",
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
     "p": [
-     53.03,
-     -0.0008,
-     68.185
+     54.0,
+     -0.0799,
+     67.2437
     ],
     "yaw": 0,
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
+    "glb": "res://assets/models/tt_food_stall.glb",
+    "asset": "tt_food_stall",
     "p": [
-     53.03,
-     -0.0008,
-     70.6
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     55.61,
-     -0.0008,
-     65.44
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     55.61,
-     -0.0008,
-     68.02
+     97.0,
+     -0.0799,
+     67.2437
     ],
     "yaw": 0,
     "tag": "f1"
@@ -476,23 +432,23 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     81.41,
-     -0.0008,
-     65.44
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
     "glb": "res://assets/models/tt_food_table4_acc.glb",
     "asset": "tt_food_table4_acc",
     "p": [
      81.41,
      -0.0008,
-     68.185
+     65.605
+    ],
+    "yaw": 0,
+    "tag": "f1"
+   },
+   {
+    "glb": "res://assets/models/tt_food_table4.glb",
+    "asset": "tt_food_table4",
+    "p": [
+     81.41,
+     -0.0008,
+     68.02
     ],
     "yaw": 0,
     "tag": "f1"
@@ -515,83 +471,6 @@
      83.99,
      -0.0008,
      65.44
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     94.31,
-     -0.0008,
-     68.02
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     94.31,
-     -0.0008,
-     70.6
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4_acc.glb",
-    "asset": "tt_food_table4_acc",
-    "p": [
-     96.89,
-     -0.0008,
-     65.605
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     96.89,
-     -0.0008,
-     68.02
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     96.89,
-     -0.0008,
-     70.6
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     99.47,
-     -0.0008,
-     65.44
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_food_table4.glb",
-    "asset": "tt_food_table4",
-    "p": [
-     99.47,
-     -0.0008,
-     68.02
     ],
     "yaw": 0,
     "tag": "f1"

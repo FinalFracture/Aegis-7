@@ -1,5 +1,5 @@
-"""F1-FOOD (X 44..102, Z 64..79). Rev 3.2 s3. Stall = 6 x 5 m incl. kitchen, local front +Z (place yaw 180 on the N facade).
-Only X44..102 is ours, so the 3 spec stalls at X30..48 (R1-NW, temp-Services) are relocated inside our room (reported).
+"""F1-FOOD (X 44..102, Z 64..79). Rev 3.2 s3 room-local vendors (spec X30..54 stalls land in R1-NW; relocated inside F1-FOOD).
+Stall = 6 x 5 m incl. kitchen, local front +Z (place yaw 180 on the N facade).
 Facade inner line (tt_facade_bay fins) is Z78.38, so N stalls take Z73.3..78.3."""
 from lz_lib import *
 def stall():
@@ -99,11 +99,15 @@ def tree_moss():
     return emit('tt_food_tree_moss', it, 'moss + river stone ring around a TC-N tree column base (r 1.0 flare kept clear)')
 
 TREES_N = [(57.5, 70.5), (65.5, 70.5), (84.5, 70.5), (101.5, 70.5)]
-EXCL = [(58, 64, 65.8, 76.4), (86, 92, 65.8, 76.4), (66.5, 70.5, 64, 68), (71, 76.5, 64, 69.5), (50, 53, 64, 66.2), (90, 93, 64, 66.2)]
-STALLS = [(51, 75.8, 180), (69, 75.8, 180), (75, 75.8, 180), (81, 75.8, 180), (98.8, 75.8, 180), (47.2, 66.8, 0)]
+EXCL = [(58, 64, 65.8, 76.4), (86, 92, 65.8, 76.4), (66.5, 70.5, 64, 68), (71, 76.5, 64, 69.5), (50, 53, 64, 66.2), (90, 93, 64, 66.2),
+        (46.5, 52.5, 72.4, 78.3), (78.0, 84.0, 72.4, 78.3), (95.5, 101.5, 72.4, 78.3),  # N-facade stalls + 0.9 m queue to -Z
+        (44.8, 50.8, 64.55, 70.65), (51.0, 57.0, 64.55, 70.65), (94.0, 100.0, 64.55, 70.65)]  # interior stalls + 0.9 m queue to +Z
+# OLD STALLS were [(51,75.8,180),(69,75.8,180),(75,75.8,180),(81,75.8,180),(98.8,75.8,180),(47.2,66.8,0)]
+# NEW: 3 N-facade (door X54..57 + entrance X68..76 clear) + 3 interior yaw0 clear of R1-NW wall X44.15 and stand-back Z64.3
+STALLS = [(49.5, 75.8, 180), (81.0, 75.8, 180), (98.5, 75.8, 180), (47.8, 67.2, 0), (54.0, 67.2, 0), (97.0, 67.2, 0)]
 def seats(H=.84, RT=.9, P=2.58):
     """table sets (half-size H) on a P pitch = 0.9 m clear routes; 1.5 m queue/waste route Z71.8..73.3 kept clear."""
-    ex = EXCL + [(44.15, 50.25, 64.3, 69.3 + 1.2), (101.85, 102.2, 64, 79)]
+    ex = EXCL + [(101.85, 102.2, 64, 79), (43.85, 44.5, 64, 79), (68.0, 76.0, 73.0, 79.0), (54.0, 57.0, 73.0, 79.0)]
     out = []
     for x in np.arange(44.15 + H + .3, 101.85 - H, P):
         for z in np.arange(64.3 + H + .3, 71.8 - H + 1e-6, P):
