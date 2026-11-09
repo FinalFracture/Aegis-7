@@ -1,6 +1,8 @@
-"""Arrival: W main-entrance bay (tt_entrance_bay) per 44 m plan / Rev 2.8+.
-4.0 m Court Wayfinding bay: TT_GlassScissor doors/transoms, no kerb/hedge in egress,
-half-jambs for tiling, colliders, canopy 2.6 m. Run from tennis_tower/: 
+"""Arrival: 4.0 m W main-entrance bay (tt_entrance_bay) and 2.0 m half (tt_entrance_bay_half) per 44 m plan / Rev 2.8+.
+Court Wayfinding bays: SCR Door_Scissor / Upper_Scissor, no kerb/hedge in egress,
+closed-box half-jambs for tiling, colliders, canopy 2.6 m.
+The 2.0 m half is retained for non-W runs and seams; it is NOT placed on the 44 m W run.
+Run from tennis_tower/:
 python3 rooms/temp-Arrival/entrance_bay_arrival.py
 """
 import os, sys
@@ -16,7 +18,7 @@ except ImportError:
     from struct_lib import SCR, finish_scissor
 H, TD, T2 = 6.1, 2.6, 4.35
 def build(q):
-    """Court Wayfinding bay. width defaults to 4.0; other widths still build, but only 4.0 is promoted."""
+    """Court Wayfinding bay. width defaults to 4.0; other widths still build. 4.0 and 2.0 are promoted."""
     w = q.get("width", 4.0); h = w/2; X0, X1 = -h + .001, h - .001; p = Part()
     hf = -h + .06
     # Loft fin replaced by a closed box (facade_bay_final._fin belly=0) so caps are not zero-area.
@@ -67,7 +69,8 @@ def build(q):
     p.add("Fascia_Leaf_Crests", LF, *[crest((x, y1 + .12 - E, zt - .1)) for x in np.arange(-h + .4, h - .3, .8) if abs(x) > .3])
     # slate walk mat only — kerb, hedge and planted edge stay out of the 6 m egress
     p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, .012, .122, 1.4))
-    boll = (-h*.5, h*.5)   # 4.0 m bay: x = +-1.0, pitch 2.0 m
+    # w>=3: pair at +-h/2 (4.0 m -> +-1.0, pitch 2.0 m). w<3: one bollard at x=0 so pitch stays >= 1.5 m.
+    boll = (0.0,) if w < 3 else (-h*.5, h*.5)
     for x in boll:
         p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), .1, 10)); p.add("Bollard_Balls", BA, node((x, .85 + .11 - E, 1.55), .11, 1))
     # colliders. Wall starts at y=.5; DoorClear is a floor strip and does not fill the door volume.
@@ -91,13 +94,16 @@ def seam_check(widths):
     near = {k: v for k, v in A.items() if "colonly" not in k and v[1].bounds[1][0] > edge - .6 and v[1].bounds[0][0] < edge + .6}
     chk = cc.check(near, n_samp=300); bad = [o for o in chk["overlap"] if not o[3] and o[0][:2] != o[1][:2]]; cop = [c for c in chk["coplanar"] if c[0][:2] != c[1][:2]]
     return dict(bad=bad[:3], coplanar=cop[:3], pass_=not bad and not cop)
-def promote():
-    """4.0 m asset only. The 2.0 m half bay is not part of the 44 m W run."""
-    p = recenter(build(dict(width=4.0)))
-    gp = os.path.join(ROOT, "godot/assets/models", "tt_entrance_bay.glb")
+def _promote_one(width, filename):
+    p = recenter(build(dict(width=width)))
+    gp = os.path.join(ROOT, "godot/assets/models", filename)
     tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
     V = np.vstack([m.vertices for n, (mk, m) in p.P.items() if "colonly" not in n])
     lo, hi = V.min(0), V.max(0)
-    print("tt_entrance_bay.glb", "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
+    print(filename, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
+def promote():
+    """Export 4.0 m tt_entrance_bay and 2.0 m tt_entrance_bay_half. Half is not placed on the 44 m W run."""
+    _promote_one(4.0, "tt_entrance_bay.glb")
+    _promote_one(2.0, "tt_entrance_bay_half.glb")
 if __name__ == "__main__":
-    promote(); print("SEAM", seam_check([4, 4]))
+    promote(); print("SEAM", seam_check([4, 4]), seam_check([4, 2]), seam_check([2, 4]))
