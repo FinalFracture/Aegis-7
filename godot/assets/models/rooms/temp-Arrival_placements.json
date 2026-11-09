@@ -1,0 +1,544 @@
+{
+ "owner": "temp-Arrival",
+ "spec": "design/strip5_tennis_tower_v1.md \u00a73.12.4 (current Rev; desks/kiosks Rev 2.9 / 3.x)",
+ "axes": "Y up, X axial, Z across; yaw deg about +Y. Model +Z = guest front; yaw -90 => front faces world -X (W doors).",
+ "note": "V4 River Queue kit placed as-is (tt_foyer_desk/kiosk/stanchion/backdrop). Entrance bay asset is Arrival-owned rebuild; 11-bay W placement is a Rook layout task.",
+ "stats": {
+  "desks": 2,
+  "kiosks": 8,
+  "backdrops": 2,
+  "stanchions": 30,
+  "clear_passage_X": [
+   -12,
+   -6
+  ],
+  "aquarium_mouth_Z": [
+   34.5,
+   42.5
+  ]
+ },
+ "open_conflicts": [
+  {
+   "id": "kiosk_vs_possible_N_deck_door",
+   "detail": "Spec \u00a73.12.4 places 4 kiosks at Z 43.0..46.5 (centers 43.0, 43.875, 44.75, 45.625). Brief flagged a possible N-deck door around Z 45..47. Placed per spec; if a door exists at Z 45..47 on X~0, last 1\u20132 kiosks conflict \u2014 Rook/layout to confirm. Did not invent an alternate layout.",
+   "kiosk_z": [
+    43.0,
+    43.875,
+    44.75,
+    45.625
+   ]
+  },
+  {
+   "id": "layout_11_bay_W_run",
+   "detail": "tt_struct_layout.json was not edited (Arrival must not). W run should be 11 x tt_entrance_bay at Z 17.5..61.5 with no half bay; Rook owns layout/assembly update."
+  }
+ ],
+ "rooms": {
+  "F1-FOY": [
+   {
+    "glb": "res://assets/models/tt_foyer_desk.glb",
+    "asset": "tt_foyer_desk",
+    "p": [
+     -1.8036,
+     0.0,
+     26.0
+    ],
+    "yaw": -90,
+    "tag": "desk",
+    "note": "desk 1: front X-2.5, span Z 22..30, +Z faces -X"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_backdrop.glb",
+    "asset": "tt_foyer_backdrop",
+    "p": [
+     -0.25,
+     0.0,
+     26.0
+    ],
+    "yaw": -90,
+    "tag": "backdrop",
+    "note": "staff-side backdrop at X~0"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_desk.glb",
+    "asset": "tt_foyer_desk",
+    "p": [
+     -1.8036,
+     0.0,
+     53.0
+    ],
+    "yaw": -90,
+    "tag": "desk",
+    "note": "desk 2: front X-2.5, span Z 49..57, +Z faces -X"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_backdrop.glb",
+    "asset": "tt_foyer_backdrop",
+    "p": [
+     -0.25,
+     0.0,
+     53.0
+    ],
+    "yaw": -90,
+    "tag": "backdrop",
+    "note": "staff-side backdrop at X~0"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk S1: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     31.375
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk S2: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     32.25
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk S3: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     33.125
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk S4: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     43.0
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk N1: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     43.875
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk N2: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     44.75
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk N3: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_kiosk.glb",
+    "asset": "tt_foyer_kiosk",
+    "p": [
+     -0.3495,
+     0.0,
+     45.625
+    ],
+    "yaw": -90,
+    "tag": "kiosk",
+    "note": "kiosk N4: X-1..0 face -X, pitch 0.875"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     23.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     24.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     26.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     27.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     23.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     24.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     26.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     27.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     23.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     24.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     26.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     27.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     51.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     53.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     54.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -5.5,
+     0.0,
+     55.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 1 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     51.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     53.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     54.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -4.25,
+     0.0,
+     55.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 2 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     51.75
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     53.0
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     54.25
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   },
+   {
+    "glb": "res://assets/models/tt_foyer_stanchion.glb",
+    "asset": "tt_foyer_stanchion",
+    "p": [
+     -3.0,
+     0.0,
+     55.5
+    ],
+    "yaw": -90,
+    "tag": "stanchion",
+    "note": "lane 3 queue post"
+   }
+  ]
+ }
+}
