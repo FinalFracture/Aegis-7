@@ -165,6 +165,7 @@ def interiors():
         for xl in (-5.5, -4.25, -3.0):
             for k in range(5): put("tt_foyer_stanchion", xl, 0, zc - 2.5 + 1.25*k, -90, "f1")
     for z in (31.175, 32.05, 32.925, 33.8, 42.875, 43.75, 44.625, 47.675): put("tt_foyer_kiosk", -0.3495, 0, z, -90, "f1")   # 8 kiosks, Rev 3.4 / Arrival 734a873
+    put("tt_core_clad_aqn", -3.075, 0, 58.359, 180, "f1")   # r3: foyer-side S face of ST-AQN (wall plane Z 58.40), relief <= 0.08
     # aquatic slides
     put("tt_slide_tower_t1", 22.5, 1.0, 53.5, 0, "f1"); put("tt_slide_tower_t2", 22.5, 1.0, 59.5, 0, "f1")   # island datum F1+1.0; T1 +Z link, T2 -Z link + W bridge gate
     # restrooms (stall rows) per block

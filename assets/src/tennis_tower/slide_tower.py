@@ -1,7 +1,7 @@
 """Rook: Tennis Tower aquatic slide tower T1/T2 (spec §3.6: 5 x 5 m). Island datum y0 = F1+1.0; N2 5.1 / deck 6.0 / roof 8.4 local
 (= +6.1/+7.0/+9.4 building), roof under the +9.7 soffit. Stair half (-X): switchback 8/8/7/7 risers x 0.17 to bridge landing N2 at 5.1,
 then 5 risers x 0.18 eastward onto the start deck at 6.0. T1 has the +Z link opening; T2 is the Z-mirror with the -X bridge gate at final
-local Z -1.50..-0.40 (world 58.0..59.1 at Z 59.5) and its link opening on -Z. Slide tube stub leaves through the +X face (invert at deck).
+local Z -1.36..-0.26 (world 58.14..59.24 at Z 59.5, r3: matches the Aquatics 9c11848 gate clear opening) and its link opening on -Z. Slide tube stub leaves through the +X face (invert at deck).
 REUSE: stair_core_colliders_rev_c.slab_between ramps + Rev C stair materials/finish/nosing scheme (tt_stair_core V5), court-partition
 scissor guard language, curtain-wall fin() (Branch Fin), restroom Leaf Crest crest(), stand planter()/shrubs(), green_wall(), tree-column CHS columns.
 Run: python3 slide_tower.py"""
@@ -15,6 +15,8 @@ NS = [8, 8, 7, 7]; R = 5.1 / sum(NS); R5, N5 = .18, 5
 XA, XB = (-2.3, -1.25), (-1.15, -.1); ZN, ZS, ZI = 1.2, -2.3, 2.3; C = 2.4
 DECK = 6.0; YR = DECK + 2.15; ROOF = YR + .25   # 8.15 roof underside, 8.4 roof top
 PG = .011  # half pane thickness
+TH3 = .03         # r3: N2 extension pan thickness over the flight-3 start
+GZ = (.26, 1.36)  # r3: T2 -X bridge-gate opening, pre-mirror local Z (world 58.14..59.24)
 def U(m): m.metadata["uv"] = np.zeros((len(m.vertices), 2)); return m
 
 def flight(p, xr, z0, y0, n, d, nos, th=TH):  # d=-1 rises toward -Z, +1 toward +Z; first riser at z0
@@ -37,7 +39,7 @@ def landing(p, tag, z0, z1, y, th=TH):
 
 def build(q):
     p = Part(); nos = q.get("nosing", False); t2 = q.get("tower", "t1") == "t2"
-    ZN1, ZN2 = (.68, .40) if t2 else (1.2, 1.2); sz = -1 if t2 else 1
+    ZN1, ZN2 = (.68, .40) if t2 else (1.2, 1.2); sz = -1 if t2 else 1; ZN2L = ZN2 - .14 if t2 else ZN2
     # --- switchback to the bridge landing (stair frame: N landings toward +Z) ---
     z, y = flight(p, XA, ZN1, 0.0, NS[0], -1, nos); landing(p, "S1", ZS, z - E*0, y); zs1 = z
     z, y = flight(p, XB, zs1, y, NS[1], +1, nos); landing(p, "N1", ZN1, ZI, y); yn1 = y
@@ -47,6 +49,10 @@ def build(q):
         p.add("N1x_Landing-colonly", G, trimesh.creation.box(bounds=[[XA[0], y - TH, ZN2], [XA[1] + E, y, ZN1]]))
     z, y = flight(p, XA, ZN2, y, NS[2], -1, nos); landing(p, "S2", ZS, z, y, TH2); zs2, ys2 = z, y
     z, y = flight(p, XB, zs2, y, NS[3], +1, nos, TH2); landing(p, "N2", ZN2, ZI, y, TH2); yn2 = y
+    if t2:  # r3: N2 extension over the XA lane (ZN2L..ZN2) so the whole shifted -X gate opening (GZ 0.26..1.36) lands on N2, not over flight 3
+        p.add("Stair_Cast", WH, box(XA[0], XA[1] + E, y - TH3, y - FIN + E, ZN2L, ZN2 + E))   # 30 mm steel-pan nose keeps >= 2.1 m headroom over flight 3
+        p.add("Treads_Slate", SSL, box(XA[0] + .002, XA[1] + E - .002, y - FIN, y, ZN2L + .002, ZN2 + E - .002))
+        p.add("N2x_Landing-colonly", G, trimesh.creation.box(bounds=[[XA[0], y - TH3, ZN2L], [XA[1] + E, y, ZN2 + E]]))
     # --- flight 5 eastward onto the deck (ZN = 1.2 band for both towers) ---
     x0 = XB[1]
     for k in range(1, N5):
@@ -70,9 +76,9 @@ def build(q):
     p.add("Columns", G, *[tube((sx*C, 0, szc*C), (sx*C, YR + E, szc*C), .1, 16) for sx in (-1, 1) for szc in (-1, 1)])
     p.add("Roof", q.get("roof_mat", WH), box(-2.6, 2.6, YR, ROOF, -2.6, 2.6))
     # --- scissor enclosure (court-partition guard language), split around openings ---
-    e = 2.305; gt = YR - .002; LX0, LX1 = 1.10, 2.20; GZ0, GZ1 = .40, 1.50
+    e = 2.305; gt = YR - .002; LX0, LX1 = 1.10, 2.20; GZ0, GZ1 = GZ
     oz0, oz1 = sorted((sz * -1.7, sz * -.7)); outer = []
-    if t2:  # -X bridge gate Z 0.40..1.50 (lands at -1.50..-0.40 after the T2 mirror)
+    if t2:  # -X bridge gate Z 0.26..1.36 (lands at -1.36..-0.26 after the T2 mirror)
         outer += [(-C - PG, -C + PG, 0, gt, -e, GZ0), (-C - PG, -C + PG, 0, yn2 - TH2 - .02, GZ0, GZ1), (-C - PG, -C + PG, yn2 + 2.3, gt, GZ0, GZ1), (-C - PG, -C + PG, 0, gt, GZ1, e)]
     else: outer += [(-C - PG, -C + PG, 0, gt, -e, e)]   # -X, full pane, no bridge opening
     outer += [(XA[1], LX0, 0, gt, C - PG, C + PG), (LX1, e, 0, gt, C - PG, C + PG), (LX0, LX1, 0, DECK - .052, C - PG, C + PG)]  # +Z link opening X 1.10..2.20
@@ -81,7 +87,7 @@ def build(q):
     outer += [(C - PG, C + PG, 0, gt, -e, oz0), (C - PG, C + PG, 0, gt, oz1, e), (C - PG, C + PG, 0, DECK - .07, oz0, oz1), (C - PG, C + PG, DECK + .9, gt, oz0, oz1)]  # +X, slide opening
     panes = [box(*a) for a in outer]
     panes += [box(-.05 - PG, -.05 + PG, 0, DECK + 1.1, ZS, ZN - .003), box(-.05 - PG, -.05 + PG, 0, yn2 - TH2 - .05, ZN + .003, ZI - .003)]  # inner screen (stair | shaft)
-    panes += [box(-.035, x5, DECK + .002, DECK + 1.1, ZN - .03, ZN - .008), box(XA[0], XA[1] - .002, yn2 + .002, yn2 + 1.1, ZN2 + .008, ZN2 + .03)]  # deck + N2 edge guards
+    panes += [box(-.035, x5, DECK + .002, DECK + 1.1, ZN - .03, ZN - .008), box(XA[0], XA[1] - .002, yn2 + .002, yn2 + 1.1, ZN2L + .008, ZN2L + .03)]  # deck + N2 edge guards
     p.add("Enclosure_Scissor", SCR, *panes)
     p.add("Enclosure-colonly", G, *[U(trimesh.creation.box(bounds=[[a[0], a[2], a[4]], [a[1], a[3], a[5]]])) for a in outer])
     p.add("Link_Sill", SGM, box(LX0 + .004, LX1 - .004, DECK - .05, DECK - .002, ZI - E, C + PG + .002))
@@ -102,7 +108,7 @@ def build(q):
         m.metadata["uv"] = np.zeros((len(m.vertices), 2)); p.P[k] = (mk, m)
     if t2:
         p.walk = [(-1.775, 2.9), (-1.775, -1.8), (-.625, -1.8), (-.625, 1.75), (-1.775, 1.75), (-1.775, -1.8), (-.625, -1.8), (-.625, 1.75), (1.6, 1.75), (1.6, 1.2), (1.95, 1.2)]
-        p.walk_gate = [(-.625, 1.75), (-1.775, 1.0), (-2.28, 1.0)]
+        p.walk_gate = [(-.625, 1.75), (-1.775, 1.75), (-1.775, .81), (-2.28, .81)]   # r3: gate centre GZ 0.81
     else:
         p.walk = [(-1.775, 2.9), (-1.775, -1.7), (-.625, -1.7), (-.625, 1.75), (-1.775, 1.75), (-1.775, -1.5), (-.625, -1.5), (-.625, 1.75), (1.6, 1.75), (1.6, -1.2), (1.95, -1.2), (1.6, 1.75), (1.65, 2.3)]
     return p
@@ -157,7 +163,7 @@ if __name__ == "__main__":
                 uv = np.array(m.metadata["uv"]); m.apply_transform(np.diag([1, 1, -1, 1])); m.metadata["uv"] = uv
         V0 = np.vstack([m.vertices for k, (_, m) in p.P.items() if "colonly" not in k]); lo0, hi0 = V0.min(0), V0.max(0)
         d = np.array((-(lo0[0] + hi0[0]) / 2, -lo0[1], -(lo0[2] + hi0[2]) / 2))
-        gate = None if not mir else _rect(-C - PG, -C + PG, yn2_m - TH2 - .02, yn2_m + 2.3, .40, 1.50, mir, d)
+        gate = None if not mir else _rect(-C - PG, -C + PG, yn2_m - TH2 - .02, yn2_m + 2.3, *GZ, mir, d)
         link = _rect(1.10, 2.20, DECK - .052, YR - .002, C - PG, C + PG, mir, d)
         p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", f"tt_slide_tower_{t}.glb")
         tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)

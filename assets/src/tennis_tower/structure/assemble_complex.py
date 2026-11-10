@@ -250,6 +250,7 @@ def rook_core():
         put("tt_tree_column", x, 0, z, tag="cols")
     for x, z in TREES_W:
         put("tt_tree_column_west", x, 12.2, z, tag="f3")
+    put("tt_core_clad_aqn", -3.075, 0, 58.359, 180, "f1")   # r3: foyer-side S face of ST-AQN (wall plane Z 58.40), relief <= 0.08
     put("tt_slide_tower_t1", 22.5, 1.0, 53.5, 0, "f1")
     put("tt_slide_tower_t2", 22.5, 1.0, 59.5, 0, "f1")
     # Services world placements were never committed; keep Rook's restroom shells.
