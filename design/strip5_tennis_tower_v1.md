@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.5**, 2026-11-10 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.6**, 2026-11-10 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -629,3 +629,15 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
    - Rook builds the cuts, ramps, landings, guards and the Z 34.5 wall opening.
    - temp-Aquatics does the river level, the footbridges, and the `tt_leisure_deck` / `tt_pool_deck_finish` trims.
    - Columns on the S strip are checked during the build.
+
+**Rev 3.6 (supersedes Rev 3.5 item 3 and the footbridge spans in item 5; raised by temp-Aquatics at d76e318).** The Rev 3.5 cut swallowed the 3 m board stair (X 7.56..12.6, Z 24.5..25.5), so the switchback is turned to run along X, north of the board. The boards stay as specified in §3.6.
+1. **Cut:** X 1.0..10.0, Z 26.0..32.0, plus a passage at X 8.5..10.0, Z 32.0..34.5. It stays ≥ 0.5 m clear of the 3 m board stair. The 1 m board stairs at Z 28.5 / 31.5 must stay at X ≥ 10.05; temp-Aquatics to confirm.
+2. **Entry:** a 1.5 m opening in the Z 34.5 lobby wall at X 8.5..10.0. A level F1 passage runs from it to the bottom landing at X 8.5..10.0, Z 30.5..32.0.
+3. **Legs:** each is 6 m long along X (X 2.5..8.5), 1.5 m wide and rises 0.5 m at 1:12:
+   - L1 at Z 30.5..32.0 runs −X to +0.5.
+   - L2 at Z 29.0..30.5 runs +X to +1.0.
+   - L3 at Z 27.5..29.0 runs −X to +1.5.
+   - L4 at Z 26.0..27.5 runs +X to +2.0.
+4. **Landings:** turning landings at X 1.0..2.5, Z 29.0..32.0 (+0.5) and Z 26.0..29.0 (+1.5), and at X 8.5..10.0, Z 27.5..30.5 (+1.0, guarded from the F1 bottom landing next to it). The top landing is at X 8.5..10.0, Z 26.0..27.5 (+2.0). It exits +X onto the deck along Z 26.0..27.5, 0.5 m north of the 3 m board stair.
+5. **Guards:** 1.07 m on the deck edge around the whole cut and between landings at different levels.
+6. **Footbridges:** each spans only the channel, S at Z 47.0..50.0 and N at Z 72.0..75.0. They bear flush on the +1.0 deck edges, so no recesses are cut. The S bridge is at X 18..20 and the N bridge at X 8..10. The other Rev 3.5 terms are unchanged.
