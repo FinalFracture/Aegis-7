@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.0**, 2026-11-07 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.5**, 2026-11-10 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -603,3 +603,29 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 **Rev 3.3 (temp-Arrival):** the N kiosk group is split 2 + 2 around the existing N-deck doorway on the X 0 wall (Z 45..47, `build_structure.py:63`). The kiosks are at Z 42.65..44.4 and 47.15..48.9, X −0.7..0. The doorway and the aquarium corridor mouth stay clear. Door leaves must not swing into the foyer within Z 47..47.15.
 
 **Rev 3.4 (supersedes the Rev 3.3 kiosk ranges):** all 8 kiosks are given as Z centres; see §3.12.4. Rule: kiosk footprints (±0.3 m) stay ≥ 0.075 m off the X 0 piers (AQ_Z ± 0.3: Z 30.2..30.8, 48.2..48.8), the aquarium mouth (Z 34.5..42.5), the N-deck door (Z 45..47) and its 0.15 m no-swing strip (Z 47..47.15). The piers stay as built, with no notching. Footprints: 30.875..34.1, 42.575..44.925, 47.375..47.975.
+
+**Rev 3.5 (accessible routes; Vance proposal, approved by Jared 2026-11-10, raised by Rook from Patch QA at 10deb61):**
+1. **Rule:** every public floor or deck is reached step-free by a ramp of 1:12 or flatter (each run rises 0.76 m at most and is 9 m long at most, with 1.5 m level landings at the top, bottom and turns, 1.2 m clear between handrails, handrails on both sides, and a 1.07 m guard wherever the drop is over 0.76 m) or by a lift stop. Slide towers and the slide start decks (+7.0) are stairs only, because slide platforms are exempt. The 1:20 Spine ramp and terrace rules (§3.12.5) still apply outside.
+2. **Datums (measured in the build):** F1 is 0. The pool deck is **+2.0** (+1.92 is the diving-tank water surface, not a floor). The leisure hall deck is **+1.0** (X 0.32..29.68, Z 44.8..78.68). The F2 gallery, slide bridge and T2 −X gate are **level at +6.1**. +6.75 is the underside of the T1–T2 link deck, not a walking surface, so there is no gallery step.
+3. **Pool deck switchback (F1 to +2.0):**
+   - Cut the deck fill in an L shape: X 4..10.5 at Z 22..31, plus a passage at X 4..6.25, Z 31..34.5.
+   - Make a 1.5 m opening in the Z 34.5 lobby wall at X 4.5..6. A level F1 passage runs from it to the bottom landing at X 4.25..5.75, Z 29.5..31.
+   - Four legs run along Z, each 6 m long and 1.5 m wide, rising 0.5 m at 1:12:
+     - L1 at X 4.25..5.75, from Z 29.5 (0) to Z 23.5 (+0.5).
+     - L2 at X 5.75..7.25, from Z 23.5 back to Z 29.5 (+1.0).
+     - L3 at X 7.25..8.75, from Z 29.5 to Z 23.5 (+1.5).
+     - L4 at X 8.75..10.25, from Z 23.5 to Z 29.5 (+2.0).
+   - Turning landings: at Z 22..23.5 (+0.5 for L1→L2, +1.5 for L3→L4) and at Z 29.5..31 (+1.0 for L2→L3, beside the F1 bottom landing, with a guard between them).
+   - The top landing is at X 8.75..10.5, Z 29.5..31 (+2.0). It exits +X onto the deck at X 10.5..15, which is clear of the diving well (X 15..28, Z 22..34).
+   - A 1.07 m guard runs on the deck edge around the whole cut. The lap pool tank (Z ≤ 21.5) keeps a 0.5 m wall to the cut.
+4. **Leisure hall ramp (F1 to +1.0), on the S strip:**
+   - The N-deck door (X 0 wall, Z 45..47) opens onto an F1 bottom landing at X 0.3..1.8, Z 44.8..47.0, covering the full door width. It is guarded where it meets the +1.0 deck and the river wall.
+   - The ramp runs +X at Z 44.8..46.3 (1.2 m clear): a 6 m leg at X 1.8..7.8 (to +0.5), a 1.5 m landing at X 7.8..9.3, then a 6 m leg at X 9.3..15.3 (to +1.0). It joins the deck at X 15.3.
+   - A 1.07 m guard runs on the +Z side along the drop.
+   - The +1.0 deck fill and the `tt_leisure_deck` finish are cut at X 0.3..15.3, Z 44.8..47.0 under the landing and Z 44.8..46.3 under the legs.
+   - The aquarium tank bays (to Z 44.5) stay 0.3 m clear, and the Rev 3.4 kiosk (Z 44.325..44.925, foyer side) is unaffected.
+5. **Island footbridges:** the river water drops to **+0.85** (0.85 m deep). Both footbridges become **flush at +1.0** with a 0.1 m deck (underside +0.9, 0.05 m over the water), so there is no step at either end. The N bridge stays at X 8..10, Z 71.85..75.15. The **S bridge moves to X 18..20** (Z about 46.85..50.15), clear of the S-strip ramp.
+6. **Owners:**
+   - Rook builds the cuts, ramps, landings, guards and the Z 34.5 wall opening.
+   - temp-Aquatics does the river level, the footbridges, and the `tt_leisure_deck` / `tt_pool_deck_finish` trims.
+   - Columns on the S strip are checked during the build.
