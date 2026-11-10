@@ -11,7 +11,9 @@ sys.path[:0]=[str(TT),str(TT/'structure')]
 import numpy as np
 import assemble_preview as block
 PL=[]
-HELD_UNPLACED=()  # nothing held from placement
+# Rev 3.5: the 3 m board stair (X 7.56..12.6, Z 24.5..25.5, from deck +2.0) stands inside the switchback L cut
+# (X 4..10.5, Z 22..31, legs L3/L4). It is held unplaced until Vance/Rook re-site the stair or the cut.
+HELD_UNPLACED=('tt_pool_board_3m',)
 def put(asset,pos,yaw=0,tag='finish',room='',**extra):
     PL.append(dict(glb=str(MD/(asset+'.glb')),p=pos,yaw=yaw,tag=tag,room=room,**extra))
 def placements():

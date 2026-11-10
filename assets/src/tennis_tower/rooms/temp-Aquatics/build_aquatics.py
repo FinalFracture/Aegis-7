@@ -31,7 +31,7 @@ def emit(n,it,note=''):
     if n.startswith('tt_gallery_') and n!='tt_gallery_floor':
         for _,_,m in it:
             uv=m.metadata['uv']; m.apply_translation((0,.008,0)); m.metadata['uv']=uv
-    if n=='tt_pool_start_blocks' or n.startswith('tt_pool_board_') or n in ('tt_leisure_footbridges','tt_leisure_nature_mounds'):
+    if n=='tt_pool_start_blocks' or n.startswith('tt_pool_board_') or n in ('tt_leisure_nature_mounds',):
         for _,_,m in it:
             uv=m.metadata['uv']; m.apply_translation((0,-.004,0)); m.metadata['uv']=uv
     for _,_,m in it: m.fix_normals()
@@ -58,7 +58,7 @@ def rim(it,r,y):
         for x in np.arange(a,b,.27): B(it,'Gutter_Grate',ST,x,x+.11,y+.004,y+.016,z-.064,z+.064)
     for x in (a-.09,b+.09):
         B(it,'Gutter_DarkSlot',G,x-.06,x+.06,y-E,y+.008,c,d)
-        for z in np.arange(c+.1,d-.1,.27): B(it,'Gutter_Grate',ST,x-.064,x+.064,y+.004,y+.016,z,z+.11)
+        for z in np.arange(c+.1,d-.1,.27): B(it,'Gutter_Grate',ST,x-.064,x+.064,y+.004,y+.016,z,min(z+.11,d-.004))  # last grate stops short of the slot end
     B(it,'Coping',WH,a,a+.06,y-.08,y+.016,c,d)
     B(it,'Coping',WH,b-.06,b,y-.08,y+.016,c,d)
     B(it,'Coping',WH,a+.064,b-.064,y-.08,y+.016,c,c+.06)
@@ -86,9 +86,11 @@ def pool():
     lap=(2.5,27.5,.5,21.5); dive=(15,28,22,34)
     it=[]; tank(it,lap,2,2,True); emit('tt_pool_lap_tank',it,'8 axial 25m lanes; opaque water; floor y=0, deck y=2')
     it=[]; tank(it,dive,2,4.5); emit('tt_pool_diving_tank',it,'4.5m depth; floor y=-2.5, water y=1.92')
-    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(4,7,31.1,34.5)]
+    # Rev 3.5 switchback: L cut X4..10.5 @ Z22..31 + passage X4..6.25 @ Z31..34.5 (replaces the X4..7 stair hole);
+    # the X10.5..15 top-landing exit band stays finished.
+    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(4,10.5,22,31),(4,6.25,31,34.5)]
     finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2); rim(it,dive,2)
-    emit('tt_pool_deck_finish',it,'finish on existing +2 deck; stair opening X4..7 kept clear')
+    emit('tt_pool_deck_finish',it,'finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open')
     it=[]
     for k in range(8):
         z=2.25+2.5*k
@@ -133,8 +135,8 @@ def chair():
     it=[]; y=2.012; x=28.7; z=12
     for a in (-.42,.42):
         for b in (-.4,.4):
-            B(it,'Chair_Feet',G,x+a-.10,x+a+.10,y,y+.055,z+b-.10,z+b+.10)
-            add(it,'Chair_Legs',ST,tube((x+a,y+.051,z+b),(x+a*.72,y+1.82,z+b*.72),.04,8))
+            B(it,'Chair_Feet',G,x+a-.10,x+a+.10,y-.004,y+.055,z+b-.10,z+b+.10)   # 4 mm into the finish (no coplanar contact)
+            add(it,'Chair_Legs',ST,tube((x+a,y+.050,z+b),(x+a*.72,y+1.82,z+b*.72),.04,8))
     B(it,'Chair_Seat',WH,x-.36,x+.36,y+1.816,y+1.89,z-.38,z+.38)
     B(it,'Chair_Back',RU,x+.31,x+.38,y+1.886,y+2.43,z-.38,z+.38)
     for dz in (-.34,.34): add(it,'Chair_Arm',ST,tube((x-.31,y+2.16,z+dz),(x+.314,y+2.16,z+dz),.025,8))
@@ -268,13 +270,15 @@ def leisure():
     it=[]
     # A continuous open ring: no cross-channel dams at the four corner joins.
     ring=[(1,29,47,50),(1,4,50,72),(26,29,50,72),(1,29,72,75)]
-    for a,b,c,d in ring:
-        B(it,'River_Floor',TI,a,b,0,.035,c,d)
-        B(it,'Water_Opaque',WA,a+.004,b-.004,.915,.92,c+.004,d-.004)
+    for a,b,c,d in ring: B(it,'River_Floor',TI,a,b,0,.035,c,d)
+    # Rev 3.5: river surface +0.85, now below the lining tops, so the water sits 4 mm inside the lining faces
+    # (S/N full width, W/E between them with 4 mm joints).
+    for a,b,c,d in ((1.059,28.941,47.059,49.941),(1.059,28.941,72.059,74.941),(1.059,3.941,49.945,72.055),(26.059,28.941,49.945,72.055)):
+        B(it,'Water_Opaque',WA,a,b,.845,.85,c,d)
     for a,b,c,d in ((1,1.055,47,75),(28.945,29,47,75),(1.06,28.94,47,47.055),(1.06,28.94,74.945,75),
                        (3.945,4,50,72),(26,26.055,50,72),(4.004,25.996,49.945,50),(4.004,25.996,72,72.055)):
-        B(it,'River_Lining',TI,a,b,.039,.91,c,d)
-    emit('tt_leisure_river',it,'Open continuous 3m rectangular river, 1m deep; no corner dams')
+        B(it,'River_Lining',TI,a,b,.039,.904,c,d)   # top +0.904: the flush footbridges bear 4 mm onto the channel-wall linings
+    emit('tt_leisure_river',it,'Open continuous 3m rectangular river, surface +0.85 (0.85 m deep); no corner dams')
     for name,r,dep in (('splash',(5,17,51,62),.6),('runout',(5,23,64,71),1)):
         it=[]; tank(it,r,1,dep)
         if name=='splash':
@@ -285,21 +289,26 @@ def leisure():
         emit('tt_leisure_'+name,it,('Opaque water; slide runouts enter axially (-X) from the NE helices' if name=='runout' else 'Opaque water splash pool; ball-crown sprays'))
     it=[]
     holes=[(1,29,47,75)]
+    # Rev 3.5 S-strip ramp (Rook): landing X0.3..1.8 @ Z44.8..47.0, legs X0.3..15.3 @ Z44.8..46.3.
+    holes=[(1,29,47,75),(.3,15.3,44.8,46.3),(.3,1.8,44.8,47.0)]
     finish(it,(.32,29.68,44.8,78.68),holes,1)
     finish(it,(4.06,25.94,50.06,71.94),[(5,17,51,62),(5,23,64,71)],1)
     emit('tt_leisure_deck',it,'Finish on existing +1m deck, clear of water channels')
     it=[]
-    for z0 in (46.85,71.85):
-        B(it,'RiverBridge_Deck',WH,8,10,1.012,1.16,z0,z0+3.3)
-        B(it,'RiverBridge_Nonslip',RU,8.04,9.96,1.156,1.18,z0+.04,z0+3.26)
-        for x in (8.05,9.95):
-            B(it,'RiverBridge_Kick',G,x-.04,x+.04,1.176,1.28,z0,z0+3.3)
-            B(it,'RiverBridge_Rail',ST,x-.025,x+.025,2.246,2.28,z0,z0+3.3)
-            for z in np.arange(z0+.05,z0+3.3,.8): B(it,'RiverBridge_Post',ST,x-.02,x+.02,1.276,2.25,z-.02,z+.02)
-            zs=[z0+.05]+list(np.arange(z0+.85,z0+3.3,.8))+[z0+3.25]
-            for a,b in zip(zs,zs[1:]):
-                if b-a>.04: B(it,'RiverBridge_Pane_Scissor',SCR,x-.008,x+.008,1.31,2.21,a+.016,b-.016)
-    emit('tt_leisure_footbridges',it,'North/south island footbridges: 0.168m deck step, 1.1m scissor guards')
+    # Rev 3.5 flush footbridges: 0.1 m deck (underside +0.9, 0.05 m over the +0.85 water), walking top +1.012 =
+    # the deck finish top, so no step. Ends lap 4 mm into the deck finish. N X8..10 over Z72..75, S X18..20 over Z47..50.
+    for x0,(za,zb) in ((18.0,(47.0,50.0)),(8.0,(72.0,75.0))):
+        x1=x0+2.0
+        B(it,'RiverBridge_Deck',WH,x0,x1,.9,1.0,za-.004,zb+.004)
+        B(it,'RiverBridge_Nonslip',RU,x0+.004,x1-.004,.996,1.012,za-.002,zb+.002)
+        for x in (x0+.05,x1-.05):
+            B(it,'RiverBridge_Kick',G,x-.04,x+.04,1.008,1.112,za,zb)
+            B(it,'RiverBridge_Rail',ST,x-.025,x+.025,2.078,2.112,za,zb)
+            zp=[za+.05]+list(np.arange(za+.8,zb-.3,.8))+[zb-.05]
+            for z in zp: B(it,'RiverBridge_Post',ST,x-.02,x+.02,1.108,2.082,z-.02,z+.02)
+            for a,b in zip(zp,zp[1:]):
+                B(it,'RiverBridge_Pane_Scissor',SCR,x-.008,x+.008,1.142,2.042,a+.016,b-.016)
+    emit('tt_leisure_footbridges',it,'Rev 3.5 flush island footbridges (N X8..10, S X18..20): top +1.012 = deck finish, underside +0.9 over +0.85 water; 1.1 m scissor guards')
     it=[]
     for x,z in ((7,53),(15,54),(8,59),(15,60)):
         B(it,'Spray_Foot',G,x-.18,x+.18,.435,.48,z-.18,z+.18)

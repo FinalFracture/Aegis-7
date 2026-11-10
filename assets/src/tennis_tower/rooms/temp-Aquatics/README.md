@@ -176,3 +176,18 @@ is ready for the parent to commit with the approved identity; no hash exists.
   (4 mm embed), above the 60 mm toe plinth, and is not floor-standing, so it is left in place.
 - Pool water look: the runtime water is the scene shader (`ROUGHNESS = 0.24` in `temp-Aquatics_water.gdshader`
   via the bind script), which overrides the GLB material. A softer look needs a shader change (owner approval).
+
+## Rev 3.5 accessibility pass (Vance 19fece7)
+- River water surface +0.85 (`tt_leisure_river`); the water sits 4 mm inside the lining faces; lining tops +0.904.
+- Flush footbridges (`tt_leisure_footbridges`): N X 8..10 over Z 72..75, S moved to X 18..20 over Z 47..50.
+  Deck +0.9..+1.0 with a nonslip top at +1.012 (= the deck-finish top, so no step). The bridges bear 4 mm onto
+  the lining tops and lap 4 mm into the deck finish. Water is 0.05 m below the underside. Guards are 1.10 m with
+  rails at +2.078..2.112. The audit floor-contact datum for `RiverBridge_Deck` moved from +1.012 (old bridges sat
+  on the deck) to the +0.904 lining bearing; the ±5 mm tolerance is unchanged.
+- `tt_leisure_deck` finish cut at X 0.3..15.3 / Z 44.8..46.3 (ramp legs) plus X 0.3..1.8 / Z 44.8..47.0 (F1 landing).
+- `tt_pool_deck_finish` L cut: X 4..10.5 / Z 22..31 plus X 4..6.25 / Z 31..34.5. This replaces the old
+  X 4..7 / Z 31.1..34.5 stair hole, so X 6.25..7 at Z 31..34.5 is finished deck now. The X 10.5..15 exit band is finished.
+- **Held**: `tt_pool_board_3m` is unplaced. Its stair (X 7.56..12.6, Z 24.5..25.5) stands inside the L cut over
+  legs L3/L4. Spec §diving well puts the 3 m board at Z 25, so this is a spec conflict for Vance/Rook.
+- Lifeguard chair feet now embed 4 mm into the finish (they were flush-coplanar) and legs start at +0.050.
+- Pool gutter: the last side grate stops 4 mm short of the slot end (it was coplanar at Z 21.5).

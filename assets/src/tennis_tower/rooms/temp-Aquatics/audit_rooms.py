@@ -27,7 +27,9 @@ for name,entry in layout.items():
                 expected=None
                 if room=='pool' and gn in ('Start_Foot','Board_StairTreads','Board_Supports','Chair_Feet'): expected=2.012
                 if room=='gallery' and gn in ('Locker_Carcass','Bench_Feet','Changing_SupportPosts','Shower_Back'): expected=6.112
-                if room=='leisure' and gn in ('RiverBridge_Deck','RiverStone_Mound'): expected=1.012
+                if room=='leisure' and gn=='RiverStone_Mound': expected=1.012
+                # Rev 3.5 flush footbridges span the channel and bear on the river-lining tops (+0.904), same ±5 mm rule.
+                if room=='leisure' and gn=='RiverBridge_Deck': expected=.904
                 if room=='leisure' and gn=='Spray_Foot': expected=.435
                 if expected is not None:
                     delta=float(piece.bounds[0,1]-expected)
