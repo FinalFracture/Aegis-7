@@ -54,10 +54,10 @@ def finish(it,rect,holes,y):
 def rim(it,r,y):
     a,b,c,d=r
     for z in (c-.09,d+.09):
-        B(it,'Gutter_DarkSlot',G,a-.18,b+.18,y-E,y+.008,z-.06,z+.06)
+        B(it,'Gutter_DarkSlot',G,a-.184,b+.184,y-E+.002,y+.008,z-.06,z+.06)  # ends embed 4 mm in the deck-hole edge (no flush end caps)
         for x in np.arange(a,b,.27): B(it,'Gutter_Grate',ST,x,x+.11,y+.004,y+.016,z-.064,z+.064)
     for x in (a-.09,b+.09):
-        B(it,'Gutter_DarkSlot',G,x-.06,x+.06,y-E,y+.008,c,d)
+        B(it,'Gutter_DarkSlot',G,x-.06,x+.06,y-E+.002,y+.008,c,d)
         for z in np.arange(c+.1,d-.1,.27): B(it,'Gutter_Grate',ST,x-.064,x+.064,y+.004,y+.016,z,min(z+.11,d-.004))  # last grate stops short of the slot end
     B(it,'Coping',WH,a,a+.06,y-.08,y+.016,c,d)
     B(it,'Coping',WH,b-.06,b,y-.08,y+.016,c,d)
@@ -86,11 +86,11 @@ def pool():
     lap=(2.5,27.5,.5,21.5); dive=(15,28,22,34)
     it=[]; tank(it,lap,2,2,True); emit('tt_pool_lap_tank',it,'8 axial 25m lanes; opaque water; floor y=0, deck y=2')
     it=[]; tank(it,dive,2,4.5); emit('tt_pool_diving_tank',it,'4.5m depth; floor y=-2.5, water y=1.92')
-    # Rev 3.5 switchback: L cut X4..10.5 @ Z22..31 + passage X4..6.25 @ Z31..34.5 (replaces the X4..7 stair hole);
-    # the X10.5..15 top-landing exit band stays finished.
-    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(4,10.5,22,31),(4,6.25,31,34.5)]
+    # Rev 3.6 switchback (along X, north of the 3 m board): cut X1.0..10.0 @ Z26..32 + passage X8.5..10 @ Z32..34.5.
+    # The top landing exits +X along Z 26..27.5 onto finished deck (X 10..14.82).
+    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(1.0,10.0,26.0,32.0),(8.5,10.0,32.0,34.5)]
     finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2); rim(it,dive,2)
-    emit('tt_pool_deck_finish',it,'finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open')
+    emit('tt_pool_deck_finish',it,'finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open')
     it=[]
     for k in range(8):
         z=2.25+2.5*k
@@ -239,10 +239,12 @@ def text_z(it,label,cx,y,z,scale=.045):
 
 def signs():
     it=[]
-    B(it,'Portal_Blade',SL,4.05,6.95,3.08,3.66,34.496,34.55)
-    B(it,'Portal_LowerReveal',ST,4.10,6.90,3.10,3.14,34.546,34.565)
-    text_z(it,'AQUATICS',5.5,3.23,34.55,.055)
-    emit('tt_corridor_deck_portal_sign',it,'AQUATICS above X4..7 deck door, 4mm embed in existing header')
+    # Rev 3.6: centred over the Z 34.5 lobby-wall opening X 8.5..10.0 (head below +3.08); same height band.
+    xc=9.25
+    B(it,'Portal_Blade',SL,xc-1.45,xc+1.45,3.08,3.66,34.496,34.55)
+    B(it,'Portal_LowerReveal',ST,xc-1.40,xc+1.40,3.10,3.14,34.546,34.565)
+    text_z(it,'AQUATICS',xc,3.23,34.55,.055)
+    emit('tt_corridor_deck_portal_sign',it,'AQUATICS centred over the Rev 3.6 lobby-wall opening X8.5..10, 4mm embed in the wall above its head')
     for name,x,yaw,label in (('courts',1,-90,'COURTS'),('foyer',24,90,'FOYER')):
         it=[]
         B(it,'Direction_Blade',SL,-1.35,1.35,2.6,3.16,-.06,.06)

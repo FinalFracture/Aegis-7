@@ -74,7 +74,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open"
+      "note": "finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_b.glb",
@@ -86,7 +86,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open"
+      "note": "finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_c.glb",
@@ -98,7 +98,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open"
+      "note": "finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_d.glb",
@@ -110,7 +110,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "finish on existing +2 deck; Rev 3.5 switchback L cut X4..10.5/Z22..31 + X4..6.25/Z31..34.5 left open"
+      "note": "finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_start_blocks.glb",
@@ -123,6 +123,18 @@
       "tag": "finish",
       "room": "F1-POOL",
       "note": "8 blocks face +X; mount on deck finish at +2.012"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_board_3m.glb",
+      "p": [
+        12.53,
+        2.008,
+        25.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Axial +X board; stairs .1667m rise x.28m; top measured above finish"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_board_1m_285.glb",
@@ -367,14 +379,14 @@
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_corridor_deck_portal_sign.glb",
       "p": [
-        5.5,
+        9.25,
         3.08,
         34.5305
       ],
       "yaw": 0,
       "tag": "finish",
       "room": "F1-AQC",
-      "note": "AQUATICS above X4..7 deck door, 4mm embed in existing header"
+      "note": "AQUATICS centred over the Rev 3.6 lobby-wall opening X8.5..10, 4mm embed in the wall above its head"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_corridor_direction_courts.glb",

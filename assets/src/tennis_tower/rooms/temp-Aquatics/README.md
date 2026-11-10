@@ -191,3 +191,22 @@ is ready for the parent to commit with the approved identity; no hash exists.
   legs L3/L4. Spec §diving well puts the 3 m board at Z 25, so this is a spec conflict for Vance/Rook.
 - Lifeguard chair feet now embed 4 mm into the finish (they were flush-coplanar) and legs start at +0.050.
 - Pool gutter: the last side grate stops 4 mm short of the slot end (it was coplanar at Z 21.5).
+
+## Rev 3.6 pool switchback pass (Vance ad89c1a; Rook ramps 8638069 / de77ddc)
+- `tt_pool_deck_finish` cut is now X 1.0..10.0 / Z 26..32 plus the passage X 8.5..10 / Z 32..34.5. The Rev 3.5 L cut
+  is gone. The ramp-top exit band (Z 26..27.5, X 10..14.82) is finished deck. The old X 4..7 deck stair opening is no
+  longer in the spec. All finish is supported by the +2.0 deck (4 mm embed).
+- `tt_pool_board_3m` is placed again at Z 25. Its stair runs X 7.56..12.60 / Z 24.5..25.5, 0.5 m clear of the cut at Z 26.
+- The 1 m board stairs (unchanged) run X 10.92..12.60 at Z 28.0..29.0 and 31.0..32.0, so min X is 10.92 (≥ 10.05). They
+  sit 0.92 m east of the cut edge.
+- `tt_corridor_deck_portal_sign` is centred at X 9.25 (blade X 7.8..10.7, +3.08..3.66) over the Z 34.5 lobby-wall opening
+  X 8.5..10.0, whose head is at +3.0, giving 80 mm clearance. It embeds 4 mm into the wall face.
+- Pool gutter dark-slot ends now embed 4 mm into the deck-hole edges (their end caps were flush-coplanar), and the slot
+  bottoms sit at +2 mm.
+- Against Rook's ramps:
+  - No penetrations between our parts and the ramps.
+  - Guard kerbs bear flush on the terrazzo top.
+  - Footbridges are ≥ 2.8 m from the ramp guards.
+  - Open item for Rook: the ramp tops meet our finish with a lip. At the pool exit (X 10) the ramp is at +2.000 and the
+    finish at +2.012, a 12.0 mm lip. At the leisure exit (X 15.3) the ramp is at +0.9988 and the finish at +1.012, a 13.2 mm lip.
+- No aquatics placement sits in the cut or the passage. There are 4 tank bays at Z 42.9, none at the origin.
