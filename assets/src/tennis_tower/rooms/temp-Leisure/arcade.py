@@ -166,34 +166,56 @@ def col_moss():
     for k in range(6): a = k*math.pi/3 + .2; it.a('Col_Moss', LF if k % 2 else LF2, moss_mound((.75*math.cos(a), 0, .75*math.sin(a)), .22, k + 40))
     for k in range(4): a = k*math.pi/2 + .7; it.a('Col_Stones', SL, clump((1.15*math.cos(a), .05, 1.15*math.sin(a)), .11, k + 50))
     return emit('tt_arc_col_moss', it, 'moss + stones ring at an X126.5 column base')
+def seated_mound(c, r, seed=0):
+    """moss_mound with bottom exactly at c[1]."""
+    raw = moss_mound((0, 0, 0), r, seed)
+    lift = -float(raw.bounds[0][1]) + c[1]
+    return moss_mound((c[0], lift, c[2]), r, seed)
+
 def feature_stair():
-    """X126..139, Z38..40.5: flight 1 from X126.6 up +X to a mid landing at +3.05, flight 2 to +6.1 at X~138."""
-    it = It(); z0, z1 = 38.0, 40.5; n = 18; rise = 6.1/36; tr = .28
-    xa = 126.6; xl0 = xa + n*tr; xl1 = xl0 + 1.4; xb = xl1 + n*tr
-    for f, (xs, ys) in enumerate(((xa, 0.0), (xl1, 3.05))):
-        for i in range(n - 1):
-            x = xs + i*tr; y = ys + (i + 1)*rise
-            it.b('Treads', WH, x + D, x + tr - D, y - .05, y, z0 + .08, z1 - .08, col=True)
-            it.b('Nosing_LED', CY, x + tr - D - .004, x + tr - D + .006, y - .03, y - .012, z0 + .12, z1 - .12)
-        for z in (z0 + .038, z1 - .038):
-            it.a('Stringers', G, beam((xs, ys + .02, z), (xs + n*tr, ys + 3.05 - .08, z), .3, .08))
-    it.b('Landing', WH, xl0 - tr + D, xl1 + .03, 3.0, 3.05, z0 + .08, z1 - .08, col=True)
+    """X126.6..139, Z38..40.5: two solid flights, mid landing +3.05, top +6.1. Guards both sides. y>=0."""
+    it = It()
+    z0, z1 = 38.0, 40.5
+    n = 18
+    rise = 6.1 / 36
+    tr = .28
+    xa = 126.6
+    xl0 = xa + n * tr
+    xl1 = xl0 + 1.4
+    xb = xl1 + n * tr
+    zw0, zw1 = z0 + .08, z1 - .08
+    for xs, ys in ((xa, 0.0), (xl1, 3.05)):
+        for i in range(n):
+            x0s, x1s = xs + i * tr, xs + (i + 1) * tr
+            y0s, y1s = ys + i * rise, ys + (i + 1) * rise
+            it.b('Treads', WH, x0s + (E if i else 0), x1s + (E if i < n - 1 else 0), y1s - .05, y1s, zw0, zw1, col=True)
+            it.b('Treads', WH, x0s, x0s + .04 + E, y0s - (E if i else 0), y1s, zw0, zw1, col=True)
+            if i < n - 1:
+                it.b('Nosing_LED', CY, x1s + .002, x1s + .006, y1s - .022, y1s - .008, zw0 + .04, zw1 - .04)
+    it.b('Treads', WH, xl0 - E, xl1 + E, 3.0, 3.05, zw0, zw1, col=True)
     it.b('Landing_Beam', G, xl0 - .02, xl1 + .02, 2.75, 3.0 + E, z0 + .12, z1 - .12)
     for x in (xl0 + .2, xl1 - .2):
-        it.a('Landing_Columns', ST, tube((x, 0, (z0 + z1)/2), (x, 2.754, (z0 + z1)/2), .09, 10))
-        it.a('Column_Moss', LF, moss_mound((x, 0, (z0 + z1)/2 + .5), .25, int(x)))
-    it.b('Top_Landing', WH, xb - tr + D, 139.0, 6.05, 6.1, z0 + .08, z1 - .08, col=True)
-    # scissor balustrade + handrail, both flights + landing
-    for z in (z0 - .01, z1 + .01):
+        it.a('Landing_Columns', ST, tube((x, 0, (z0 + z1) / 2), (x, 2.754, (z0 + z1) / 2), .09, 10))
+        it.a('Column_Moss', LF, seated_mound((x, 0, (z0 + z1) / 2 + .5), .25, int(x)))
+    it.b('Treads', WH, xb - E, 139.0, 6.05, 6.1, zw0, zw1, col=True)
+    for zi, zside in ((z0, -1), (z1, +1)):
+        z_pane = zi - zside * .02
+        z_edge = zi - zside * .04
         for xs, ys in ((xa, 0.0), (xl1, 3.05)):
-            for k in range(6):
-                x = xs + k*n*tr/6; y = ys + (k*n/6 + 1)*rise
-                p0, p1 = (x + .1, y, z), (x + n*tr/6 - .05, y + n*rise/6, z)
-                it.a('Guard_Scissor', SCR, beam((p0[0], p0[1] + .3, z), (p1[0], p1[1] + .3, z), .9, .012))
-            it.a('Handrail', ALY, tube((xs, ys + 1.05, z), (xs + n*tr, ys + 3.05 + 1.05, z), .025, 8))
-        it.b('Guard_Scissor', SCR, xl0 + .05, xl1 - .05, 3.1, 4.0, z - .006, z + .006)
-        st, lv = vine([(xa + .5, .5, z), (xl0, 3.4, z), (xl1, 3.4, z), (xb - .5, 6.5, z)], seed=int(z), leaf_every=.6)
-        it.a('Vine_Leaves', LF2, lv)
+            p0 = (xs + .04, ys + .14, z_pane)
+            p1 = (xs + n * tr - .04, ys + 3.05 + .14, z_pane)
+            it.a('Guard_Scissor', SCR, beam((p0[0], p0[1] + .38, p0[2]), (p1[0], p1[1] + .38, p1[2]), .76, .014))
+            it.a('Handrail', ALY, tube((xs + .052, ys + 1.05, z_edge), (xs + n * tr - .052, ys + 3.05 + 1.05, z_edge), .025, 8))
+            for k in range(3, n, 3):
+                x = xs + k * tr
+                y = ys + k * rise
+                it.a('Guard_Posts', ST, tube((x, y + .10, z_edge), (x, y + .98, z_edge), .018, 8))
+        it.b('Guard_Scissor', SCR, xl0 + .06, xl1 - .06, 3.19, 3.95, z_pane - .007, z_pane + .007)
+        it.a('Handrail', ALY, tube((xl0 + .052, 3.05 + 1.05, z_edge), (xl1 - .052, 3.05 + 1.05, z_edge), .025, 8))
+        it.b('Guard_Scissor', SCR, xb + .06, 138.90, 6.24, 7.03, z_pane - .007, z_pane + .007)
+        it.a('Handrail', ALY, tube((xb + .052, 6.1 + 1.05, z_edge), (138.92, 6.1 + 1.05, z_edge), .025, 8))
+        for x, y in ((xa, 0.0), (xl0, 3.05), (xl1, 3.05), (xb, 6.1)):
+            it.a('Newel', ALY, tube((x, y, z_edge), (x, y + 1.10, z_edge), .03, 8))
     return emit('tt_arc_feature_stair', it, 'decorative open L1->L2 stair (not egress); top lands at +6.1 X~138..139: needs an F2 slab opening (not cut here)')
 
 # ---------------- layout ----------------
@@ -239,6 +261,10 @@ def layout(floor):
         a = 'tt_arc_redemption' if k < 4 else 'tt_arc_claw' if k < 6 else 'tt_arc_video'
         out += [(a, x, z, yaw) for x, z, yaw in bl]
     out += big
+    if floor == 1:
+        # ST-ARS F1 N door approach X 134.48..136.62, Z 20.61..22.1: keep 0.05 m clear
+        _shift = {21.3: 26.8, 22.4: 27.9}
+        out = [(a, x, _shift[z] if a == 'tt_arc_video' and abs(x - 135.0) < 0.02 and z in _shift else z, yaw) for a, x, z, yaw in out]
     if floor == 1: out.append(('tt_arc_prize_counter', 122.5, 61.15, 0))
     for cx, cz in COLS:
         if free(cx - 1.3, cx + 1.3, cz - 1.3, cz + 1.3, F1EX): out.append(('tt_arc_col_moss', cx, cz, 0))

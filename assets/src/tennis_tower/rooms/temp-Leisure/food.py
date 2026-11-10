@@ -2,6 +2,58 @@
 Stall = 6 x 5 m incl. kitchen, local front +Z (place yaw 180 on the N facade).
 Facade inner line (tt_facade_bay fins) is Z78.38, so N stalls take Z73.3..78.3."""
 from lz_lib import *
+ml._m('lz_moss_dk', 'TT_MossDark', (.14, .32, .16), 0, .85, a=1.0)
+ml._m('lz_moss_md', 'TT_MossMid', (.20, .42, .18), 0, .85, a=1.0)
+MDK, MMD = 'lz_moss_dk', 'lz_moss_md'
+
+def seated_mound(c, r, seed=0):
+    """moss_mound with bottom exactly at c[1]."""
+    raw = moss_mound((0, 0, 0), r, seed)
+    lift = -float(raw.bounds[0][1]) + c[1]
+    return moss_mound((c[0], lift, c[2]), r, seed)
+
+def seated_clump(c, r, seed=0, sub=0):
+    raw = clump((0, 0, 0), r, seed, sub)
+    lift = -float(raw.bounds[0][1]) + c[1]
+    return clump((c[0], lift, c[2]), r, seed, sub)
+
+def finish_moss_scissor(path):
+    """MASK 0.5, baseColor alpha 1.0, lancet-leaf alpha texture for TT_MossDark / TT_MossMid."""
+    import io as _io
+    import pygltflib as pg
+    from PIL import Image, ImageDraw
+    n = 64
+    im = Image.new('RGBA', (n, n), (0, 0, 0, 0))
+    dr = ImageDraw.Draw(im)
+    poly = [(0.5*n, 0.02*n), (0.96*n, 0.35*n), (0.5*n, 0.98*n), (0.04*n, 0.35*n)]
+    dr.polygon(poly, fill=(40, 90, 45, 255))
+    b = _io.BytesIO(); im.save(b, 'PNG'); data = b.getvalue()
+    g = pg.GLTF2().load(path); blob = bytearray(g.binary_blob()); hit = False
+    if not g.samplers:
+        g.samplers.append(pg.Sampler(magFilter=9729, minFilter=9987, wrapS=33071, wrapT=33071))
+    for m in g.materials:
+        if m.name not in ('TT_MossDark', 'TT_MossMid'):
+            continue
+        hit = True
+        while len(blob) % 4: blob.append(0)
+        g.bufferViews.append(pg.BufferView(buffer=0, byteOffset=len(blob), byteLength=len(data)))
+        blob.extend(data)
+        g.images.append(pg.Image(bufferView=len(g.bufferViews)-1, mimeType='image/png'))
+        g.textures.append(pg.Texture(source=len(g.images)-1, sampler=0))
+        m.alphaMode = 'MASK'
+        m.alphaCutoff = .5
+        m.doubleSided = True
+        if m.pbrMetallicRoughness is None:
+            m.pbrMetallicRoughness = pg.MaterialPBRMetallicRoughness()
+        bc = m.pbrMetallicRoughness.baseColorFactor or [1, 1, 1, 1]
+        m.pbrMetallicRoughness.baseColorFactor = [bc[0], bc[1], bc[2], 1.0]
+        m.pbrMetallicRoughness.baseColorTexture = pg.TextureInfo(index=len(g.textures)-1)
+    if hit:
+        while len(blob) % 4: blob.append(0)
+        g.buffers[0].byteLength = len(blob)
+        g.set_binary_blob(bytes(blob))
+        g.save_binary(path)
+
 def paint_menu(it, x0, x1, y0, y1, z0, z1, variant=0):
     """Opaque menu board art: slate plate + cyan rows + amber price ticks + ball/leaf accent."""
     it.b('Menu_Plate', SL, x0, x1, y0, y1, z0, z1)
@@ -62,7 +114,7 @@ def stall():
     for k in range(9): it.a('Canopy_Leaves', LF2, zwall_leaf((-2.8 + .7*k, 3.05, 2.5), (k - 4)*.12, .55, .2, face=1))
     for x in (x0 + .15, x1 - .15): it.a('Canopy_Balls', BA, node((x, 3.5, 2.3), .09, 1))
     # moss mound bases at the stall corners (integrated greenery, no planter)
-    for x in (x0 + .5, x1 - .5): it.a('Moss_Base', LF, moss_mound((x, 0, 2.38), .2, int(abs(x)*7)))
+    for x in (x0 + .5, x1 - .5): it.a('Moss_Base', LF, seated_mound((x, 0, 2.38), .2, int(abs(x)*7)))
     it.col(x0, x1, 0, 3.4, z0, z0 + .15)
     return emit('tt_food_stall', it, '6x5 m stall incl. kitchen; front +Z; accessible 0.9 m counter at 0.86 m')
 
@@ -115,13 +167,40 @@ def service_door():
 
 def tree_moss():
     it = It()
-    for k in range(9):
-        a = k*2*math.pi/9; r = 1.45 + .15*(k % 2)
-        it.a('Moss_Ring', LF if k % 2 else LF2, moss_mound((r*math.cos(a), 0, r*math.sin(a)), .32, k))
+    # flare r=1.0 kept clear; AABB radius <= 1.50 (N queues at +1.81 m in Z from the tree)
+    rng = np.random.default_rng(7)
+    for k in range(10):
+        a = k * 2 * math.pi / 10 + .08
+        r = 1.30 + .06 * (k % 2)
+        it.a('Moss_Mound', MDK if k % 2 == 0 else MMD, seated_mound((r * math.cos(a), 0, r * math.sin(a)), .14, k + 3))
+    for k in range(20):
+        a = k * 2 * math.pi / 20 + rng.uniform(-.05, .05)
+        r = 1.08 + rng.uniform(0.0, 0.04)
+        x, z = r * math.cos(a), r * math.sin(a)
+        h0 = rng.uniform(0.02, 0.08)
+        L = rng.uniform(0.42, 0.62)
+        W = rng.uniform(0.11, 0.17)
+        yaw = a + math.pi + rng.uniform(-.25, .25)
+        pitch = rng.uniform(0.04, 0.18)
+        mk = MDK if k % 2 == 0 else MMD
+        it.a('Moss_Leaves', mk, leaf((x, h0, z), L, W, yaw=yaw, pitch=pitch, t=.01))
+    for k in range(16):
+        a = k * 2 * math.pi / 16 + .2 + rng.uniform(-.06, .06)
+        r = 1.26 + rng.uniform(-0.04, 0.06)
+        x, z = r * math.cos(a), r * math.sin(a)
+        L = rng.uniform(0.28, 0.42)
+        W = rng.uniform(0.10, 0.16)
+        yaw = a + math.pi + rng.uniform(-.4, .4)
+        pitch = rng.uniform(0.20, 0.50)
+        mk = MMD if k % 2 == 0 else MDK
+        it.a('Moss_Leaves', mk, leaf((x, 0.36, z), L, W, yaw=yaw, pitch=pitch, t=.01))
     for k in range(5):
-        a = k*2*math.pi/5 + .3; it.a('River_Stones', SL, clump((2.25*math.cos(a), .06, 2.25*math.sin(a)), .14, k + 20))
-    for k in range(9): a = k*2*math.pi/9 + .35; it.b('Edge_Inlay', BA, 1.9*math.cos(a) - .05, 1.9*math.cos(a) + .05, 0, .01, 1.9*math.sin(a) - .05, 1.9*math.sin(a) + .05)
-    return emit('tt_food_tree_moss', it, 'moss + river stone ring around a TC-N tree column base (r 1.0 flare kept clear)')
+        a = k * 2 * math.pi / 5 + .4
+        it.a('River_Stones', SL, seated_clump((1.42 * math.cos(a), 0, 1.42 * math.sin(a)), .08, k + 20))
+    out = emit('tt_food_tree_moss', it, 'layered dark/mid moss + scissor leaves around a TC-N tree; r 1.0 flare clear; r<=1.50')
+    for nm, _ in out:
+        finish_moss_scissor(str(GM / f'{nm}.glb'))
+    return out
 
 TREES_N = [(57.5, 70.5), (65.5, 70.5), (84.5, 70.5), (101.5, 70.5)]
 EXCL = [(58, 64, 65.8, 76.4), (86, 92, 65.8, 76.4), (66.5, 70.5, 64, 68), (71, 76.5, 64, 69.5), (50, 53, 64, 66.2), (90, 93, 64, 66.2),
