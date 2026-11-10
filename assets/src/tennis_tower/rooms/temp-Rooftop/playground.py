@@ -64,11 +64,10 @@ def build(PL):
     PL.append(dict(glb=str(GM / 'tt_see_saw.glb'), asset='tt_see_saw', p=[136.0, Y, 48.0], yaw=90, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_toddler_zone.glb'), asset='tt_toddler_zone', p=[134.5, Y, 54.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_balance_trail.glb'), asset='tt_balance_trail', p=[132.5, Y, 38.0], yaw=90, tag='f3'))
-    place(PL, A_s, 136.5, Y, 24.5, 0)
+    place(PL, A_s, 136.5, Y, 24.5, 0, local=False)
+    place(PL, A_g, 128.3, Y, 51.0, -90)
     for z in [21.6 + 2.0 * i for i in range(18)]:
-        if 49.5 < z < 52.5:
-            place(PL, A_g, 128.3, Y, 51.0, -90); continue
-        if abs(z - 51.0) < 1.0: continue
+        if 49.5 < z < 52.5: continue
         place(PL, A_f, 128.3, Y, z, -90)
     place(PL, A_g, 134.15, Y, 20.6, 180)
     place(PL, A_g, 134.15, Y, 58.4, 0)
@@ -78,5 +77,5 @@ def build(PL):
         place(PL, A_f, x, Y, 20.6, 180)
         place(PL, A_f, x, Y, 58.4, 0)
     for z in (25.0, 33.0, 41.0, 46.0):
-        place(PL, A_p, 128.45, Y, z, 90)
+        place(PL, A_p, 128.463, Y, z, 90, local=False)
     return dict(soft4=1, fences='kick+picket', perches=4, seesaw_yaw=90)

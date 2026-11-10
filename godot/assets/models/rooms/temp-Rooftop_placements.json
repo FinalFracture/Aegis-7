@@ -618,10 +618,21 @@
     "asset": "tt_play_soft4",
     "p": [
      136.5,
-     12.0645,
+     12.2,
      24.5
     ],
     "yaw": 0,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_gate.glb",
+    "asset": "tt_play_fence_gate",
+    "p": [
+     128.3,
+     12.2,
+     51.0225
+    ],
+    "yaw": -90,
     "tag": "f3"
    },
    {
@@ -774,28 +785,6 @@
      128.3,
      12.2,
      47.6
-    ],
-    "yaw": -90,
-    "tag": "f3"
-   },
-   {
-    "glb": "res://assets/models/tt_play_fence_gate.glb",
-    "asset": "tt_play_fence_gate",
-    "p": [
-     128.3,
-     12.2,
-     51.0225
-    ],
-    "yaw": -90,
-    "tag": "f3"
-   },
-   {
-    "glb": "res://assets/models/tt_play_fence_gate.glb",
-    "asset": "tt_play_fence_gate",
-    "p": [
-     128.3,
-     12.2,
-     51.0225
     ],
     "yaw": -90,
     "tag": "f3"
@@ -1157,7 +1146,7 @@
     "asset": "tt_play_perch",
     "p": [
      128.463,
-     12.334,
+     12.2,
      25.0
     ],
     "yaw": 90,
@@ -1168,7 +1157,7 @@
     "asset": "tt_play_perch",
     "p": [
      128.463,
-     12.334,
+     12.2,
      33.0
     ],
     "yaw": 90,
@@ -1179,7 +1168,7 @@
     "asset": "tt_play_perch",
     "p": [
      128.463,
-     12.334,
+     12.2,
      41.0
     ],
     "yaw": 90,
@@ -1190,7 +1179,7 @@
     "asset": "tt_play_perch",
     "p": [
      128.463,
-     12.334,
+     12.2,
      46.0
     ],
     "yaw": 90,
