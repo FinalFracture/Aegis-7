@@ -87,6 +87,14 @@
   ],
   "note": "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails"
  },
+ "tt_struct_f2_feature_stair_guard": {
+  "world_offset": [
+   136.1613,
+   6.096,
+   39.25
+  ],
+  "note": "r5 1.07 m F2 guards round the Leisure feature-stair opening"
+ },
  "tt_struct_leisure_ramp": {
   "world_offset": [
    7.8787,

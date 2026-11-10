@@ -162,3 +162,13 @@ def walk(p, path, y0=0.0, step=.03, head=2.1, ds=.05):
     w.update(grade_1_in=round(1/max(g, 1e-9), 2), top_y=round(float(y), 3), samples=len(Y))
     w["pass"] = bool(w["nofloor"] == 0 and w["step"] <= step and w["head"] >= head and w["grade_1_in"] >= 12 - .05)
     return {kk: (round(v, 3) if isinstance(v, float) else v) for kk, v in w.items()}
+
+FS_HOLE = (133.4, 139.0, 37.95, 40.55)   # r5: F2 opening over the Leisure tt_arc_feature_stair (9f076fa, placed [132.7205, 0, 39.25], world X 126.44..139.0,
+                                         # Z 38.01..40.49, top landing +6.1 at X 137.82..139.0). West edge X 133.4: every tread west of it is <= +3.39,
+                                         # so the F2 soffit (+5.7) keeps >= 2.31 m over the run; the hole runs on to the landing end at X 139.0.
+def feature_stair_guard():
+    k = Kit(); x0, x1, z0, z1 = FS_HOLE; F = lambda s: F2; T = lambda s: F2 + GT
+    k.guard(z0 - .07, z1 + .07, x0 - .07, "z", F, T, (False, False))      # W edge (the run passes under it)
+    k.guard(x0 - .07, x1, z0 - .07, "x", F, T, (True, True))             # S edge, to the landing end (stair's own guards are 0.06 inside)
+    k.guard(x0 - .07, x1, z1 + .07, "x", F, T, (True, True))             # N edge
+    return k

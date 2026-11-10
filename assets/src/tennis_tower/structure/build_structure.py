@@ -11,6 +11,7 @@ TREE_HOLES = [(x - .7, x + .7, z - .7, z + .7) for x, z in TREES]
 CORE_HOLES = [c[2] for c in CORES]; LIFT_HOLES = [l[1] for l in LIFTS]; PLANT_HOLES = [p[1] for p in PLANT]
 POOL_CUT = [(1, 10, 26, 32), (8.5, 10, 32, 34.2)]           # r4 Rev 3.6 pool switchback cut + passage (deck to the lobby wall face Z 34.2)
 LEIS_CUT = [(0, 15.3, 44.8, 46.3), (0, 1.8, 46.3, 47.0)]         # r4 Rev 3.5 leisure S-strip ramp + bottom landing
+from ramps import FS_HOLE
 SKIP_X0 = {12.5, 66.5}; SKIP_X30 = {39.5}        # columns that land inside a stair-core wall (ST-AQS / ST-AQN / LW): bearing taken by the core
 
 def f1_slab():
@@ -34,7 +35,7 @@ def f1_slab():
 def f2_slab():
     it = []; y = F2; d = SLAB[F2]
     aq = [(0, 30, 0, 34.5), (0, 30, 44.5, 56), (2, 30, 56, 58), (20, 30, 58, 60.4), (0, 30, 60.4, 79)]
-    holes = aq + CORE_HOLES + LIFT_HOLES + TREE_HOLES + PLANT_HOLES
+    holes = aq + CORE_HOLES + LIFT_HOLES + TREE_HOLES + PLANT_HOLES + [FS_HOLE]   # r5: feature-stair opening
     it += [("Slab_F2", CON, m) for m in slab(FOOT, holes, y, d)]
     for x in (45.5, 71.5, 97.5): it.append(("Beams_F2", CON, box(x - .3, x + .3, y - 1.1, y - d + E, 24.5, 54.5)))
     it.append(("Beams_F2", CON, box(39.5, 103.5, y - 1.1, y - d + E, 39.2, 39.8)))
@@ -264,6 +265,7 @@ if __name__ == "__main__":
         export_chunk(nm, parts, col, REP, note=note)
     import ramps
     ramps.export("tt_struct_pool_ramp", ramps.pool_ramp(), REP, LAY, "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails")
+    ramps.export("tt_struct_f2_feature_stair_guard", ramps.feature_stair_guard(), REP, LAY, "r5 1.07 m F2 guards round the Leisure feature-stair opening")
     ramps.export("tt_struct_leisure_ramp", ramps.leisure_ramp(), REP, LAY, "r4 Rev 3.5 leisure S-strip ramp F1 -> +1.0, guards + rails")
     json.dump(LAY, open(LAYOUT, "w"), indent=1)
     rd = os.path.join(RENDER_OUT, "structure_blockout"); os.makedirs(rd, exist_ok=True); json.dump(REP, open(os.path.join(rd, "struct_report.json"), "w"), indent=1, default=str)
