@@ -234,10 +234,10 @@ def load_owner(owner, filename, log):
 
 def rook_core():
     """Cores, lifts, trees, slide towers, restroom shells — not owner-owned kits."""
-    from tower_plan import CORES, LIFTS, TREES, TREES_W
+    from tower_plan import CORES, LIFTS, TREES, TREES_W, CORE_ASSET, RESTROOMS_F3
     put = AP.put
     for cid, typ, (x0, x1, z0, z1) in CORES:
-        a = "tt_stair_core_a" if typ == "A" else "tt_stair_core_b"
+        a = CORE_ASSET.get(cid, "tt_stair_core_a" if typ == "A" else "tt_stair_core_b")
         yaw = 90 if (x1 - x0) > (z1 - z0) else 0
         cx = (x0 + x1) / 2 if cid != "ST+S1" else 61.0
         for y in (0, 6.1):
@@ -259,10 +259,10 @@ def rook_core():
         ((107.5, 70), 0, "f1"), ((107.5, 74.5), 0, "f1"),
         ((37, 70), 6.1, "f2"), ((37, 74.5), 6.1, "f2"),
         ((107.5, 70), 6.1, "f2"), ((107.5, 74.5), 6.1, "f2"),
-        ((46, 12), 12.2, "f3"), ((97, 12), 12.2, "f3"),
-        ((46, 67), 12.2, "f3"), ((97, 67), 12.2, "f3"),
     ]:
         put("tt_restroom", x, y, z, 0, t)
+    for (x, z), yaw in RESTROOMS_F3:   # r1: 6-stall shells in the clear bays under the Courts F3 stands
+        put("tt_restroom_6", x, 12.2, z, yaw, "f3")
 
 
 def tag_rook(pl):

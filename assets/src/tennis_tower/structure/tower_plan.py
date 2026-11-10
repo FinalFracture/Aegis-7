@@ -7,6 +7,13 @@ CORES = [("C-SW", "A", (30, 40.2, 15, 20.5)), ("C-SE", "A", (102.8, 113, 15, 20.
          ("ST+S1", "B", (57, 64, 2.6, 13.2)), ("ST+S2", "B", (86, 92, 2.6, 13.2)), ("ST+N1", "B", (58, 64, 65.8, 76.4)), ("ST+N2", "B", (86, 92, 65.8, 76.4)),
          ("ST+E", "B", (119.5, 125.5, 50, 60.6)), ("ST-AQS", "B", (-6, 0, 10, 20.6)), ("ST-AQN", "B", (-6, 0, 58.4, 69)),
          ("ST-ARS", "B", (134, 140, 10, 20.6)), ("ST-ARN", "B", (134, 140, 58.4, 69))]
+# r1: per-core asset overrides. ST-AQN / ST-ARN take tt_stair_core_b_m (Type B mirrored in Z), so like ST-AQS / ST-ARS their
+# portals and F3 arrival face the foyer / arcade (S face Z 58.4, X -5.52..-3.38 / 134.48..136.62), not the N face that sits
+# 0.02 m off the NW / NE plant-stack S walls (Z 69.025). A plain 180 deg turn would put the NE portal against the E facade.
+CORE_ASSET = {"ST-AQN": "tt_stair_core_b_m", "ST-ARN": "tt_stair_core_b_m"}
+# r1: F3 under-stand WC shells (tt_restroom_6, 5.4 x 2.4 m) centred in the 6.31 m clear bays between the Courts Aisle_Solid walls
+# of the 7.5 m stand modules at X 47.75 / 95.25; backs 0.08 m inside the stand back line (S Z 9.072 / N Z 69.928), stalls face the rear concourse
+RESTROOMS_F3 = [((47.75, 10.35), 180), ((95.25, 10.35), 180), ((47.75, 68.65), 0), ((95.25, 68.65), 0)]
 # lift stacks: id, rect, door facing
 LIFTS = [("Lift S", (66.5, 70.5, 11, 15), "+z"), ("Lift N", (66.5, 70.5, 64, 68), "-z"), ("Lift W", (26, 30, 34.5, 38.5), "+x"), ("Lift E", (113, 117, 34.5, 38.5), "-x")]
 TREES = [(x, 8.5) for x in (57.5, 65.5, 84.5, 101.5)] + [(x, 70.5) for x in (57.5, 65.5, 84.5, 101.5)] + [(119.5, 30.5), (119.5, 48.5)]

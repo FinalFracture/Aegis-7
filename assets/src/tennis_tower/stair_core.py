@@ -214,8 +214,26 @@ def final():
     print("WALK", json.dumps(W)); json.dump(W, open(os.path.join(RENDER_OUT, "stair_core", "walk_check_final.json"), "w"), indent=1)
     return rep, W
 
+def mirror_b():  # r1: tt_stair_core_b_m = Type B mirrored in local Z (portal on the -Z face, same X side) for ST-AQN / ST-ARN,
+    p = stair_full(dict(type="B"))  # so their F1/F2 portals and F3 arrival face the foyer / arcade like ST-AQS / ST-ARS, not the plant-stack S walls
+    for k, (mk, m) in list(p.P.items()):
+        uv = np.array(m.metadata["uv"]); m.apply_transform(np.diag([1, 1, -1, 1])); m.metadata["uv"] = uv
+    p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", "tt_stair_core_b_m.glb")
+    tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    chk = cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=400)
+    try: ok_v = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
+    except AssertionError as e: print("VALIDATE FAIL", e); ok_v = False
+    V = np.vstack([m.vertices for k, (_, m) in p.P.items() if "colonly" not in k]); lo, hi = V.min(0), V.max(0)
+    pp = stair_full(dict(type="B")); c = CORE["B"]; zi = c["L"]/2 - .2
+    fl = trimesh.creation.box(bounds=[[-c["W"]/2, -.2, zi - c["FW"]], [c["W"]/2, 0, zi]]); fl.metadata["uv"] = np.zeros((8, 2)); pp.P["Entry_Floor-colonly"] = (G, fl)
+    w = walk_check(pp, pp.walk)   # walk on the unmirrored twin (a mirror keeps every step, slope and headroom)
+    print(json.dumps(dict(glb="tt_stair_core_b_m.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], coplanar=chk["coplanar"],
+                          open=chk["open"], validate=bool(ok_v), bbox=[lo.round(4).tolist(), hi.round(4).tolist()], walk=w), default=str))
+
 if __name__ == "__main__" and sys.argv[1:] == ["final"]:
     final()
+elif __name__ == "__main__" and sys.argv[1:] == ["mirror_b"]:
+    mirror_b()
 elif __name__ == "__main__":
     rs = run("stair_core", stair, VARIANTS, title="Type A 5.5 x 5.5 m, half-storey switchback (stack 2 per 6.1 m storey) | ground module", post=finish_scissor)
     ru = run("stair_core", stair, [dict(v, ground=False) for v in VARIANTS], title="Type A upper half (modular flights)", suffix="_upper", post=finish_scissor)

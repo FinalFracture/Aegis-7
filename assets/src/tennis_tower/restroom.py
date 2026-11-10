@@ -19,7 +19,7 @@ def wc(p, x, z):  # bath_pod_generator.wc() recipe (same bowl/seat lofts, materi
     p.add("StatusLight", "green", place(blk(-0.05, 0.05, .9, .92, 0.05, 0.064, 0.004, 1), x, z, "+z"))
 
 def build(q):
-    p = Part(); X0 = -NS*SW/2
+    NS = q.get("ns", 8); p = Part(); X0 = -NS*SW/2
     p.add("Wet_Wall", WH, box(X0 + .001, -X0 - .001, 0, 2.4, Z0, ZW)); p.add("Aisle_Centre_Strip", SSL, box(X0 + .001, -X0 - .001, 0, .003, -.03, -.001))  # fixes the bbox to the 2.4 m half unit
     bounds = [X0 + k*SW for k in range(NS + 1)]
     for b in bounds[1:-1]: p.add("Partitions", WH, box(b - .0125, b + .0125, .15, 1.95, ZW - E, ZF - .02 + E))
@@ -57,4 +57,17 @@ VARIANTS = [
     dict(label="Canopy: Branch Diagonals rail with hanging foliage", dress="canopy"),
     dict(label="Court Line: floor stripe, occupancy lamps, ball hooks", dress="court"),
 ]
-if __name__ == "__main__": run("restroom", build, VARIANTS, title="half row unit 7.2 x 2.4 m, 8 WC stalls (place 2 face to face) | nature + sports")
+def promote6():  # r1: 6-stall (5.4 x 2.4 m) V2 Leaf Crest row for the F3 under-stand bays (6.31 m clear between Courts' Aisle_Solid walls)
+    p = build(dict(VARIANTS[1], ns=6)); X0 = -6*SW/2
+    cs = [box(X0 + .001, -X0 - .001, 0, 2.4, Z0, ZW), box(X0 + .001, -X0 - .001, 0, 1.95, ZW, ZF + .02)]   # wet wall + stall block (doors closed)
+    col = trimesh.util.concatenate(cs); col.metadata["uv"] = np.zeros((len(col.vertices), 2)); p.P["Stalls-colonly"] = (WH, col)
+    p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", "tt_restroom_6.glb"); tris, _ = export_final(p.P, [gp]); finish_glb(gp)
+    chk = cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=400)
+    try: ok_v = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
+    except AssertionError as e: print("VALIDATE FAIL", e); ok_v = False
+    V = np.vstack([m.vertices for k, (_, m) in p.P.items() if "colonly" not in k])
+    print(json.dumps(dict(glb="tt_restroom_6.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], coplanar=chk["coplanar"], open=chk["open"],
+                          validate=bool(ok_v), bbox=[V.min(0).round(4).tolist(), V.max(0).round(4).tolist()]), default=str))
+
+if __name__ == "__main__" and sys.argv[1:] == ["six"]: promote6()
+elif __name__ == "__main__": run("restroom", build, VARIANTS, title="half row unit 7.2 x 2.4 m, 8 WC stalls (place 2 face to face) | nature + sports")

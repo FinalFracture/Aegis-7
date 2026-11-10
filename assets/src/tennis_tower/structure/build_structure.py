@@ -152,7 +152,7 @@ def void_guard():
         alongx = az == bz; L = abs(bx - ax) if alongx else abs(bz - az); n = int(np.ceil(L / 2.0)); s = np.linspace(0, L, n + 1)
         o = (az if alongx else ax)
         if alongx: K.append(box(ax - .06, bx + .06, y - E, y + .1, o - .06, o + .06)); RA.append(box(ax - .04, bx + .04, y + 1.01, y + 1.07, o - .04, o + .04))
-        else: K.append(box(o - .06, o + .06, y - E, y + .1, az + .06, bz)); RA.append(box(o - .04, o + .04, y + 1.01, y + 1.07, az + .04, bz))
+        else: K.append(box(o - .06, o + .06, y - E, y + .1, az + .06, bz - .06)); RA.append(box(o - .04, o + .04, y + 1.01, y + 1.07, az + .04, bz - .04))
         for i, t in enumerate(s):
             if not alongx and i == 0: continue
             px, pz = (ax + t, o) if alongx else (o, az + t)
@@ -160,6 +160,12 @@ def void_guard():
         for a, b in zip(s[:-1], s[1:]):
             if alongx: PA.append(box(ax + a + .022, ax + b - .022, y + .098, y + .98, o - .01, o + .01))
             else: PA.append(box(o - .01, o + .01, y + .098, y + .98, az + a + (.065 if a == 0 else .022), az + b - .022))
+    # r1: N-edge stubs at Z 8 over the 1 m gaps the lead wall leaves (panels X 36.0..56.0); each owns its corner and stops 0.02 m short of the panels
+    for c, e, sg in ((35, 35.95, 1), (57, 56.05, -1)):
+        lo, hi = sorted((c - sg*.06, e + sg*.03)); K.append(box(lo, hi, y - E, y + .1, 8 - .06, 8 + .06))
+        lo, hi = sorted((c + sg*.04, e + sg*.03)); RA.append(box(lo, hi, y + 1.01, y + 1.07, 8 - .04, 8 + .04))
+        PO.append(box(e - .03, e + .03, y + .1 - E, y + 1.01 + E, 8 - .03, 8 + .03))
+        lo, hi = sorted((c + sg*.022, e - sg*.022)); PA.append(box(lo, hi, y + .098, y + .98, 8 - .01, 8 + .01))
     return [("Guard_Kerb", SL, K), ("Guard_Posts", G, PO), ("Guard_Rail", ST, RA), ("Guard_Pane_Scissor", SCR, PA)]
 
 def climb_frame():

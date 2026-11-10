@@ -131,7 +131,7 @@ def site():
 
 def interiors():
     for cid, typ, (x0, x1, z0, z1) in CORES:
-        a = "tt_stair_core_a" if typ == "A" else "tt_stair_core_b"; yaw = 90 if (x1 - x0) > (z1 - z0) else 0
+        a = CORE_ASSET.get(cid, "tt_stair_core_a" if typ == "A" else "tt_stair_core_b"); yaw = 90 if (x1 - x0) > (z1 - z0) else 0
         cx = (x0 + x1) / 2 if cid != "ST+S1" else 61.0
         for y in (0, 6.1): put(a, cx, y, (z0 + z1) / 2, yaw, "f1" if y == 0 else "f2")
     for _, (x0, x1, z0, z1), face in LIFTS:
@@ -169,8 +169,9 @@ def interiors():
     put("tt_slide_tower_t1", 22.5, 1.0, 53.5, 0, "f1"); put("tt_slide_tower_t2", 22.5, 1.0, 59.5, 0, "f1")   # island datum F1+1.0; T1 +Z link, T2 -Z link + W bridge gate
     # restrooms (stall rows) per block
     for (x, z), y, t in [((107.5, 4), 0, "f1"), ((107.5, 9), 0, "f1"), ((37, 70), 0, "f1"), ((37, 74.5), 0, "f1"), ((107.5, 70), 0, "f1"), ((107.5, 74.5), 0, "f1"),
-                         ((37, 70), 6.1, "f2"), ((37, 74.5), 6.1, "f2"), ((107.5, 70), 6.1, "f2"), ((107.5, 74.5), 6.1, "f2"), ((46, 12), 12.2, "f3"), ((97, 12), 12.2, "f3"), ((46, 67), 12.2, "f3"), ((97, 67), 12.2, "f3")]:
+                         ((37, 70), 6.1, "f2"), ((37, 74.5), 6.1, "f2"), ((107.5, 70), 6.1, "f2"), ((107.5, 74.5), 6.1, "f2")]:
         put("tt_restroom", x, y, z, 0, t)
+    for (x, z), yaw in RESTROOMS_F3: put("tt_restroom_6", x, 12.2, z, yaw, "f3")   # r1: clear of the Courts F3 stand aisle walls
     # climbing (F2)
     for k in range(16):
         for c in range(5): put("tt_climbing_panel", 36.625 + 1.25*k, 6.1 + 2.3*c, 8.085, 180, "f2")
