@@ -13,31 +13,94 @@ def _mound():
     return it
 
 def _vine():
-    """Green-wall post. Envelope x±0.10, z±0.12, y 0..2.8. Leaves may break mirror symmetry."""
+    """Green-wall post. Envelope x -0.12..0.12, z -0.14..0.14, y 0..2.80. Back strand is the front yawed 180 about Y."""
     it = It()
     it.b('Plate', KP, -0.04, 0.04, 0.03, 2.776, -0.02, 0.02, col=True)
     it.b('PlateShoe', SSL, -0.07, 0.07, 0, 0.034, -0.05, 0.05)
     it.b('PlateCap', KP, -0.05, 0.05, 2.772, 2.8, -0.03, 0.03)
     for y in (0.6, 1.4, 2.2):
         for s in (1.0, -1.0):
-            it.a('Bolt', SGM, node((0.0, y, s * (0.02 + 0.004)), 0.008))
-    front0 = [(0.03, 0.08, 0.03), (0.06, 0.9, 0.05), (0.02, 1.7, 0.03), (0.05, 2.55, 0.04)]
-    back0 = [(-0.03, 0.08, -0.03), (-0.05, 0.8, -0.05), (-0.02, 1.6, -0.03), (-0.05, 2.5, -0.04)]
+            it.a('Bolt', ALY, node((0.0, y, s * (0.02 + 0.004)), 0.008))
+    # |z| >= 0.035 so an r=0.012 stem stays outside the plate (|z|<=0.02) by >= 3 mm.
+    front = [(0.03, 0.08, 0.035), (0.06, 0.6, 0.05), (0.02, 1.2, 0.04),
+             (0.06, 1.8, 0.05), (0.02, 2.4, 0.04), (0.04, 2.72, 0.045)]
 
-    def push(pts, sign, floor):
-        out = []
-        for x, y, z in pts:
-            if abs(z) < floor:
-                z = sign * floor
-            out.append((x, y, z))
+    def yaw180(m):
+        out = trimesh.Trimesh(np.array(m.vertices, float, copy=True), np.array(m.faces, copy=True), process=False)
+        out.metadata['uv'] = np.array(m.metadata['uv'], float, copy=True)
+        R = np.eye(4)
+        R[0, 0] = -1.0
+        R[2, 2] = -1.0
+        return xf(out, R=R)
+
+    stem = merge([tube(a, b, 0.012, 6) for a, b in zip(front[:-1], front[1:])] + [node(p, 0.012) for p in front])
+    it.a('VineStem', LF, merge([stem, yaw180(stem)]))
+
+    def samples(pts, step):
+        pts = [np.asarray(p, float) for p in pts]
+        out, dist, target = [], 0.0, step
+        for a, b in zip(pts[:-1], pts[1:]):
+            seg = b - a
+            L = float(np.linalg.norm(seg))
+            while target <= dist + L + 1e-9:
+                u = (target - dist) / L
+                if u > 1.0:
+                    break
+                out.append(a + seg * u)
+                target += step
+            dist += L
         return out
 
-    def inside(m):
+    def fits(m):
         lo, hi = m.bounds
-        return (lo[0] >= -0.10 - 1e-6 and hi[0] <= 0.10 + 1e-6 and lo[1] >= -1e-6 and hi[1] <= 2.8 + 1e-6
-                and lo[2] >= -0.12 - 1e-6 and hi[2] <= 0.12 + 1e-6)
+        return (lo[0] >= -0.12 and hi[0] <= 0.12 and lo[1] >= 0.0 and hi[1] <= 2.8
+                and lo[2] >= -0.14 and hi[2] <= 0.14)
 
-    def clip(m):
+    def fit_leaf(c, d, length, width):
+        # Shorten length only. The stem point stays put.
+        m = leaf_dir(c, d, length, width, 0.02)
+        if fits(m):
+            return m
+        lo_l, hi_l, best = 1e-3, float(length), None
+        for _ in range(20):
+            mid = 0.5 * (lo_l + hi_l)
+            trial = leaf_dir(c, d, mid, width, 0.02)
+            if fits(trial):
+                best, lo_l = trial, mid
+            else:
+                hi_l = mid
+        return best if best is not None else leaf_dir(c, d, lo_l, width, 0.02)
+
+    def cuts_plate(m):
+        v = np.asarray(m.vertices)
+        return bool(np.any((np.abs(v[:, 0]) < 0.038) & (np.abs(v[:, 2]) < 0.018)
+                           & (v[:, 1] >= 0.03) & (v[:, 1] <= 2.776)))
+
+    rng = np.random.default_rng(7)
+    specs = []
+    for i, p in enumerate(samples(front, 0.09)):
+        length = float(rng.uniform(0.15, 0.20))
+        width = float(rng.uniform(0.06, 0.08))
+        x = (1.0 if i % 2 == 0 else -1.0) * float(rng.uniform(0.3, 0.5))
+        y = float(rng.uniform(0.6, 0.8))
+        z = float(rng.uniform(0.35, 0.55))
+        specs.append((p, np.array([x, y, z], float), length, width))
+    tip = np.asarray(front[-1], float)
+    for x, w in zip((-0.50, -0.25, 0.0, 0.25, 0.50), (0.066, 0.072, 0.078, 0.072, 0.066)):
+        specs.append((tip, np.array([x, 0.80, 0.45], float), 0.16, w))
+    lf, lf2 = [], []
+    for i, (c, d, length, width) in enumerate(specs):
+        c = c + 0.003 * d / np.linalg.norm(d)
+        m = fit_leaf(c, d, length, width)
+        if cuts_plate(m):
+            continue
+        (lf if i % 3 == 2 else lf2).append(m)
+    if lf2:
+        it.a('VineLeaves', LF2, merge(lf2 + [yaw180(m) for m in lf2]))
+    if lf:
+        it.a('VineLeaves', LF, merge(lf + [yaw180(m) for m in lf]))
+
+    def clip_moss(m):
         v = np.array(m.vertices, float, copy=True)
         v[:, 0] = np.clip(v[:, 0], -0.10, 0.10)
         v[:, 1] = np.clip(v[:, 1], 0.0, 2.8)
@@ -45,35 +108,8 @@ def _vine():
         m.vertices = v
         return m
 
-    # vine() parks each leaf r*2.2 toward +Z. On the -Z strand that bias points into the
-    # plate, so that strand is held out far enough for an embed of about 8 mm, never past 10.
-    leaf_len, stems, leaves = 0.12, None, None
-    for _ in range(10):
-        flare = 0.012 + 0.16 * leaf_len
-        back_floor = max(0.031, 0.011 * 2.2 + flare + 0.012)
-        st1, lv1 = vine(push(front0, 1.0, 0.031), r=0.011, leaf_every=0.28, leaf_len=leaf_len, seed=7, outward=True)
-        st2, lv2 = vine(push(back0, -1.0, back_floor), r=0.011, leaf_every=0.28, leaf_len=leaf_len, seed=8, outward=True)
-        stems, leaves = merge([st1, st2]), merge([lv1, lv2])
-        if inside(stems) and inside(leaves):
-            break
-        leaf_len *= 0.8
-    else:
-        clip(leaves)
-    # Drop a leaf whose vertices sit >6 mm inside the plate (|x|<0.034, |z|<0.014, plate y).
-    kept = []
-    for part in leaves.split(only_watertight=False):
-        v = np.asarray(part.vertices)
-        if np.any((np.abs(v[:, 0]) < 0.034) & (np.abs(v[:, 2]) < 0.014) & (v[:, 1] >= 0.03) & (v[:, 1] <= 2.776)):
-            continue
-        uv = part.metadata.get('uv')
-        if uv is None or len(uv) != len(v):
-            part.metadata['uv'] = np.zeros((len(v), 2))
-        kept.append(part)
-    leaves = merge(kept)
-    it.a('VineStem', LF, stems)
-    it.a('VineLeaves', LF2, leaves)
     for c, seed in (((0.04, 0.05, 0.07), 31), ((-0.04, 0.05, -0.07), 32)):
-        it.a('MossTuft', LF, clip(clump(c, 0.045, seed)))
+        it.a('MossTuft', LF, clip_moss(clump(c, 0.045, seed)))
     return it
 
 def _seat():

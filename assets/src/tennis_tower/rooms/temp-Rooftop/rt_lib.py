@@ -105,7 +105,7 @@ def view_rail_parts(x0, x1, z, y0=0.0, h=1.07):
         parts.append(('BasePlate', KP, box(max(x0, cx - 0.05), min(x1, cx + 0.05), y0, y0 + 0.014, z - 0.028, z + 0.028)))
         for s in (-1, 1):
             bx = min(max(cx + s * 0.034, x0 + 0.010), x1 - 0.010)
-            parts.append(('Bolt', SGM, node((bx, y0 + 0.018, z), 0.008)))
+            parts.append(('Bolt', ALY, node((bx, y0 + 0.018, z), 0.008)))
     for a, b in zip(xs, xs[1:]):
         xa, xb = a + pr - 0.004, b - pr + 0.004
         if xb > xa:
@@ -138,7 +138,7 @@ def perch_it():
         it.a('Brace', KP, tube((cx, .16, -.130), (cx, y_end, z_end), .011, 8))
         for bx in (cx - .025, cx + .025):
             for by in (.18, .36):
-                it.a('Bolt', SGM, node((bx, by, -.128 + .006), .01))
+                it.a('Bolt', ALY, node((bx, by, -.128 + .006), .01))
     it.col(-.9, .9, .41, .45, -.15, .15)
     for s in (-1, 1):
         cx = .75 * s

@@ -26,27 +26,27 @@ def _soft4():
 def _fence_panel():
     """2.0 m panel: kick plate 0.35 m + pickets to 1.2 m. Local X -1..1, +Z outside."""
     it = It(); H = 1.2; pw = .04
-    it.b('Post', SGM, -1.0, -1.0 + 2 * pw, 0, H + .02, -pw, pw, col=True)
+    it.b('Post', ALY, -1.0, -1.0 + 2 * pw, 0, H + .02, -pw, pw, col=True)
     it.b('Kick', KP, -1.0 + 2 * pw + D, 1.0, 0, .35, -.025, .025, col=True)
-    it.b('Rail_Top', SGM, -1.0 + 2 * pw + D, 1.0, H - .06, H - .02, -.018, .018)
-    it.b('Rail_Low', SGM, -1.0 + 2 * pw + D, 1.0, .35 - E, .41, -.018, .018)
+    it.b('RailTop', ALY, -1.0 + 2 * pw + D, 1.0, H - .06, H - .02, -.018, .018)
+    it.b('RailLow', ALY, -1.0 + 2 * pw + D, 1.0, .35 - E, .41, -.018, .018)
     n = 12; xs = [(-1.0 + 2 * pw + .05) + i * ((2.0 - 2 * pw - .1) / (n - 1)) for i in range(n)]
     for x in xs:
         it.b('Picket', WH, x - .015, x + .015, .41 - E, H - .06 + E, -.012, .012)
-    it.a('Cap', SGM, cap((-1.0 + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
+    it.a('Cap', ALY, cap((-1.0 + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
     return it
 
 def _fence_gate():
     it = It(); H = 1.2; pw = .04
     for x in (-.8, .8 - 2 * pw):
-        it.b('Post', SGM, x, x + 2 * pw, 0, H + .02, -pw, pw, col=True)
-        it.a('Cap', SGM, cap((x + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
+        it.b('Post', ALY, x, x + 2 * pw, 0, H + .02, -pw, pw, col=True)
+        it.a('Cap', ALY, cap((x + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
     x0, x1 = -.8 + 2 * pw + D, .8 - 2 * pw - D
-    it.b('Gate_Kick', KP, x0, x1, 0, .35, -.025, .025, col=True)
-    it.b('Gate_Rail', SGM, x0, x1, H - .06, H - .02, -.018, .018)
+    it.b('GateKick', KP, x0, x1, 0, .35, -.025, .025, col=True)
+    it.b('GateRail', ALY, x0, x1, H - .06, H - .02, -.018, .018)
     n = 8; xs = [x0 + .04 + i * ((x1 - x0 - .08) / max(n - 1, 1)) for i in range(n)]
     for x in xs:
-        it.b('Gate_Picket', WH, x - .015, x + .015, .35 - E, H - .06 + E, -.012, .012)
+        it.b('GatePicket', WH, x - .015, x + .015, .35 - E, H - .06 + E, -.012, .012)
     # latch fully outside +X post (post ends at .8)
     it.b('Latch', G, .8 + D, .8 + .045, H - .12, H - .02, -.035, .035)
     return it

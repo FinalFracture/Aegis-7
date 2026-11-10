@@ -16,12 +16,28 @@ GAP = 0.02
 def _acc():
     """1.5 m counter, top 0.86 m, knee space on local +Z, back on local -Z. Pivot bottom-centre."""
     it = It()
-    top = SL if 'SL' in globals() else SSL
-    it.b('AccTop', top, -0.75, 0.75, 0.82, 0.86, -0.30, 0.30, col=True)
-    it.b('AccLeg', KP, 0.698, 0.748, 0, 0.824, -0.28, 0.28, col=True)
-    it.b('AccLeg', KP, -0.748, -0.698, 0, 0.824, -0.28, 0.28, col=True)
-    it.b('AccModesty', KP, -0.694, 0.694, 0.30, 0.824, -0.298, -0.268)   # back only; front knee >= 0.82 m
-    it.b('AccLine', WH, -0.72, 0.72, 0.80, 0.824, 0.296, 0.304)
+    it.b('AccTop', SL, -0.74, 0.74, 0.82, 0.856, -0.30, 0.27)
+    it.a('AccTop', SL, tube((-0.73, 0.84, 0.28), (0.73, 0.84, 0.28), 0.02, 10))
+    it.a('AccTop', SL, node((-0.73, 0.84, 0.28), 0.02))
+    it.a('AccTop', SL, node((0.73, 0.84, 0.28), 0.02))
+    it.b('CourtLine', WH, -0.70, 0.70, 0.854, 0.858, 0.192, 0.208)
+    it.b('CourtLine', WH, -0.70, 0.70, 0.854, 0.858, -0.208, -0.192)
+    it.b('EdgeReveal', G, -0.694, 0.694, 0.80, 0.824, -0.266, 0.24)
+    it.b('AccLeg', KP, 0.698, 0.748, 0.030, 0.824, -0.27, 0.27, col=True)
+    it.b('AccLeg', KP, -0.748, -0.698, 0.030, 0.824, -0.27, 0.27, col=True)
+    it.b('LegFoot', ALY, 0.692, 0.75, 0.0, 0.034, -0.29, 0.29)
+    it.b('LegFoot', ALY, -0.75, -0.692, 0.0, 0.034, -0.29, 0.29)
+    for s in (-1, 1):
+        cx = s * (0.698 - 0.003)
+        for y in (0.15, 0.70):
+            for z in (-0.2, 0.2):
+                it.a('Fastener', ALY, node((cx, y, z), 0.007))
+    it.b('AccessMarker', VIO, 0.708, 0.738, 0.10, 0.70, 0.268, 0.274)
+    it.b('AccessMarker', VIO, -0.738, -0.708, 0.10, 0.70, 0.268, 0.274)
+    it.b('AccModesty', KP, -0.694, 0.694, 0.30, 0.824, -0.298, -0.268)
+    for y0, y1 in ((0.41, 0.43), (0.53, 0.55), (0.65, 0.67)):
+        it.b('ModestyRib', G, -0.68, 0.68, y0, y1, -0.270, -0.256)
+    it.col(-0.75, 0.75, 0.82, 0.86, -0.30, 0.30)
     return it
 
 def _put(PL, asset, x, z, yaw):

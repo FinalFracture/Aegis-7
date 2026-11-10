@@ -1,7 +1,7 @@
 """F3-SLNG S/N rear lounges for Tennis Tower (spec Rev 3.0)."""
 from rt_lib import *
 
-HALF = {'tt_cab_lounge_seat': (0.9, 0.35), 'tt_cab_dress_mound': (0.56, 0.38), 'tt_cab_dress_vine': (0.076, 0.099)}
+HALF = {'tt_cab_lounge_seat': (0.9, 0.35), 'tt_cab_dress_mound': (0.56, 0.38), 'tt_cab_dress_vine': (0.12, 0.14)}
 KIND = {'tt_cab_lounge_seat': 'seats', 'tt_cab_dress_mound': 'mounds', 'tt_cab_dress_vine': 'vines'}
 # S-band pod, pitch 4 m: rear seat, vines, rear mound, front seat, mid mound. N mirrors z and yaw.
 POD = (('tt_cab_lounge_seat', 0.0, 7.85), ('tt_cab_dress_vine', -1.2, 8.75), ('tt_cab_dress_vine', 1.2, 8.75),
