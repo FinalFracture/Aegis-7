@@ -1,8 +1,8 @@
 {
  "owner": "temp-Arrival",
- "spec": "design/strip5_tennis_tower_v1.md \u00a73.12.4 (current Rev; desks/kiosks Rev 2.9 / 3.x)",
+ "spec": "design/strip5_tennis_tower_v1.md \u00a73.12.4 Rev 3.4 (explicit kiosk centres, commit ab51b76)",
  "axes": "Y up, X axial, Z across; yaw deg about +Y. Model +Z = guest front; yaw -90 => front faces world -X (W doors).",
- "note": "V4 River Queue kit placed as-is (tt_foyer_desk/kiosk/stanchion/backdrop). Entrance bay asset is Arrival-owned rebuild; 11-bay W placement is a Rook layout task.",
+ "note": "V4 River Queue kit as-is. Kiosks at Rev 3.4 explicit centres. Desks/backdrops/stanchions unchanged. 11-bay W run is in assemble_preview (Rook 3b2d07a).",
  "stats": {
   "desks": 2,
   "kiosks": 8,
@@ -15,24 +15,23 @@
   "aquarium_mouth_Z": [
    34.5,
    42.5
+  ],
+  "kiosk_centres_Z": [
+   31.175,
+   32.05,
+   32.925,
+   33.8,
+   42.875,
+   43.75,
+   44.625,
+   47.675
+  ],
+  "n_deck_door_Z": [
+   45.0,
+   47.0
   ]
  },
- "open_conflicts": [
-  {
-   "id": "kiosk_vs_possible_N_deck_door",
-   "detail": "Spec \u00a73.12.4 places 4 kiosks at Z 43.0..46.5 (centers 43.0, 43.875, 44.75, 45.625). Brief flagged a possible N-deck door around Z 45..47. Placed per spec; if a door exists at Z 45..47 on X~0, last 1\u20132 kiosks conflict \u2014 Rook/layout to confirm. Did not invent an alternate layout.",
-   "kiosk_z": [
-    43.0,
-    43.875,
-    44.75,
-    45.625
-   ]
-  },
-  {
-   "id": "layout_11_bay_W_run",
-   "detail": "tt_struct_layout.json was not edited (Arrival must not). W run should be 11 x tt_entrance_bay at Z 17.5..61.5 with no half bay; Rook owns layout/assembly update."
-  }
- ],
+ "open_conflicts": [],
  "rooms": {
   "F1-FOY": [
    {
@@ -89,11 +88,11 @@
     "p": [
      -0.3495,
      0.0,
-     30.5
+     31.175
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk S1: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk S1: Rev 3.4 centre Z 31.175, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -101,11 +100,11 @@
     "p": [
      -0.3495,
      0.0,
-     31.375
+     32.05
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk S2: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk S2: Rev 3.4 centre Z 32.05, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -113,11 +112,11 @@
     "p": [
      -0.3495,
      0.0,
-     32.25
+     32.925
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk S3: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk S3: Rev 3.4 centre Z 32.925, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -125,11 +124,11 @@
     "p": [
      -0.3495,
      0.0,
-     33.125
+     33.8
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk S4: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk S4: Rev 3.4 centre Z 33.8, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -137,11 +136,11 @@
     "p": [
      -0.3495,
      0.0,
-     43.0
+     42.875
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk N1: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk N1: Rev 3.4 centre Z 42.875, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -149,11 +148,11 @@
     "p": [
      -0.3495,
      0.0,
-     43.875
+     43.75
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk N2: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk N2: Rev 3.4 centre Z 43.75, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -161,11 +160,11 @@
     "p": [
      -0.3495,
      0.0,
-     44.75
+     44.625
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk N3: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk N3: Rev 3.4 centre Z 44.625, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_kiosk.glb",
@@ -173,11 +172,11 @@
     "p": [
      -0.3495,
      0.0,
-     45.625
+     47.675
     ],
     "yaw": -90,
     "tag": "kiosk",
-    "note": "kiosk N4: X-1..0 face -X, pitch 0.875"
+    "note": "kiosk N4: Rev 3.4 centre Z 47.675, X-1..0 face -X"
    },
    {
     "glb": "res://assets/models/tt_foyer_stanchion.glb",
