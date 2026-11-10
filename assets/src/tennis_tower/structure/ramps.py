@@ -9,6 +9,7 @@ from struct_lib import *
 from ridge_crown import huv
 RH, RR, RO = .865, .02, .065            # handrail height over the walk line, tube radius, centre offset from its wall / post line
 GT = 1.07                               # guard height
+TZ = .016                               # r6: Aquatics deck terrazzo is 10 mm; kerb base (TZ - E) sits 2 mm above it (no embed)
 def wedge(x0, x1, z0, z1, ya, yb, axis="z"):   # solid fill from F1 to a plane rising ya -> yb along axis (z0->z1 or x0->x1)
     P = []
     for x in (x0, x1):
@@ -99,7 +100,7 @@ def pool_ramp():   # r4b: Rev 3.6 (ad89c1a) layout, legs along X north of the 3 
     for (z0, z1), f in legs:   # handrails both sides of every leg, 0.3 m extensions onto the landings
         pts = [(2.2, f(2.5) + RH), (2.5, f(2.5) + RH), (8.5, f(8.5) + RH), (8.8, f(8.5) + RH)]
         k.rail(pts, z0 + RO, "x", z0); k.rail(pts, z1 - RO, "x", z1)
-    D = lambda s: 2.0; T = lambda s: 2.0 + GT
+    D = lambda s: 2.0 + TZ; T = lambda s: 2.0 + GT   # deck guards stand on the Aquatics terrazzo (+2.01), 2 mm proud
     k.guard(25.9, 32.1, .9, "z", D, T)                                           # W edge
     k.guard(.9, 10.0, 25.9, "x", D, T, (False, True))                            # S edge, ends at the top-landing exit
     k.guard(.9, 8.4, 32.1, "x", D, T, (False, True))                             # N edge
@@ -118,10 +119,10 @@ def leisure_ramp():
     k.add("Court_Line_Amber", AM, *[strip(x, x + .05, 44.85, 46.18, f, "x") for x, f in ((1.8, a), (7.75, a), (9.3, b), (15.25, b))])
     surf = lambda s: 0.0 if s <= 1.8 else (a(s) if s <= 7.8 else (.5 if s <= 9.3 else (b(s) if s <= 15.3 else 1.0)))
     T = lambda s: 1.0 + GT
-    k.guard(1.77, 15.3, 46.24, "x", surf, T, (True, True), kerb=False)          # +Z side along the drop from the +1.0 strip
-    k.guard(46.24, 46.94, 1.77, "z", lambda s: 0.0, T, (False, True))           # landing / deck-strip edge at X 1.8
-    k.guard(.96, 1.77, 46.94, "x", lambda s: 0.0, T, (True, False))            # landing / river wall (lining Z 47.0..47.06), kerb 0.01 off it
-    k.guard(.2, .96, 47.06, "x", lambda s: 1.0, T, (True, True))               # W deck strip X 0..1 edge over the landing
+    k.guard(1.76, 15.26, 46.24, "x", surf, T, (True, True), kerb=False)          # +Z side along the drop from the +1.0 strip
+    k.guard(46.24, 46.94, 1.76, "z", lambda s: 0.0, T, (False, True))           # landing / deck-strip edge at X 1.8
+    k.guard(.96, 1.76, 46.94, "x", lambda s: 0.0, T, (True, False))            # landing / river wall (lining Z 47.0..47.06), kerb 0.01 off it
+    k.guard(.2, .96, 47.06, "x", lambda s: 1.0 + TZ, T, (True, True))               # W deck strip X 0..1 edge over the landing
     pts = [(1.5, RH), (1.8, RH), (7.8, .5 + RH), (9.3, .5 + RH), (15.3, 1.0 + RH), (15.6, 1.0 + RH)]
     k.rail(pts, 44.8 + RO, "x", 44.8)                                             # S: on the tank-bay wall face
     k.rail([(1.8, RH)] + pts[2:5], 46.24 - RO, "x", 46.24 - .035)                # N: on the guard posts

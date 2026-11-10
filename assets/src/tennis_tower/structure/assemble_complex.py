@@ -102,6 +102,16 @@ SHOTS = [
     ("19_playground",                 (128.5, 16.5, 16), (134.5, 13.0, 42), 60, HIDE_ROOF, 1.7, 1.2, 1.1),
     ("20_basketball_track",           (20, 26, -6), (72, 13.5, 42), 58, HIDE_ROOF, 1.65, 1.2, 1.05),
 ]
+SHOTS += [   # r2 tour (2026-11-10): Rev 3.5/3.6 ramps, flush footbridge, lead wall, feature stair, foyer end wall, T2 gate, tree crowns
+    ("21_pool_switchback_ramp",       (13.5, 7.5, 20.5), (5.5, 1.0, 29.5), 64, HIDE_UPPER, 2.0, 1.25, 1.3),
+    ("22_leisure_s_strip_ramp",       (-4.0, 1.7, 46.0), (6.0, 0.8, 45.6), 66, HIDE_UPPER, 2.0, 1.25, 1.3),
+    ("23_flush_footbridge_s",         (14.5, 2.7, 54.5), (19.0, 0.9, 48.5), 64, HIDE_UPPER, 2.0, 1.25, 1.3),
+    ("24_lead_climbing_wall",         (35.6, 13.9, 3.5), (50.0, 11.0, 7.8), 76, [], 2.0, 1.25, 1.3),
+    ("25_arcade_feature_stair",       (128.0, 9.2, 34.0), (135.5, 4.5, 39.25), 64, HIDE_F3_ROOF, 2.0, 1.25, 1.3),
+    ("26_foyer_end_wall_st_aqn",      (-2.6, 1.7, 52.0), (-3.0, 2.4, 58.4), 70, [], 2.0, 1.25, 1.3),
+    ("27_t2_bridge_gate",             (14.5, 8.0, 63.5), (20.0, 7.0, 58.7), 62, [], 2.0, 1.25, 1.3),
+    ("28_tree_crowns_over_f3_stands", (49.0, 15.0, 22.0), (57.5, 19.5, 9.0), 66, [], 1.6, 1.1, 1.1),
+]
 
 
 def asset_name(glb, asset=None):
@@ -598,6 +608,8 @@ def assemble():
 
 
 def main():
+    global OUT
+    if "--out" in sys.argv: OUT = sys.argv[sys.argv.index("--out") + 1]   # r2: e.g. --out /workspace/renders/tennis_tower/complex_tour_r2
     os.makedirs(OUT, exist_ok=True)
     pl, log = assemble()
     print("placements", log["total"], "by owner", log["by_owner"])
