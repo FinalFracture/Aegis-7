@@ -9,7 +9,7 @@
   {
    "id": "C2",
    "room": "F2-CLIMB",
-   "what": "N-wall panels+trim start at X96 (13 boulder + 3 trim, pivot Z 14.2933, yaw 180, back Z 14.685). Entry corridor X94..96 Z13..15 remains hard floor.",
+   "what": "r8: N-wall panels start at X98 (12 boulder, no trim, pivot Z 14.2933, yaw 180, back Z 14.685). Guard at raw X98.10 Z13.75 yaw -90. Mats start X98. Entry landing X94..98 Z13.2..15 is hard floor (not a fall zone).",
    "status": "resolved"
   },
   {
@@ -68,17 +68,16 @@
   "tt_rink_goal_futsal": 2,
   "tt_climbing_panel_kids": 9,
   "tt_climb_auto_belay": 3,
-  "tt_climb_mat_300": 27,
+  "tt_climb_mat_300": 35,
   "tt_climb_mat_300_14x28": 1,
   "tt_climb_mat_300_06x16": 1,
   "tt_climb_anchor": 6,
-  "tt_climb_mat_300_edge": 4,
+  "tt_climb_mat_300_edge": 3,
   "tt_climb_mat_300_2x15": 2,
   "tt_climb_mat_300_124x15": 1,
   "tt_climb_mat_300_088x24": 1,
   "tt_climb_mat_300_188x40": 1,
-  "tt_climbing_panel_boulder": 13,
-  "tt_climbing_panel_trim": 3,
+  "tt_climbing_panel_boulder": 12,
   "tt_climb_entry_guard": 1,
   "tt_climb_train_board_spray": 5,
   "tt_climb_train_board": 5,
@@ -104,7 +103,15 @@
   "tt_gym_dumbbell_rack_s": 1,
   "tt_gym_bench_flat": 2,
   "tt_gym_kb_rack": 1,
-  "tt_climbing_panel": 80
+  "tt_climbing_panel": 80,
+  "tt_climb_lead_routes_a": 1,
+  "tt_climb_lead_routes_b": 1,
+  "tt_climb_lead_routes_c": 1,
+  "tt_climb_lead_routes_d": 1,
+  "tt_climb_lead_routes_e": 1,
+  "tt_climb_lead_routes_f": 1,
+  "tt_climb_lead_routes_g": 1,
+  "tt_climb_lead_routes_h": 1
  },
  "items": [
   {
@@ -4895,99 +4902,6 @@
   },
   {
    "room": "F2-CLIMB",
-   "asset": "tt_climb_mat_300_edge",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300_edge.glb",
-   "pos": [
-    97.0,
-    6.1,
-    9.7
-   ],
-   "yaw_deg": 180,
-   "size": [
-    1.998,
-    0.341,
-    1.998
-   ],
-   "raw_origin_world": [
-    97,
-    6.1,
-    9.7
-   ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    96.001,
-    97.999,
-    8.701,
-    10.699
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climb_mat_300",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
-   "pos": [
-    97.0,
-    6.1,
-    11.7
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.998,
-    0.341,
-    1.998
-   ],
-   "raw_origin_world": [
-    97,
-    6.1,
-    11.7
-   ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    96.001,
-    97.999,
-    10.701,
-    12.699
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climb_mat_300",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
-   "pos": [
-    97.0,
-    6.1,
-    13.7
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.998,
-    0.341,
-    1.998
-   ],
-   "raw_origin_world": [
-    97,
-    6.1,
-    13.7
-   ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    96.001,
-    97.999,
-    12.701,
-    14.699
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
    "asset": "tt_climb_mat_300",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
    "pos": [
@@ -5006,8 +4920,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5037,8 +4951,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5068,8 +4982,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5099,8 +5013,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5130,8 +5044,8 @@
     6.1,
     9.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5161,8 +5075,8 @@
     6.1,
     11.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5192,8 +5106,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5223,8 +5137,8 @@
     6.1,
     9.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5254,8 +5168,8 @@
     6.1,
     11.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5285,8 +5199,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5316,8 +5230,8 @@
     6.1,
     9.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5347,8 +5261,8 @@
     6.1,
     11.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5378,8 +5292,8 @@
     6.1,
     13.7
    ],
-   "src": "Rev 3.1 item 2: N wall Z15 X94..113; mats only X96..113 (entry X94..96 Z13..15 hard floor)",
-   "note": "field X96..112; corridor X94..96 Z13..15 kept hard floor",
+   "src": "Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
+   "note": "field X98..112; landing X94..98 Z13.2..15 kept hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
@@ -5549,7 +5463,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    96.625,
+    98.625,
     6.1,
     14.2933
    ],
@@ -5560,17 +5474,17 @@
     0.783
    ],
    "raw_origin_world": [
-    96.625,
+    98.625,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    96.001,
-    97.249,
+    98.001,
+    99.249,
     13.902,
     14.685
    ]
@@ -5580,7 +5494,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    97.875,
+    99.875,
     6.1,
     14.2933
    ],
@@ -5591,17 +5505,17 @@
     0.783
    ],
    "raw_origin_world": [
-    97.875,
+    99.875,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    97.251,
-    98.499,
+    99.251,
+    100.499,
     13.902,
     14.685
    ]
@@ -5611,7 +5525,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    99.125,
+    101.125,
     6.1,
     14.2933
    ],
@@ -5622,17 +5536,17 @@
     0.783
    ],
    "raw_origin_world": [
-    99.125,
+    101.125,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    98.501,
-    99.749,
+    100.501,
+    101.749,
     13.902,
     14.685
    ]
@@ -5642,7 +5556,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    100.375,
+    102.375,
     6.1,
     14.2933
    ],
@@ -5653,17 +5567,17 @@
     0.783
    ],
    "raw_origin_world": [
-    100.375,
+    102.375,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    99.751,
-    100.999,
+    101.751,
+    102.999,
     13.902,
     14.685
    ]
@@ -5673,7 +5587,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    101.625,
+    103.625,
     6.1,
     14.2933
    ],
@@ -5684,17 +5598,17 @@
     0.783
    ],
    "raw_origin_world": [
-    101.625,
+    103.625,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    101.001,
-    102.249,
+    103.001,
+    104.249,
     13.902,
     14.685
    ]
@@ -5704,7 +5618,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    102.875,
+    104.875,
     6.1,
     14.2933
    ],
@@ -5715,17 +5629,17 @@
     0.783
    ],
    "raw_origin_world": [
-    102.875,
+    104.875,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    102.251,
-    103.499,
+    104.251,
+    105.499,
     13.902,
     14.685
    ]
@@ -5735,7 +5649,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    104.125,
+    106.125,
     6.1,
     14.2933
    ],
@@ -5746,17 +5660,17 @@
     0.783
    ],
    "raw_origin_world": [
-    104.125,
+    106.125,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    103.501,
-    104.749,
+    105.501,
+    106.749,
     13.902,
     14.685
    ]
@@ -5766,7 +5680,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    105.375,
+    107.375,
     6.1,
     14.2933
    ],
@@ -5777,17 +5691,17 @@
     0.783
    ],
    "raw_origin_world": [
-    105.375,
+    107.375,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    104.751,
-    105.999,
+    106.751,
+    107.999,
     13.902,
     14.685
    ]
@@ -5797,7 +5711,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    106.625,
+    108.625,
     6.1,
     14.2933
    ],
@@ -5808,17 +5722,17 @@
     0.783
    ],
    "raw_origin_world": [
-    106.625,
+    108.625,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    106.001,
-    107.249,
+    108.001,
+    109.249,
     13.902,
     14.685
    ]
@@ -5828,7 +5742,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    107.875,
+    109.875,
     6.1,
     14.2933
    ],
@@ -5839,17 +5753,17 @@
     0.783
    ],
    "raw_origin_world": [
-    107.875,
+    109.875,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    107.251,
-    108.499,
+    109.251,
+    110.499,
     13.902,
     14.685
    ]
@@ -5859,7 +5773,7 @@
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
    "pos": [
-    109.125,
+    111.125,
     6.1,
     14.2933
    ],
@@ -5870,17 +5784,17 @@
     0.783
    ],
    "raw_origin_world": [
-    109.125,
+    111.125,
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    108.501,
-    109.749,
+    110.501,
+    111.749,
     13.902,
     14.685
    ]
@@ -5889,68 +5803,6 @@
    "room": "F2-CLIMB",
    "asset": "tt_climbing_panel_boulder",
    "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
-   "pos": [
-    110.375,
-    6.1,
-    14.2933
-   ],
-   "yaw_deg": 180,
-   "size": [
-    1.248,
-    4.498,
-    0.783
-   ],
-   "raw_origin_world": [
-    110.375,
-    6.1,
-    14.2933
-   ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    109.751,
-    110.999,
-    13.902,
-    14.685
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climbing_panel_boulder",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_boulder.glb",
-   "pos": [
-    111.625,
-    6.1,
-    14.2933
-   ],
-   "yaw_deg": 180,
-   "size": [
-    1.248,
-    4.498,
-    0.783
-   ],
-   "raw_origin_world": [
-    111.625,
-    6.1,
-    14.2933
-   ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall starts X96",
-   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..96",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    111.001,
-    112.249,
-    13.902,
-    14.685
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climbing_panel_trim",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_trim.glb",
    "pos": [
     112.375,
     6.1,
@@ -5958,7 +5810,7 @@
    ],
    "yaw_deg": 180,
    "size": [
-    0.248,
+    1.248,
     4.498,
     0.783
    ],
@@ -5967,74 +5819,12 @@
     6.1,
     14.2933
    ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall trim X112.25..113",
-   "note": "yaw 180; same face plane as boulder panels",
+   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); r8 C2 N-wall starts X98",
+   "note": "yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    112.251,
-    112.499,
-    13.902,
-    14.685
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climbing_panel_trim",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_trim.glb",
-   "pos": [
-    112.625,
-    6.1,
-    14.2933
-   ],
-   "yaw_deg": 180,
-   "size": [
-    0.248,
-    4.498,
-    0.783
-   ],
-   "raw_origin_world": [
-    112.625,
-    6.1,
-    14.2933
-   ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall trim X112.25..113",
-   "note": "yaw 180; same face plane as boulder panels",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    112.501,
-    112.749,
-    13.902,
-    14.685
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climbing_panel_trim",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climbing_panel_trim.glb",
-   "pos": [
-    112.875,
-    6.1,
-    14.2933
-   ],
-   "yaw_deg": 180,
-   "size": [
-    0.248,
-    4.498,
-    0.783
-   ],
-   "raw_origin_world": [
-    112.875,
-    6.1,
-    14.2933
-   ],
-   "src": "\u00a73.7.1 + Rev 3.1 (dc2b3ea/be578b7); C2 N-wall trim X112.25..113",
-   "note": "yaw 180; same face plane as boulder panels",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    112.751,
+    111.751,
     112.999,
     13.902,
     14.685
@@ -6045,7 +5835,7 @@
    "asset": "tt_climb_entry_guard",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_entry_guard.glb",
    "pos": [
-    96.1,
+    98.1,
     6.1,
     13.75
    ],
@@ -6056,17 +5846,17 @@
     0.1
    ],
    "raw_origin_world": [
-    96.1,
+    98.1,
     6.1,
     13.75
    ],
-   "src": "r6 entry corridor delineator",
-   "note": "yaw -90: mat face (+Z) points +X into hall/mats; raw_X 96.10 -> pivot ~96.05, corridor face ~96.00 outside X94..96 interior; Z 13.75 (L 1.90, north=14.70 exact, meets Z15 stand-back); corridor X94..96 Z13..15 hard floor",
+   "src": "r8 entry landing delineator",
+   "note": "yaw -90: mat face (+Z) points +X into hall/mats; raw_X 98.10 -> pivot ~98.05, corridor face ~98.00 at the landing edge; Z 13.75 (L 1.90, north=14.70 exact, meets Z15 stand-back); landing X94..98 Z13.2..15 hard floor",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    96.05,
-    96.15,
+    98.05,
+    98.15,
     12.8,
     14.7
    ]
@@ -16308,6 +16098,564 @@
    "note": "yaw 180; Face_Sheet front at local +0.0127 sits on world Z 8; pivot Z 8.0127",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_a",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_a.glb",
+   "pos": [
+    37.25,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    37.25,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    36.0,
+    38.5,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_b",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_b.glb",
+   "pos": [
+    39.75,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    39.75,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    38.5,
+    41.0,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_c",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_c.glb",
+   "pos": [
+    42.25,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    42.25,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    41.0,
+    43.5,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_d",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_d.glb",
+   "pos": [
+    44.75,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    44.75,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    43.5,
+    46.0,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_e",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_e.glb",
+   "pos": [
+    47.25,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    47.25,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    46.0,
+    48.5,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_f",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_f.glb",
+   "pos": [
+    49.75,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    49.75,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    48.5,
+    51.0,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_g",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_g.glb",
+   "pos": [
+    52.25,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    52.25,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    51.0,
+    53.5,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_lead_routes_h",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_lead_routes_h.glb",
+   "pos": [
+    54.75,
+    6.1,
+    7.826
+   ],
+   "yaw_deg": 180,
+   "size": [
+    2.5,
+    11.5,
+    0.364
+   ],
+   "raw_origin_world": [
+    54.75,
+    6.1,
+    8.0
+   ],
+   "src": "\u00a73.7.1 W-CL r8 owned route overlay; not a tt_climbing_panel edit",
+   "note": "yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    53.5,
+    56.0,
+    7.644,
+    8.008
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    37.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    37,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    36.001,
+    37.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    39.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    39,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    38.001,
+    39.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    41.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    41,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    40.001,
+    41.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    43.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    43,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    42.001,
+    43.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    45.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    45,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    44.001,
+    45.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    47.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    47,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    46.001,
+    47.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    49.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    49,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    48.001,
+    49.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    51.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    51,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    50.001,
+    51.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    53.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    53,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    52.001,
+    53.999,
+    6.001,
+    7.999
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
+   "pos": [
+    55.0,
+    6.1,
+    7.0
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.998
+   ],
+   "raw_origin_world": [
+    55,
+    6.1,
+    7.0
+   ],
+   "src": "\u00a73.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes",
+   "note": "X36..56 Z6..8 under W-CL face at Z 8",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    54.001,
+    55.999,
+    6.001,
+    7.999
+   ]
   }
  ],
  "withheld": [
