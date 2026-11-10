@@ -47,9 +47,9 @@ Every new GLB is below 6,000 triangles including its collision mesh.
 | Room | Existing partial build | This pass | Still outstanding |
 |---|---|---|---|
 | Lap / diving hall | Raised +2 deck, pool/pit cutouts, trusses/coffer | 8 axial lap lanes, opaque animated water, linings, flush gutters, 8 moulded start blocks, 3m + 2x1m diving boards with real stairs, lifeguard chair, sport/leaf relief; placed in blockout | Shipping-level swim volumes, player walk/physics QA; final lighting/material approval |
-| Leisure water | +1 island/deck and cutouts; legacy slide-tower asset | Continuous open river lining/water (no corner dams), splash/runout, 2 guarded island footbridges, ball-crown sprays, sculpted moss/stone crests | Corrected T1/T2, enclosed slide tubes, +7 link and axial slide finishes; tower is deliberately not placed in this pass |
+| Leisure water | +1 island/deck and cutouts; legacy slide-tower asset | Continuous open river lining/water (no corner dams), splash/runout, 2 guarded island footbridges, ball-crown sprays, sculpted moss/stone crests | Enclosed T1/T2 slide tubes + NE helices built (`slides.py`, `tt_leisure_slide_tubes_a..d`) but **not placed** until Rook's island-relative `tt_slide_tower` lands; +7.0 T1–T2 link deck not emitted yet |
 | Aquatic gallery | Partition and viewing panes + stair cores | 40 lockers with actual ventilation apertures, 5 composite benches, 4 changing cabins, 4 shower bays, floor finish, sculpted relief, frames reusing existing scissor panes | Shower drains/wet-floor details, accessible changing fitout, exterior F2 facade closure by envelope owner, player/door QA |
-| Slide / view bridges | Structural slab decks and gallery landing | Scissor view-deck and main slide-span guards, keeping existing slab dogleg | T2 1.1m gate, canopy, +6.1 to +7 transition and complete dogleg edge closure |
+| Slide / view bridges | Structural slab decks and gallery landing | Scissor view-deck and main slide-span guards, keeping existing slab dogleg; T2 1.1 m queue gate (Z 58.65..59.75), leaf canopy, dogleg landing guards (`bridges_finish.py`) placed | +6.1 to +7 transition at the tower; gallery landing Z56..58.4 / +2.0 deck ramp (Rook/Vance) |
 | Aquarium corridor | `aquarium_corridor.py` + `aquarium_corridor_final.py`: full promoted #80 Kelp Forest kit | Reused tank visuals via `tt_corridor_tank_bay` (Tank-colonly carved for walk prism); life-support grilles/end cladding; FOYER/COURTS blades; AQUATICS sign; **service catwalk placed** (headroom 2.10 m, width 0.67 m, hatch X11..14 north bypass; F2 hatch still on hold) | Genuine F2 hatch cut (Rook/Vance); widen aisle if wall moves; player traversal QA |
 
 ## Neighbour / Vance / Rook questions
@@ -132,3 +132,15 @@ is ready for the parent to commit with the approved identity; no hash exists.
   - The shared tower datum (local +6.1/+7.0/+9.4 on the +1.0 island) needs Rook.
   - The T1 +Z / T2 -Z link openings and the T2 bridge-opening Z offset need Rook.
   - The +2.0 deck has no space for 1:12 ramps without a structural cut (Rook/Vance).
+
+## Nov 10 pass (bridges finish landed; tubes built, unplaced)
+- T2 gate: ball finial centre raised 6 mm (now 6 mm into the post, limit 10 mm). Gate clear
+  opening already matches Rook's stated west bridge gate, world Z 58.65..59.75.
+- Landed and placed: `tt_bridges_t2_gate`, `tt_bridges_canopy_a/_b`, `tt_bridges_landing_guards`.
+- Landed but **unplaced**: `tt_leisure_slide_tubes_a..d` (`assemble_rooms.py` `HELD_UNPLACED`).
+  Towers and tubes are placed together only after Rook's rebuilt tower (deck local 6.0 / roof 8.4,
+  1.1 m ±Z link openings) is on main; then place tubes, check the +X stubs at invert +7.0 against
+  the openings, and emit `slides.link_items()` (+7.0 deck, Z 56..57, 1.1 m wide).
+- Tube worst overlaps 16–24 mm are `Tube_HardwareClamp`/`Tube_HardwareArms` embeds (30 mm hardware limit).
+- Still held outside Git (needs Gage/QA): `gallery_wet.py`, the wet `tt_gallery_floor` and
+  `tt_gallery_accessible`. The committed dry gallery floor is unchanged.

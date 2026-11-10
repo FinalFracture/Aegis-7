@@ -11,11 +11,13 @@ sys.path[:0]=[str(TT),str(TT/'structure')]
 import numpy as np
 import assemble_preview as block
 PL=[]
+HELD_UNPLACED=('tt_leisure_slide_tubes',)
 def put(asset,pos,yaw=0,tag='finish',room='',**extra):
     PL.append(dict(glb=str(MD/(asset+'.glb')),p=pos,yaw=yaw,tag=tag,room=room,**extra))
 def placements():
     layout=json.load(open(OUT/'layout.json'))
     for asset,d in layout.items():
+        if asset.startswith(HELD_UNPLACED): continue  # tubes built/validated but not placed until Rook's island-relative tt_slide_tower lands
         if asset in ('tt_corridor_tank_bay','tt_aquarium_tank'): continue  # placed explicitly below (four bays, yaw 180); never at the layout origin
         room={'pool':'F1-POOL','gallery':'F2-GAL','bridges':'F2-BRG','corridor':'F1-AQC','leisure':'F1-LEIS'}[asset.split('_')[1]]
         put(asset,d['world_offset'],room=room,note=d['note'])

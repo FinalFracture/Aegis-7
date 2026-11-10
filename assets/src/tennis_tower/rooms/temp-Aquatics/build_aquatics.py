@@ -9,6 +9,8 @@ sys.path[:0]=[str(TT),str(TT/'structure')]
 from struct_lib import *
 import modlib as ml
 import corridor_access as ca
+import slides as sl
+import bridges_finish as bf
 OUT=Path('/workspace/renders/tennis_tower/rooms/temp-Aquatics'); OUT.mkdir(parents=True,exist_ok=True)
 ml._m('aq_tile','TT_PoolCeramic',(.64,.75,.78),0,.45)
 ml._m('aq_water','TT_OpaquePoolWater',(.025,.31,.37),0,.19)
@@ -35,7 +37,7 @@ def emit(n,it,note=''):
     for _,_,m in it: m.fix_normals()
     ITEMS[n]=it
     # Pack includes actual ceramic/rubber solid colliders, but excludes water/foliage.
-    chunks=[[]]; count=0; solid=(SL,G,ST,CON,SSL,WH,TI,RU,SCR)
+    chunks=[[]]; count=0; solid=(SL,G,ST,CON,SSL,WH,TI,RU,SCR,LF)
     for item in sorted(it,key=lambda a:a[2].bounds.mean(0)[0]):
         cost=len(item[2].faces)*(2 if item[1] in solid else 1)
         if count+cost>5600 and chunks[-1]: chunks.append([]); count=0
@@ -217,7 +219,10 @@ def bridges():
         xs=[2.15]+list(np.arange(2.2,19.9,1.5))+[19.8]
         for a,b in zip(xs,xs[1:]):
             if b-a>.05: B(it,'Bridge_Pane_Scissor',SCR,a+.021,b-.021,6.23,7.15,z-.008,z+.008)
-    emit('tt_bridges_slide_guards',it,'Blockout dogleg; gallery landing Z56..58.4. T2 gate and .9m rise still pending')
+    emit('tt_bridges_slide_guards',it,'Blockout dogleg span guards; gallery landing Z56..58.4 kept; gate/canopy/landing guards in separate assets')
+    it=bf.landing_guard_items(); emit('tt_bridges_landing_guards',it,bf.landing_note())
+    it=bf.t2_gate_items(); emit('tt_bridges_t2_gate',it,bf.gate_note())
+    it=bf.canopy_items(); emit('tt_bridges_canopy',it,bf.canopy_note())
 def text_z(it,label,cx,y,z,scale=.045):
     # Vectorize the bundled Pillow font into short raised, opaque LCD strokes.
     from PIL import Image,ImageFont,ImageDraw
@@ -277,7 +282,7 @@ def leisure():
             holes=[(x-.05,x+.05,z-.05,z+.05) for x,z in ((7,53),(15,54),(8,59),(15,60))]
             a,b,c,d=r
             for x0,x1,z0,z1 in rect_minus((a+.064,b-.064,c+.064,d-.064),holes): B(it,'Water_Opaque',WA,x0,x1,.915,.92,z0,z1)
-        emit('tt_leisure_'+name,it,'Opaque water, axial runout reserved; slides remain pending')
+        emit('tt_leisure_'+name,it,('Opaque water; slide runouts enter axially (-X) from the NE helices' if name=='runout' else 'Opaque water splash pool; ball-crown sprays'))
     it=[]
     holes=[(1,29,47,75)]
     finish(it,(.32,29.68,44.8,78.68),holes,1)
@@ -309,6 +314,7 @@ def leisure():
         add(it,'RiverStone_Mound',SL,m)
         h=float(m.bounds[1,1]); add(it,'Moss_Crest',LF2,leaf_dir((x,h-E,z),(.3,1,.2),.24,.2))
     emit('tt_leisure_nature_mounds',it,'Sculpted river-stone/moss crests integrated into deck, no planter boxes')
+    it=sl.tube_items(); emit('tt_leisure_slide_tubes',it,sl.tube_note())
 
 def main():
     pool(); gallery(); bridges(); corridor(); signs(); leisure()
