@@ -159,15 +159,14 @@ def interiors():
     for x in (2.5, 23.5): put("tt_aquarium_plinth", x, 0, 36.0, 0, "f1")
     for x in (1.0, 24.0): put("tt_aquarium_sign", x, 2.6, 38.5, 90, "f1")
     for x in (6, 12, 18): put("tt_aquarium_caustic", x, 5.22, 40, 0, "f1")
-    # foyer ticketing (#79 / Arrival 1bdac4f, §3.12.4): 2 desks, 2 staff-side backdrops, 8 kiosks, 30 stanchions
+    # foyer ticketing (#79 / Arrival 1bdac4f, §3.12.4; kiosks Rev 3.4): 2 desks, 2 staff-side backdrops, 8 kiosks, 30 stanchions
     for zc in (26, 53):
         put("tt_foyer_desk", -1.8036, 0, zc, -90, "f1"); put("tt_foyer_backdrop", -0.25, 0, zc, -90, "f1")
         for xl in (-5.5, -4.25, -3.0):
             for k in range(5): put("tt_foyer_stanchion", xl, 0, zc - 2.5 + 1.25*k, -90, "f1")
-    for z0 in (30.5, 43.0):
-        for k in range(4): put("tt_foyer_kiosk", -0.3495, 0, z0 + 0.875*k, -90, "f1")
+    for z in (31.175, 32.05, 32.925, 33.8, 42.875, 43.75, 44.625, 47.675): put("tt_foyer_kiosk", -0.3495, 0, z, -90, "f1")   # 8 kiosks, Rev 3.4 / Arrival 734a873
     # aquatic slides
-    put("tt_slide_tower", 22.5, 1.0, 53.5, 0, "f1"); put("tt_slide_tower", 22.5, 1.0, 59.5, 0, "f1")
+    put("tt_slide_tower_t1", 22.5, 1.0, 53.5, 0, "f1"); put("tt_slide_tower_t2", 22.5, 1.0, 59.5, 0, "f1")   # island datum F1+1.0; T1 +Z link, T2 -Z link + W bridge gate
     # restrooms (stall rows) per block
     for (x, z), y, t in [((107.5, 4), 0, "f1"), ((107.5, 9), 0, "f1"), ((37, 70), 0, "f1"), ((37, 74.5), 0, "f1"), ((107.5, 70), 0, "f1"), ((107.5, 74.5), 0, "f1"),
                          ((37, 70), 6.1, "f2"), ((37, 74.5), 6.1, "f2"), ((107.5, 70), 6.1, "f2"), ((107.5, 74.5), 6.1, "f2"), ((46, 12), 12.2, "f3"), ((97, 12), 12.2, "f3"), ((46, 67), 12.2, "f3"), ((97, 67), 12.2, "f3")]:
@@ -264,6 +263,6 @@ def render():
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True); structure(); roof(); envelope(); site(); interiors(); hull_mesh()
     json.dump(PL, open(os.path.join(OUT, "placements.json"), "w"), indent=0)
-    from collections import Counter; c = Counter(os.path.basename(p["glb"]) for p in PL); print("placements", len(PL), "unique", len(c))
+    from collections import Counter; c = Counter(os.path.basename(p["glb"]) for p in PL); print("placements", len(PL), "unique", len(c)); print("tt_foyer_kiosk", c["tt_foyer_kiosk.glb"])
     miss = [p["glb"] for p in PL if not os.path.exists(p["glb"])]; print("missing", set(miss))
     if "--no-render" not in sys.argv: render()
