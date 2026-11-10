@@ -36,7 +36,7 @@ def bay(w=BAY_W):
     it.b('Rack_Bar', G, 77.45, 77.6, 1.25, 1.35, a + .1, a + .9)
     for k in range(3):
         z = a + .3 + k*.25; it.a('Axe_Handles', ALY, tube((77.62, .796, z), (77.62, 1.34, z), .018, 6))
-        it.b('Axe_Heads', SGM, 77.6, 77.82, .7, .8, z - .012, z + .012)
+        it.b('Axe_Heads', ALY, 77.6, 77.82, .7, .8, z - .012, z + .012)
     it.b('Tablet_Post', G, 77.35, 77.45, .021, 1.25, b - .35, b - .25, col=True)
     it.b('Tablet', SL, 77.452, 77.5, 1.05, 1.45, b - .55, b - .05)
     # legible tablet score art (face +X)

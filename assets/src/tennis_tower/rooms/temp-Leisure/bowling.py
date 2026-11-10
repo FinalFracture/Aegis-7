@@ -67,7 +67,7 @@ def lane_pair():
 def settee():
     """settee + scoring console per pair, X 30..32.4 (local Z 0..3.6); green wall + leaf crests on the X30 wall face."""
     it = It()
-    it.b('Settee_Plinth', G, 30.25, 31.25, 0, .2, .414, 3.186, col=True)
+    it.bv('Settee_Plinth', G, 30.25, 31.25, 0, .2, .414, 3.186, col=True)
     it.b('Settee_Seat', FA, 30.52, 31.23, .196, .44, .418, 3.182, col=True)
     it.b('Settee_Back', FA, 30.2, 30.5, .196, 1.0, .418, 3.182, col=True)
     for z in (.31, 3.29): it.b('Settee_Arms', WH, 30.2, 31.26, 0, .66, z - .1, z + .1)

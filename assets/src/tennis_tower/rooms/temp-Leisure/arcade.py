@@ -44,8 +44,8 @@ def paint_screen(it, x0, x1, y0, y1, z0, z1, kind='court'):
         it.a('Scr_Ball', BA, cap((xf + .014, cy, cz), min(.05, dy * .18), .012, 12, 'x'))
 def video():
     it = It(); w = .72
-    it.b('Cab_Plinth', G, -w/2, w/2, 0, .1, -.42, .4, col=True)
-    it.b('Cab_Body', SL, -w/2 + .02, w/2 - .02, .1 + D, 1.9, -.42, .1, col=True)
+    it.bv('Cab_Plinth', G, -w/2, w/2, 0, .1, -.42, .4, col=True)
+    it.bv('Cab_Body', SL, -w/2 + .02, w/2 - .02, .1 + D, 1.9, -.42, .1, col=True)
     it.b('Cab_Deck', G, -w/2 + .02, w/2 - .02, .1 + D, .92, .1 + D, .4, col=True)
     it.b('Cab_Panel', WH, -w/2 + .06, w/2 - .06, .916, .96, .12, .38)
     _buttons(it, .962, .25, (-.18, -.1, .1, .18, .26))
@@ -71,7 +71,7 @@ def redemption():
     return emit('tt_arc_redemption', it, 'redemption (ticket) game 1.0 x 1.1 m')
 def claw():
     it = It(); w = .95
-    it.b('Claw_Base', SL, -w/2, w/2, 0, .95, -w/2, w/2, col=True)
+    it.bv('Claw_Base', SL, -w/2, w/2, 0, .95, -w/2, w/2, col=True)
     it.b('Claw_Prize_Floor', G, -w/2 + .056, w/2 - .056, .946, .98, -w/2 + .056, w/2 - .056)
     for k in range(16):
         x, z = -.27 + .18*(k % 4), -.27 + .18*(k // 4)
@@ -82,7 +82,7 @@ def claw():
         it.b('Claw_Pane_Scissor', SCR, -w/2 + .045, w/2 - .045, .99, 1.95, s*(w/2 - .03) - .006, s*(w/2 - .03) + .006)
         it.b('Claw_Pane_Scissor', SCR, s*(w/2 - .03) - .006, s*(w/2 - .03) + .006, .99, 1.95, -w/2 + .045, w/2 - .045)
     it.col(-w/2, w/2, .95, 2.0, -w/2, w/2)
-    it.b('Claw_Top', WH, -w/2, w/2, 1.996, 2.2, -w/2, w/2)
+    it.bv('Claw_Top', WH, -w/2, w/2, 1.996, 2.2, -w/2, w/2)
     paint_screen(it, -w/2 + .05, w/2 - .05, 2.05, 2.15, w/2 - .004, w/2 + .008, 'nature')
     it.a('Claw_Cable', ST, tube((.05, 1.5, 0), (.05, 1.996, 0), .006, 6)); it.b('Claw_Head', ALY, -.0, .1, 1.4, 1.5, -.05, .05)
     it.b('Claw_Controls', G, -w/2 + .05, w/2 - .05, .8, .9, w/2 - D, w/2 + .12)
@@ -90,15 +90,15 @@ def claw():
     return emit('tt_arc_claw', it, 'claw / prize machine 0.95 m square, scissor glazing')
 def racer():
     it = It()
-    it.b('Racer_Base', G, -.55, .55, 0, .12, -.95, .95, col=True)
+    it.bv('Racer_Base', G, -.55, .55, 0, .12, -.95, .95, col=True)
     it.b('Seat_Shell', WH, -.3, .3, .116, .55, .35, .98, col=True)
-    it.b('Seat_Cushion', FA, -.26, .26, .546, .6, .4, .86)
-    it.a('Seat_Back', WH, beam((0, .54, .95), (0, 1.15, 1.02), .1, .56))
-    it.b('Dash', SL, -.5, .5, .116, .95, -.55, -.1, col=True)
+    it.b('Seat_Cushion', FA, -.26, .26, .546, .6, .4, .82)
+    it.a('Seat_Back', WH, beam((0, .62, .95), (0, 1.15, 1.02), .1, .56))
+    it.b('Dash', SL, -.5, .5, .116, .944, -.548, -.1, col=True)
     it.a('Wheel', ST, cap((0, 1.0, -.05), .16, .03, 16, 'z')); it.a('Wheel_Hub', BA, cap((0, 1.0, -.022), .04, .03, 8, 'z'))
     it.a('Wheel_Column', G, tube((0, .946, -.105), (0, 1.0, -.07), .03, 6))
-    it.b('Screen_Housing', G, -.53, .53, .946, 1.75, -.95, -.55, col=True)
-    paint_screen(it, -.48, .48, 1.05, 1.65, -.552, -.544, 'track')
+    it.b('Screen_Housing', G, -.53, .53, .952, 1.75, -.95, -.552, col=True)
+    paint_screen(it, -.48, .48, 1.05, 1.65, -.548, -.540, 'track')
     it.b('Pedals', ALY, -.15, .15, .118, .2, -.08, .1)
     for k in range(4):
         for sx in (-1, 1): it.b('Track_Stripes', AM if k % 2 else BA, min(sx*.32, sx*.5), max(sx*.32, sx*.5), .118, .124, .1 + .2*k, .2 + .2*k)
@@ -122,7 +122,7 @@ def pinball():
     for x in (-.3, .3):
         for z in (-.6, .6): it.a('PB_Legs', ST, tube((x, 0, z), (x, .72, z), .025, 6))
     it.col(-.36, .36, 0, .9, -.7, .7)
-    it.b('PB_Body', SL, -.36, .36, .716, .86, -.62, .7)
+    it.bv('PB_Body', SL, -.36, .36, .716, .86, -.62, .7)
     it.b('PB_Playfield', CY, -.32, .32, .856, .866, -.58, .66)
     it.b('PB_Backbox', G, -.36, .36, .856, 1.75, -.78, -.6, col=True)
     paint_screen(it, -.32, .32, 1.0, 1.7, -.602, -.594, 'nature')
@@ -145,10 +145,10 @@ def vr_pod():
     return emit('tt_arc_vr_pod', it, 'VR pod 2.2 m dia, open cage')
 def prize_counter():
     it = It(); L = 6.0
-    it.b('PC_Body', WH, -L/2, L/2, 0, 1.0, .5, 1.1, col=True)
-    it.b('PC_Top', ST, -L/2 - .02, L/2 + .02, .996, 1.05, .46, 1.16)
-    it.b('PC_Acc_Body', WH, -L/2 + .1, -L/2 + 1.1, 0, .81, 1.104, 1.4, col=True)
-    it.b('PC_Acc_Top', ST, -L/2 + .08, -L/2 + 1.12, .806, .86, 1.104, 1.44)
+    it.bv('PC_Body', WH, -L/2, L/2, 0, 1.0, .5, 1.1, col=True)
+    it.bv('PC_Top', ST, -L/2 - .02, L/2 + .02, .996, 1.05, .46, 1.16)
+    it.bv('PC_Acc_Body', WH, -L/2 + .1, -L/2 + 1.1, 0, .81, 1.104, 1.4, col=True)
+    it.bv('PC_Acc_Top', ST, -L/2 + .08, -L/2 + 1.12, .806, .86, 1.104, 1.44)
     for x in np.arange(-L/2 + 1.3, L/2 - .2, .6): it.b('PC_Flutes', G, x, x + .06, .15, .9, 1.096, 1.11)
     it.b('PC_CourtLine', BA, -L/2 + 1.2, L/2 - .1, .5, .53, 1.108, 1.116)
     it.b('PC_Shelves_Back', G, -L/2, L/2, 0, 2.8, -.4, -.3, col=True)
@@ -212,12 +212,12 @@ def layout(floor):
     if floor == 1: ex = ex + [(118.9, 126.1, 60.6, 63.2)]   # prize counter zone
     big = []
     for i in range(3):          # air hockey: 2 x 3 at X128.6..133.4, Z22..36
-        for j in range(2): big.append(('tt_arc_airhockey', 129.85 + j*2.95, 23.6 + i*4.6, 0))
-    for j, z in enumerate((44.0, 47.4, 50.8, 54.2)): big.append(('tt_arc_vr_pod', 129.9 if j % 2 else 132.4, z, 0))
+        for j in range(2): big.append(('tt_arc_airhockey', 129.85 + j*3.28, 23.6 + i*4.6, 0))
+    for j, z in enumerate((44.0, 47.4, 50.8, 54.2)): big.append(('tt_arc_vr_pod', 130.82 if j % 2 else 132.4, z, 0))
     for k in range(4): big.append(('tt_arc_pinball', 128.1, 44.0 + .8*k + 8.0, -90 + 180))  # pinball row facing +X at Z52..54.4
     for k in range(10): big.append(('tt_arc_racer', 122.5, 1.2 + 1.25*k, -90))     # racers, player faces -X? screen at -Z local
     for a, x, z, yaw in big: ex.append((x - 1.3, x + 1.3, z - 1.2, z + 1.2) if a != 'tt_arc_racer' else (x - 1.0, x + 1.0, z - .6, z + .6))
-    rows = [(113.78, 90), (116.625, -90), (117.475, 90), (120.325, -90), (121.175, 90), (124.025, -90), (127.6, 90),
+    rows = [(113.90, 90), (116.625, -90), (117.475, 90), (120.325, -90), (121.175, 90), (124.025, -90), (127.6, 90),
             (130.455, -90), (131.305, 90), (134.155, -90), (135.0, 90), (138.93, -90)]
     slots = []
     for x, yaw in rows:
@@ -239,7 +239,7 @@ def layout(floor):
         a = 'tt_arc_redemption' if k < 4 else 'tt_arc_claw' if k < 6 else 'tt_arc_video'
         out += [(a, x, z, yaw) for x, z, yaw in bl]
     out += big
-    if floor == 1: out.append(('tt_arc_prize_counter', 122.5, 60.65, 0))
+    if floor == 1: out.append(('tt_arc_prize_counter', 122.5, 61.15, 0))
     for cx, cz in COLS:
         if free(cx - 1.3, cx + 1.3, cz - 1.3, cz + 1.3, F1EX): out.append(('tt_arc_col_moss', cx, cz, 0))
     return [(a, x, y, z, yaw) for a, x, z, yaw in out], len(slots)

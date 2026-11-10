@@ -10,13 +10,23 @@ import modlib as ml
 import numpy as np, trimesh
 ml._m('lz_rub', 'TT_PlayRubber_Slate', (.20, .24, .27), 0, .9)
 ml._m('lz_fab', 'TT_Upholstery_FabricSlate', (.24, .28, .33), 0, .95)
-ml._m('lz_lane', 'TT_LaneComposite_White', (.86, .88, .90), 0, .25)
 ml._m('lz_red', 'TT_AccentCoral', (.85, .32, .28), 0, .5)
-RU, FA, LN, RD = 'lz_rub', 'lz_fab', 'lz_lane', 'lz_red'
+RU, FA, RD = 'lz_rub', 'lz_fab', 'lz_red'
+LN = WH  # official TT_WhiteComposite from modlib (do not fork a second white)
 SOLID = {SL, G, ST, CON, SSL, WH, ALY, SGM, RU, FA, LN, SCR}
 GM = Path(GODOT_MODELS)
 REP = []; LAY = {}
 D = 0.002
+
+def bevel_box(x0, x1, y0, y1, z0, z1, c=.016):
+    """Axis box with an inward top chamfer. Outer AABB remains x0..x1, y0..y1, z0..z1 (footprint unchanged)."""
+    dx, dy, dz = abs(x1 - x0), abs(y1 - y0), abs(z1 - z0)
+    c = min(c, .4 * dx, .4 * dy, .4 * dz)
+    if c < .004:
+        return box(x0, x1, y0, y1, z0, z1)
+    o = np.array([((x1-x0)/2, (z1-z0)/2), (-(x1-x0)/2, (z1-z0)/2), (-(x1-x0)/2, -(z1-z0)/2), ((x1-x0)/2, -(z1-z0)/2)])
+    rings = [(y0, 1, 1), (y1 - c, 1, 1), (y1, (dx - 2*c)/dx, (dz - 2*c)/dz)]
+    return xf(loft(o, rings), t=((x0+x1)/2, 0, (z0+z1)/2))
 
 class It(list):
     """item list [(part, mat, mesh)] + collider boxes"""
@@ -25,6 +35,16 @@ class It(list):
     def b(s, n, m, x0, x1, y0, y1, z0, z1, col=False):
         mesh = box(x0, x1, y0, y1, z0, z1); s.append((n, m, mesh))
         if col: s.cols.append(box(x0, x1, y0, y1, z0, z1))
+        return mesh
+    def bv(s, n, m, x0, x1, y0, y1, z0, z1, col=False, c=.016):
+        """Bevelled Body/Top/Plinth plus a mid-height +Z reveal. Collider stays the un-bevelled box."""
+        mesh = bevel_box(x0, x1, y0, y1, z0, z1, c=c); s.append((n, m, mesh))
+        if col: s.cols.append(box(x0, x1, y0, y1, z0, z1))
+        inset = max(c + .01, .03)
+        # just below the top chamfer; 8 mm into +Z (under the 10 mm overlap limit); does not grow AABB
+        y0r = max(y0 + .008, y1 - c - .018); y1r = min(y1 - c - .004, y0r + .014)
+        if y1r > y0r + .004:
+            s.append((n + '_Reveal', ST, box(x0 + inset, x1 - inset, y0r, y1r, z1 - .008, z1 - .003)))
         return mesh
     def col(s, x0, x1, y0, y1, z0, z1): s.cols.append(box(x0, x1, y0, y1, z0, z1))
 
