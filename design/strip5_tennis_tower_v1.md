@@ -386,7 +386,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 - **Secondary:** one 8.0 m module (2 double pairs, 3.6 m clear), mirrored S/N at **X 68..76**, rotated for **E at Z 33.5..41.5**. Canopy 2.2 m; 3 m clear in front. The E threshold is flush on the terrace deck (+4.0). Glyph = a parameter on one asset.
 #### 3.12.4 Foyer ticketing
 - **Desks:** two 8 m desks against X 0 at **Z 22..30 and 49..57**, desk front X −2.5. Each has 1 accessible bay (0.86 m) + 4 stations (1.05 m): **10 stations** in all.
-- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** (Rev 2.9) against the X 0 wall, X −1.0..0, faces −X: 4 at Z 30.5..34.0, 2 at Z 42.65..44.4 and 2 at Z 47.15..48.9 (0.875 m pitch; Rev 3.3: split around the N-deck doorway Z 45..47, which stays clear), between the desks and clear of the aquarium corridor mouth (Z 34.5..42.5). Use zone X −2.5..−1.0; nothing in the 6 m passage.
+- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** (Rev 2.9) against the X 0 wall, X −1.0..0, faces −X: Rev 3.4 explicit **centres** (0.6 m wide, footprint X −0.699..0): **Z 31.175, 32.05, 32.925, 33.8** (S group), **Z 42.875, 43.75, 44.625** (between the aquarium mouth and the N-deck door), **Z 47.675** (N of the door), between the desks and clear of the aquarium corridor mouth (Z 34.5..42.5). Use zone X −2.5..−1.0; nothing in the 6 m passage.
 - **Clearances:** a 6 m clear passage (X −12..−6) runs the full foyer length.
 - Model +Z faces −X. Screens are opaque emissive; printers and RFID are baked mesh (any live behaviour is a later Gage item).
 #### 3.12.5 Terraces, ramps, plinth (project rule)
@@ -601,3 +601,5 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 
 
 **Rev 3.3 (temp-Arrival):** the N kiosk group is split 2 + 2 around the existing N-deck doorway on the X 0 wall (Z 45..47, `build_structure.py:63`). The kiosks are at Z 42.65..44.4 and 47.15..48.9, X −0.7..0. The doorway and the aquarium corridor mouth stay clear. Door leaves must not swing into the foyer within Z 47..47.15.
+
+**Rev 3.4 (supersedes the Rev 3.3 kiosk ranges):** all 8 kiosks are given as Z centres; see §3.12.4. Rule: kiosk footprints (±0.3 m) stay ≥ 0.075 m off the X 0 piers (AQ_Z ± 0.3: Z 30.2..30.8, 48.2..48.8), the aquarium mouth (Z 34.5..42.5), the N-deck door (Z 45..47) and its 0.15 m no-swing strip (Z 47..47.15). The piers stay as built, with no notching. Footprints: 30.875..34.1, 42.575..44.925, 47.375..47.975.
