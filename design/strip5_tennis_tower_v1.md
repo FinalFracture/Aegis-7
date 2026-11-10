@@ -386,7 +386,7 @@ Rule: occupants 50/50; WC male 1/75 for the first 1,500 then 1/120, female 1/40 
 - **Secondary:** one 8.0 m module (2 double pairs, 3.6 m clear), mirrored S/N at **X 68..76**, rotated for **E at Z 33.5..41.5**. Canopy 2.2 m; 3 m clear in front. The E threshold is flush on the terrace deck (+4.0). Glyph = a parameter on one asset.
 #### 3.12.4 Foyer ticketing
 - **Desks:** two 8 m desks against X 0 at **Z 22..30 and 49..57**, desk front X −2.5. Each has 1 accessible bay (0.86 m) + 4 stations (1.05 m): **10 stations** in all.
-- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** (Rev 2.9) against the X 0 wall, X −1.0..0, faces −X: 4 at Z 30.5..34.0 and 4 at Z 43.0..46.5 (0.875 m pitch), between the desks and clear of the aquarium corridor mouth (Z 34.5..42.5). Use zone X −2.5..−1.0; nothing in the 6 m passage.
+- **Queues and kiosks:** 3-lane serpentine queues in X −6..−2.5; **8 kiosks** (Rev 2.9) against the X 0 wall, X −1.0..0, faces −X: 4 at Z 30.5..34.0, 2 at Z 42.65..44.4 and 2 at Z 47.15..48.9 (0.875 m pitch; Rev 3.3: split around the N-deck doorway Z 45..47, which stays clear), between the desks and clear of the aquarium corridor mouth (Z 34.5..42.5). Use zone X −2.5..−1.0; nothing in the 6 m passage.
 - **Clearances:** a 6 m clear passage (X −12..−6) runs the full foyer length.
 - Model +Z faces −X. Screens are opaque emissive; printers and RFID are baked mesh (any live behaviour is a later Gage item).
 #### 3.12.5 Terraces, ramps, plinth (project rule)
@@ -598,3 +598,6 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
    - **Prize counter:** on L1, beside ST+E.
    - **Feature stair:** an open 2.5 m-wide stair from L1 to L2 at X 126..139, Z 38..40.5, with a mid landing. It is decorative and not counted for egress.
 5. **Bowling (X 30..57):** keep 8 lanes across Z 0.6..15 (4 pairs at 3.6 m = 14.4 m). Because the sports are story decoration (Jared), lanes run 17 m to the head pin. In X that gives a 2.4 m settee and scoring zone at X 30..32.4, the 4.6 m approach at X 32.4..37, the lane to the head pin at X 54, and the pin deck at X 54..57. The pinsetters' machinery is in the SE plant stack.
+
+
+**Rev 3.3 (temp-Arrival):** the N kiosk group is split 2 + 2 around the existing N-deck doorway on the X 0 wall (Z 45..47, `build_structure.py:63`). The kiosks are at Z 42.65..44.4 and 47.15..48.9, X −0.7..0. The doorway and the aquarium corridor mouth stay clear. Door leaves must not swing into the foyer within Z 47..47.15.
