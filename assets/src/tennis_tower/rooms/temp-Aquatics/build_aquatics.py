@@ -315,6 +315,7 @@ def leisure():
         h=float(m.bounds[1,1]); add(it,'Moss_Crest',LF2,leaf_dir((x,h-E,z),(.3,1,.2),.24,.2))
     emit('tt_leisure_nature_mounds',it,'Sculpted river-stone/moss crests integrated into deck, no planter boxes')
     it=sl.tube_items(); emit('tt_leisure_slide_tubes',it,sl.tube_note())
+    it=sl.link_items(); emit('tt_leisure_slide_link',it,sl.link_note())
 
 def main():
     pool(); gallery(); bridges(); corridor(); signs(); leisure()

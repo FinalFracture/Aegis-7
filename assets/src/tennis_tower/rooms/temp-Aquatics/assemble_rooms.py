@@ -11,13 +11,18 @@ sys.path[:0]=[str(TT),str(TT/'structure')]
 import numpy as np
 import assemble_preview as block
 PL=[]
-HELD_UNPLACED=('tt_leisure_slide_tubes',)
+# Built and committed but not placed (see README "Nov 10 late pass"):
+#  - slide tubes: start cap is normal to the 1:5 slope, tower stub end is a vertical face at X 25.052
+#    -> 86 mm open wedge at the crown, 90 mm sole overlap and a 12 mm bore-floor lip; needs a tube model edit.
+#  - T2 gate: its opening must move to Z 58.0..59.1; a pure 0.65 m shift floats the north post/panel
+#    off the slide span (slab Z 58.0..60.4) and the gate needs a re-cut.
+HELD_UNPLACED=('tt_leisure_slide_tubes','tt_bridges_t2_gate')
 def put(asset,pos,yaw=0,tag='finish',room='',**extra):
     PL.append(dict(glb=str(MD/(asset+'.glb')),p=pos,yaw=yaw,tag=tag,room=room,**extra))
 def placements():
     layout=json.load(open(OUT/'layout.json'))
     for asset,d in layout.items():
-        if asset.startswith(HELD_UNPLACED): continue  # tubes built/validated but not placed until Rook's island-relative tt_slide_tower lands
+        if asset.startswith(HELD_UNPLACED): continue
         if asset in ('tt_corridor_tank_bay','tt_aquarium_tank'): continue  # placed explicitly below (four bays, yaw 180); never at the layout origin
         room={'pool':'F1-POOL','gallery':'F2-GAL','bridges':'F2-BRG','corridor':'F1-AQC','leisure':'F1-LEIS'}[asset.split('_')[1]]
         put(asset,d['world_offset'],room=room,note=d['note'])

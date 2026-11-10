@@ -144,3 +144,18 @@ is ready for the parent to commit with the approved identity; no hash exists.
 - Tube worst overlaps 16–24 mm are `Tube_HardwareClamp`/`Tube_HardwareArms` embeds (30 mm hardware limit).
 - Still held outside Git (needs Gage/QA): `gallery_wet.py`, the wet `tt_gallery_floor` and
   `tt_gallery_accessible`. The committed dry gallery floor is unchanged.
+
+## Nov 10 late pass (Rook tower r2 1ef96f1 on main)
+- **Link deck landed and placed**: `tt_leisure_slide_link` (`slides.link_items()`), +7.0 deck X 23.60..24.70,
+  Z 55.909..57.091. The measured enclosure faces are Z 55.911 (T1) and 57.089 (T2), not 56.9, so the deck
+  embeds 4 mm into each tower sill; guards stop 4 mm short of the faces. Underside +6.75 keeps the
+  ground-entry gap (X 20.2..21.24 west doors, Z 55.9..57.1) clear. No penetration into either tower mesh.
+- **T2 gate unplaced** (`HELD_UNPLACED`): the tower's west gate is now Z 58.0..59.1 and the old gate's
+  north flare panel/post would block it, leaving 0.45 m of clear width. A pure 0.65 m shift south puts
+  the north post (Z 57.88..58.0) and panel (Z 57.35..57.88) over a void, because the slide span slab
+  is Z 58.0..60.4 at X 19.84. The gate needs a re-cut (one side panel only, or a post inside the span).
+- **Tubes still unplaced**: the start cap is normal to the 1:5 slope (tilted 11.3°) but the tower stub
+  ends in a vertical face at X 25.052 (centre Y 7.40, Z 52.30/58.30, outer R 0.453, inner ~0.404).
+  Centre, invert +7.0 and radius match, but the crown leaves an 86 mm open wedge (outer crown at X 25.138),
+  the sole reaches 90 mm back into the stub (X 24.962), and the bore floor at the cap is 12 mm above
+  the stub's (7.008 vs 6.996). This needs a tube model edit: a short horizontal lead-in before the elbow.

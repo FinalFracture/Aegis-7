@@ -154,24 +154,32 @@ def tube_items():
 def tube_note():
     return 'Enclosed T1/T2 spiral tubes from tower +X stubs (invert +7.0) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing'
 
+# T1 +Z / T2 -Z link openings (tt_slide_tower r2, 1ef96f1): X 23.60..24.70, clear from +7.0.
+# Enclosure faces at world Z 55.911 (T1) / 57.089 (T2); sills Z 55.796..55.913 / 57.087..57.204.
+LX0,LX1=23.60,24.70
+LZ0,LZ1=55.909,57.091     # deck/finish embed 4 mm into each tower sill (no gap at either door)
+GZ0,GZ1=55.915,57.085     # kicks/posts/rails stop 4 mm short of the enclosure faces
+
 def link_items():
-    """Held T2->T1 link deck. Not part of tube_items."""
+    """T1<->T2 +7.0 link deck spanning the gap between the towers. Underside +6.75 keeps the
+    ground-entry gap below clear."""
     it=[]
-    add(it,'Link_Deck',WH,box(23.60,24.70,6.75,6.985,55.81,57.19))
-    add(it,'Link_DeckFinish',SSL,box(23.602,24.698,6.985,7.0,55.812,57.188))
-    zs=(55.85,56.5,57.15)
-    for x0,inward in ((23.60,1.0),(24.70,-1.0)):
-        add(it,'Link_Kick',G,box(x0,x0+inward*0.08,7.0,7.10,55.81,57.19) if inward>0 else box(x0-0.08,x0,7.0,7.10,55.81,57.19))
-        px=(x0,x0+0.04) if inward>0 else (x0-0.04,x0)
-        for z in zs: add(it,'Link_Post',ST,box(px[0],px[1],7.0,8.10,z-.02,z+.02))
-        add(it,'Link_CapRail',ST,box(px[0],px[1],8.08,8.12,zs[0]-.02,zs[-1]+.02))
-        pc=(px[0]+px[1])/2
-        for a,b in zip(zs,zs[1:]):
-            add(it,'Link_Pane_Scissor',SCR,box(pc-.008,pc+.008,7.12,8.04,a+.04,b-.04))
+    add(it,'Link_Deck',WH,box(LX0,LX1,6.75,6.985,LZ0,LZ1))
+    add(it,'Link_DeckFinish',SSL,box(LX0+.002,LX1-.002,6.981,7.0,LZ0+.002,LZ1-.002))
+    zs=(GZ0+.04,(GZ0+GZ1)/2,GZ1-.04)
+    for x0,d in ((LX0,1.0),(LX1,-1.0)):
+        xs=lambda u,v: (min(x0+d*u,x0+d*v),max(x0+d*u,x0+d*v))
+        k=xs(0,0.08); add(it,'Link_Kick',G,box(k[0],k[1],6.996,7.10,GZ0,GZ1))      # 4 mm into the deck finish
+        q=xs(0.02,0.06)
+        for z in zs: add(it,'Link_Post',ST,box(q[0],q[1],7.096,8.084,z-.02,z+.02))  # 4 mm into kick and rail
+        r=xs(0.005,0.075); add(it,'Link_CapRail',ST,box(r[0],r[1],8.08,8.12,zs[0]-.03,zs[-1]+.03))
+        pc=(q[0]+q[1])/2
+        for za,zb in zip(zs,zs[1:]):
+            add(it,'Link_Pane_Scissor',SCR,box(pc-.008,pc+.008,7.098,8.082,za+.016,zb-.016))
     return it
 
 def link_note():
-    return 'Held: needs T1 +Z and T2 -Z 1.1 m openings and island-datum tower; not placed'
+    return 'T1<->T2 link deck at +7.0, X 23.60..24.70 between the tower link openings; 1.1 m guards; underside +6.75 keeps the ground-entry gap clear'
 
 if __name__=='__main__':
     it=tube_items()
