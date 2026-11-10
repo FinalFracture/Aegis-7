@@ -16,28 +16,40 @@ ML._m("tt_rubber", "TT_PlayRubber_Black", (.07, .075, .08), 0, .9)
 RB = "tt_rubber"
 def U(m): m.metadata["uv"] = np.zeros((len(m.vertices), 2)); return m
 def hull(pts): return U(trimesh.convex.convex_hull(np.asarray(pts, float)))
-DS = .064   # metres per dither texture tile (32 px -> 2 mm px, 8 mm Bayer period)
+DS = .128   # metres per scissor texture tile (128 px, 16 mm dot period; mip-friendly)
 def puv(m):  # world-planar UV (tile every DS metres) so the fine dither keeps constant scale on every pane
     v = m.vertices; lo, hi = v.min(0), v.max(0); a = 0 if hi[0] - lo[0] >= hi[2] - lo[2] else 2
     m.metadata["uv"] = np.c_[v[:, a] / DS, v[:, 1] / DS]; return m
 def frit(x0, x1, y0, y1, w=.025, t=.011):  # opaque ceramic frit frame around a pane (pane edges embed E into it)
     return [box(x0, x1, y0, y0 + w, -t, t), box(x0, x1, y1 - w, y1, -t, t), box(x0, x0 + w, y0 + w, y1 - w, -t, t), box(x1 - w, x1, y0 + w, y1 - w, -t, t)]
 def fine_scissor(path):
-    """MASK, cutoff 0.5, 32 px tiled 4x4 Bayer (30 % opaque), nearest filter, repeat; no frit in the texture (frit is geometry)."""
+    """MASK, cutoff 0.5, mip-friendly regular-dot frit, LINEAR + mipmaps, repeat.
+    Ceramic frit stays in mesh geometry (frit()); this texture is only the scissor pattern.
+    Unique name TT_GlassScissorActive kept. Factor alpha 1.0."""
     import pygltflib as pg, io
-    from PIL import Image
+    from PIL import Image, ImageDraw, ImageFilter
     g = pg.GLTF2().load(path); blob = bytearray(g.binary_blob()); hit = False
+    N, period, radius = 128, 16, 5.2  # 8x8 dots, ~33% fill, slightly antialiased
     for m in g.materials:
         if m.name not in ('TT_GlassScissor', 'TT_GlassScissorActive'): continue
         m.name = 'TT_GlassScissorActive'
-        hit = True; bay = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16.0
-        a = (np.tile(bay, (8, 8)) < .30).astype(np.uint8) * 255; im = Image.new("RGBA", (32, 32), (184, 219, 237, 0)); im.putalpha(Image.fromarray(a))
+        hit = True
+        im = Image.new("RGBA", (N, N), (184, 219, 237, 0))
+        dots = Image.new("L", (N, N), 0)
+        dr = ImageDraw.Draw(dots)
+        for i in range(0, N, period):
+            for j in range(0, N, period):
+                cx, cy = i + period / 2, j + period / 2
+                dr.ellipse((cx - radius, cy - radius, cx + radius, cy + radius), fill=255)
+        dots = dots.filter(ImageFilter.GaussianBlur(radius=0.8))
+        im.putalpha(dots)
         bcf = m.pbrMetallicRoughness.baseColorFactor
         if bcf is not None and len(bcf) >= 4 and bcf[3] < 1.0:
             bcf = list(bcf); bcf[3] = 1.0; m.pbrMetallicRoughness.baseColorFactor = bcf
         b = io.BytesIO(); im.save(b, "PNG"); data = b.getvalue()
         while len(blob) % 4: blob.append(0)
-        g.samplers.append(pg.Sampler(magFilter=9728, minFilter=9728, wrapS=10497, wrapT=10497))
+        # 9729=LINEAR, 9987=LINEAR_MIPMAP_LINEAR, 10497=REPEAT
+        g.samplers.append(pg.Sampler(magFilter=9729, minFilter=9987, wrapS=10497, wrapT=10497))
         g.bufferViews.append(pg.BufferView(buffer=0, byteOffset=len(blob), byteLength=len(data))); blob.extend(data)
         g.images.append(pg.Image(bufferView=len(g.bufferViews) - 1, mimeType="image/png")); g.textures.append(pg.Texture(source=len(g.images) - 1, sampler=len(g.samplers) - 1))
         m.alphaMode = "MASK"; m.alphaCutoff = .5; m.doubleSided = True; m.pbrMetallicRoughness.baseColorTexture = pg.TextureInfo(index=len(g.textures) - 1)
@@ -118,6 +130,18 @@ def gate(q):
 
 def pbench(q):
     p = Part(); L = q["L"]; a, b = -L/2, L/2; bk = q.get("back", True)
+    if q.get("slim"):  # depth 0.24 m (back z=-0.02, front z=0.22); no bottle shelf (it will not fit)
+        xs = np.linspace(a + .1, b - .1, q.get("legs", 3)); fr = []
+        for x in xs:
+            fr += [box(x - .025, x + .025, .02, .44, -.02, .03), box(x - .025, x + .025, .02, .44, .17, .22),
+                   box(x - .025, x + .025, .02, .06, -.02 + E, .22 - E), box(x - .025, x + .025, .44 - E, .47, -.02, .22),
+                   box(x - .018, x + .018, .47 - E, .68, -.012, .018)]
+        fr += [box(a + .05, b - .05, .40, .44 - E, .08, .12), box(a + .05, b - .05, .64, .68, -.008, .012)]
+        p.add("Frame_Weldment", G, *fr)
+        p.add("Feet", RB, *[box(x - .05, x + .05, 0, .02 + E, z - .025, z + .025) for x in xs for z in (.005, .195)])
+        p.add("Seat_Slats", RB, box(a, b, .47 - E, .52, .035, .115), box(a, b, .47 - E, .52, .135, .22))
+        p.add("Back_Pad", PAD, box(a + .02, b - .02, .52, .70, -.02, .03))
+        col(p, "Bench", (a, 0, -.02), (b, .70, .22)); return p
     xs = np.linspace(a + .1, b - .1, q.get("legs", 3)); fr = []
     for x in xs: fr += [box(x - .03, x + .03, .02, .44, -.22, -.16), box(x - .03, x + .03, .02, .44, .16, .22), box(x - .03, x + .03, .02, .06, -.16 - E, .16 + E), box(x - .03, x + .03, .44 - E, .47, -.24, .24)]
     fr += [box(a + .05, b - .05, .40, .44 - E, -.03, .03)]
@@ -255,10 +279,17 @@ SETS = {
  "tt_rink_board_corner": (corner, [dict(label="Rink corner 90 deg, R 4.0 m board line, 6 chords", R=4.0, n=6, crest=True)]),
  "tt_rink_board_gate": (gate, [dict(label="Rink gate 2.0 m: 1.0 m leaf board+scissor glass, hinges, latch")]),
  "tt_rink_players_bench": (pbench, [dict(label="Players bench 4.0 m, padded back, bottle shelf", L=4.0), dict(label="Players bench 4.0 m backless", L=4.0, back=False)]),
+ "tt_rink_players_bench_slim": (pbench, [dict(label="Slim players bench 4.0 m, depth 0.24 m, >=0.9 m walkway in 1.16 m board-to-pad gap", L=4.0, slim=True)]),
  "tt_climb_rental_desk": (desk, [dict(label="Rental desk 4.5 m module, stone fascia, shoe cubbies", L=4.5), dict(label="Rental desk 4.5 m, accessible 0.86 m bay", L=4.5, acc=(.6, 1.5), seed=3)]),
  "tt_climb_mat_300": (mat, [dict(label="Mat 300 mm 2.0 x 2.0 field tile", W=2.0, D=2.0), dict(label="Mat 300 mm 2.0 x 2.0 edge tile, 0.25 chamfer +Z", W=2.0, D=2.0, chamfer=.25, amber=True)]),
  "tt_climb_mat_ring_corner": (mat_ring_corner, [dict(label="TC-S4 ring corner quarter disc R 2.0 x 0.3", R=2.0)]),
  "tt_climb_mat_ring_side": (mat, [dict(label="TC-S4 ring side 1.24 x 2.0 x 0.3", W=1.24, D=2.0)]),
+ "tt_climb_mat_300_2x15": (mat, [dict(label="Mat 300 mm 2.0 x 1.5 cut tile (TC-S4 north infill)", W=2.0, D=1.58)]),
+ "tt_climb_mat_300_124x15": (mat, [dict(label="Mat 300 mm 1.24 x 1.58 cut tile (TC-S4 north leftover)", W=1.24, D=1.58)]),
+ "tt_climb_mat_300_088x24": (mat, [dict(label="Mat 300 mm 0.88 x 2.42 cut tile (TC-S4 west remnant)", W=0.88, D=2.42)]),
+ "tt_climb_mat_300_188x40": (mat, [dict(label="Mat 300 mm 1.88 x 4.0 cut tile (TC-S4 east remnant)", W=1.88, D=4.0)]),
+ "tt_climb_mat_300_14x28": (mat, [dict(label="Mat 300 mm 1.4 x 2.8 collar west of TC-S3", W=1.4, D=2.8)]),
+ "tt_climb_mat_300_06x16": (mat, [dict(label="Mat 300 mm 0.6 x 1.6 collar south of TC-S3 trunk", W=0.6, D=1.6)]),
  "tt_climb_auto_belay": (autobelay, [dict(label="Auto-belay unit, wall plate, webbing stub, carabiner")]),
  "tt_climb_anchor": (anchor, [dict(label="Top anchor: plate, 2 hangers, chains, lower-off ring")]),
  "tt_gym_squat_rack": (squat, [dict(label="Power rack 1.22 x 1.22 x 2.3, J-hooks, safeties, loaded bar")]),
