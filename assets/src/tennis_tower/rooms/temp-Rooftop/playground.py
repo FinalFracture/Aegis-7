@@ -77,5 +77,5 @@ def build(PL):
         place(PL, A_f, x, Y, 20.6, 180)
         place(PL, A_f, x, Y, 58.4, 0)
     for z in (25.0, 33.0, 41.0, 46.0):
-        place(PL, A_p, 128.463, Y, z, 90, local=False)
+        place(PL, A_p, 128.478, Y, z, 90, local=False)
     return dict(soft4=1, fences='kick+picket', perches=4, seesaw_yaw=90)
