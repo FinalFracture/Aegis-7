@@ -45,25 +45,29 @@ def landing_guard_items():
     return it
 
 def gate_note():
-    return ('T2 queue gate: 1.10 m clear Z58.65..59.75 + 0.65 m solid each side; '
-            'aligned to the bridge centre; tower opening alignment is an open Rook item')
+    return ('T2 queue gate framing the tower -X opening: posts Z 58.04..58.14 / 59.24..59.36, 1.10 m clear '
+            'Z 58.14..59.24 (through-clear with the tower opening Z 58.14..59.10), south flare panel to 60.40')
 
+# T2 -X opening (tt_slide_tower r2): Z 58.0..59.1, clear +6.1..+8.4. Slide span slab Z 58.0..60.4.
+# North post sits on the existing north guard line (kick Z 58.06..58.14), so the gate clear starts at
+# Z 58.14; the south post and a single flare panel fill to the slab edge Z 60.4. Nothing past Z 58.0.
+GATE_N=(58.04,58.14); GATE_S=(59.24,59.36)
 def t2_gate_items():
     it=[]
-    for za,zb in ((58.00,58.526),(59.874,60.40)):
+    for za,zb in ((GATE_S[1]+.004,60.40),):
         B(it,'Gate_FlarePanel',WH,19.84,19.92,6.1,7.22,za,zb)
         B(it,'Gate_FlareInlay',CY,19.832,19.844,6.70,6.74,za+.05,zb-.05)
         zc=(za+zb)*.5
         for i,y in enumerate((6.35,6.6,6.85)):
             m=add(it,'Gate_LeafCrests',LF2,leaf_dir((19.836,y,zc),(0,1,0.35 if i%2==0 else -0.35),.28,.14))
             uv=m.metadata['uv']; m.vertices[:,0] = 19.836 + (m.vertices[:,0]-19.836)*0.1; m.metadata['uv']=uv
-    B(it,'Gate_Posts',G,19.82,19.94,6.1,8.50,58.53,58.65)
-    B(it,'Gate_Posts',G,19.82,19.94,6.1,8.50,59.75,59.87)
-    B(it,'Gate_Header',WH,19.80,19.96,8.30,8.50,58.654,59.746)
-    B(it,'Gate_StatusLight',GRN,19.776,19.804,8.36,8.44,59.14,59.26)
+    for z0,z1 in (GATE_N,GATE_S): B(it,'Gate_Posts',G,19.82,19.94,6.1,8.50,z0,z1)
+    B(it,'Gate_Header',WH,19.80,19.96,8.30,8.50,GATE_N[1]+.004,GATE_S[0]-.004)
+    zm=(GATE_N[1]+GATE_S[0])/2
+    B(it,'Gate_StatusLight',GRN,19.776,19.804,8.36,8.44,zm-.06,zm+.06)
     yc=8.50+0.10-0.006
-    for z in (58.59,59.81):
-        add(it,'Gate_BallFinial',BA,node((19.88,yc,z),0.10,1))
+    for z0,z1 in (GATE_N,GATE_S):
+        add(it,'Gate_BallFinial',BA,node((19.88,yc,(z0+z1)/2),0.10,1))
     return it
 
 def canopy_note():

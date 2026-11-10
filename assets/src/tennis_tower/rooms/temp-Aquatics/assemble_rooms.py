@@ -11,12 +11,7 @@ sys.path[:0]=[str(TT),str(TT/'structure')]
 import numpy as np
 import assemble_preview as block
 PL=[]
-# Built and committed but not placed (see README "Nov 10 late pass"):
-#  - slide tubes: start cap is normal to the 1:5 slope, tower stub end is a vertical face at X 25.052
-#    -> 86 mm open wedge at the crown, 90 mm sole overlap and a 12 mm bore-floor lip; needs a tube model edit.
-#  - T2 gate: its opening must move to Z 58.0..59.1; a pure 0.65 m shift floats the north post/panel
-#    off the slide span (slab Z 58.0..60.4) and the gate needs a re-cut.
-HELD_UNPLACED=('tt_leisure_slide_tubes','tt_bridges_t2_gate')
+HELD_UNPLACED=()  # nothing held from placement
 def put(asset,pos,yaw=0,tag='finish',room='',**extra):
     PL.append(dict(glb=str(MD/(asset+'.glb')),p=pos,yaw=yaw,tag=tag,room=room,**extra))
 def placements():

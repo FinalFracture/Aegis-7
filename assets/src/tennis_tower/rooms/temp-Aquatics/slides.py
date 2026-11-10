@@ -6,10 +6,15 @@ AQ_HERE=Path(__file__).resolve().parent
 def add(it,n,m,mesh): it.append((n,m,mesh)); return mesh
 
 # Enclosed T1/T2 spiral tubes (spec 3.6). Building metres, Y up. Centre y = invert + RI.
-RI,RO,SEG=0.40,0.45,12
-RB,XS,CX,R,S=0.48,25.53,24.66,0.87,0.20
-X_END,STUB_X=22.60,25.05
-H_STUB,H_EXIT,RUN_S=7.0,1.45,0.10
+# Section matches Rook's tt_slide_tower r2 stub: 16 staves, flats on the cardinals, inner/outer flat
+# apothems 0.3960/0.4460 (stub vertex radii 0.4041/0.4532 are bevel points). Our sharp 16-gon uses the
+# corner radii of those flats, so the bore floor flat is +7.004 at the stub face, the same as the stub's.
+RI,RO,SEG=0.3960/math.cos(math.pi/16),0.4460/math.cos(math.pi/16),16
+PHASE=math.pi/SEG
+XS,CX,R,S=25.53,24.66,0.87,0.20
+X_END,STUB_X=22.60,25.052   # flush with the tower stub end face
+RB=XS-STUB_X                # 0.478 elbow radius (> RO)
+H_STUB,H_EXIT,RUN_S=7.40-RI,1.45,0.10   # centre +7.40 at the stub face
 TRI_PIECE=2700
 
 def _cat(chunks):
@@ -21,10 +26,11 @@ def _cat(chunks):
 
 def centreline(zs, cz, turns):
     """(P, T) stations, invert-based, plus per-section height data. Joins drop <1 mm duplicates."""
-    z0=zs+RB; earc=RB*math.pi/2; h_elbow=H_STUB-S*earc; h_entry=h_elbow-S*(cz-z0)
-    na=int(math.ceil(earc/0.12)); a=np.linspace(-math.pi/2,0,na+1); s=RB*(a+math.pi/2); h=H_STUB-S*s
+    # Level lead-in: the elbow starts horizontal (vertical start face at STUB_X) and eases linearly to 1:5.
+    z0=zs+RB; earc=RB*math.pi/2; h_elbow=H_STUB-S*earc/2; h_entry=h_elbow-S*(cz-z0)
+    na=int(math.ceil(earc/0.12)); a=np.linspace(-math.pi/2,0,na+1); s=RB*(a+math.pi/2); h=H_STUB-S*s*s/(2*earc)
     Pe=np.c_[STUB_X+RB*np.cos(a), h+RI, z0+RB*np.sin(a)]
-    Te=np.c_[-RB*np.sin(a), np.full_like(a,-S*RB), RB*np.cos(a)]
+    Te=np.c_[-RB*np.sin(a), -S*RB*(s/earc), RB*np.cos(a)]
     ns=int(math.ceil((cz-z0)/1.0)); z=np.linspace(z0,cz,ns+1); hs=h_elbow-S*(z-z0)
     Ps=np.c_[np.full_like(z,XS), hs+RI, z]
     Ts=np.c_[np.zeros_like(z), np.full_like(z,-S), np.ones_like(z)]
@@ -53,7 +59,7 @@ def _frames(stations):
 
 def sweep_annulus(stations, ri=RI, ro=RO, seg=SEG):
     """Closed annular tube. Outer normals outward, inner normals into the bore, annular end caps."""
-    P,T,side,up=_frames(stations); n=len(P); k=np.arange(seg); phi=2*np.pi*k/seg
+    P,T,side,up=_frames(stations); n=len(P); k=np.arange(seg); phi=2*np.pi*k/seg+PHASE
     rad=np.cos(phi)[None,:,None]*side[:,None,:]+np.sin(phi)[None,:,None]*up[:,None,:]
     outer=P[:,None,:]+ro*rad; inner=P[:,None,:]+ri*rad
     V=np.ascontiguousarray(np.vstack([outer.reshape(-1,3), inner.reshape(-1,3)]))
@@ -152,7 +158,7 @@ def tube_items():
     return it
 
 def tube_note():
-    return 'Enclosed T1/T2 spiral tubes from tower +X stubs (invert +7.0) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing'
+    return 'Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing'
 
 # T1 +Z / T2 -Z link openings (tt_slide_tower r2, 1ef96f1): X 23.60..24.70, clear from +7.0.
 # Enclosure faces at world Z 55.911 (T1) / 57.089 (T2); sills Z 55.796..55.913 / 57.087..57.204.

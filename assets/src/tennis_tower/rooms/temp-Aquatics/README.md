@@ -159,3 +159,20 @@ is ready for the parent to commit with the approved identity; no hash exists.
   Centre, invert +7.0 and radius match, but the crown leaves an 86 mm open wedge (outer crown at X 25.138),
   the sole reaches 90 mm back into the stub (X 24.962), and the bore floor at the cap is 12 mm above
   the stub's (7.008 vs 6.996). This needs a tube model edit: a short horizontal lead-in before the elbow.
+
+## Nov 10 clash-fix pass (tubes + T2 gate placed)
+- **Tubes** (`slides.py`): the section now matches Rook's r2 stub (16-gon, flats on the cardinals,
+  inner/outer flat apothems 0.3960/0.4460, centre +7.40). The start face is vertical and flush at X 25.052
+  (elbow radius 0.478). The elbow starts level and eases linearly to the 1:5 slope. Measured at both stubs:
+  bore floor +7.004 both sides (no lip), crown/side walls identical, 0.000 mm X overlap, 0.36 cm² of
+  stub bevel corners outside our section. The only uncovered area is Rook's own inter-stave slits.
+  The 16-sided section re-chunks the tubes into `tt_leisure_slide_tubes_a..f` (max 5,600 tris including collision).
+- **T2 gate** (`bridges_finish.py`): north post Z 58.04..58.14 on the existing north guard line, south post
+  Z 59.24..59.36, header Z 58.144..59.236, gate clear Z 58.14..59.24 (1.10 m), and one south flare panel
+  Z 59.364..60.40. The whole footprint is on the +6.1 slab (Z 58.0..60.4). Through-clear with the tower
+  opening (Z 58.0..59.1) is **0.96 m (Z 58.14..59.10)**: the existing slide-span guard at Z 58.06..58.14
+  and the tower's north jamb set it. A full 1.1 m needs the tower opening to move to about Z 58.14..59.24 (Rook).
+- `tt_gallery_lockers_b` at +6.168 is the locker door/handle chunk. It is fixed to `_a`'s carcass front
+  (4 mm embed), above the 60 mm toe plinth, and is not floor-standing, so it is left in place.
+- Pool water look: the runtime water is the scene shader (`ROUGHNESS = 0.24` in `temp-Aquatics_water.gdshader`
+  via the bind script), which overrides the GLB material. A softer look needs a shader change (owner approval).

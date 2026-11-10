@@ -317,6 +317,18 @@
       "note": "Dogleg landing E/S edges and span N edge west of X2.1 closed; 1.12 m scissor guard"
     },
     {
+      "glb": "/workspace/game-project/godot/assets/models/tt_bridges_t2_gate.glb",
+      "p": [
+        19.878,
+        6.1,
+        59.195
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F2-BRG",
+      "note": "T2 queue gate framing the tower -X opening: posts Z 58.04..58.14 / 59.24..59.36, 1.10 m clear Z 58.14..59.24 (through-clear with the tower opening Z 58.14..59.10), south flare panel to 60.40"
+    },
+    {
       "glb": "/workspace/game-project/godot/assets/models/tt_bridges_canopy_a.glb",
       "p": [
         11.0,
@@ -495,6 +507,78 @@
       "tag": "finish",
       "room": "F1-LEIS",
       "note": "Sculpted river-stone/moss crests integrated into deck, no planter boxes"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_a.glb",
+      "p": [
+        24.2597,
+        1.008,
+        66.4821
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_b.glb",
+      "p": [
+        24.2658,
+        1.008,
+        67.113
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_c.glb",
+      "p": [
+        24.6601,
+        2.9835,
+        64.877
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_d.glb",
+      "p": [
+        24.6613,
+        1.9603,
+        67.1236
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_e.glb",
+      "p": [
+        25.514,
+        1.008,
+        60.1607
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_tubes_f.glb",
+      "p": [
+        25.53,
+        1.008,
+        63.37
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Enclosed T1/T2 spiral tubes from tower +X stubs (16-gon, centre +7.40, level start face at X 25.05 easing to 1:5) down X 25.53 strip to NE-corner helices; runouts run -X into lanes Z 65.75/69.25; crown max +7.85; no walkway crossing"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_leisure_slide_link.glb",
