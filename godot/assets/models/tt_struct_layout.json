@@ -78,5 +78,21 @@
    26.0
   ],
   "note": "diving-well coffer plate, soffit +11.8"
+ },
+ "tt_struct_pool_ramp": {
+  "world_offset": [
+   5.5,
+   -0.004,
+   30.0313
+  ],
+  "note": "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails"
+ },
+ "tt_struct_leisure_ramp": {
+  "world_offset": [
+   7.8787,
+   -0.004,
+   45.9517
+  ],
+  "note": "r4 Rev 3.5 leisure S-strip ramp F1 -> +1.0, guards + rails"
  }
 }

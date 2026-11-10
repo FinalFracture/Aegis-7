@@ -9,6 +9,8 @@ REP, LAY = [], {}
 R = lambda r, pad=0: (r[0] - pad, r[1] + pad, r[2] - pad, r[3] + pad)
 TREE_HOLES = [(x - .7, x + .7, z - .7, z + .7) for x, z in TREES]
 CORE_HOLES = [c[2] for c in CORES]; LIFT_HOLES = [l[1] for l in LIFTS]; PLANT_HOLES = [p[1] for p in PLANT]
+POOL_CUT = [(1, 10, 26, 32), (8.5, 10, 32, 34.2)]           # r4 Rev 3.6 pool switchback cut + passage (deck to the lobby wall face Z 34.2)
+LEIS_CUT = [(0, 15.3, 44.8, 46.3), (0, 1.8, 46.3, 47.0)]         # r4 Rev 3.5 leisure S-strip ramp + bottom landing
 SKIP_X0 = {12.5, 66.5}; SKIP_X30 = {39.5}        # columns that land inside a stair-core wall (ST-AQS / ST-AQN / LW): bearing taken by the core
 
 def f1_slab():
@@ -21,13 +23,11 @@ def f1_slab():
     it += [("Slab_F1", CON, box(x0, x1, pit - .4, pit, z0, z1))]
     it += [("Slab_F1", CON, m) for m in (box(x0 - .3, x0 + E, pit - .4, F1, z0 - .3, z1 + .3), box(x1 - E, x1 + .3, pit - .4, F1, z0 - .3, z1 + .3),
                                             box(x0 + E, x1 - E, pit - .4, F1, z0 - .3, z0 + E), box(x0 + E, x1 - E, pit - .4, F1, z1 - E, z1 + .3))]
-    # S deck +2.0 (lap / diving), stair hole X 4..7 Z 31.1..34.5
-    st = (4, 7, 31.1, 34.5)
-    it += [("Deck_S_+2.0", SSL, m) for m in slab((0, 30, 0, 34.2), [WATER["lap"][:4], WATER["diving"][:4], st], 2.0, 2.0 + E)]
-    it += [("Deck_S_+2.0", SSL, m) for m in steps(4, 7, 34.5, 2.0 + E, 12, run=.28, y0=-E, direction=-1)]
+    # S deck +2.0 (lap / diving). r4 Rev 3.5: the X 4..7 deck stair is replaced by the switchback cut (tt_struct_pool_ramp, Rev 3.6)
+    it += [("Deck_S_+2.0", SSL, m) for m in slab((0, 30, 0, 34.2), [WATER["lap"][:4], WATER["diving"][:4]] + POOL_CUT, 2.0, 2.0 + E)]
     # N deck +1.0 (river channel, splash -0.6, runout -1.0), N-deck access steps from the foyer door Z 45..47
     holes = RIVER + [WATER["splash"][:4], WATER["runout"][:4]]
-    it += [("Deck_N_+1.0", SSL, m) for m in slab((0, 30, 44.8, 79), holes, 1.0, 1.0 + E)]
+    it += [("Deck_N_+1.0", SSL, m) for m in slab((0, 30, 44.8, 79), holes + LEIS_CUT, 1.0, 1.0 + E)]   # r4: S-strip ramp cut
     sx0, sx1, sz0, sz1, sd = WATER["splash"]; it += [("Deck_N_+1.0", SSL, box(sx0, sx1, -E, 1.0 - sd, sz0, sz1))]
     return it
 
@@ -61,7 +61,7 @@ def walls_f1():
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0)])
     W += wall(20.6, 58.4, y0, y1, axis="z", line=0, openings=[(34.5, 42.5, 4.5), (45, 47, 3.0)], piers=aqp0)
-    W += wall(0.3, 26, y0, y1, axis="x", line=34.5, side=-1, openings=[(4, 7, 3.0)], piers=[(-.3, .3)])
+    W += wall(0.3, 26, y0, y1, axis="x", line=34.5, side=-1, openings=[(8.5, 10, 3.0)], piers=[(-.3, .3)])   # r4 Rev 3.6: 1.5 m ramp passage opening
     W += wall(0.3, 24.5, y0, y1, axis="x", line=44.5, side=1)
     W += [box(0.3, 1.0, y0, y1, 42.5, 44.5 + E), box(23, 24.5, y0, y1, 42.5, 44.5 + E)]          # tank end closures
     W += wall(0.3, 2.6, y0, y1, axis="z", line=57.5, t=1.0) + wall(13.2, 14.7, y0, y1, axis="z", line=57.5, t=1.0)   # bowling acoustic wall stubs
@@ -262,6 +262,9 @@ if __name__ == "__main__":
     for nm, parts, note in KIT:
         col = [("Struct-colonly", [m.copy() for pn, mk, ms in parts if mk in (SL, G, WH, CON) and "Stack" in pn for m in ms])] if "plant" in nm else None
         export_chunk(nm, parts, col, REP, note=note)
+    import ramps
+    ramps.export("tt_struct_pool_ramp", ramps.pool_ramp(), REP, LAY, "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails")
+    ramps.export("tt_struct_leisure_ramp", ramps.leisure_ramp(), REP, LAY, "r4 Rev 3.5 leisure S-strip ramp F1 -> +1.0, guards + rails")
     json.dump(LAY, open(LAYOUT, "w"), indent=1)
     rd = os.path.join(RENDER_OUT, "structure_blockout"); os.makedirs(rd, exist_ok=True); json.dump(REP, open(os.path.join(rd, "struct_report.json"), "w"), indent=1, default=str)
     bad = [r["asset"] for r in REP if not r["passed"]]; print("ASSETS", len(REP), "FAILED", bad, "TRIS", sum(r["tris"] for r in REP))
