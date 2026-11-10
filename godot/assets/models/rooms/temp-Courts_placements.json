@@ -1,0 +1,4522 @@
+{
+ "owner": "temp-Courts",
+ "spec": "design/strip5_tennis_tower_v1.md Rev 3.0",
+ "axes": "Y up, X axial, Z across; yaw deg about +Y; p = building coords of GLB pivot (bottom centre)",
+ "note": "Court doors default CLOSED at mid of each long side (Vance). Open-door asset (tt_court_partition_door) frame line is local z=-0.432 after recenter; apply +0.432 m along local +Z to align with panels if that variant is used. F3 rake + seats are co-placed at the same transform. 3.8 m cut bays sit at the corner-stair end of each long run; 6.5 m cut bays sit at the lift-gap end of each short run (preview had only the 7.5 m short bays, at the lift end \u2014 this file follows Vance Rev 2.7). Stand put-z 17.6 / 61.4 / 14.8 / 64.2 / 32.6 / 110.4 / 29.8 / 113.2 matches assemble_preview; do not 'correct' the back face to nominal Z 15. Track E outer edge is 127.6 and is not moved; playground perches X 128.3..128.6 and path X 128.6..129.8 stay clear. tt_trk_crossing is promoted but not co-located on the full straights (a second bed would clash); Rook may split straights and drop it in at ST+S1/S2 (X 57..64 / 86..92), ST+N1/N2, ST+E (Z 50..60.6), ST-AQS/AQN. Void-edge rail: reuse tt_struct_void_guard (structure / F3-SLNG); not re-placed here. F1-CON / F2-CON floor finish and vomitory portal kit are a later batch if usage allows. WC interiors under the stands are temp-Services'; stand fronts stay lip-only so access stays open.",
+ "stats": {
+  "counts": {
+   "tt_court_partition": 112,
+   "tt_court_net": 120,
+   "tt_court_partition_door_closed": 8,
+   "tt_stand_module_3p8": 8,
+   "tt_stand_module": 32,
+   "tt_stand_module_6p5": 8,
+   "tt_stand_module_f3_3p8": 4,
+   "tt_stand_module_f3_3p8_seats": 4,
+   "tt_stand_module_f3": 16,
+   "tt_stand_module_f3_seats": 16,
+   "tt_stand_module_f3_6p5": 4,
+   "tt_stand_module_f3_6p5_seats": 4,
+   "tt_bb_court": 2,
+   "tt_bb_hoop": 4,
+   "tt_bb_scorer_table": 1,
+   "tt_bb_scoreboard": 1,
+   "tt_trk_corner": 4,
+   "tt_trk_straight_sn": 2,
+   "tt_trk_straight_ew": 2
+  },
+  "n": 352,
+  "basketball_courts": [
+   "W X 41.5..69.5 Z 32..47",
+   "E X 73.5..101.5 Z 32..47"
+  ],
+  "open_door_shift_m": 0.432,
+  "skipped": [
+   "concourse floor/vomitory (budget)",
+   "track crossing co-location (clash)",
+   "void guard (reuse structure)"
+  ]
+ },
+ "open_conflicts": [
+  "Short-run 7.5 m bays moved to the corner-stair end vs assemble_preview z=30.75/48.25 (lift-gap end). Follows Vance.",
+  "Concourse vomitory / floor kit not in this commit."
+ ],
+ "rooms": {
+  "F1-CRT": [
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     49.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     49.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     51.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     51.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     53.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     53.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     55.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     55.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     57.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     57.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     59.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     59.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     61.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     61.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     63.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     63.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     65.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     65.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     67.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     67.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     49.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     49.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     51.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     51.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     53.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     53.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     55.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     55.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     57.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     57.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     59.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     59.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     61.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     61.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     63.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     63.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     65.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     65.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     67.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     67.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     32.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     32.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     34.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     34.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     36.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     36.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     28.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     28.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     30.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     30.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     32.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     32.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     34.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     34.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     36.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     36.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     75.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     75.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     77.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     77.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     79.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     79.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     81.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     81.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     83.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     83.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     85.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     85.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     87.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     87.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     89.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     89.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     91.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     91.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     93.5,
+     0.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     93.5,
+     3.0,
+     27.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     75.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     75.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     77.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     77.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     79.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     79.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     81.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     81.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     83.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     83.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     85.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     85.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     87.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     87.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     89.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     89.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     91.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     91.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     93.5,
+     0.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     93.5,
+     3.0,
+     37.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     28.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     30.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     32.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     32.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     34.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     34.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     36.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     36.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     28.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     28.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     30.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     30.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     32.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     32.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     34.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     34.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     36.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     36.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     49.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     49.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     51.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     51.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     53.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     53.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     55.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     55.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     57.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     57.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     59.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     59.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     61.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     61.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     63.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     63.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     65.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     65.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     67.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     67.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     49.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     49.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     51.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     51.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     53.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     53.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     55.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     55.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     57.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     57.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     59.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     59.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     61.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     61.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     63.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     63.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     65.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     65.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     67.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     67.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     42.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     42.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     44.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     44.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     46.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     46.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     48.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     48.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     48.5,
+     0.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     48.5,
+     3.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     42.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     42.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     44.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     44.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     46.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     46.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     48.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     48.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     68.5,
+     0.0,
+     50.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     68.5,
+     3.0,
+     50.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     75.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     75.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     77.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     77.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     79.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     79.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     81.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     81.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     83.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     83.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     85.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     85.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     87.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     87.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     89.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     89.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     91.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     91.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     93.5,
+     0.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     93.5,
+     3.0,
+     41.5
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     75.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     75.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     77.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     77.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     79.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     79.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     81.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     81.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition_door_closed.glb",
+    "asset": "tt_court_partition_door_closed",
+    "p": [
+     83.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "default closed; mid long-side 2m slot (1 m west of box centre; no 1 m filler)"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     83.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     85.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     85.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     87.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     87.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     89.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     89.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     91.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     91.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     93.5,
+     0.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     93.5,
+     3.0,
+     51.5
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     42.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     42.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     44.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     44.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     46.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     46.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     48.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     48.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     74.5,
+     0.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     74.5,
+     3.0,
+     50.5
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     42.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     42.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     44.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     44.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     46.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     46.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     48.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     48.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   },
+   {
+    "glb": "res://assets/models/tt_court_partition.glb",
+    "asset": "tt_court_partition",
+    "p": [
+     94.5,
+     0.0,
+     50.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT"
+   },
+   {
+    "glb": "res://assets/models/tt_court_net.glb",
+    "asset": "tt_court_net",
+    "p": [
+     94.5,
+     3.0,
+     50.5
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CRT",
+    "note": "net band +3.0..+5.0"
+   }
+  ],
+  "F1-CON": [
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     42.1,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     42.1,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     47.75,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     47.75,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     55.25,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     55.25,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     62.75,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     62.75,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     80.25,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     80.25,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     87.75,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     87.75,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     95.25,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     95.25,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     100.9,
+     0.0,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     100.9,
+     0.0,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     32.6,
+     0.0,
+     24.25
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     110.4,
+     0.0,
+     24.25
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     32.6,
+     0.0,
+     31.25
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     110.4,
+     0.0,
+     31.25
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     32.6,
+     0.0,
+     47.75
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     110.4,
+     0.0,
+     47.75
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     32.6,
+     0.0,
+     54.75
+    ],
+    "yaw": 90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     110.4,
+     0.0,
+     54.75
+    ],
+    "yaw": -90,
+    "tag": "f1",
+    "room": "F1-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   }
+  ],
+  "F2-CON": [
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     42.1,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     42.1,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     47.75,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     47.75,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     55.25,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     55.25,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     62.75,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     62.75,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     80.25,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     80.25,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     87.75,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     87.75,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     95.25,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     95.25,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     100.9,
+     6.1,
+     17.6
+    ],
+    "yaw": 0,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "S long; put z 17.6 keeps preview back-face convention"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
+    "p": [
+     100.9,
+     6.1,
+     61.4
+    ],
+    "yaw": 180,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "N long"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     32.6,
+     6.1,
+     24.25
+    ],
+    "yaw": 90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     110.4,
+     6.1,
+     24.25
+    ],
+    "yaw": -90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     32.6,
+     6.1,
+     31.25
+    ],
+    "yaw": 90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     110.4,
+     6.1,
+     31.25
+    ],
+    "yaw": -90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     32.6,
+     6.1,
+     47.75
+    ],
+    "yaw": 90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
+    "p": [
+     110.4,
+     6.1,
+     47.75
+    ],
+    "yaw": -90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     32.6,
+     6.1,
+     54.75
+    ],
+    "yaw": 90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "W short; 6.5 m at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module.glb",
+    "asset": "tt_stand_module",
+    "p": [
+     110.4,
+     6.1,
+     54.75
+    ],
+    "yaw": -90,
+    "tag": "f2",
+    "room": "F2-CON",
+    "note": "E short; 6.5 m at lift-gap end"
+   }
+  ],
+  "F3-STAND": [
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8.glb",
+    "asset": "tt_stand_module_f3_3p8",
+    "p": [
+     42.1,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8_seats.glb",
+    "asset": "tt_stand_module_f3_3p8_seats",
+    "p": [
+     42.1,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8.glb",
+    "asset": "tt_stand_module_f3_3p8",
+    "p": [
+     42.1,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8_seats.glb",
+    "asset": "tt_stand_module_f3_3p8_seats",
+    "p": [
+     42.1,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     47.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     47.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     47.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     47.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     55.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     55.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     55.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     55.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     62.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     62.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     62.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     62.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     80.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     80.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     80.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     80.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     87.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     87.75,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     87.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     87.75,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     95.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     95.25,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     95.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     95.25,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8.glb",
+    "asset": "tt_stand_module_f3_3p8",
+    "p": [
+     100.9,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "S long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8_seats.glb",
+    "asset": "tt_stand_module_f3_3p8_seats",
+    "p": [
+     100.9,
+     12.2,
+     14.8
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8.glb",
+    "asset": "tt_stand_module_f3_3p8",
+    "p": [
+     100.9,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "N long rake; seats co-placed"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_3p8_seats.glb",
+    "asset": "tt_stand_module_f3_3p8_seats",
+    "p": [
+     100.9,
+     12.2,
+     64.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     29.8,
+     12.2,
+     24.25
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "W short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     29.8,
+     12.2,
+     24.25
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     113.2,
+     12.2,
+     24.25
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "E short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     113.2,
+     12.2,
+     24.25
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5.glb",
+    "asset": "tt_stand_module_f3_6p5",
+    "p": [
+     29.8,
+     12.2,
+     31.25
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "W short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5_seats.glb",
+    "asset": "tt_stand_module_f3_6p5_seats",
+    "p": [
+     29.8,
+     12.2,
+     31.25
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5.glb",
+    "asset": "tt_stand_module_f3_6p5",
+    "p": [
+     113.2,
+     12.2,
+     31.25
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "E short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5_seats.glb",
+    "asset": "tt_stand_module_f3_6p5_seats",
+    "p": [
+     113.2,
+     12.2,
+     31.25
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5.glb",
+    "asset": "tt_stand_module_f3_6p5",
+    "p": [
+     29.8,
+     12.2,
+     47.75
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "W short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5_seats.glb",
+    "asset": "tt_stand_module_f3_6p5_seats",
+    "p": [
+     29.8,
+     12.2,
+     47.75
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5.glb",
+    "asset": "tt_stand_module_f3_6p5",
+    "p": [
+     113.2,
+     12.2,
+     47.75
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "E short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_6p5_seats.glb",
+    "asset": "tt_stand_module_f3_6p5_seats",
+    "p": [
+     113.2,
+     12.2,
+     47.75
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     29.8,
+     12.2,
+     54.75
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "W short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     29.8,
+     12.2,
+     54.75
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3.glb",
+    "asset": "tt_stand_module_f3",
+    "p": [
+     113.2,
+     12.2,
+     54.75
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "E short rake; 6.5 at lift-gap end"
+   },
+   {
+    "glb": "res://assets/models/tt_stand_module_f3_seats.glb",
+    "asset": "tt_stand_module_f3_seats",
+    "p": [
+     113.2,
+     12.2,
+     54.75
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-STAND",
+    "note": "co-placed with rake, same transform"
+   }
+  ],
+  "F3-BB": [
+   {
+    "glb": "res://assets/models/tt_bb_court.glb",
+    "asset": "tt_bb_court",
+    "p": [
+     55.5,
+     12.2,
+     39.5
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "W court 28x15, end-to-end along X"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_court.glb",
+    "asset": "tt_bb_court",
+    "p": [
+     87.5,
+     12.2,
+     39.5
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "E court 28x15"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_hoop.glb",
+    "asset": "tt_bb_hoop",
+    "p": [
+     41.93,
+     12.2,
+     39.5
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "W court W hoop; baseline X 41.5"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_hoop.glb",
+    "asset": "tt_bb_hoop",
+    "p": [
+     69.07,
+     12.2,
+     39.5
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "W court E hoop; baseline X 69.5"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_hoop.glb",
+    "asset": "tt_bb_hoop",
+    "p": [
+     73.93,
+     12.2,
+     39.5
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "E court W hoop; baseline X 73.5"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_hoop.glb",
+    "asset": "tt_bb_hoop",
+    "p": [
+     101.07,
+     12.2,
+     39.5
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "E court E hoop; baseline X 101.5"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_scorer_table.glb",
+    "asset": "tt_bb_scorer_table",
+    "p": [
+     71.5,
+     12.2,
+     39.5
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "mid-gap 4 m, long axis along Z"
+   },
+   {
+    "glb": "res://assets/models/tt_bb_scoreboard.glb",
+    "asset": "tt_bb_scoreboard",
+    "p": [
+     71.5,
+     19.7,
+     39.5
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-BB",
+    "note": "hung on hall centre line Z 39.5, faces \u00b1X; y=19.7 under ball net +21.5"
+   }
+  ],
+  "F3-TRK": [
+   {
+    "glb": "res://assets/models/tt_trk_corner.glb",
+    "asset": "tt_trk_corner",
+    "p": [
+     2.2,
+     12.2,
+     2.2
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "SW corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_corner.glb",
+    "asset": "tt_trk_corner",
+    "p": [
+     126.1,
+     12.2,
+     2.2
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "SE corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_corner.glb",
+    "asset": "tt_trk_corner",
+    "p": [
+     126.1,
+     12.2,
+     76.9
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "NE corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_corner.glb",
+    "asset": "tt_trk_corner",
+    "p": [
+     2.2,
+     12.2,
+     76.9
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "NW corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_straight_sn.glb",
+    "asset": "tt_trk_straight_sn",
+    "p": [
+     64.15,
+     12.2,
+     1.6
+    ],
+    "yaw": 0,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "S straight X 3.7..124.6, outer Z 0.7"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_straight_sn.glb",
+    "asset": "tt_trk_straight_sn",
+    "p": [
+     64.15,
+     12.2,
+     77.5
+    ],
+    "yaw": 180,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "N straight, outer Z 78.4"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_straight_ew.glb",
+    "asset": "tt_trk_straight_ew",
+    "p": [
+     1.6,
+     12.2,
+     39.55
+    ],
+    "yaw": 90,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "W straight Z 3.7..75.4, outer X 0.7"
+   },
+   {
+    "glb": "res://assets/models/tt_trk_straight_ew.glb",
+    "asset": "tt_trk_straight_ew",
+    "p": [
+     126.7,
+     12.2,
+     39.55
+    ],
+    "yaw": -90,
+    "tag": "f3",
+    "room": "F3-TRK",
+    "note": "E straight, outer X 127.6 FIXED"
+   }
+  ]
+ }
+}
