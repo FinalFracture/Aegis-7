@@ -10,8 +10,7 @@ import modlib as ml
 import numpy as np, trimesh
 ml._m('rt_rub', 'TT_PlayRubber_Slate', (.20, .24, .27), 0, .9)
 ml._m('rt_fab', 'TT_Upholstery_FabricSlate', (.24, .28, .33), 0, .95)
-ml._m('rt_kick', 'TT_KickPlate_Gunmetal', (.18, .20, .24), .85, .45)
-RU, FA, KP = 'rt_rub', 'rt_fab', 'rt_kick'
+RU, FA, KP = 'rt_rub', 'rt_fab', G
 SOLID = {SL, G, ST, CON, SSL, WH, ALY, SGM, RU, FA, KP, SCR} if 'SCR' in globals() else {SL, G, ST, CON, SSL, WH, ALY, SGM, RU, FA, KP}
 GM = Path(GODOT_MODELS)
 REP = []; LAY = {}
@@ -83,37 +82,65 @@ def zwall_leaf(c, ang, L, W, t=.012, face=1):
     return xf(m, t=(c[0], c[1], c[2] + face*(t - .004)))
 
 def view_rail_parts(x0, x1, z, y0=0.0, h=1.07):
-    """Gunmetal view rail for the lounge at the W glass: posts every 1.2 m, top rail, mid rail at h/2."""
+    """Sculpted gunmetal view rail: round posts every 1.2 m, top rail, mid rail, cyan LED. No glass."""
     parts = []
-    pw, rw = 0.025, 0.02
-    c0, c1 = x0 + pw, x1 - pw
+    c0, c1 = x0 + 0.025, x1 - 0.025
     xs = [c0]
     x = c0 + 1.2
     while x < c1 - 1e-6:
         xs.append(x); x += 1.2
-    if c1 - xs[-1] > 1e-6: xs.append(c1)
-    for x in xs:
-        parts.append(('post', KP, box(x - pw, x + pw, y0, y0 + h, z - pw, z + pw)))
+    if c1 - xs[-1] > 1e-6:
+        xs.append(c1)
+    pr, tr, mr = 0.022, 0.024, 0.014
+    yc = y0 + h - tr
+    cap0, cap1 = x0 + tr, x1 - tr
+    # sphere r equals the rail r, so the tube stops 18 mm short and the cap embeds 6 mm
+    inset = tr - 0.006
+    if cap1 - inset > cap0 + inset:
+        parts.append(('TopRail', KP, tube((cap0 + inset, yc, z), (cap1 - inset, yc, z), tr, 10)))
+    parts.append(('RailEndCap', KP, node((cap0, yc, z), tr)))
+    parts.append(('RailEndCap', KP, node((cap1, yc, z), tr)))
+    for cx in xs:
+        parts.append(('Post', KP, tube((cx, y0 + 0.010, z), (cx, yc - 0.0215, z), pr, 10)))
+        parts.append(('BasePlate', KP, box(max(x0, cx - 0.05), min(x1, cx + 0.05), y0, y0 + 0.014, z - 0.028, z + 0.028)))
+        for s in (-1, 1):
+            bx = min(max(cx + s * 0.034, x0 + 0.010), x1 - 0.010)
+            parts.append(('Bolt', SGM, node((bx, y0 + 0.018, z), 0.008)))
     for a, b in zip(xs, xs[1:]):
-        xa, xb = a + pw + D, b - pw - D
-        if xb - xa <= 0: continue
-        parts.append(('top_rail', KP, box(xa, xb, y0 + h - 0.04, y0 + h, z - rw, z + rw)))
-        my = y0 + h / 2
-        parts.append(('mid_rail', KP, box(xa, xb, my - rw, my + rw, z - rw, z + rw)))
+        xa, xb = a + pr - 0.004, b - pr + 0.004
+        if xb > xa:
+            my = y0 + h / 2
+            parts.append(('MidRail', KP, tube((xa, my, z), (xb, my, z), mr, 8)))
+        la = max(a + pr + D, cap0 + tr + D)
+        lb = min(b - pr - D, cap1 - tr - D)
+        if lb > la:
+            parts.append(('RailLED', CY, box(la, lb, yc - 0.030, yc - 0.020, z - 0.006, z + 0.006)))
     return parts
 
 def perch_it():
     """Fence perch L=1.8 D=0.3. Pivot bottom-centre; seat top ~0.45."""
     it = It()
-    it.b('seat', RU, -.9, .9, .41, .45, -.15, .15)
-    it.b('lip', RU, -.896, .896, .39, .414, .146, .176)
-    by0, by1 = .414 - .28, .414
-    bz0, bz1 = -.146, -.026
+    it.b('Seat', RU, -.88, .88, .41, .45, -.15, .13)
+    it.a('Seat', RU, tube((-.88, .43, .13), (.88, .43, .13), .02, 8))
+    it.a('Seat', RU, node((-.88, .43, .13), .02))
+    it.a('Seat', RU, node((.88, .43, .13), .02))
+    for zc in (-.09, -.02, .05):
+        it.b('CourtLine', WH, -.80, .80, .448, .452, zc - .006, zc + .006)
+    it.b('FrontSkirt', RU, -.86, .86, .39, .414, .146, .176)
     for s in (-1, 1):
         cx = .75 * s
-        it.b('bracket', KP, cx - .04, cx + .04, by0, by1, bz0, bz1)
+        it.b('Bracket', KP, cx - .04, cx + .04, .134, .414, -.148, -.128)
+        it.b('Bracket', KP, cx - .015, cx + .015, .37, .414, -.13, .10)
+        # specified line (cx,.16,-.130)->(cx,.40,.07); stop just under the arm so embed stays <= 6 mm
+        y_end = .3685
+        t = (y_end - .16) / (.40 - .16)
+        z_end = -.130 + t * (.07 + .130)
+        it.a('Brace', KP, tube((cx, .16, -.130), (cx, y_end, z_end), .011, 8))
+        for bx in (cx - .025, cx + .025):
+            for by in (.18, .36):
+                it.a('Bolt', SGM, node((bx, by, -.128 + .006), .01))
     it.col(-.9, .9, .41, .45, -.15, .15)
     for s in (-1, 1):
         cx = .75 * s
-        it.col(cx - .04, cx + .04, by0, by1, bz0, bz1)
+        it.col(cx - .04, cx + .04, .134, .414, -.148, -.128)
     return it
