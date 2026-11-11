@@ -15,7 +15,8 @@ def _fin(x, y0, y1, depth, t, z0=0.0, belly=0.0):
     return box(x - t/2, x + t/2, y0, y1, z0 - depth, z0)
 def build(q):
     w = q.get("width", 4.0); h = w/2; X0, X1 = -h + .001, h - .001; p = Part(); F = []
-    F += [box(X0, X1, H - .15, H, -.65, .1), _fin(-h + .06, .6 - E, H - .15 + E, .6, .05, z0=.03), box(h - .045, h - .01, .6 - E, H - .15 + E, -.04, .04)]
+    PZ = -.525 if q.get("pool") else None   # r7c (Aquatics 667f3cc): S bays X 2..26 behind the lap-tank wall (Z 0.500): ledge / edge fin to raw z >= -0.525 (world Z <= 0.496)
+    F += [box(X0, X1, H - .15, H, -.65, .1), _fin(-h + .06, .6 - E, H - .15 + E, .555 if PZ else .6, .05, z0=.03), box(h - .045, h - .01, .6 - E, H - .15 + E, -.04, .04)]
     cols = [(-h + .085, -.0125), (.0125, h - .045)] if w > 3 else [(-h + .085, h - .045)]
     if w > 3: F.append(_fin(0, .6 - E, H - .15 + E, .45, .025, z0=.03))
     # recessed alpha-scissor panes + deep reveal frames (4 bars per cell, standing proud to z +0.15)
@@ -27,7 +28,7 @@ def build(q):
                   box(a + .07 - E, b - .07 + E, y0 + .004, y0 + .07, -.04, .15), box(a + .07 - E, b - .07 + E, y1 - .07, y1 - .004, -.04, .12)]
     F += R
     # plinth ledge (stepped) + slate sill
-    p.add("Plinth_Ledge", SL, box(X0, X1, 0, .45, -.1, .42), box(X0, X1, .45 - E, .6, -.65, .3))
+    p.add("Plinth_Ledge", SL, box(X0, X1, 0, .45, -.1, .42), box(X0, X1, .45 - E, .6, PZ if PZ else -.65, .3))
     p.add("Slate_Sill", SSL, box(X0, X1, .596, .702, .045, .26))
     p.add("Plinth_Court_Line", AM, box(X0, -h + .047, .2, .24, .42 - E, .427), box(-h + .453, X1, .2, .24, .42 - E, .427))
     # spandrel band between F1 and F2 (5.6..6.52) with soffit/header
@@ -66,13 +67,22 @@ def seam_check(widths):
     near = {k: v for k, v in A.items() if v[1].bounds[1][0] > edge - .6 and v[1].bounds[0][0] < edge + .6}
     chk = cc.check(near, n_samp=300); bad = [o for o in chk["overlap"] if not o[3] and o[0][:2] != o[1][:2]]; cop = [c for c in chk["coplanar"] if c[0][:2] != c[1][:2]]
     return dict(bad=bad[:3], coplanar=cop[:3], pass_=not bad and not cop)
+def promote_pool():   # r7c: tt_facade_bay_pool (header keeps -0.65, so bbox / pivot match tt_facade_bay)
+    p = recenter(build(dict(VARIANTS[0], pool=True))); gp = os.path.join(ROOT, "godot/assets/models", "tt_facade_bay_pool.glb")
+    chk = cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=300)
+    tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    ok = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
+    V = np.vstack([m.vertices for _, m in p.P.values()])
+    print("tt_facade_bay_pool.glb", int(tris), chk["pass"], chk["worst_overlap"], [o for o in chk["overlap"] if not o[3]][:3], chk["coplanar"][:3], ok, V.min(0).round(4).tolist(), V.max(0).round(4).tolist())
 def promote():
     for prm, fn in ((VARIANTS[0], "tt_facade_bay.glb"), (VARIANTS[1], "tt_facade_bay_half.glb")):
         p = recenter(build(prm)); gp = os.path.join(ROOT, "godot/assets/models", fn)
         tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
         V = np.vstack([m.vertices for _, m in p.P.values()]); lo, hi = V.min(0), V.max(0)
         print(fn, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1:] == ["pool"]:
+    promote_pool()
+elif __name__ == "__main__":
     rep = run("facade_bay_final", build, VARIANTS, title="F1-F2 facade bay final", sheet="facade_bay_final_run_sheet.png", post=finish_scissor)
     seams = {str(w): seam_check(w) for w in ([4, 4], [4, 2], [2, 4])}; print("SEAMS", seams)
     rdir = os.path.join(RENDER_OUT, "facade_bay_final"); os.makedirs(rdir, exist_ok=True)

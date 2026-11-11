@@ -105,7 +105,7 @@ def envelope():
             if 68 < x < 76:
                 if abs(x - 70) < .1: put(f"tt_secondary_entrance_{sec}", 72, 0, z0 + s*.98, yaw, "facade")
                 continue
-            put("tt_facade_bay", x, 0, z0 + s*.21, yaw, "facade")
+            put("tt_facade_bay_pool" if (sec == "s" and 2 <= x <= 26) else "tt_facade_bay", x, 0, z0 + s*.21, yaw, "facade")   # r7c: pool-wall trim behind the lap tank
     for j in range(19):
         z = 3.5 + 4*j
         put("tt_curtain_wall_panel", -12 + .285, 12.2, z, -90, "env"); put("tt_curtain_wall_panel", 140 - .285, 12.2, z, 90, "env")

@@ -113,3 +113,7 @@ No script errors, no leaks at exit.
 - `tt_lift_core` is now the spec 4.0 m wide: shafts 2 × 1.75, walls 0.15/0.2/0.15, car 1.5 × 2.4 internal, landing doors 1.0 m. It was 4.6 m.
 - New `tt_stair_core_b_cap` for the ST+S1 / ST+S2 F2 cores, whose tops sit under the F3 stand rake. Well guards, handrails and the top court stripe are cut at F3. Below F3 everything is unchanged; above F3 the stand's solid rake closes the well.
 - Headless check after the fixes: placed 2,659, 228 GLBs, missing 0, surfaces 24,279, tris 3,075,770, colliders 3,361, PASS.
+
+## r7c (Aquatics 667f3cc)
+- S facade bays X 2..26 (Z -0.21, yaw 180) now use `tt_facade_bay_pool.glb`: plinth ledge upper box and edge fin trimmed to world Z <= 0.496 (hidden behind lap-tank wall at Z 0.504). Header kept, so bbox/pivot identical to tt_facade_bay. Colliders unchanged (Plinth-colonly reaches Z 0.071, Wall-colonly at glass line).
+- Focused clash tt_pool_* vs tt_facade_bay_pool: 0 pairs. tt_pool_deck_finish_c confirmed at [24.0225, 1.92, 17.237].

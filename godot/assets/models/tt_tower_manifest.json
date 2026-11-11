@@ -4461,7 +4461,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 2,
 0,
@@ -4470,7 +4470,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4509,7 +4509,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 6,
 0,
@@ -4518,7 +4518,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4557,7 +4557,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 10,
 0,
@@ -4566,7 +4566,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4605,7 +4605,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 14,
 0,
@@ -4614,7 +4614,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4653,7 +4653,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 18,
 0,
@@ -4662,7 +4662,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4701,7 +4701,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 22,
 0,
@@ -4710,7 +4710,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -4749,7 +4749,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_facade_bay.glb",
+"glb": "res://assets/models/tt_facade_bay_pool.glb",
 "p": [
 26,
 0,
@@ -4758,7 +4758,7 @@
 "yaw": 180,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_facade_bay"
+"asset": "tt_facade_bay_pool"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
