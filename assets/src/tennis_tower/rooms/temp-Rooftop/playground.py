@@ -58,7 +58,7 @@ def build(PL):
     A_p = emit('tt_play_perch', perch_it(), '1.8x0.3 fence perch')
     Y = F3_Y
     PL.append(dict(glb=str(GM / 'tt_play_surface.glb'), asset='tt_play_surface', p=[134.15, Y, 39.5], yaw=0, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_play_tower.glb'), asset='tt_play_tower', p=[136.5, Y, 28.0], yaw=0, tag='f3'))
+    PL.append(dict(glb=str(GM / 'tt_play_tower.glb'), asset='tt_play_tower', p=[136.14, Y, 28.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_swing_set.glb'), asset='tt_swing_set', p=[136.0, Y, 35.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_dome_climber.glb'), asset='tt_dome_climber', p=[136.5, Y, 42.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_see_saw.glb'), asset='tt_see_saw', p=[136.0, Y, 48.0], yaw=90, tag='f3'))
