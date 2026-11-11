@@ -60,7 +60,7 @@ def build(PL):
     PL.append(dict(glb=str(GM / 'tt_play_surface.glb'), asset='tt_play_surface', p=[134.15, Y, 39.5], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_play_tower.glb'), asset='tt_play_tower', p=[136.14, Y, 28.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_swing_set.glb'), asset='tt_swing_set', p=[136.0, Y, 35.0], yaw=0, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_dome_climber.glb'), asset='tt_dome_climber', p=[136.5, Y, 42.0], yaw=0, tag='f3'))
+    PL.append(dict(glb=str(GM / 'tt_dome_climber.glb'), asset='tt_dome_climber', p=[136.32, Y, 42.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_see_saw.glb'), asset='tt_see_saw', p=[136.0, Y, 48.0], yaw=90, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_toddler_zone.glb'), asset='tt_toddler_zone', p=[134.5, Y, 54.0], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_balance_trail.glb'), asset='tt_balance_trail', p=[132.5, Y, 38.0], yaw=90, tag='f3'))
@@ -72,7 +72,7 @@ def build(PL):
     place(PL, A_g, 134.15, Y, 20.6, 180)
     place(PL, A_g, 134.15, Y, 58.4, 0)
     for z in [21.6 + 2.0 * i for i in range(18)]:
-        place(PL, A_f, 139.7, Y, z, 90)
+        place(PL, A_f, 139.45, Y, z, 90)
     for x in [129.3 + 2.0 * i for i in range(5)]:
         place(PL, A_f, x, Y, 20.6, 180)
         place(PL, A_f, x, Y, 58.4, 0)

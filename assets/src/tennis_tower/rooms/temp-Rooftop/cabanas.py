@@ -169,9 +169,9 @@ def build(PL):
             place(PL, A_v, -10.6, F3_Y, gz, 0)
     # view rails along W glass covering Z 20.6..58.4 (6 m modules, yaw=-90: local X -> world -Z? 
     # yaw=-90: local +X -> world -Z, local +Z -> world -X. Rail along local X becomes along -Z. Good.
-    # place at X=-11.65 so rail faces glass (local +Z toward -X after yaw=-90)
+    # place at X=-11.47 so rail faces glass (local +Z toward -X after yaw=-90)
     for i, z0 in enumerate([23.6, 29.6, 35.6, 41.6, 47.6, 53.6]):
-        place(PL, A_r, -11.65, F3_Y, z0, -90)
+        place(PL, A_r, -11.47, F3_Y, z0, -90)
     # lounge seats in walk, facing glass (yaw=90 -> local +Z to -X)
     for i, z in enumerate([22.5, 27.0, 31.5, 36.0, 40.5, 45.0, 49.5, 54.0]):
         place(PL, A_s, -4.2, F3_Y, z, 90)
