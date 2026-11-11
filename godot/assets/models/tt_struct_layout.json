@@ -85,7 +85,7 @@
    -0.004,
    30.0313
   ],
-  "note": "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails"
+  "note": "r4 Rev 3.5 pool-deck switchback F1 -> +2.0, guards + rails; r7 top landing to +2.012 (no lip)"
  },
  "tt_struct_f2_feature_stair_guard": {
   "world_offset": [
@@ -101,6 +101,14 @@
    -0.004,
    45.9517
   ],
-  "note": "r4 Rev 3.5 leisure S-strip ramp F1 -> +1.0, guards + rails"
+  "note": "r4 Rev 3.5 leisure S-strip ramp F1 -> +1.0, guards + rails; r7 mid landing +12 mm, top +1.012 (no lip)"
+ },
+ "tt_struct_plinth_fill": {
+  "world_offset": [
+   54.0,
+   -4.1906,
+   40.0
+  ],
+  "note": "r7 cylinder drop: cast fill from slab / terrace undersides to the R 200 hull - 0.15 m"
  }
 }

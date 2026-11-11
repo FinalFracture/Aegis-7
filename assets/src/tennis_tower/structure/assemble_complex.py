@@ -66,6 +66,7 @@ MEGA_STRUCTURE = {
     "tt_struct_f2_slab", "tt_struct_f2_walls",
     "tt_struct_f3_slab", "tt_struct_f3_walls",
     "tt_struct_columns",
+    "tt_struct_plinth_fill",   # r7: cast fill under the whole footprint (pool tanks / pit sit in it by design)
 }
 
 

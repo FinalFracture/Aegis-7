@@ -82,7 +82,7 @@ def pool_ramp():   # r4b: Rev 3.6 (ad89c1a) layout, legs along X north of the 3 
     W[0] = wedge(2.497, 8.5, 30.556, 31.994, L1(2.497), 0.0, "x")                                        # L1 ends on the F1 bottom landing
     g = .003
     LD = [box(1.0, 2.5, -E, .5, 29.05 + g, 32.0), box(1.0, 2.5, -E, 1.5, 26.0, 28.95 - g),                # W turning landings +0.5 / +1.5
-          box(8.5, 10.0, -E, 1.0, 27.55 + g, 30.45 - g), box(8.5, 10.0, -E, 2.0, 26.0, 27.45 - g)]        # E +1.0 turn, +2.0 top (exits +X)
+          box(8.5, 10.0, -E, 1.0, 27.55 + g, 30.45 - g), wedge(8.5, 10.0, 26.0, 27.45 - g, 2.0, 2.012, "x")]   # E +1.0 turn, +2.0 top (exits +X); r7: top landing rises 12 mm at 1:125 to the +2.012 terrazzo (no lip)
     k.add("Ramp_Legs", SSL, *W); k.add("Ramp_Landings", SSL, *LD); C(*W, *LD)
     sp = lambda x0, x1, z, y0, y1: huv([(x, y, zz) for x, yt in ((x0, y0), (x1, y1)) for zz in (z - .05, z + .05) for y in (-E, yt)])
     SP = [sp(2.5, 8.5, 30.5, 1.57, 2.07), box(8.5, 10.0, -E, 2.07, 30.45, 30.55),          # L1 | L2, then F1 bottom landing | +1.0
@@ -110,20 +110,21 @@ def pool_ramp():   # r4b: Rev 3.6 (ad89c1a) layout, legs along X north of the 3 
 
 def leisure_ramp():
     k = Kit(); C = lambda *ms: k.col(*[m.copy() for m in ms])
-    a = lerp(1.8, 7.8, 0, .5); b = lerp(9.3, 15.3, .5, 1.0)
-    W = [wedge(1.8, 7.803, 44.803, 46.297, 0, a(7.803), "x"), wedge(9.297, 15.3, 44.803, 46.297, b(9.297), 1.0, "x")]   # legs run 3 mm into the landing
-    LD = [box(7.8, 9.3, -E, .5, 44.801, 46.299)]
+    TL = .012                                     # r7: Aquatics nonslip finish top +1.012 at the X 15.3 exit; the mid landing takes the 12 mm at 1:125 (<= 1:48), legs stay 1:12
+    a = lerp(1.8, 7.8, 0, .5); m = lerp(7.8, 9.3, .5, .5 + TL); b = lerp(9.3, 15.3, .5 + TL, 1.0 + TL)
+    W = [wedge(1.8, 7.803, 44.803, 46.297, 0, a(7.803), "x"), wedge(9.297, 15.3, 44.803, 46.297, b(9.297), 1.0 + TL, "x")]   # legs run 3 mm into the landing
+    LD = [wedge(7.8, 9.3, 44.801, 46.299, .5, .5 + TL, "x")]
     k.add("Ramp_Legs", SSL, *W); k.add("Ramp_Landings", SSL, *LD); C(*W, *LD)
     k.add("Court_Lines", WH, strip(1.9, 15.2, 45.525, 45.575, lambda s: a(s) if s <= 7.8 else (.5 if s <= 9.3 else b(s)), "x") if False else strip(1.9, 7.7, 45.525, 45.575, a, "x"),
           strip(9.4, 15.2, 45.525, 45.575, b, "x"))
-    k.add("Court_Line_Amber", AM, *[strip(x, x + .05, 44.85, 46.18, f, "x") for x, f in ((1.8, a), (7.75, a), (9.3, b), (15.25, b))])
-    surf = lambda s: 0.0 if s <= 1.8 else (a(s) if s <= 7.8 else (.5 if s <= 9.3 else (b(s) if s <= 15.3 else 1.0)))
-    T = lambda s: 1.0 + GT
+    k.add("Court_Line_Amber", AM, *[strip(x, x + .05, 44.85, 46.18, f, "x") for x, f in ((1.8, a), (7.745, a), (9.3, b), (15.25, b))])   # r7: 7.745 keeps the amber end 5 mm off the landing face (coplanar)
+    surf = lambda s: 0.0 if s <= 1.8 else (a(s) if s <= 7.8 else (m(s) if s <= 9.3 else (b(s) if s <= 15.3 else 1.0 + TL)))
+    T = lambda s: 1.0 + TL + GT                    # r7: guard top follows the +12 mm
     k.guard(1.76, 15.26, 46.24, "x", surf, T, (True, True), kerb=False)          # +Z side along the drop from the +1.0 strip
     k.guard(46.24, 46.94, 1.76, "z", lambda s: 0.0, T, (False, True))           # landing / deck-strip edge at X 1.8
     k.guard(.96, 1.76, 46.94, "x", lambda s: 0.0, T, (True, False))            # landing / river wall (lining Z 47.0..47.06), kerb 0.01 off it
     k.guard(.2, .96, 47.06, "x", lambda s: 1.0 + TZ, T, (True, True))               # W deck strip X 0..1 edge over the landing
-    pts = [(1.5, RH), (1.8, RH), (7.8, .5 + RH), (9.3, .5 + RH), (15.3, 1.0 + RH), (15.6, 1.0 + RH)]
+    pts = [(1.5, RH), (1.8, RH), (7.8, .5 + RH), (9.3, .5 + TL + RH), (15.3, 1.0 + TL + RH), (15.6, 1.0 + TL + RH)]
     k.rail(pts, 44.8 + RO, "x", 44.8)                                             # S: on the tank-bay wall face
     k.rail([(1.8, RH)] + pts[2:5], 46.24 - RO, "x", 46.24 - .035)                # N: on the guard posts
     return k
