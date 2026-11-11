@@ -113,10 +113,19 @@ def stall():
     for x in (-2.0, 0, 2.0): it.a('Menu_Hangers', ST, tube((x, 3.396, 2.05), (x, 3.454, 2.05), .02, 6))
     for k in range(9): it.a('Canopy_Leaves', LF2, zwall_leaf((-2.8 + .7*k, 3.05, 2.5), (k - 4)*.12, .55, .2, face=1))
     for x in (x0 + .15, x1 - .15): it.a('Canopy_Balls', BA, node((x, 3.5, 2.3), .09, 1))
-    # moss mound bases at the stall corners (integrated greenery, no planter)
-    for x in (x0 + .5, x1 - .5): it.a('Moss_Base', LF, seated_mound((x, 0, 2.38), .2, int(abs(x)*7)))
+    # moss at front corners, inset so the SW stall at (54.0, 67.2) clears the 2x2 TC-N
+    # Pedestal_Concrete at (57.5, 70.5) by >= 50 mm; keep stall X/Z placement
+    for i, x in enumerate((x0 + .72, x1 - .72)):
+        it.a('Moss_Base', MDK if i == 0 else MMD, seated_mound((x, 0, 2.05), .10, int(abs(x)*7)))
+        for k in range(3):
+            lx = x + (-.05 + .05 * k); lz = 2.11
+            it.a('Moss_Leaves', MMD if k % 2 == 0 else MDK,
+                 leaf((lx, .22, lz), .16 + .02 * k, .07, yaw=(-.12 + .12 * k), pitch=.28, t=.01))
     it.col(x0, x1, 0, 3.4, z0, z0 + .15)
-    return emit('tt_food_stall', it, '6x5 m stall incl. kitchen; front +Z; accessible 0.9 m counter at 0.86 m')
+    out = emit('tt_food_stall', it, '6x5 m stall incl. kitchen; front +Z; accessible 0.9 m counter at 0.86 m')
+    for nm, _ in out:
+        finish_moss_scissor(str(GM / f'{nm}.glb'))
+    return out
 
 def table4(acc=False):
     it = It()
@@ -167,37 +176,60 @@ def service_door():
 
 def tree_moss():
     it = It()
-    # flare r=1.0 kept clear; AABB radius <= 1.50 (N queues at +1.81 m in Z from the tree)
+    # Pedestal_Concrete is a 2 x 2 m square (|x|,|z| <= 1.0, y 0..0.6), not an r=1 circle.
+    # Keep a 50 mm gap (outside |x|<=1.05 and |z|<=1.05). N queues at Z 72.31 -> local z <= 1.81; cap ~1.65.
     rng = np.random.default_rng(7)
-    for k in range(10):
-        a = k * 2 * math.pi / 10 + .08
-        r = 1.30 + .06 * (k % 2)
-        it.a('Moss_Mound', MDK if k % 2 == 0 else MMD, seated_mound((r * math.cos(a), 0, r * math.sin(a)), .14, k + 3))
-    for k in range(20):
-        a = k * 2 * math.pi / 20 + rng.uniform(-.05, .05)
-        r = 1.08 + rng.uniform(0.0, 0.04)
-        x, z = r * math.cos(a), r * math.sin(a)
-        h0 = rng.uniform(0.02, 0.08)
-        L = rng.uniform(0.42, 0.62)
-        W = rng.uniform(0.11, 0.17)
-        yaw = a + math.pi + rng.uniform(-.25, .25)
-        pitch = rng.uniform(0.04, 0.18)
-        mk = MDK if k % 2 == 0 else MMD
+    FACE, RM = 1.22, 0.10
+    for side, (sx, sz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
+        for i, t in enumerate((-0.62, 0.0, 0.62)):
+            x = sx * FACE + sz * t
+            z = sz * FACE + sx * t
+            it.a('Moss_Mound', MDK if (side + i) % 2 == 0 else MMD, seated_mound((x, 0, z), RM, 10 + side * 3 + i))
+    for i, (x, z) in enumerate(((1.18, 1.18), (1.18, -1.18), (-1.18, 1.18), (-1.18, -1.18))):
+        it.a('Moss_Mound', MMD if i % 2 == 0 else MDK, seated_mound((x, 0, z), 0.09, 40 + i))
+
+    def add_leaf(x, z, h0, L, W, pitch, yaw_off, mk):
+        yaw = math.atan2(x, z) + yaw_off  # +pitch leans outward
         it.a('Moss_Leaves', mk, leaf((x, h0, z), L, W, yaw=yaw, pitch=pitch, t=.01))
-    for k in range(16):
-        a = k * 2 * math.pi / 16 + .2 + rng.uniform(-.06, .06)
-        r = 1.26 + rng.uniform(-0.04, 0.06)
-        x, z = r * math.cos(a), r * math.sin(a)
-        L = rng.uniform(0.28, 0.42)
-        W = rng.uniform(0.10, 0.16)
-        yaw = a + math.pi + rng.uniform(-.4, .4)
-        pitch = rng.uniform(0.20, 0.50)
-        mk = MMD if k % 2 == 0 else MDK
-        it.a('Moss_Leaves', mk, leaf((x, 0.36, z), L, W, yaw=yaw, pitch=pitch, t=.01))
-    for k in range(5):
-        a = k * 2 * math.pi / 5 + .4
-        it.a('River_Stones', SL, seated_clump((1.42 * math.cos(a), 0, 1.42 * math.sin(a)), .08, k + 20))
-    out = emit('tt_food_tree_moss', it, 'layered dark/mid moss + scissor leaves around a TC-N tree; r 1.0 flare clear; r<=1.50')
+
+    for side, (sx, sz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
+        for i in range(7):
+            t = -0.85 + i * 0.283
+            j = rng.uniform(-0.02, 0.02)
+            x = sx * 1.36 + sz * (t + j)
+            z = sz * 1.36 + sx * (t + j)
+            h0 = rng.uniform(0.22, 0.28)
+            L = rng.uniform(0.30, 0.46)
+            W = rng.uniform(0.10, 0.15)
+            pitch = rng.uniform(0.22, 0.42)
+            mk = MDK if (side + i) % 2 == 0 else MMD
+            add_leaf(x, z, h0, L, W, pitch, rng.uniform(-0.18, 0.18), mk)
+    for side, (sx, sz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
+        for i in range(5):
+            t = -0.70 + i * 0.35
+            j = rng.uniform(-0.03, 0.03)
+            x = sx * 1.46 + sz * (t + j)
+            z = sz * 1.46 + sx * (t + j)
+            h0 = rng.uniform(0.16, 0.22)
+            L = rng.uniform(0.26, 0.38)
+            W = rng.uniform(0.09, 0.14)
+            pitch = rng.uniform(0.30, 0.55)
+            mk = MMD if (side + i) % 2 == 0 else MDK
+            add_leaf(x, z, h0, L, W, pitch, rng.uniform(-0.25, 0.25), mk)
+    for i, (x, z) in enumerate(((1.30, 1.30), (1.30, -1.30), (-1.30, 1.30), (-1.30, -1.30))):
+        for k in range(3):
+            a = rng.uniform(-0.08, 0.08)
+            b = rng.uniform(-0.08, 0.08)
+            h0 = rng.uniform(0.20, 0.26)
+            L = rng.uniform(0.28, 0.42)
+            W = rng.uniform(0.10, 0.14)
+            pitch = rng.uniform(0.22, 0.42)
+            mk = MDK if (i + k) % 2 == 0 else MMD
+            add_leaf(x + a, z + b, h0, L, W, pitch, rng.uniform(-0.20, 0.20), mk)
+    for i, (x, z) in enumerate(((0.0, 1.44), (0.0, -1.44), (1.44, 0.0), (-1.44, 0.0),
+                                (0.72, 1.42), (-0.72, 1.42), (0.72, -1.42), (-0.72, -1.42))):
+        it.a('River_Stones', SL, seated_clump((x, 0, z), 0.055, 60 + i))
+    out = emit('tt_food_tree_moss', it, 'square-ring dark/mid moss + scissor leaves around a TC-N tree; 2x2 ped +50mm clear; z<=1.65')
     for nm, _ in out:
         finish_moss_scissor(str(GM / f'{nm}.glb'))
     return out
