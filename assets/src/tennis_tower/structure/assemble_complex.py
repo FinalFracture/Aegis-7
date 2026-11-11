@@ -252,7 +252,9 @@ def rook_core():
         yaw = 90 if (x1 - x0) > (z1 - z0) else 0
         cx = (x0 + x1) / 2 if cid != "ST+S1" else 61.0
         for y in (0, 6.1):
-            put(a, cx, y, (z0 + z1) / 2, yaw, "f1" if y == 0 else "f2")
+            # r7 (Courts cc9a204): the ST+S1 / ST+S2 F2 cores top out under the F3 stand rake -> capped variant (guards cut at F3)
+            aa = "tt_stair_core_b_cap" if (cid in ("ST+S1", "ST+S2") and y == 6.1) else a
+            put(aa, cx, y, (z0 + z1) / 2, yaw, "f1" if y == 0 else "f2")
     for _, (x0, x1, z0, z1), face in LIFTS:
         for y, t in ((-.15, "f1"), (5.95, "f2"), (12.05, "f3")):
             put("tt_lift_core", (x0 + x1) / 2, y, (z0 + z1) / 2,

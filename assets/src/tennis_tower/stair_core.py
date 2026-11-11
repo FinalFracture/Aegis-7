@@ -87,11 +87,14 @@ def dress_stair(p, q):
         p.add("Level_Disc", AM, cap((XI[0] + .02 + .005, 1.6, 2.0), .3, .01, 16, axis="x"))
 
 # ---------------- lift core ----------------
-PIT, SW, SD, LW = .15, 2.0, 2.8, .2   # pivot at pit floor; landing level = +0.15
+# r7 (2026-11-11, Courts cc9a204): spec lifts are 4.0 m wide (tower_plan LIFTS, e.g. S X 66.5..70.5); was 4.6 (2 x 2.0 shafts + 3 x 0.2 walls).
+# Now 2 x 1.75 shafts, 0.15 outer / 0.2 centre walls = 4.0; car 1.6 outer (1.5 x 2.4 internal), landing doors 1.0 (clear >= 0.915) so the open
+# leaves stay inside the 4.0 m door-wall cavity.
+PIT, SW, SD, LW, LWO = .15, 1.75, 2.8, .2, .15   # pivot at pit floor; landing level = +0.15
 def lift(q):
-    p = Part(); X0, X1 = -SW - LW*1.5, SW + LW*1.5; Zb, Zf = -SD/2, SD/2; Y1 = PIT + ST_H; DH, DW = 2.1, 1.1
+    p = Part(); X0, X1 = -SW - LW/2 - LWO, SW + LW/2 + LWO; Zb, Zf = -SD/2, SD/2; Y1 = PIT + ST_H; DH, DW = 2.1, 1.0
     xs = [(-SW - LW/2, -LW/2), (LW/2, SW + LW/2)]
-    p.add("Shaft_Walls", WH, box(X0, X0 + LW, 0, Y1, Zb - LW, Zf + E), box(X1 - LW, X1, 0, Y1, Zb - LW, Zf + E), box(-LW/2, LW/2, 0, Y1, Zb - LW + E, Zf + E), box(X0 + LW - E, X1 - LW + E, 0, Y1, Zb - LW, Zb))
+    p.add("Shaft_Walls", WH, box(X0, X0 + LWO, 0, Y1, Zb - LW, Zf + E), box(X1 - LWO, X1, 0, Y1, Zb - LW, Zf + E), box(-LW/2, LW/2, 0, Y1, Zb - LW + E, Zf + E), box(X0 + LWO - E, X1 - LWO + E, 0, Y1, Zb - LW, Zb))
     fw = []
     for z0, z1 in ((Zf, Zf + .08), (Zf + .14, Zf + .22)):  # two-skin door wall with cavity
         fw.append(box(X0, X1, PIT + DH, Y1, z0, z1))
@@ -102,15 +105,15 @@ def lift(q):
         c = (a + b)/2
         p.add("Door_Jambs", SGM, box(c - DW/2 - .03, c - DW/2 + E, PIT, PIT + DH + .03, Zf + .22 - E, Zf + .24), box(c + DW/2 - E, c + DW/2 + .03, PIT, PIT + DH + .03, Zf + .22 - E, Zf + .24), box(c - DW/2 + E, c + DW/2 - E, PIT + DH - E, PIT + DH + .03, Zf + .22 - E, Zf + .24))
         p.add("Sills", ALY, box(c - DW/2 + .003, c + DW/2 - .003, PIT - .03, PIT, Zf - .05, Zf + .22 + .001))
-        op = .55 if k == 0 else 0  # shaft A open, shaft B closed: centre-opening panels in the cavity
+        op = DW/2 if k == 0 else 0  # shaft A open, shaft B closed: centre-opening panels in the cavity
         p.add("Landing_Doors", SGM, box(c - DW/2 - op + .002, c - op - .002, PIT + .005, PIT + DH - .005, Zf + .095, Zf + .125), box(c + op + .002, c + DW/2 + op - .002, PIT + .005, PIT + DH - .005, Zf + .095, Zf + .125))
         p.add("Call_Panels", SGM, box(c + DW/2 + .12, c + DW/2 + .3, PIT + .9, PIT + 1.4, Zf + .22 - E, Zf + .24))
         p.add("Call_Glyph", AM, box(c + DW/2 + .17, c + DW/2 + .25, PIT + 1.1, PIT + 1.2, Zf + .24 - E, Zf + .245))
         p.add("Status_Lamps", GRN if k == 0 else AM, box(c - .1, c + .1, PIT + DH + .1, PIT + DH + .14, Zf + .22 - E, Zf + .235))
         p.add("Guide_Rails", ALY, box(a + .02, a + .06, 0, Y1 - .1, -.02, .02), box(b - .06, b - .02, 0, Y1 - .1, -.02, .02))
     c = sum(xs[0])/2; cz = (Zb + Zf)/2  # car in shaft A at the landing, doors open; 1.6 x 2.4 x 2.5 internal
-    p.add("Lift_Car", ALY, box(c - .85, c + .85, PIT - .1, PIT, cz - 1.25, cz + 1.2), box(c - .85, c + .85, PIT + 2.5, PIT + 2.6, cz - 1.25, cz + 1.2),
-          box(c - .85, c - .8, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c + .8, c + .85, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c - .8 + E, c + .8 - E, PIT - E, PIT + 2.5 + E, cz - 1.25, cz - 1.2))
+    p.add("Lift_Car", ALY, box(c - .8, c + .8, PIT - .1, PIT, cz - 1.25, cz + 1.2), box(c - .8, c + .8, PIT + 2.5, PIT + 2.6, cz - 1.25, cz + 1.2),
+          box(c - .8, c - .75, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c + .75, c + .8, PIT - E, PIT + 2.5 + E, cz - 1.2, cz + 1.2), box(c - .75 + E, c + .75 - E, PIT - E, PIT + 2.5 + E, cz - 1.25, cz - 1.2))
     p.add("Car_Floor_Slate", SSL, box(c - .8 + E, c + .8 - E, PIT - .003, PIT + .0, cz - 1.2 + E, cz + 1.2 - .002)) if False else None
     dress_lift(p, q, xs, Zf + .24, DH, DW); return _scrub(p)
 
@@ -230,7 +233,37 @@ def mirror_b():  # r1: tt_stair_core_b_m = Type B mirrored in local Z (portal on
     print(json.dumps(dict(glb="tt_stair_core_b_m.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], coplanar=chk["coplanar"],
                           open=chk["open"], validate=bool(ok_v), bbox=[lo.round(4).tolist(), hi.round(4).tolist()], walk=w), default=str))
 
-if __name__ == "__main__" and sys.argv[1:] == ["final"]:
+def lift_final():   # r7: tt_lift_core = V5 Court Wayfinding lift at the spec 4.0 m width
+    p = recenter(lift(VARIANTS[4])); gp = os.path.join(ROOT, "godot/assets/models", "tt_lift_core.glb")
+    chk = cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=400)
+    tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    ok_v = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
+    V = np.vstack([m.vertices for _, m in p.P.values()])
+    print(json.dumps(dict(glb="tt_lift_core.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], bad=[o for o in chk["overlap"] if not o[3]][:4],
+                          coplanar=chk["coplanar"][:4], open=chk["open"][:3], validate=bool(ok_v), bbox=[V.min(0).round(4).tolist(), V.max(0).round(4).tolist()]), default=str))
+
+CAP_PARTS = ("Handrail_Wall", "Guard_Cap_Rail", "Guard_Posts", "Guard_Scissor", "Well_Guard_F1-convcolonly", "Well_Guard_F2-convcolonly", "Court_Line_Landing")
+def cap_b():   # r7 (Courts cc9a204): tt_stair_core_b_cap for the ST+S1 / ST+S2 F2 cores, whose F3 top sits under the F3 stand rake.
+    # Well guards / handrails / the top-landing court stripe are cut at F3 (local ST_H - 3 mm); below F3 the guards are unchanged,
+    # above it the stand's solid rake closes the well. X/Z extents (and so the pivot) are unchanged.
+    p = stair_full(dict(type="B"))
+    for k in CAP_PARTS:
+        mk, m = p.P[k]; uv = np.array(m.metadata["uv"]); keep = m.vertices[:, 1] <= ST_H - .003
+        m2 = m.slice_plane([0, ST_H - .003, 0], [0, -1, 0], cap=True)
+        m2.metadata["uv"] = m2.vertices[:, [0, 2]] / 2.0; p.P[k] = (mk, m2)
+    p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", "tt_stair_core_b_cap.glb")
+    chk = cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=400)
+    tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    ok_v = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
+    V = np.vstack([m.vertices for _, m in p.P.values()])
+    print(json.dumps(dict(glb="tt_stair_core_b_cap.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], coplanar=chk["coplanar"][:4],
+                          open=chk["open"][:3], validate=bool(ok_v), bbox=[V.min(0).round(4).tolist(), V.max(0).round(4).tolist()]), default=str))
+
+if __name__ == "__main__" and sys.argv[1:] == ["lift_final"]:
+    lift_final()
+elif __name__ == "__main__" and sys.argv[1:] == ["cap_b"]:
+    cap_b()
+elif __name__ == "__main__" and sys.argv[1:] == ["final"]:
     final()
 elif __name__ == "__main__" and sys.argv[1:] == ["mirror_b"]:
     mirror_b()

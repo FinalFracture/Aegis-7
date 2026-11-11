@@ -1,13 +1,13 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2671,
+"count": 2659,
 "by_owner": {
 "Rook": 1022,
 "Arrival": 42,
 "Aquatics": 66,
 "Leisure": 236,
 "Courts": 352,
-"Active": 549,
+"Active": 537,
 "Rooftop": 404
 },
 "skipped": [
@@ -11613,7 +11613,7 @@
 "asset": "tt_stair_core_b"
 },
 {
-"glb": "res://assets/models/tt_stair_core_b.glb",
+"glb": "res://assets/models/tt_stair_core_b_cap.glb",
 "p": [
 61.0,
 6.1,
@@ -11622,7 +11622,7 @@
 "yaw": 0,
 "tag": "f2",
 "owner": "Rook",
-"asset": "tt_stair_core_b"
+"asset": "tt_stair_core_b_cap"
 },
 {
 "glb": "res://assets/models/tt_stair_core_b.glb",
@@ -11637,7 +11637,7 @@
 "asset": "tt_stair_core_b"
 },
 {
-"glb": "res://assets/models/tt_stair_core_b.glb",
+"glb": "res://assets/models/tt_stair_core_b_cap.glb",
 "p": [
 89.0,
 6.1,
@@ -11646,7 +11646,7 @@
 "yaw": 0,
 "tag": "f2",
 "owner": "Rook",
-"asset": "tt_stair_core_b"
+"asset": "tt_stair_core_b_cap"
 },
 {
 "glb": "res://assets/models/tt_stair_core_b.glb",
@@ -12899,9 +12899,9 @@
 {
 "glb": "res://assets/models/tt_pool_deck_finish_c.glb",
 "p": [
-25.452,
+24.0225,
 1.92,
-17.25
+17.237
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13621,7 +13621,7 @@
 "p": [
 31.098,
 0.0,
-2.05
+2.095
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13645,7 +13645,7 @@
 "p": [
 31.098,
 0.0,
-5.65
+5.695
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13669,7 +13669,7 @@
 "p": [
 31.098,
 0.0,
-9.25
+9.295
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13693,7 +13693,7 @@
 "p": [
 31.098,
 0.0,
-12.85
+12.895
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13713,16 +13713,16 @@
 "asset": "tt_bowl_core_acoustic"
 },
 {
-"glb": "res://assets/models/tt_axe_bay.glb",
+"glb": "res://assets/models/tt_axe_bay_s.glb",
 "p": [
 80.601,
 0.0,
-2.0
+2.05
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay"
+"asset": "tt_axe_bay_s"
 },
 {
 "glb": "res://assets/models/tt_axe_bay.glb",
@@ -13737,7 +13737,7 @@
 "asset": "tt_axe_bay"
 },
 {
-"glb": "res://assets/models/tt_axe_bay.glb",
+"glb": "res://assets/models/tt_axe_bay_tree.glb",
 "p": [
 80.601,
 0.0,
@@ -13746,7 +13746,7 @@
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay"
+"asset": "tt_axe_bay_tree"
 },
 {
 "glb": "res://assets/models/tt_axe_bay.glb",
@@ -13809,16 +13809,16 @@
 "asset": "tt_axe_spectator"
 },
 {
-"glb": "res://assets/models/tt_axe_bay.glb",
+"glb": "res://assets/models/tt_axe_bay_s.glb",
 "p": [
 97.601,
 0.0,
-2.0
+2.05
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay"
+"asset": "tt_axe_bay_s"
 },
 {
 "glb": "res://assets/models/tt_axe_bay.glb",
@@ -13833,7 +13833,7 @@
 "asset": "tt_axe_bay"
 },
 {
-"glb": "res://assets/models/tt_axe_bay.glb",
+"glb": "res://assets/models/tt_axe_bay_tree.glb",
 "p": [
 97.601,
 0.0,
@@ -13842,7 +13842,7 @@
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay"
+"asset": "tt_axe_bay_tree"
 },
 {
 "glb": "res://assets/models/tt_axe_bay.glb",
@@ -14125,7 +14125,7 @@
 "p": [
 55.5,
 0.0,
-77.6
+77.5845
 ],
 "yaw": 180.0,
 "tag": "f1",
@@ -14941,7 +14941,7 @@
 "p": [
 117.467,
 0.0,
-0.8
+1.0
 ],
 "yaw": 90.0,
 "tag": "f1",
@@ -20593,7 +20593,7 @@
 "p": [
 126.1,
 12.2,
-76.9
+76.84
 ],
 "yaw": 0.0,
 "tag": "f3",
@@ -20605,7 +20605,7 @@
 "p": [
 2.2,
 12.2,
-76.9
+76.84
 ],
 "yaw": -90.0,
 "tag": "f3",
@@ -20629,7 +20629,7 @@
 "p": [
 64.15,
 12.2,
-77.5
+77.44
 ],
 "yaw": 180.0,
 "tag": "f3",
@@ -20641,7 +20641,7 @@
 "p": [
 1.6,
 12.2,
-39.55
+39.52
 ],
 "yaw": 90.0,
 "tag": "f3",
@@ -20653,7 +20653,7 @@
 "p": [
 126.7,
 12.2,
-39.55
+39.52
 ],
 "yaw": -90.0,
 "tag": "f3",
@@ -22381,18 +22381,6 @@
 "p": [
 83.5,
 6.1,
-1.3
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_climb_mat_300"
-},
-{
-"glb": "res://assets/models/tt_climb_mat_300.glb",
-"p": [
-83.5,
-6.1,
 3.3
 ],
 "yaw": 0.0,
@@ -22435,6 +22423,18 @@
 "tag": "f2",
 "owner": "Active",
 "asset": "tt_climb_mat_300"
+},
+{
+"glb": "res://assets/models/tt_climb_mat_300_2x15.glb",
+"p": [
+83.5,
+6.1,
+1.42
+],
+"yaw": 0.0,
+"tag": "f2",
+"owner": "Active",
+"asset": "tt_climb_mat_300_2x15"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_14x28.glb",
@@ -22909,7 +22909,7 @@
 "p": [
 94.074,
 6.1,
-0.625
+1.256
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22921,7 +22921,7 @@
 "p": [
 94.0642,
 6.1,
-1.875
+2.506
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22933,7 +22933,7 @@
 "p": [
 94.074,
 6.1,
-3.125
+3.756
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22945,7 +22945,7 @@
 "p": [
 94.0642,
 6.1,
-4.375
+5.006
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22957,7 +22957,7 @@
 "p": [
 94.074,
 6.1,
-5.625
+6.256
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22969,7 +22969,7 @@
 "p": [
 94.0642,
 6.1,
-6.875
+7.506
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22981,7 +22981,7 @@
 "p": [
 94.074,
 6.1,
-8.125
+8.756
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -22993,7 +22993,7 @@
 "p": [
 94.0642,
 6.1,
-9.375
+10.006
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -23005,7 +23005,7 @@
 "p": [
 94.074,
 6.1,
-10.625
+11.256
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -23017,7 +23017,7 @@
 "p": [
 94.0642,
 6.1,
-11.875
+12.506
 ],
 "yaw": -90.0,
 "tag": "f2",
@@ -23025,23 +23025,11 @@
 "asset": "tt_climb_train_board"
 },
 {
-"glb": "res://assets/models/tt_climb_train_trim.glb",
-"p": [
-94.063,
-6.1,
-12.625
-],
-"yaw": -90.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_climb_train_trim"
-},
-{
 "glb": "res://assets/models/tt_climb_mat_300.glb",
 "p": [
 95.0,
 6.1,
-1.0
+1.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23053,7 +23041,7 @@
 "p": [
 95.0,
 6.1,
-3.0
+3.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23065,7 +23053,7 @@
 "p": [
 95.0,
 6.1,
-5.0
+5.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23077,7 +23065,7 @@
 "p": [
 95.0,
 6.1,
-7.0
+7.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23089,7 +23077,7 @@
 "p": [
 95.0,
 6.1,
-9.0
+9.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23101,7 +23089,7 @@
 "p": [
 95.0,
 6.1,
-11.0
+11.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23509,7 +23497,7 @@
 "p": [
 112.0,
 6.1,
-1.0
+1.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23521,7 +23509,7 @@
 "p": [
 112.0,
 6.1,
-3.0
+3.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23533,7 +23521,7 @@
 "p": [
 112.0,
 6.1,
-5.0
+5.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23545,7 +23533,7 @@
 "p": [
 112.0,
 6.1,
-7.0
+7.631
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -23759,18 +23747,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-45.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 46.0,
 6.1,
 66.5
@@ -23906,18 +23882,6 @@
 46.0,
 6.1,
 77.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
-46.0,
-6.1,
-78.5
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -24071,18 +24035,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-47.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 48.0,
 6.1,
 66.5
@@ -24218,18 +24170,6 @@
 48.0,
 6.1,
 77.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
-48.0,
-6.1,
-78.5
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -24383,18 +24323,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-49.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 50.0,
 6.1,
 66.5
@@ -24530,18 +24458,6 @@
 50.0,
 6.1,
 77.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
-50.0,
-6.1,
-78.5
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -24695,18 +24611,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-51.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 52.0,
 6.1,
 66.5
@@ -24842,18 +24746,6 @@
 52.0,
 6.1,
 77.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
-52.0,
-6.1,
-78.5
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -25007,18 +24899,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-53.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 54.0,
 6.1,
 66.5
@@ -25163,18 +25043,6 @@
 {
 "glb": "res://assets/models/tt_gym_floor_tile.glb",
 "p": [
-54.0,
-6.1,
-78.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
 55.0,
 6.1,
 66.5
@@ -25310,18 +25178,6 @@
 55.0,
 6.1,
 77.5
-],
-"yaw": 0.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_gym_floor_tile"
-},
-{
-"glb": "res://assets/models/tt_gym_floor_tile.glb",
-"p": [
-55.0,
-6.1,
-78.5
 ],
 "yaw": 0.0,
 "tag": "f2",
@@ -25609,7 +25465,7 @@
 "p": [
 46.5,
 6.12,
-78.5775
+78.0375
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -25621,7 +25477,7 @@
 "p": [
 49.0,
 6.12,
-78.5775
+78.0375
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -25633,7 +25489,7 @@
 "p": [
 51.5,
 6.12,
-78.5775
+78.0375
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -25645,7 +25501,7 @@
 "p": [
 54.0,
 6.12,
-78.5775
+78.0375
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -26029,7 +25885,7 @@
 "p": [
 96.5,
 6.1,
-78.6265
+78.0455
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -27743,7 +27599,7 @@
 {
 "glb": "res://assets/models/tt_play_tower.glb",
 "p": [
-136.5,
+136.14,
 12.2,
 28.0
 ],

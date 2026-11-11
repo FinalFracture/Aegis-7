@@ -3,12 +3,14 @@ heavy fin (600x50) on the grid line, light fin (600x25) at 2.0 m, transoms 150x1
 width=1.5 gives the Rev 2.5 W/E closure bay (no light fin). Nature/sports theme per Jared. Run: python3 curtain_wall_panel.py"""
 from modlib import *
 H, FD, TR = 13.3, .6, (3.325, 6.65, 9.975)
+SI = .15                                   # r7 (2026-11-11): Sill_Track depth inboard of the glass line; Head_Track keeps -0.65 (pivot / bbox unchanged)
 
 def build(q):
     W = q.get("width", 4.0); p = Part(); x0 = -W/2; hf = (x0 + .035, x0 + .085)  # heavy fin on the grid line
     lt = q.get("light_t", .025); fins = [hf] + ([(x0 + 2 - lt/2, x0 + 2 + lt/2)] if W > 3 else []); jamb = (W/2 - .045, W/2 - .01)
     edges = [e for f in fins for e in f] + [jamb[0]]; bays = list(zip(edges[1::2], edges[2::2]))
-    p.add("Sill_Track", G, box(x0, W/2, 0, .15, -FD - .05, .08)); p.add("Head_Track", G, box(x0, W/2, H - .15, H, -FD - .05, .08))
+    p.add("Sill_Track", G, box(x0, W/2, 0, .15, -SI, .08));   # r7: sill 0.15 m inboard of the glass (was -0.65: swallowed F3 fences / pads)
+    p.add("Curtain-colonly", G, box(x0, W/2, 0, H, -.05, .05)); p.add("Head_Track", G, box(x0, W/2, H - .15, H, -FD - .05, .08))
     p.add("End_Jamb", G, box(*jamb, .15 - E, H - .15 + E, -.04, .04))
     for i, (a, b) in enumerate(fins):  # fin profile per variant
         d = FD if i == 0 or not q.get("short_light") else .35
@@ -17,6 +19,7 @@ def build(q):
         elif q["fin"] == "branch":  # trunk tube with Y-forked branches back to the glass line, echoing the tree columns
             c = (a+b)/2; p.add("Fin_Branch", G, fin(c, .15-E, H-.15+E, .16, b-a, z0=.03))
             p.add("Fin_Branch", G, tube((c, .15-E, -.4), (c, H-.15+E, -.4), .06, 8))
+            p.add("Fin_Branch", G, box(c - .06, c + .06, 0, .15, -.46, -.34))   # r7 trunk shoe to the deck (the sill no longer runs under the trunk)
             for y in np.arange(1.6, H-.5, 3.325):
                 for s in (-1, 1): p.add("Fin_Branch", G, tube((c, y, -.4), (c, y + s*.9, -.13+E), .035, 6))
                 p.add("Fin_Branch", G, node((c, y, -.4), .095, 1))

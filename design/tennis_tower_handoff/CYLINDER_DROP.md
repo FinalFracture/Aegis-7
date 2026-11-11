@@ -104,3 +104,12 @@ No script errors, no leaks at exit.
 - Services placements are not included until they are committed.
 - Mesh clash r3: 228 instance pairs (was 231). The remaining items per owner are in `/workspace/renders/tennis_tower/cylinder_drop_r1/` (box only) and in Rook's report.
 - `tt_gallery_lockers_b` reads as "floating" by AABB. It is a door chunk on `_a` (Aquatics), so this is intended. The 12 `tt_lift_core` pits read as "sunk", also intended.
+
+## r7b (Nov 11, 08:3x CT): Rooftop 358edb5 / Courts cc9a204 fixes
+- `tt_curtain_wall_panel`: `Sill_Track` now reaches 0.15 m inboard of the glass line. It was 0.65 m and swallowed the F3 E fences, the swing and dome pads, and the W view rails. The room-side sill faces are now at Z 0.135 (S), 78.865 (N), X 139.85 (E) and −11.85 (W).
+  - Each trunk fin gets a 0.12 m gunmetal shoe down to the deck.
+  - `Head_Track` is unchanged, so the bbox and pivot are unchanged.
+  - New `Curtain-colonly` 0.1 m wall at the glass line (the panel had no collider before).
+- `tt_lift_core` is now the spec 4.0 m wide: shafts 2 × 1.75, walls 0.15/0.2/0.15, car 1.5 × 2.4 internal, landing doors 1.0 m. It was 4.6 m.
+- New `tt_stair_core_b_cap` for the ST+S1 / ST+S2 F2 cores, whose tops sit under the F3 stand rake. Well guards, handrails and the top court stripe are cut at F3. Below F3 everything is unchanged; above F3 the stand's solid rake closes the well.
+- Headless check after the fixes: placed 2,659, 228 GLBs, missing 0, surfaces 24,279, tris 3,075,770, colliders 3,361, PASS.
