@@ -91,9 +91,9 @@
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_c.glb",
       "p": [
-        25.452,
+        24.0225,
         1.92,
-        17.25
+        17.237
       ],
       "yaw": 0,
       "tag": "finish",

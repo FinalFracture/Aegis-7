@@ -51,6 +51,40 @@ def emit(n,it,note=''):
         ALL.append(out)
 def finish(it,rect,holes,y):
     for a,b,c,d in rect_minus(rect,holes): B(it,'Deck_Terrazzo',SL,a,b,y-E,y+.012,c,d)
+# r3 cylinder-drop clash (Rook e10bdcc): Rook's tt_facade_bay room-side fins stand through our finishes
+# (mid fin to 0.601 m, edge fin to 0.751 m in from the bay origin, Y 0.596..12.054). Finishes are notched
+# around them with a 10 mm gap; their facade geometry is untouched.
+P10=.01
+def fin_holes(side,bays):
+    out=[]
+    for ap in bays:
+        if side=='S': r=[(ap-.013,ap+.013,-.059,.391),(ap+1.915,ap+1.965,-.059,.541)]
+        elif side=='N': r=[(ap-.013,ap+.013,78.609,79.059),(ap-1.965,ap-1.915,78.459,79.059)]
+        else: r=[(-11.989,-11.609,ap-.013,ap+.013),(-11.989,-11.459,ap-1.965,ap-1.915)]   # W, X -12.21 yaw -90
+        out+=[(a-P10,b+P10,c-P10,d+P10) for a,b,c,d in r]
+    return out
+FIN_S=fin_holes('S',range(2,31,4)); FIN_N=fin_holes('N',range(2,31,4)); FIN_W=fin_holes('W',(11.5,15.5,63.5,67.5,71.5))
+def tower_holes():
+    # Rook tt_slide_tower_t1/_t2 (X 22.5, Z 53.5/59.5) solids that reach the +1.0 deck: columns, enclosure lines, spine, stair.
+    out=[]
+    for zc,sp,st in ((53.5,(52.732,54.698),(52.736,54.704)),(59.5,(58.822,60.774),(58.816,60.784))):
+        r=[(x,x+.2,z,z+.2) for x in (20.0,24.8) for z in (zc-2.5,zc+2.3)]
+        r+=[(20.089,20.111,zc-2.305,zc+2.305),(24.889,24.911,zc-2.305,zc+2.305),(20.195,24.805,zc-2.411,zc-2.389),
+            (20.195,24.805,zc+2.389,zc+2.411),(22.439,22.461,zc-2.3,zc+2.3),(21.25,21.35,*sp),(20.2,21.254,*st)]
+        out+=[(a-P10,b+P10,c-P10,d+P10) for a,b,c,d in r]
+    return out
+def carve(it,holes,ymin=.596):
+    """Notch axis-aligned box items around XZ holes (holes span Y>=ymin); drop slivers under 20 mm."""
+    out=[]
+    for n,m,mesh in it:
+        lo,hi=mesh.bounds
+        hit=[h for h in holes if h[0]<hi[0]-1e-6 and h[1]>lo[0]+1e-6 and h[2]<hi[2]-1e-6 and h[3]>lo[2]+1e-6] if hi[1]>ymin else []
+        if not hit: out.append((n,m,mesh)); continue
+        if n=='Gutter_Grate': continue   # whole grate omitted at a fin (keeps chunk splits and pivots stable)
+        assert mesh.is_watertight and abs(mesh.volume/np.prod(hi-lo)-1)<1e-6, f'carve needs a box: {n}'
+        for a,b,c,d in rect_minus((lo[0],hi[0],lo[2],hi[2]),hit):
+            if min(b-a,d-c)>=.02: out.append((n,m,box(a,b,lo[1],hi[1],c,d)))
+    it[:]=out
 def rim(it,r,y):
     a,b,c,d=r
     for z in (c-.09,d+.09):
@@ -89,7 +123,7 @@ def pool():
     # Rev 3.6 switchback (along X, north of the 3 m board): cut X1.0..10.0 @ Z26..32 + passage X8.5..10 @ Z32..34.5.
     # The top landing exits +X along Z 26..27.5 onto finished deck (X 10..14.82).
     it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(1.0,10.0,26.0,32.0),(8.5,10.0,32.0,34.5)]
-    finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2); rim(it,dive,2)
+    finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2); rim(it,dive,2); carve(it,FIN_S)
     emit('tt_pool_deck_finish',it,'finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open')
     it=[]
     for k in range(8):
@@ -185,9 +219,10 @@ def gallery():
         add(it,'Shower_Arm',ST,tube((-11.67,8.2,z),(-11.32,8.2,z),.025,8))
         add(it,'Shower_Head',ST,cap((-11.32,8.16,z),.09,.04,12,'y'))
         B(it,'Shower_Control',G,-11.706,-11.62,7.1,7.25,z-.1,z+.1)
+    carve(it,FIN_W)
     emit('tt_gallery_showers',it,'Four shower bays; dry preview; floor drainage pending')
     it=[]
-    finish(it,(-11.8,-6.2,10.2,68.8),[],6.1)
+    finish(it,(-11.8,-6.2,10.2,68.8),FIN_W,6.1)
     finish(it,(-5.8,-.2,20.8,58.2),[],6.1)
     emit('tt_gallery_floor',it,'12mm terrazzo finish, lockers and benches rest on top')
     it=[]
@@ -293,8 +328,8 @@ def leisure():
     holes=[(1,29,47,75)]
     # Rev 3.5 S-strip ramp (Rook): landing X0.3..1.8 @ Z44.8..47.0, legs X0.3..15.3 @ Z44.8..46.3.
     holes=[(1,29,47,75),(.3,15.3,44.8,46.3),(.3,1.8,44.8,47.0)]
-    finish(it,(.32,29.68,44.8,78.68),holes,1)
-    finish(it,(4.06,25.94,50.06,71.94),[(5,17,51,62),(5,23,64,71)],1)
+    finish(it,(.32,29.68,44.8,78.68),holes+FIN_N,1)
+    finish(it,(4.06,25.94,50.06,71.94),[(5,17,51,62),(5,23,64,71)]+tower_holes(),1)
     emit('tt_leisure_deck',it,'Finish on existing +1m deck, clear of water channels')
     it=[]
     # Rev 3.5 flush footbridges: 0.1 m deck (underside +0.9, 0.05 m over the +0.85 water), walking top +1.012 =

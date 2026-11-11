@@ -93,7 +93,7 @@ position = Vector3(7.57, 1.92, 17.26)
 position = Vector3(15.0, 1.92, 17.273)
 
 [node name="tt_pool_deck_finish_c_9" parent="." instance=ExtResource("9")]
-position = Vector3(25.452, 1.92, 17.25)
+position = Vector3(24.0225, 1.92, 17.237)
 
 [node name="tt_pool_deck_finish_d_10" parent="." instance=ExtResource("10")]
 position = Vector3(28.68, 1.996, 17.25)
