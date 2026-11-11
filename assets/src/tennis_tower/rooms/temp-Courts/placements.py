@@ -107,23 +107,32 @@ def basketball():
 
 def track():
     out = []; room = "F3-TRK"; y = Y3
-    # corners: built +X+Z from circle centre; AABB 3x3, pivot is footprint centre (offset 1.5,1.5 in local)
-    # SW / SE / NE / NW centres and yaws (quarter toward the outer glass corner)
-    corners = [
-        ((3.7, 3.7), 180, "SW"),
-        ((124.6, 3.7), 90, "SE"),
-        ((124.6, 75.4), 0, "NE"),
-        ((3.7, 75.4), -90, "NW"),
-    ]
+    # r3 clash vs tt_curtain_wall_panel Sill_Track (local z ±0.365):
+    # N panels p.z=78.715 yaw 0 → inner face 78.350; S panels p.z=0.285 yaw 180 → inner 0.650.
+    # Previous N outer 78.4 penetrated the N sill by 0.050 m (reported pd 0.050–0.110).
+    # Pull N outer to 78.340 (10 mm clear of 78.350). S outer stays 0.7 (50 mm clear of 0.650).
+    # E outer stays 127.6. N-side pull shortens E/W straights so they still meet the N corners.
+    n_outer, s_outer, e_outer, w_outer = 78.340, 0.7, 127.6, 0.7
+    r_out, r_in, half_w = 3.0, 1.2, 0.9
+    # corner circle-centres (inner-corner of each 3x3 AABB)
+    sw, se = (w_outer + r_out, s_outer + r_out), (e_outer - r_out, s_outer + r_out)
+    ne, nw = (e_outer - r_out, n_outer - r_out), (w_outer + r_out, n_outer - r_out)
+    # SW / SE / NE / NW, quarter toward the outer glass corner
+    corners = [(sw, 180, "SW"), (se, 90, "SE"), (ne, 0, "NE"), (nw, -90, "NW")]
     for (cx, cz), yaw, name in corners:
         dx, dz = rot_offset(yaw, 1.5, 1.5)
         out.append(item("tt_trk_corner", (cx + dx, y, cz + dz), yaw, "f3", room,
-                        f"{name} corner; outer E stays 127.6; r_in=1.2 r_out=3.0"))
-    # full straights (crossings not co-located — see note)
-    out.append(item("tt_trk_straight_sn", (64.15, y, 1.6), 0, "f3", room, "S straight X 3.7..124.6, outer Z 0.7"))
-    out.append(item("tt_trk_straight_sn", (64.15, y, 77.5), 180, "f3", room, "N straight, outer Z 78.4"))
-    out.append(item("tt_trk_straight_ew", (1.6, y, 39.55), 90, "f3", room, "W straight Z 3.7..75.4, outer X 0.7"))
-    out.append(item("tt_trk_straight_ew", (126.7, y, 39.55), -90, "f3", room, "E straight, outer X 127.6 FIXED"))
+                        f"{name} corner; N outer {n_outer}; E outer {e_outer}; r_in={r_in} r_out={r_out}"))
+    sn_x = (sw[0] + se[0]) / 2.0
+    ew_z = (sw[1] + nw[1]) / 2.0
+    out.append(item("tt_trk_straight_sn", (sn_x, y, s_outer + half_w), 0, "f3", room,
+                    f"S straight X {sw[0]}..{se[0]}, outer Z {s_outer}"))
+    out.append(item("tt_trk_straight_sn", (sn_x, y, n_outer - half_w), 180, "f3", room,
+                    f"N straight, outer Z {n_outer} (10 mm clear of N sill 78.350)"))
+    out.append(item("tt_trk_straight_ew", (w_outer + half_w, y, ew_z), 90, "f3", room,
+                    f"W straight Z {sw[1]}..{nw[1]}, L={nw[1]-sw[1]:.3f}, outer X {w_outer}"))
+    out.append(item("tt_trk_straight_ew", (e_outer - half_w, y, ew_z), -90, "f3", room,
+                    f"E straight, L={nw[1]-sw[1]:.3f}, outer X {e_outer} FIXED"))
     return out
 
 def main():
@@ -152,7 +161,7 @@ def main():
             "(preview had only the 7.5 m short bays, at the lift end — this file follows Vance Rev 2.7). "
             "Stand put-z 17.6 / 61.4 / 14.8 / 64.2 / 32.6 / 110.4 / 29.8 / 113.2 matches assemble_preview; "
             "do not 'correct' the back face to nominal Z 15. "
-            "Track E outer edge is 127.6 and is not moved; playground perches X 128.3..128.6 and path X 128.6..129.8 stay clear. "
+            "Track E outer edge is 127.6 and is not moved; playground perches X 128.3..128.6 and path X 128.6..129.8 stay clear. ""r3 clash: N track outer pulled 0.060 m to Z 78.340 (10 mm clear of curtain Sill_Track inner 78.350); S outer stays 0.7 (50 mm clear of S sill 0.650); E/W straights shortened to 71.64 m to meet the shifted N corners. F3 stand vs tt_lift_core / tt_stair_core_b: stand runs and put-z unchanged (backs stay on the Z14.7 interface). Lift cores are 4.6 m wide vs spec 4.0 m (S 66.5..70.5) and overrun the 66.5 / 34.5 gap lines by ~0.3 m — their footprint. ST+S1/S2 (Type B, X 57..64 / 86..92, Z 2.6..13.2) are specified under the F3 stand rake; not cut back. "
             "tt_trk_crossing is promoted but not co-located on the full straights (a second bed would clash); "
             "Rook may split straights and drop it in at ST+S1/S2 (X 57..64 / 86..92), ST+N1/N2, ST+E (Z 50..60.6), ST-AQS/AQN. "
             "Void-edge rail: reuse tt_struct_void_guard (structure / F3-SLNG); not re-placed here. "
@@ -167,6 +176,8 @@ def main():
         open_conflicts=[
             "Short-run 7.5 m bays moved to the corner-stair end vs assemble_preview z=30.75/48.25 (lift-gap end). Follows Vance.",
             "Concourse vomitory / floor kit not in this commit.",
+            "r3: F3 stands vs tt_lift_core (pd 0.085–0.723): lift asset 4.6 m wide vs spec 4.0 m (S X 66.5..70.5); centred 68.5 → 66.2..70.8, overruns the 66.5 stand-end by 0.3 m. Same 0.3 m overrun of Z 34.5 on W/E. Not trimmed.",
+            "r3: F3 stands vs tt_stair_core_b (pd 0.085–4.047): ST+S1/S2 specified under the F3 rake (Z 2.6..13.2). Court_Line_Landing is ~3 mm proud of F3 floor; Handrail_Wall projects ~0.75 m above F3 into the hollow under-rake. Aisle_Solid of the 7.5 m bays lands on those cores. Cutting a bay would remove seating the spec keeps over the stair. Stand backs not moved.",
         ],
         rooms=rooms,
     )

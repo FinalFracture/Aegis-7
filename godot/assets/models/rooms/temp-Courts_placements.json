@@ -2,7 +2,7 @@
  "owner": "temp-Courts",
  "spec": "design/strip5_tennis_tower_v1.md Rev 3.0",
  "axes": "Y up, X axial, Z across; yaw deg about +Y; p = building coords of GLB pivot (bottom centre)",
- "note": "Court doors default CLOSED at mid of each long side (Vance). Open-door asset (tt_court_partition_door) frame line is local z=-0.432 after recenter; apply +0.432 m along local +Z to align with panels if that variant is used. F3 rake + seats are co-placed at the same transform. 3.8 m cut bays sit at the corner-stair end of each long run; 6.5 m cut bays sit at the lift-gap end of each short run (preview had only the 7.5 m short bays, at the lift end \u2014 this file follows Vance Rev 2.7). Stand put-z 17.6 / 61.4 / 14.8 / 64.2 / 32.6 / 110.4 / 29.8 / 113.2 matches assemble_preview; do not 'correct' the back face to nominal Z 15. Track E outer edge is 127.6 and is not moved; playground perches X 128.3..128.6 and path X 128.6..129.8 stay clear. tt_trk_crossing is promoted but not co-located on the full straights (a second bed would clash); Rook may split straights and drop it in at ST+S1/S2 (X 57..64 / 86..92), ST+N1/N2, ST+E (Z 50..60.6), ST-AQS/AQN. Void-edge rail: reuse tt_struct_void_guard (structure / F3-SLNG); not re-placed here. F1-CON / F2-CON floor finish and vomitory portal kit are a later batch if usage allows. WC interiors under the stands are temp-Services'; stand fronts stay lip-only so access stays open.",
+ "note": "Court doors default CLOSED at mid of each long side (Vance). Open-door asset (tt_court_partition_door) frame line is local z=-0.432 after recenter; apply +0.432 m along local +Z to align with panels if that variant is used. F3 rake + seats are co-placed at the same transform. 3.8 m cut bays sit at the corner-stair end of each long run; 6.5 m cut bays sit at the lift-gap end of each short run (preview had only the 7.5 m short bays, at the lift end \u2014 this file follows Vance Rev 2.7). Stand put-z 17.6 / 61.4 / 14.8 / 64.2 / 32.6 / 110.4 / 29.8 / 113.2 matches assemble_preview; do not 'correct' the back face to nominal Z 15. Track E outer edge is 127.6 and is not moved; playground perches X 128.3..128.6 and path X 128.6..129.8 stay clear. r3 clash: N track outer pulled 0.060 m to Z 78.340 (10 mm clear of curtain Sill_Track inner 78.350); S outer stays 0.7 (50 mm clear of S sill 0.650); E/W straights shortened to 71.64 m to meet the shifted N corners. F3 stand vs tt_lift_core / tt_stair_core_b: stand runs and put-z unchanged (backs stay on the Z14.7 interface). Lift cores are 4.6 m wide vs spec 4.0 m (S 66.5..70.5) and overrun the 66.5 / 34.5 gap lines by ~0.3 m \u2014 their footprint. ST+S1/S2 (Type B, X 57..64 / 86..92, Z 2.6..13.2) are specified under the F3 stand rake; not cut back. tt_trk_crossing is promoted but not co-located on the full straights (a second bed would clash); Rook may split straights and drop it in at ST+S1/S2 (X 57..64 / 86..92), ST+N1/N2, ST+E (Z 50..60.6), ST-AQS/AQN. Void-edge rail: reuse tt_struct_void_guard (structure / F3-SLNG); not re-placed here. F1-CON / F2-CON floor finish and vomitory portal kit are a later batch if usage allows. WC interiors under the stands are temp-Services'; stand fronts stay lip-only so access stays open.",
  "stats": {
   "counts": {
    "tt_court_partition": 112,
@@ -39,7 +39,9 @@
  },
  "open_conflicts": [
   "Short-run 7.5 m bays moved to the corner-stair end vs assemble_preview z=30.75/48.25 (lift-gap end). Follows Vance.",
-  "Concourse vomitory / floor kit not in this commit."
+  "Concourse vomitory / floor kit not in this commit.",
+  "r3: F3 stands vs tt_lift_core (pd 0.085\u20130.723): lift asset 4.6 m wide vs spec 4.0 m (S X 66.5..70.5); centred 68.5 \u2192 66.2..70.8, overruns the 66.5 stand-end by 0.3 m. Same 0.3 m overrun of Z 34.5 on W/E. Not trimmed.",
+  "r3: F3 stands vs tt_stair_core_b (pd 0.085\u20134.047): ST+S1/S2 specified under the F3 rake (Z 2.6..13.2). Court_Line_Landing is ~3 mm proud of F3 floor; Handrail_Wall projects ~0.75 m above F3 into the hollow under-rake. Aisle_Solid of the 7.5 m bays lands on those cores. Cutting a bay would remove seating the spec keeps over the stair. Stand backs not moved."
  ],
  "rooms": {
   "F1-CRT": [
@@ -4424,7 +4426,7 @@
     "yaw": 180,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "SW corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+    "note": "SW corner; N outer 78.34; E outer 127.6; r_in=1.2 r_out=3.0"
    },
    {
     "glb": "res://assets/models/tt_trk_corner.glb",
@@ -4437,7 +4439,7 @@
     "yaw": 90,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "SE corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+    "note": "SE corner; N outer 78.34; E outer 127.6; r_in=1.2 r_out=3.0"
    },
    {
     "glb": "res://assets/models/tt_trk_corner.glb",
@@ -4445,12 +4447,12 @@
     "p": [
      126.1,
      12.2,
-     76.9
+     76.84
     ],
     "yaw": 0,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "NE corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+    "note": "NE corner; N outer 78.34; E outer 127.6; r_in=1.2 r_out=3.0"
    },
    {
     "glb": "res://assets/models/tt_trk_corner.glb",
@@ -4458,12 +4460,12 @@
     "p": [
      2.2,
      12.2,
-     76.9
+     76.84
     ],
     "yaw": -90,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "NW corner; outer E stays 127.6; r_in=1.2 r_out=3.0"
+    "note": "NW corner; N outer 78.34; E outer 127.6; r_in=1.2 r_out=3.0"
    },
    {
     "glb": "res://assets/models/tt_trk_straight_sn.glb",
@@ -4484,12 +4486,12 @@
     "p": [
      64.15,
      12.2,
-     77.5
+     77.44
     ],
     "yaw": 180,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "N straight, outer Z 78.4"
+    "note": "N straight, outer Z 78.34 (10 mm clear of N sill 78.350)"
    },
    {
     "glb": "res://assets/models/tt_trk_straight_ew.glb",
@@ -4497,12 +4499,12 @@
     "p": [
      1.6,
      12.2,
-     39.55
+     39.52
     ],
     "yaw": 90,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "W straight Z 3.7..75.4, outer X 0.7"
+    "note": "W straight Z 3.7..75.34, L=71.640, outer X 0.7"
    },
    {
     "glb": "res://assets/models/tt_trk_straight_ew.glb",
@@ -4510,12 +4512,12 @@
     "p": [
      126.7,
      12.2,
-     39.55
+     39.52
     ],
     "yaw": -90,
     "tag": "f3",
     "room": "F3-TRK",
-    "note": "E straight, outer X 127.6 FIXED"
+    "note": "E straight, L=71.640, outer X 127.6 FIXED"
    }
   ]
  }

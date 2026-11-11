@@ -151,7 +151,7 @@ if __name__ == "__main__":
     jobs = [
         ("tt_trk_straight", lambda: straight({"L": 8.0}), "8 m straight module"),
         ("tt_trk_straight_sn", lambda: straight({"L": 120.9}), "S/N full straight 120.9 m"),
-        ("tt_trk_straight_ew", lambda: straight({"L": 71.7}), "E/W full straight 71.7 m"),
+        ("tt_trk_straight_ew", lambda: straight({"L": 71.64}), "E/W full straight 71.64 m (N outer pulled to 78.340)"),
         ("tt_trk_corner", corner, "quarter corner r 1.2-3.0"),
         ("tt_trk_crossing", crossing, "6 m stair-landing crossing"),
     ]
