@@ -165,7 +165,8 @@ def bin_station():
 def service_door():
     """inside face of the N facade at X54..57 (needs a facade door variant from the shared kit owner)."""
     it = It()
-    it.b('Door_Frame', G, -1.5, 1.5, 0, 3.0, -.1, .0, col=True)
+    # local -Z is world +Z at yaw 180; keep world z <= 78.379 (N inner ledge) at place Z 78.3
+    it.b('Door_Frame', G, -1.5, 1.5, 0, 3.0, -.069, .0, col=True)
     for xa, xb in ((-1.4, -.002), (.002, 1.4)):
         it.b('Door_Leaves', SGM, xa, xb, .02, 2.7, .0 - D, .05, col=True)
         it.b('Door_Kick', ST, xa + .05, xb - .05, .08, .4, .048, .056)

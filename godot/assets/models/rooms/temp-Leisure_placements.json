@@ -59,7 +59,7 @@
     "p": [
      31.098,
      0.0,
-     2.05
+     2.095
     ],
     "yaw": 0,
     "tag": "f1"
@@ -81,7 +81,7 @@
     "p": [
      31.098,
      0.0,
-     5.65
+     5.695
     ],
     "yaw": 0,
     "tag": "f1"
@@ -103,7 +103,7 @@
     "p": [
      31.098,
      0.0,
-     9.25
+     9.295
     ],
     "yaw": 0,
     "tag": "f1"
@@ -125,7 +125,7 @@
     "p": [
      31.098,
      0.0,
-     12.85
+     12.895
     ],
     "yaw": 0,
     "tag": "f1"
@@ -144,12 +144,12 @@
   ],
   "F1-AXE": [
    {
-    "glb": "res://assets/models/tt_axe_bay.glb",
-    "asset": "tt_axe_bay",
+    "glb": "res://assets/models/tt_axe_bay_s.glb",
+    "asset": "tt_axe_bay_s",
     "p": [
      80.601,
      0.0,
-     2.0
+     2.05
     ],
     "yaw": 0,
     "tag": "f1"
@@ -166,8 +166,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_bay.glb",
-    "asset": "tt_axe_bay",
+    "glb": "res://assets/models/tt_axe_bay_tree.glb",
+    "asset": "tt_axe_bay_tree",
     "p": [
      80.601,
      0.0,
@@ -232,12 +232,12 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_bay.glb",
-    "asset": "tt_axe_bay",
+    "glb": "res://assets/models/tt_axe_bay_s.glb",
+    "asset": "tt_axe_bay_s",
     "p": [
      97.601,
      0.0,
-     2.0
+     2.05
     ],
     "yaw": 0,
     "tag": "f1"
@@ -254,8 +254,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_bay.glb",
-    "asset": "tt_axe_bay",
+    "glb": "res://assets/models/tt_axe_bay_tree.glb",
+    "asset": "tt_axe_bay_tree",
     "p": [
      97.601,
      0.0,
@@ -525,7 +525,7 @@
     "p": [
      55.5,
      0.0,
-     77.6
+     77.5845
     ],
     "yaw": 180,
     "tag": "f1"
@@ -1275,7 +1275,7 @@
     "p": [
      117.467,
      0.0,
-     0.8
+     1.0
     ],
     "yaw": 90,
     "tag": "f1"

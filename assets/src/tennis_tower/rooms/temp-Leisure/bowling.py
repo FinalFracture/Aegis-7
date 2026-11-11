@@ -31,8 +31,9 @@ def lane_pair():
     for a, b in ((0, .14), (3.46, 3.6)): it.b('Capping', ST, 37.3, 54.55, .026, .14, a + D, b - D); it.b('Approach_Edge', SL, x0 + D, 36.98, .026, .054, a + D, b - D)
     # pin deck kickbacks + pit curtain (masking side only)
     for z in (.02, 1.75, 3.5):
-        it.b('Kickbacks', G, 54.6, 56.6, .026, 1.1, z, z + .08, col=True)
-        it.b('Kickback_LED', AM, 54.62, 56.58, 1.096, 1.11, z + .01, z + .07)
+        # east end stops 10 mm west of TC-S2 Pedestal_Concrete (x 56.5..58.5)
+        it.b('Kickbacks', G, 54.6, 56.49, .026, 1.1, z, z + .08, col=True)
+        it.b('Kickback_LED', AM, 54.62, 56.47, 1.096, 1.11, z + .01, z + .07)
     it.b('Pit_Curtain', FA, 56.62, 56.85, .026, 1.2, .1, 3.5)
     # masking unit: sculpted panel with leaf crests + ball medallions
     it.b('Masking_Frame', G, 54.3, 54.5, 1.35, 2.55, .02, 3.58)
@@ -70,9 +71,11 @@ def settee():
     it.bv('Settee_Plinth', G, 30.25, 31.25, 0, .2, .414, 3.186, col=True)
     it.b('Settee_Seat', FA, 30.52, 31.23, .196, .44, .418, 3.182, col=True)
     it.b('Settee_Back', FA, 30.2, 30.5, .196, 1.0, .418, 3.182, col=True)
-    for z in (.31, 3.29): it.b('Settee_Arms', WH, 30.2, 31.26, 0, .66, z - .1, z + .1)
+    # south arm stays room-side of S facade inner ledge Z 0.621 (place Z 0.25 -> local z >= 0.371)
+    it.b('Settee_Arms', WH, 30.2, 31.26, 0, .66, .375, .41)
+    it.b('Settee_Arms', WH, 30.2, 31.26, 0, .66, 3.19, 3.39)
     for k in range(5): it.b('Settee_Tufts', SL, 30.497, 30.51, .5, .9, .45 + .6*k, .55 + .6*k)
-    it.b('Settee_LED', CY, 30.8, 31.2, .02, .04, .298, .302)
+    it.b('Settee_LED', CY, 30.8, 31.2, .02, .04, .375, .379)
     it.b('Console_Pedestal', G, 31.6, 31.9, 0, .7, 1.65, 1.95, col=True)
     it.b('Console_Top', WH, 31.4, 32.1, .696, .74, 1.4, 2.2)
     it.b('Console_Plate', SL, 31.55, 31.95, .738, .748, 1.55, 2.05)
@@ -94,17 +97,34 @@ def settee():
     return emit('tt_bowl_settee', it, 'settee + scorer + ball rack + moss wall; per lane pair')
 
 def acoustic():
-    """50 mm fabric panels on the ST+S1 W face / stubs at X57 (Z0.3..14.7), X 56.95..57.002, y 0.15..5.6."""
+    """50 mm fabric panels on the ST+S1 W face / stubs at X57 (Z0.3..14.7), X 56.95..57.002, y 0.15..5.6.
+    Notch around TC-S2 at (57.5, 8.5): Trunk_Clad r=0.6 + 12 mm; lowest row and base also clear the 2x2 pedestal."""
     it = It(); zs = np.arange(.3, 14.7 - .01, 1.2)
+    TRUNK, PED = (7.888, 9.112), (7.488, 9.512)
+    def segs(z0, z1, cut):
+        a, b = cut
+        out = []
+        if z1 <= a or z0 >= b:
+            out.append((z0, z1))
+        else:
+            if z0 < a: out.append((z0, a))
+            if z1 > b: out.append((b, z1))
+        return [(p, q) for p, q in out if q - p > 0.04]
     for z in zs:
         z1 = min(z + 1.2, 14.7)
         for y in np.arange(.15, 5.5, 1.35):
-            it.b('Acoustic_Panels', FA, 56.95, 57.002, y + .01, y + 1.34, z + .01, z1 - .01)
-        it.b('Panel_Reveal', CY, 56.946, 56.95 + D, 2.9, 2.94, z + .1, z1 - .1)
+            cut = PED if y < 0.62 else TRUNK
+            for u, v in segs(z + .01, z1 - .01, cut):
+                it.b('Acoustic_Panels', FA, 56.95, 57.002, y + .01, y + 1.34, u, v)
+        for u, v in segs(z + .1, z1 - .1, TRUNK):
+            it.b('Panel_Reveal', CY, 56.946, 56.95 + D, 2.9, 2.94, u, v)
     for k, z in enumerate(np.arange(1.0, 14.5, 1.8)):
+        if TRUNK[0] <= z <= TRUNK[1]:
+            continue
         for j in range(4): it.a('Panel_LeafRelief', LF2, wall_leaf((56.95, 3.4 + .35*j, z + (j % 2)*.2), .35*(j - 1.5), .5, .2, face=-1))
-    it.b('Panel_Base', G, 56.9, 57.002, 0, .15, .3, 14.7, col=True)
-    return emit('tt_bowl_core_acoustic', it, 'ST+S1 W face lining (Rev 3.0 #4); built in place')
+    for u, v in segs(.3, 14.7, PED):
+        it.b('Panel_Base', G, 56.9, 57.002, 0, .15, u, v, col=True)
+    return emit('tt_bowl_core_acoustic', it, 'ST+S1 W face lining (Rev 3.0 #4); built in place; TC-S2 notch')
 
 def build(PL):
     lp = lane_pair(); st = settee(); ac = acoustic()
