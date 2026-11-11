@@ -165,7 +165,7 @@ def build(PL):
         # dress in 1.5 m gaps between cabanas (avoid 2 m half-size)
         if k < 7:
             gz = cz + 2.75
-            place(PL, A_m, -9.0, F3_Y, gz, 0)
+            place(PL, A_m, -8.9897, F3_Y, round(gz + 0.0104, 4), 0, local=False)
             place(PL, A_v, -10.6, F3_Y, gz, 0)
     # view rails along W glass covering Z 20.6..58.4 (6 m modules, yaw=-90: local X -> world -Z? 
     # yaw=-90: local +X -> world -Z, local +Z -> world -X. Rail along local X becomes along -Z. Good.
@@ -176,5 +176,5 @@ def build(PL):
     for i, z in enumerate([22.5, 27.0, 31.5, 36.0, 40.5, 45.0, 49.5, 54.0]):
         place(PL, A_s, -4.2, F3_Y, z, 90)
         if i % 2 == 0:
-            place(PL, A_m, -5.5, F3_Y, z + 1.8, 0)
+            place(PL, A_m, -5.4897, F3_Y, round(z + 1.8 + 0.0104, 4), 0, local=False)
     return dict(cabanas=8, rails=6, seats=8, mounds=7 + 4, vines=7)
