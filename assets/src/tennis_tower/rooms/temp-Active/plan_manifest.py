@@ -139,8 +139,11 @@ for z in [.3 + .625 + 1.25*k for k in range(6)] + [9.2 + .625 + 1.25*k for k in 
     put("F2-CLIMB", "tt_climbing_panel_kids", 84.5 - .094 - .004, z, -90, src=SC + "; ROOM_OWNERSHIP reuse tt_climbing_panel_kids", note="reused promoted GLB; Rev 3.1 spine Z13.2..15 kept clear")
 for z in (1.6, 4.9, 10.9):
     put("F2-CLIMB", "tt_climb_auto_belay", 84.5 - .094*2, z, -90, y=4.55, src="§3.7.1 kids' wall + auto-belays (5 m walls)", note="raw origin = wall plate back; on panel face")
-for zc in (1.3, 3.3, 5.3, 10.1, 12.1):   # existing 2 m kids mats; TC-S3 collar follows (1.2 m sq trunk at (84.5, 8.5) occupies X83.9..85.1 Z7.9..9.1)
+for zc in (3.3, 5.3, 10.1, 12.1):   # existing 2 m kids mats; TC-S3 collar follows (1.2 m sq trunk at (84.5, 8.5) occupies X83.9..85.1 Z7.9..9.1)
     put("F2-CLIMB", "tt_climb_mat_300", 83.5, zc, 0, src="Rev 2.8 §3.12: kids' wall 2.0 m mat zone; Rev 3.1 spine clear", note="mats X 82.5..84.5")
+# r9: first kids mat was 2.0 m at z=1.3 (foot Z 0.301..2.299) and entered the S facade inner ledge at Z 0.621.
+# 2.0 x 1.58 cut at raw Z 1.420 keeps foot z0=0.631 and a 90 mm gap to the z=3.3 tile (starts 2.301).
+put("F2-CLIMB", "tt_climb_mat_300_2x15", 83.5, 1.420, 0, src="Rev 2.8 §3.12 + r9 S facade ledge Z 0.621", note="2.0 x 1.58 cut; foot z0>=0.631, X 82.5..84.5; not shifted (would overlap z=3.3)")
 put("F2-CLIMB", "tt_climb_mat_300_14x28", 83.2, 7.7, 0, src=SC + "; C5 TC-S3 collar, 1.2 m sq clad", note="west of trunk: X82.5..83.9 Z6.3..9.1")
 put("F2-CLIMB", "tt_climb_mat_300_06x16", 84.2, 7.1, 0, src=SC + "; C5 TC-S3 collar, 1.2 m sq clad", note="south of trunk: X83.9..84.5 Z6.3..7.9; flush to trunk, not into X>=84.5 or Z>=7.9")
 for k, x in enumerate([37.65 + 3.3*i for i in range(6)]):
@@ -170,17 +173,22 @@ put("F2-CLIMB", "tt_climb_entry_guard", 98.10, 13.75, -90, src="r8 entry landing
 # Training wall X94 Z0..13. put() adds rot(yaw, raw_center) and the exported GLB is recentered,
 # so pass raw X = 94.0 + 0.005 + 0.118 = 94.123 (wall + 5 mm gap + full depth).
 # raw_X 94.123 -> pivot ~94.064; back ~94.005.
+# r9: first spray previously covered Z 0..1.25 and entered the S facade inner ledge at Z 0.621.
+# Shift the 10-board run +0.631 m so it starts at Z 0.631; last board ends at Z 13.131 (clear of spine Z13.2).
+# The 0.25 m end trim is omitted: shifting it with the run would enter the spine keepout.
 for i in range(10):
-    zc = 0.625 + 1.25*i   # panels cover Z0..12.5
+    zc = 0.625 + 0.631 + 1.25*i   # panels cover Z0.631..13.131
     nm = "tt_climb_train_board_spray" if i % 2 == 0 and "tt_climb_train_board_spray" in GL else "tt_climb_train_board"
-    put("F2-CLIMB", nm, 94.123, zc, -90, src="r6 training wall X94 Z0..13", note="raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i" if i % 2 == 0 else "raw_X 94.123 -> pivot ~94.064; back ~94.005")
-put("F2-CLIMB", "tt_climb_train_trim", 94.123, 12.625, -90, src="r6 training wall X94 Z0..13", note="end trim zc 12.625 covers Z12.5..13.0; raw_X 94.123 -> pivot ~94.064; back ~94.005")
+    put("F2-CLIMB", nm, 94.123, zc, -90, src="r6 training wall X94 + r9 S facade ledge Z 0.621", note="raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631" if i % 2 == 0 else "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631")
 # Fall mats for the training wall only, Z0..13. 2 m tiles centred X95. Skip any tile that enters Z13..15.
-for z in (1, 3, 5, 7, 9, 11):
+# r9: first 2 m tile at z=1 had foot Z 0.001..1.999 and entered the S facade ledge at Z 0.621.
+# Shift the 2 m grid +0.631 m (cannot use a 1.58 cut without a 0.21 m overlap on z=3, and a 1.36 m cut does not exist).
+# Last tile at 11.631 ends at Z 12.630, still short of Z 13 and the spine.
+for z in (1.631, 3.631, 5.631, 7.631, 9.631, 11.631):
     c, size = piv("tt_climb_mat_300", GL["tt_climb_mat_300"][1], GL["tt_climb_mat_300"][2])
     zmid = z + float(rot(0, c)[2]); hz = float(size[2]) / 2
     if zmid + hz > 13.0 and zmid - hz < 15.0: continue
-    put("F2-CLIMB", "tt_climb_mat_300", 95.0, z, 0, src="r6 training wall fall mats Z0..13", note="centred X95; not into Z13..15")
+    put("F2-CLIMB", "tt_climb_mat_300", 95.0, z, 0, src="r6 training wall fall mats + r9 S facade ledge Z 0.621", note="centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15")
 # Changing room X30..57 Z10.5..13.2 only (off spine). Lockers at Z=10.70 so the bay stays Z<=13.0.
 # Door clear X40..42: skip centers in 39.5..42.5 (40.1 and 41.4 overlap that clear).
 for x in (31.0, 32.3, 33.6, 34.9, 36.2, 37.5, 38.8, 42.7, 44.0, 45.3, 46.6, 47.9, 49.2, 50.5, 51.8, 53.1, 54.4, 55.7):
@@ -190,8 +198,9 @@ for x in (33, 36, 39, 42, 45, 48, 51, 54):
     put("F2-CLIMB", "tt_climb_change_bench", x, 11.8, 0, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 0")
 for x in (32.5, 36.5, 40.5, 44.5, 48.5, 52.5, 55.5):
     put("F2-CLIMB", "tt_climb_hook_rail", x, 12.95, 180, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2")
-for z in (1, 3, 5, 7):
-    put("F2-CLIMB", "tt_climb_mat_300", 112.0, z, 0, src="Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)", note="")
+# r9: first tile at z=1 entered the S facade inner ledge at Z 0.621; shift the 2 m grid +0.631 m (same as the training-wall mats).
+for z in (1.631, 3.631, 5.631, 7.631):
+    put("F2-CLIMB", "tt_climb_mat_300", 112.0, z, 0, src="Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621", note="r9 shifted +0.631; foot z0>=0.631")
 tx, tz, h = 101.5, 8.5, .62
 for (dx, dz, yaw) in ((1, 1, 0), (-1, 1, -90), (-1, -1, 180), (1, -1, 90)):
     put("F2-CLIMB", "tt_climb_mat_ring_corner", tx + dx*h, tz + dz*h, yaw, src="Rev 3.1: TC-S4 2 m mat ring; trunk clad 1.2 m sq (tree_column.py)", note="raw origin = trunk-clad corner (+0.02 gap); skin = 1.2 m square, documented r7")
@@ -201,17 +210,21 @@ for (dx, dz, yaw) in ((0, 1, 0), (0, -1, 180), (1, 0, 90), (-1, 0, -90)):
 # ---------------- F2-GYM ----------------
 SG = "ROOM_OWNERSHIP #18, §4.6 cores; layout = temp-Active proposal"
 TY = .02   # free-weights zone sits on 20 mm rubber tiles
+# r9: drop the Z 78.5 row (foot Z 78..79). The N facade inner ledge is at Z 78.379, so footprints must stay at Z<=78.369.
+# Shifting the 1 m tiles inward would overlap the Z 77.5 row; no shorter gym-tile variant exists.
 for i in range(11):
-    for j in range(13):
+    for j in range(12):   # Z 66.5..77.5, north edge at Z 78.0
         if i == 0 and 70 <= 66.5 + j <= 72.5: continue   # WC door X44 Z70..72.5 clearance: no tiles (edge ramp missing)
-        put("F2-GYM", "tt_gym_floor_tile_lane" if j == 6 else "tt_gym_floor_tile", 45.0 + i, 66.5 + j, 0, src=SG + "; free-weights rubber zone X44.5..55.5 Z66..79")
+        put("F2-GYM", "tt_gym_floor_tile_lane" if j == 6 else "tt_gym_floor_tile", 45.0 + i, 66.5 + j, 0, src=SG + "; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379")
 for k, z in enumerate((65.2, 66.4, 67.6, 68.8, 73.3, 74.5, 75.7, 76.9)):
     put("F2-GYM", "tt_gym_mirror_crest" if k in (1, 6) else "tt_gym_mirror", 44.06, z, 90, src=SG + "; W wall X 44 (WC door Z70..72.5 kept clear)", note="raw origin = mirror plane; back plate on wall X 44.0")
 for x in (93.5, 94.7, 95.9, 97.1): put("F2-GYM", "tt_gym_treadmill", x, 66.0, 0, src=SG + "; runners face N facade", note="console +Z")
 for z in (68.95, 69.75, 70.55, 71.35): put("F2-GYM", "tt_gym_rower", 68.3, z, 90, src=SG + "; between Lift N, TC (65.5,70.5) soft clear and cycles")
 for (x, z) in ((57.20, 77.9), (64.3, 77.9), (85.20, 77.9)): put("F2-GYM", "tt_gym_moss_berm", x, z, 0, src=SG + "; greenery beside (not on) equipment; C7 shifted off ST+N1/N2 north-door approaches", note="C7 shifted off ST+N1/N2 north-door approaches")
 for z in (66.0, 67.3, 73.6, 74.9): put("F2-GYM", "tt_gym_green_wall", 101.9, z, -90, src=SG + "; E wall X 102", note="raw origin = foliage plane; frame back on wall")
-for x in (46.5, 49.0, 51.5, 54.0): put("F2-GYM", "tt_gym_dumbbell_rack", x, 78.6, 180, y=TY, src=SG + "; N facade Z 79, ribbon sill +1.2 (§3.12.2)")
+# r9: racks sat at raw Z 78.6 (foot Z 78.246..78.909) and entered the N facade inner ledge at Z 78.379.
+# Shift raw Z by -0.540 m so foot z1=78.369 (10 mm south of the ledge). Depth 0.663 m, no neighbour clip.
+for x in (46.5, 49.0, 51.5, 54.0): put("F2-GYM", "tt_gym_dumbbell_rack", x, 78.06, 180, y=TY, src=SG + "; N facade Z 79, ribbon sill +1.2 (§3.12.2); r9 N ledge Z 78.379", note="r9 raw Z 78.06; foot z1<=78.369")
 for x in (46.0, 48.5, 51.0, 53.5): put("F2-GYM", "tt_gym_bench", x, 74.5, 180, y=TY, src=SG)
 for x in (47.0, 50.6): put("F2-GYM", "tt_gym_squat_rack", x, 68.6, 180, y=TY, src=SG)
 put("F2-GYM", "tt_gym_plate_tree", 54.5, 68.0, 0, y=TY, src=SG)
@@ -219,7 +232,8 @@ for z in (73.0, 75.2, 77.4):
     for x in (67.4, 68.6, 69.8): put("F2-GYM", "tt_gym_cycle", x, z, 180, src=SG)
 for z in (72.0, 74.4, 76.8):
     for x in (77.6, 78.8, 80.0, 81.2, 82.4): put("F2-GYM", "tt_gym_cycle", x, z, 180, src=SG)
-put("F2-GYM", "tt_gym_dumbbell_rack_s", 96.5, 78.65, 180, src=SG)
+# r9: small rack foot was Z 78.303..78.950; shift raw Z by -0.581 m so foot z1=78.369.
+put("F2-GYM", "tt_gym_dumbbell_rack_s", 96.5, 78.069, 180, src=SG + "; r9 N facade ledge Z 78.379", note="r9 raw Z 78.069; foot z1<=78.369")
 for x in (94.5, 97.5): put("F2-GYM", "tt_gym_bench_flat", x, 74.0, 180, src=SG)
 put("F2-GYM", "tt_gym_kb_rack", 96.5, 70.0, 0, src=SG + "; E functional zone X92.5..101 Z64.5..79", note="clear of TC-N4 X101.5; one rack")
 

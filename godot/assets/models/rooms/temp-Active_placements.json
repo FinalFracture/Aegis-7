@@ -68,12 +68,12 @@
   "tt_rink_goal_futsal": 2,
   "tt_climbing_panel_kids": 9,
   "tt_climb_auto_belay": 3,
-  "tt_climb_mat_300": 35,
+  "tt_climb_mat_300": 34,
+  "tt_climb_mat_300_2x15": 3,
   "tt_climb_mat_300_14x28": 1,
   "tt_climb_mat_300_06x16": 1,
   "tt_climb_anchor": 6,
   "tt_climb_mat_300_edge": 3,
-  "tt_climb_mat_300_2x15": 2,
   "tt_climb_mat_300_124x15": 1,
   "tt_climb_mat_300_088x24": 1,
   "tt_climb_mat_300_188x40": 1,
@@ -81,13 +81,12 @@
   "tt_climb_entry_guard": 1,
   "tt_climb_train_board_spray": 5,
   "tt_climb_train_board": 5,
-  "tt_climb_train_trim": 1,
   "tt_climb_locker_bay": 18,
   "tt_climb_change_bench": 8,
   "tt_climb_hook_rail": 7,
   "tt_climb_mat_ring_corner": 4,
   "tt_climb_mat_ring_side": 4,
-  "tt_gym_floor_tile": 130,
+  "tt_gym_floor_tile": 119,
   "tt_gym_floor_tile_lane": 10,
   "tt_gym_mirror": 6,
   "tt_gym_mirror_crest": 2,
@@ -4540,37 +4539,6 @@
    "pos": [
     83.5,
     6.1,
-    1.3
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.998,
-    0.341,
-    1.998
-   ],
-   "raw_origin_world": [
-    83.5,
-    6.1,
-    1.3
-   ],
-   "src": "Rev 2.8 \u00a73.12: kids' wall 2.0 m mat zone; Rev 3.1 spine clear",
-   "note": "mats X 82.5..84.5",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    82.501,
-    84.499,
-    0.301,
-    2.299
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climb_mat_300",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300.glb",
-   "pos": [
-    83.5,
-    6.1,
     3.3
    ],
    "yaw_deg": 0,
@@ -4686,6 +4654,37 @@
     84.499,
     11.101,
     13.099
+   ]
+  },
+  {
+   "room": "F2-CLIMB",
+   "asset": "tt_climb_mat_300_2x15",
+   "glb": "/workspace/game-project/godot/assets/models/tt_climb_mat_300_2x15.glb",
+   "pos": [
+    83.5,
+    6.1,
+    1.42
+   ],
+   "yaw_deg": 0,
+   "size": [
+    1.998,
+    0.341,
+    1.578
+   ],
+   "raw_origin_world": [
+    83.5,
+    6.1,
+    1.42
+   ],
+   "src": "Rev 2.8 \u00a73.12 + r9 S facade ledge Z 0.621",
+   "note": "2.0 x 1.58 cut; foot z0>=0.631, X 82.5..84.5; not shifted (would overlap z=3.3)",
+   "placement_status": "proposed",
+   "asset_qa": "pass (clip/validate/first_pass)",
+   "footprint_xz": [
+    82.501,
+    84.499,
+    0.631,
+    2.209
    ]
   },
   {
@@ -5868,7 +5867,7 @@
    "pos": [
     94.074,
     6.1,
-    0.625
+    1.256
    ],
    "yaw_deg": -90,
    "size": [
@@ -5879,17 +5878,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    0.625
+    1.256
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.025,
     94.123,
-    0.0,
-    1.25
+    0.631,
+    1.881
    ]
   },
   {
@@ -5899,7 +5898,7 @@
    "pos": [
     94.0642,
     6.1,
-    1.875
+    2.506
    ],
    "yaw_deg": -90,
    "size": [
@@ -5910,17 +5909,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    1.875
+    2.5060000000000002
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.005,
     94.123,
-    1.25,
-    2.5
+    1.881,
+    3.131
    ]
   },
   {
@@ -5930,7 +5929,7 @@
    "pos": [
     94.074,
     6.1,
-    3.125
+    3.756
    ],
    "yaw_deg": -90,
    "size": [
@@ -5941,17 +5940,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    3.125
+    3.7560000000000002
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.025,
     94.123,
-    2.5,
-    3.75
+    3.131,
+    4.381
    ]
   },
   {
@@ -5961,7 +5960,7 @@
    "pos": [
     94.0642,
     6.1,
-    4.375
+    5.006
    ],
    "yaw_deg": -90,
    "size": [
@@ -5972,17 +5971,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    4.375
+    5.006
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.005,
     94.123,
-    3.75,
-    5.0
+    4.381,
+    5.631
    ]
   },
   {
@@ -5992,7 +5991,7 @@
    "pos": [
     94.074,
     6.1,
-    5.625
+    6.256
    ],
    "yaw_deg": -90,
    "size": [
@@ -6003,17 +6002,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    5.625
+    6.256
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.025,
     94.123,
-    5.0,
-    6.25
+    5.631,
+    6.881
    ]
   },
   {
@@ -6023,7 +6022,7 @@
    "pos": [
     94.0642,
     6.1,
-    6.875
+    7.506
    ],
    "yaw_deg": -90,
    "size": [
@@ -6034,17 +6033,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    6.875
+    7.506
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.005,
     94.123,
-    6.25,
-    7.5
+    6.881,
+    8.131
    ]
   },
   {
@@ -6054,7 +6053,7 @@
    "pos": [
     94.074,
     6.1,
-    8.125
+    8.756
    ],
    "yaw_deg": -90,
    "size": [
@@ -6065,17 +6064,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    8.125
+    8.756
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.025,
     94.123,
-    7.5,
-    8.75
+    8.131,
+    9.381
    ]
   },
   {
@@ -6085,7 +6084,7 @@
    "pos": [
     94.0642,
     6.1,
-    9.375
+    10.006
    ],
    "yaw_deg": -90,
    "size": [
@@ -6096,17 +6095,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    9.375
+    10.006
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.005,
     94.123,
-    8.75,
-    10.0
+    9.381,
+    10.631
    ]
   },
   {
@@ -6116,7 +6115,7 @@
    "pos": [
     94.074,
     6.1,
-    10.625
+    11.256
    ],
    "yaw_deg": -90,
    "size": [
@@ -6127,17 +6126,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    10.625
+    11.256
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; spray on even i; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.025,
     94.123,
-    10.0,
-    11.25
+    10.631,
+    11.881
    ]
   },
   {
@@ -6147,7 +6146,7 @@
    "pos": [
     94.0642,
     6.1,
-    11.875
+    12.506
    ],
    "yaw_deg": -90,
    "size": [
@@ -6158,48 +6157,17 @@
    "raw_origin_world": [
     94.123,
     6.1,
-    11.875
+    12.506
    ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005",
+   "src": "r6 training wall X94 + r9 S facade ledge Z 0.621",
+   "note": "raw_X 94.123 -> pivot ~94.064; back ~94.005; r9 starts Z 0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.005,
     94.123,
-    11.25,
-    12.5
-   ]
-  },
-  {
-   "room": "F2-CLIMB",
-   "asset": "tt_climb_train_trim",
-   "glb": "/workspace/game-project/godot/assets/models/tt_climb_train_trim.glb",
-   "pos": [
-    94.063,
-    6.1,
-    12.625
-   ],
-   "yaw_deg": -90,
-   "size": [
-    0.25,
-    2.4,
-    0.12
-   ],
-   "raw_origin_world": [
-    94.123,
-    6.1,
-    12.625
-   ],
-   "src": "r6 training wall X94 Z0..13",
-   "note": "end trim zc 12.625 covers Z12.5..13.0; raw_X 94.123 -> pivot ~94.064; back ~94.005",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    94.003,
-    94.123,
-    12.5,
-    12.75
+    11.881,
+    13.131
    ]
   },
   {
@@ -6209,7 +6177,7 @@
    "pos": [
     95.0,
     6.1,
-    1.0
+    1.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6220,17 +6188,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    1
+    1.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    0.001,
-    1.999
+    0.632,
+    2.63
    ]
   },
   {
@@ -6240,7 +6208,7 @@
    "pos": [
     95.0,
     6.1,
-    3.0
+    3.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6251,17 +6219,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    3
+    3.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    2.001,
-    3.999
+    2.632,
+    4.63
    ]
   },
   {
@@ -6271,7 +6239,7 @@
    "pos": [
     95.0,
     6.1,
-    5.0
+    5.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6282,17 +6250,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    5
+    5.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    4.001,
-    5.999
+    4.632,
+    6.63
    ]
   },
   {
@@ -6302,7 +6270,7 @@
    "pos": [
     95.0,
     6.1,
-    7.0
+    7.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6313,17 +6281,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    7
+    7.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    6.001,
-    7.999
+    6.632,
+    8.63
    ]
   },
   {
@@ -6333,7 +6301,7 @@
    "pos": [
     95.0,
     6.1,
-    9.0
+    9.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6344,17 +6312,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    9
+    9.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    8.001,
-    9.999
+    8.632,
+    10.63
    ]
   },
   {
@@ -6364,7 +6332,7 @@
    "pos": [
     95.0,
     6.1,
-    11.0
+    11.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -6375,17 +6343,17 @@
    "raw_origin_world": [
     95.0,
     6.1,
-    11
+    11.631
    ],
-   "src": "r6 training wall fall mats Z0..13",
-   "note": "centred X95; not into Z13..15",
+   "src": "r6 training wall fall mats + r9 S facade ledge Z 0.621",
+   "note": "centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     94.001,
     95.999,
-    10.001,
-    11.999
+    10.632,
+    12.63
    ]
   },
   {
@@ -7376,7 +7344,7 @@
    "pos": [
     112.0,
     6.1,
-    1.0
+    1.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -7387,17 +7355,17 @@
    "raw_origin_world": [
     112.0,
     6.1,
-    1
+    1.631
    ],
-   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)",
-   "note": "",
+   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621",
+   "note": "r9 shifted +0.631; foot z0>=0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     111.001,
     112.999,
-    0.001,
-    1.999
+    0.632,
+    2.63
    ]
   },
   {
@@ -7407,7 +7375,7 @@
    "pos": [
     112.0,
     6.1,
-    3.0
+    3.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -7418,17 +7386,17 @@
    "raw_origin_world": [
     112.0,
     6.1,
-    3
+    3.631
    ],
-   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)",
-   "note": "",
+   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621",
+   "note": "r9 shifted +0.631; foot z0>=0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     111.001,
     112.999,
-    2.001,
-    3.999
+    2.632,
+    4.63
    ]
   },
   {
@@ -7438,7 +7406,7 @@
    "pos": [
     112.0,
     6.1,
-    5.0
+    5.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -7449,17 +7417,17 @@
    "raw_origin_world": [
     112.0,
     6.1,
-    5
+    5.631
    ],
-   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)",
-   "note": "",
+   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621",
+   "note": "r9 shifted +0.631; foot z0>=0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     111.001,
     112.999,
-    4.001,
-    5.999
+    4.632,
+    6.63
    ]
   },
   {
@@ -7469,7 +7437,7 @@
    "pos": [
     112.0,
     6.1,
-    7.0
+    7.631
    ],
    "yaw_deg": 0,
    "size": [
@@ -7480,17 +7448,17 @@
    "raw_origin_world": [
     112.0,
     6.1,
-    7
+    7.631
    ],
-   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed)",
-   "note": "",
+   "src": "Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621",
+   "note": "r9 shifted +0.631; foot z0>=0.631",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     111.001,
     112.999,
-    6.001,
-    7.999
+    6.632,
+    8.63
    ]
   },
   {
@@ -7761,7 +7729,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7792,7 +7760,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7823,7 +7791,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7854,7 +7822,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7885,7 +7853,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7916,7 +7884,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7947,7 +7915,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -7978,7 +7946,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8009,7 +7977,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8025,37 +7993,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    45.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    45.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    44.5,
-    45.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     46.0,
     6.1,
     66.5
@@ -8071,7 +8008,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8102,7 +8039,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8133,7 +8070,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8164,7 +8101,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8195,7 +8132,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8226,7 +8163,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8257,7 +8194,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8288,7 +8225,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8319,7 +8256,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8350,7 +8287,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8381,7 +8318,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8412,7 +8349,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8428,37 +8365,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    46.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    46.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    45.5,
-    46.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     47.0,
     6.1,
     66.5
@@ -8474,7 +8380,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8505,7 +8411,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8536,7 +8442,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8567,7 +8473,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8598,7 +8504,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8629,7 +8535,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8660,7 +8566,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8691,7 +8597,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8722,7 +8628,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8753,7 +8659,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8784,7 +8690,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8815,7 +8721,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8831,37 +8737,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    47.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    47.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    46.5,
-    47.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     48.0,
     6.1,
     66.5
@@ -8877,7 +8752,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8908,7 +8783,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8939,7 +8814,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -8970,7 +8845,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9001,7 +8876,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9032,7 +8907,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9063,7 +8938,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9094,7 +8969,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9125,7 +9000,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9156,7 +9031,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9187,7 +9062,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9218,7 +9093,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9234,37 +9109,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    48.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    48.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    47.5,
-    48.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     49.0,
     6.1,
     66.5
@@ -9280,7 +9124,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9311,7 +9155,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9342,7 +9186,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9373,7 +9217,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9404,7 +9248,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9435,7 +9279,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9466,7 +9310,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9497,7 +9341,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9528,7 +9372,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9559,7 +9403,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9590,7 +9434,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9621,7 +9465,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9637,37 +9481,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    49.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    49.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    48.5,
-    49.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     50.0,
     6.1,
     66.5
@@ -9683,7 +9496,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9714,7 +9527,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9745,7 +9558,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9776,7 +9589,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9807,7 +9620,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9838,7 +9651,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9869,7 +9682,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9900,7 +9713,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9931,7 +9744,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9962,7 +9775,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -9993,7 +9806,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10024,7 +9837,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10040,37 +9853,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    50.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    50.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    49.5,
-    50.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     51.0,
     6.1,
     66.5
@@ -10086,7 +9868,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10117,7 +9899,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10148,7 +9930,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10179,7 +9961,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10210,7 +9992,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10241,7 +10023,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10272,7 +10054,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10303,7 +10085,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10334,7 +10116,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10365,7 +10147,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10396,7 +10178,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10427,7 +10209,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10443,37 +10225,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    51.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    51.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    50.5,
-    51.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     52.0,
     6.1,
     66.5
@@ -10489,7 +10240,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10520,7 +10271,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10551,7 +10302,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10582,7 +10333,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10613,7 +10364,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10644,7 +10395,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10675,7 +10426,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10706,7 +10457,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10737,7 +10488,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10768,7 +10519,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10799,7 +10550,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10830,7 +10581,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10846,37 +10597,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    52.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    52.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    51.5,
-    52.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     53.0,
     6.1,
     66.5
@@ -10892,7 +10612,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10923,7 +10643,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10954,7 +10674,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -10985,7 +10705,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11016,7 +10736,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11047,7 +10767,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11078,7 +10798,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11109,7 +10829,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11140,7 +10860,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11171,7 +10891,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11202,7 +10922,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11233,7 +10953,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11249,37 +10969,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    53.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    53.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    52.5,
-    53.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     54.0,
     6.1,
     66.5
@@ -11295,7 +10984,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11326,7 +11015,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11357,7 +11046,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11388,7 +11077,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11419,7 +11108,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11450,7 +11139,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11481,7 +11170,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11512,7 +11201,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11543,7 +11232,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11574,7 +11263,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11605,7 +11294,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11636,7 +11325,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11652,37 +11341,6 @@
    "asset": "tt_gym_floor_tile",
    "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
    "pos": [
-    54.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    54.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    53.5,
-    54.5,
-    78.0,
-    79.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
     55.0,
     6.1,
     66.5
@@ -11698,7 +11356,7 @@
     6.1,
     66.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11729,7 +11387,7 @@
     6.1,
     67.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11760,7 +11418,7 @@
     6.1,
     68.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11791,7 +11449,7 @@
     6.1,
     69.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11822,7 +11480,7 @@
     6.1,
     70.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11853,7 +11511,7 @@
     6.1,
     71.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11884,7 +11542,7 @@
     6.1,
     72.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11915,7 +11573,7 @@
     6.1,
     73.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11946,7 +11604,7 @@
     6.1,
     74.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -11977,7 +11635,7 @@
     6.1,
     75.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -12008,7 +11666,7 @@
     6.1,
     76.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -12039,7 +11697,7 @@
     6.1,
     77.5
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..78; r9 N facade ledge Z 78.379",
    "note": "",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
@@ -12048,37 +11706,6 @@
     55.5,
     77.0,
     78.0
-   ]
-  },
-  {
-   "room": "F2-GYM",
-   "asset": "tt_gym_floor_tile",
-   "glb": "/workspace/game-project/godot/assets/models/tt_gym_floor_tile.glb",
-   "pos": [
-    55.0,
-    6.1,
-    78.5
-   ],
-   "yaw_deg": 0,
-   "size": [
-    1.0,
-    0.022,
-    1.0
-   ],
-   "raw_origin_world": [
-    55.0,
-    6.1,
-    78.5
-   ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; free-weights rubber zone X44.5..55.5 Z66..79",
-   "note": "",
-   "placement_status": "proposed",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    54.5,
-    55.5,
-    78.0,
-    79.0
    ]
   },
   {
@@ -12801,7 +12428,7 @@
    "pos": [
     46.5,
     6.12,
-    78.5775
+    78.0375
    ],
    "yaw_deg": 180,
    "size": [
@@ -12812,17 +12439,17 @@
    "raw_origin_world": [
     46.5,
     6.12,
-    78.6
+    78.06
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2)",
-   "note": "",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2); r9 N ledge Z 78.379",
+   "note": "r9 raw Z 78.06; foot z1<=78.369",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     45.49,
     47.51,
-    78.246,
-    78.909
+    77.706,
+    78.369
    ]
   },
   {
@@ -12832,7 +12459,7 @@
    "pos": [
     49.0,
     6.12,
-    78.5775
+    78.0375
    ],
    "yaw_deg": 180,
    "size": [
@@ -12843,17 +12470,17 @@
    "raw_origin_world": [
     49.0,
     6.12,
-    78.6
+    78.06
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2)",
-   "note": "",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2); r9 N ledge Z 78.379",
+   "note": "r9 raw Z 78.06; foot z1<=78.369",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     47.99,
     50.01,
-    78.246,
-    78.909
+    77.706,
+    78.369
    ]
   },
   {
@@ -12863,7 +12490,7 @@
    "pos": [
     51.5,
     6.12,
-    78.5775
+    78.0375
    ],
    "yaw_deg": 180,
    "size": [
@@ -12874,17 +12501,17 @@
    "raw_origin_world": [
     51.5,
     6.12,
-    78.6
+    78.06
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2)",
-   "note": "",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2); r9 N ledge Z 78.379",
+   "note": "r9 raw Z 78.06; foot z1<=78.369",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     50.49,
     52.51,
-    78.246,
-    78.909
+    77.706,
+    78.369
    ]
   },
   {
@@ -12894,7 +12521,7 @@
    "pos": [
     54.0,
     6.12,
-    78.5775
+    78.0375
    ],
    "yaw_deg": 180,
    "size": [
@@ -12905,17 +12532,17 @@
    "raw_origin_world": [
     54.0,
     6.12,
-    78.6
+    78.06
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2)",
-   "note": "",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; N facade Z 79, ribbon sill +1.2 (\u00a73.12.2); r9 N ledge Z 78.379",
+   "note": "r9 raw Z 78.06; foot z1<=78.369",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     52.99,
     55.01,
-    78.246,
-    78.909
+    77.706,
+    78.369
    ]
   },
   {
@@ -13886,7 +13513,7 @@
    "pos": [
     96.5,
     6.1,
-    78.6265
+    78.0455
    ],
    "yaw_deg": 180,
    "size": [
@@ -13897,17 +13524,17 @@
    "raw_origin_world": [
     96.5,
     6.1,
-    78.65
+    78.069
    ],
-   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal",
-   "note": "",
+   "src": "ROOM_OWNERSHIP #18, \u00a74.6 cores; layout = temp-Active proposal; r9 N facade ledge Z 78.379",
+   "note": "r9 raw Z 78.069; foot z1<=78.369",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     95.74,
     97.26,
-    78.303,
-    78.95
+    77.722,
+    78.369
    ]
   },
   {
