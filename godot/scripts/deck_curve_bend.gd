@@ -20,6 +20,8 @@ const SKIP_NAMES := {
 	"HabDrumSpinGravityRing": true,
 	"StarfieldOuterSphere": true,
 	"CylinderSpinGravityTestRing": true,
+	# Rook's Tennis Tower is built in its own drum pose (preface_playable_area.gd _build_tennis_tower).
+	"TennisTower_Strip5": true,
 }
 
 var axis_y: float = 0.0

@@ -6,7 +6,8 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`.
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`
+## (tower measurement switches: `--no-tower`, `--tower-no-batch`; shot dir override `--shot-dir=<path>`).
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -222,6 +223,37 @@ const DRUM_BLEND_OUT := 4.0
 const DRUM_PREFACE_Y0 := 22.0
 const DRUM_PREFACE_Y1 := 25.0
 
+# [TT] Rook's Tennis Tower on Strip 5 (Jared, Nov 11 2026: this one building only). World frame, not under
+# CylinderHab7_DrumAxisPivot (its YZ scale fits the visual hull; the tower sits on the walkable floor).
+# Building frame: X axial, Z across the strip (toward +alpha), Y up; origin SW corner, F1 top y 0.
+# Strip 5 local x = TT_STRIP_X0 + X, z = TT_STRIP_Z0 + Z. World x = strip x + TT_AXIAL_OFFSET: the preface
+# building is strip-4 x 100 (design/strip4_plan.md B1) and sits at world x 0 (EXT_GROUND_X0..X1 centre).
+const TENNIS_TOWER_SCENE := "res://scenes/tennis_tower/tennis_tower.tscn"
+const _TennisTowerBatcher := preload("res://scripts/tennis_tower_batcher.gd")
+const TT_STRIP := 5
+const TT_AXIAL_OFFSET := -100.0
+const TT_STRIP_X0 := 60.0
+const TT_STRIP_Z0 := -40.0
+# Building footprint and terraces (building X/Z), used for the tower-down gravity zone.
+const TT_FOOT_X0 := -12.0
+const TT_FOOT_X1 := 140.0
+const TT_FOOT_Z0 := 0.0
+const TT_FOOT_Z1 := 79.0
+const TT_TERR_X0 := -62.5
+const TT_TERR_X1 := 170.5
+const TT_TERR_Z0 := 13.5
+const TT_TERR_Z1 := 66.5
+# Tower-down inside the footprint (plus TT_BLEND_IN), radial past TT_BLEND_OUT. Above the roof it fades back.
+const TT_BLEND_IN := 0.5
+const TT_BLEND_OUT := 4.0
+const TT_GRAV_Y_MIN := -8.0
+const TT_GRAV_Y0 := 30.0
+const TT_GRAV_Y1 := 36.0
+# Rook's handoff values (CYLINDER_DROP.md), printed next to the live recompute.
+const TT_ROOK_ORIGIN := Vector3(-40.0, 18.0743, 81.5712)
+const TT_ROOK_F1_HD := 4.0408
+const SHOT_TOWER_DIR := "C:/Users/upchu/aegis_shots/tower"
+
 # [t38u] Rotating distant outer starfield sphere & RFID doors ([t45u] force-field)
 # Old barrel, kept only so the density print can name the previous field.
 const STARFIELD_OLD_RADIUS := 2200.0
@@ -433,6 +465,19 @@ var _align_gen: int = 0
 var _qa_last_slide_path: String = ""
 var _qa_nav_reach: bool = false
 var _qa_drawcalls: bool = false
+var _qa_tower_walk: bool = false
+var _shot_tower: bool = false
+var _qa_tower_draw: bool = false
+var _tt_disabled: bool = false
+var _tt_no_batch: bool = false
+var _shot_dir_override: String = ""
+var _tower: Node3D = null
+var _tower_xf: Transform3D = Transform3D.IDENTITY
+var _tower_inv: Transform3D = Transform3D.IDENTITY
+var _tower_up: Vector3 = Vector3.UP
+var _tower_stats: Dictionary = {}
+var _tower_batch_stats: Dictionary = {}
+var _tt_doors: Array[Dictionary] = []
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
 var _ff_shader: Shader = null
@@ -568,6 +613,21 @@ func _ready() -> void:
 			_qa_hand = true
 		elif arg == "--qa-nav-reach":
 			_qa_nav_reach = true
+		elif arg == "--qa-tower-walk":
+			_qa_tower_walk = true
+			_qa_hand = true
+		elif arg == "--shot-tower":
+			_shot_tower = true
+			_qa_hand = true
+		elif arg == "--qa-tower-draw":
+			_qa_tower_draw = true
+			_qa_hand = true
+		elif arg == "--no-tower":
+			_tt_disabled = true
+		elif arg == "--tower-no-batch":
+			_tt_no_batch = true
+		elif arg.begins_with("--shot-dir="):
+			_shot_dir_override = arg.substr(11)
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -638,6 +698,12 @@ func _ready() -> void:
 			_run_qa_sprint_lap.call_deferred()
 		elif _qa_drawcalls:
 			_run_qa_drawcalls.call_deferred()
+		elif _qa_tower_walk:
+			_run_qa_tower_walk.call_deferred()
+		elif _shot_tower:
+			_run_shot_tower.call_deferred()
+		elif _qa_tower_draw:
+			_run_qa_tower_draw.call_deferred()
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -1446,6 +1512,7 @@ func _build_cylinder_hab7_fullscale_world(parent: Node3D) -> void:
 			plaza_root.add_child(cap)
 
 	_build_drum_walkable_ring(hab_root)
+	_build_tennis_tower(hab_root)
 
 
 # ------------------------------------------------------------------------------
@@ -4947,6 +5014,7 @@ func _physics_process(delta: float) -> void:
 	# and a physics catch-up burst can run those frames before the next idle _process.
 	_ff_tick_active_stalls(delta)
 	_apply_ring_box_gravity(delta)
+	_tt_update_doors(delta)
 	_process_core_transits(delta)
 	if _player_body == null:
 		return
@@ -4998,8 +5066,8 @@ func _physics_process(delta: float) -> void:
 		up_dir = _ring_up_at(b.global_position, b.global_basis.y)
 		g_vec = _ring_gravity_at(b.global_position)
 	else:
-		up_dir = _drum_up_at(b.global_position)
-		g_vec = _drum_gravity_at(b.global_position)
+		up_dir = _hab_up_at(b.global_position)
+		g_vec = _hab_gravity_at(b.global_position)
 	_orient_node_to_up(b, up_dir, delta)
 	b.up_direction = up_dir
 
@@ -5068,7 +5136,7 @@ func _physics_process(delta: float) -> void:
 	if _in_gravity_ring(b.global_position):
 		up_after = _ring_up_at(b.global_position, b.global_basis.y)
 	else:
-		up_after = _drum_up_at(b.global_position)
+		up_after = _hab_up_at(b.global_position)
 	_orient_node_to_up(b, up_after, delta)
 	b.up_direction = up_after
 	# [SYS-18] Ease the camera by the rise actually gained after the slide settles, not STEP_HEIGHT.
@@ -11829,3 +11897,518 @@ func _ext_save_shot(idx: int) -> void:
 		print("[EXT] saved %s" % rel)
 	else:
 		push_warning("[EXT] failed to save %s" % rel)
+
+
+# ------------------------------------------------------------------------------
+# [TT] Rook's Tennis Tower, Strip 5. World-frame instance under the hab root, tower-down
+# gravity zone over its footprint, solid water placeholder, then Gage's batcher
+# (scripts/tennis_tower_batcher.gd). Rook's scene, loader, manifest and GLBs are read-only.
+# ------------------------------------------------------------------------------
+func _tt_f1_hd() -> float:
+	# Hull height at the S face (strip z = TT_STRIP_Z0) above the strip centreline floor, on the true circle.
+	return DRUM_FLOOR_R - sqrt(DRUM_FLOOR_R * DRUM_FLOOR_R - TT_STRIP_Z0 * TT_STRIP_Z0)
+
+
+func _tt_drop_transform() -> Transform3D:
+	var a: float = deg_to_rad(float(TT_STRIP - 4) * 36.0)
+	var up: Vector3 = -_drum_outward(a)
+	var tan_v: Vector3 = Vector3(0.0, sin(a), cos(a))
+	var centre: Vector3 = Vector3(TT_STRIP_X0 + TT_AXIAL_OFFSET, DRUM_AXIS_Y, DRUM_AXIS_Z) + _drum_outward(a) * DRUM_FLOOR_R
+	return Transform3D(Basis(Vector3.RIGHT, up, tan_v), centre + tan_v * TT_STRIP_Z0 + up * _tt_f1_hd())
+
+
+## Walkable facet top (rho) at a drum angle: the facet face is the tangent plane at DRUM_FLOOR_R at its centre.
+func _tt_facet_rho(alpha: float) -> float:
+	var step: float = TAU / float(DRUM_FACETS)
+	var i: int = int(floor((alpha + PI) / step))
+	var centre_a: float = -PI + (float(i) + 0.5) * step
+	return DRUM_FLOOR_R / cos(alpha - centre_a)
+
+
+func _build_tennis_tower(hab_root: Node3D) -> void:
+	if _tt_disabled:
+		print("[TT] tower disabled (--no-tower)")
+		return
+	if not ResourceLoader.exists(TENNIS_TOWER_SCENE):
+		push_warning("[TT] missing " + TENNIS_TOWER_SCENE)
+		return
+	var ps: PackedScene = load(TENNIS_TOWER_SCENE) as PackedScene
+	if ps == null:
+		return
+	_tower_xf = _tt_drop_transform()
+	_tower_inv = _tower_xf.affine_inverse()
+	_tower_up = _tower_xf.basis.y.normalized()
+	var o: Vector3 = _tower_xf.origin
+	var s_rho: float = _drum_rho(o)
+	var s_alpha: float = _drum_alpha(o)
+	var floor_rho: float = _tt_facet_rho(s_alpha)
+	print("[TT] rook origin=%s f1_hd=%.4f | live origin=(%.4f, %.4f, %.4f) f1_hd=%.4f delta=%.5f" % [
+		str(TT_ROOK_ORIGIN), TT_ROOK_F1_HD, o.x, o.y, o.z, _tt_f1_hd(), o.distance_to(TT_ROOK_ORIGIN)])
+	print("[TT] basis x=%s y=%s z=%s rot_deg=%s" % [str(_tower_xf.basis.x), str(_tower_xf.basis.y), str(_tower_xf.basis.z), str(_tower_xf.basis.get_euler() * (180.0 / PI))])
+	print("[TT] S threshold rho=%.4f alpha_deg=%.3f facet_floor_rho=%.4f (top of slab; chord sag <= %.4f) gap=%.4f" % [
+		s_rho, rad_to_deg(s_alpha), floor_rho, DRUM_FLOOR_R / cos(PI / float(DRUM_FACETS)) - DRUM_FLOOR_R, floor_rho - s_rho])
+	var wx0: float = TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_FOOT_X0
+	print("[TT] axial: world x = strip x %+.0f; footprint x=[%.1f, %.1f] terraces x=[%.1f, %.1f] drum x=[%.0f, %.0f]; preface x=[%.0f, %.0f] strip 4" % [
+		TT_AXIAL_OFFSET, wx0, TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_FOOT_X1, TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X0,
+		TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X1, DRUM_X_MIN, DRUM_X_MAX, EXT_GROUND_X0, EXT_GROUND_X1])
+	var a_s: float = rad_to_deg(_drum_alpha(_tower_xf * Vector3(0.0, 0.0, TT_FOOT_Z0)))
+	var a_n: float = rad_to_deg(_drum_alpha(_tower_xf * Vector3(0.0, 0.0, TT_FOOT_Z1)))
+	print("[TT] across: S face alpha=%.2f N face alpha=%.2f (strip 5 span 18..54); preface north edge arc z=%.1f -> alpha=%.2f" % [
+		a_s, a_n, EXT_GROUND_Z1, rad_to_deg((EXT_GROUND_Z1 - DRUM_AXIS_Z) / DRUM_FLOOR_R)])
+	var t0: int = Time.get_ticks_msec()
+	var tower: Node3D = ps.instantiate() as Node3D
+	tower.transform = _tower_xf
+	tower.tower_built.connect(_on_tennis_tower_built.bind(tower))
+	hab_root.add_child(tower)
+	_tower = tower
+	print("[TT] instanced under %s in %d ms" % [str(hab_root.get_path()) if hab_root.is_inside_tree() else String(hab_root.name), Time.get_ticks_msec() - t0])
+
+
+func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
+	_tower_stats = stats
+	print("[TT] built placed=%d glbs=%d missing=%d surfaces=%d tris=%d colliders=%d ms=%d" % [
+		int(stats.get("placed", 0)), int(stats.get("glbs", 0)), (stats.get("missing", []) as Array).size(),
+		int(stats.get("meshes", 0)), int(stats.get("tris", 0)), int(stats.get("colliders", 0)), int(stats.get("ms", 0))])
+	var nw: int = _tt_bind_water(tower)
+	print("[TT] water placeholder surfaces=%d" % nw)
+	var nd: int = _tt_setup_doors(tower)
+	print("[TT] sliding doors=%d (secondary entrances S/N/E)" % nd)
+	if _tt_no_batch:
+		print("[TT] batching off (--tower-no-batch)")
+		return
+	_tower_batch_stats = _TennisTowerBatcher.run(tower)
+	var b: Dictionary = _tower_batch_stats
+	print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d ms=%.1f" % [
+		int(b["mi_before"]), int(b["surfaces_before"]), int(b["mmi"]), int(b["instances_in_mmi"]), int(b["mi_after"]),
+		int(b["surfaces_after"]), int(b["ranged"]), float(b["ms"])])
+
+
+func _tt_water_material() -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.resource_name = "TT_WaterPlaceholder"
+	m.albedo_color = Color(0.10, 0.36, 0.48, 1.0)
+	m.roughness = 0.12
+	m.metallic = 0.05
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return m
+
+
+## Solid placeholder on every pool / river / splash water body (no simulation). LED ripple lines keep their GLB material.
+func _tt_bind_water(tower: Node3D) -> int:
+	var mat: StandardMaterial3D = _tt_water_material()
+	var n: int = 0
+	var stack: Array[Node] = [tower]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		for ch: Node in c.get_children():
+			stack.append(ch)
+		if not (c is MeshInstance3D):
+			continue
+		var mi: MeshInstance3D = c as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		var nm: String = String(mi.name).to_lower()
+		var water: bool = nm.begins_with("water") and not nm.contains("ripple")
+		if not water:
+			for i: int in range(mi.mesh.get_surface_count()):
+				var sm: Material = mi.mesh.surface_get_material(i)
+				if sm != null and sm.resource_name.to_lower().contains("poolwater"):
+					water = true
+		if water:
+			mi.material_override = mat
+			n += 1
+	return n
+
+
+## Tower-local signed distance (m) to the footprint union (building + terraces) in the X/Z plan.
+func _tt_rect_sdf(x: float, z: float, x0: float, x1: float, z0: float, z1: float) -> float:
+	var dx: float = maxf(x0 - x, x - x1)
+	var dz: float = maxf(z0 - z, z - z1)
+	if dx <= 0.0 and dz <= 0.0:
+		return maxf(dx, dz)
+	return Vector2(maxf(dx, 0.0), maxf(dz, 0.0)).length()
+
+
+func _tt_sdf_local(q: Vector3) -> float:
+	return minf(_tt_rect_sdf(q.x, q.z, TT_FOOT_X0, TT_FOOT_X1, TT_FOOT_Z0, TT_FOOT_Z1),
+		_tt_rect_sdf(q.x, q.z, TT_TERR_X0, TT_TERR_X1, TT_TERR_Z0, TT_TERR_Z1))
+
+
+func _tt_weight(p: Vector3) -> float:
+	if _tower == null:
+		return 0.0
+	var q: Vector3 = _tower_inv * p
+	if q.y < TT_GRAV_Y_MIN or q.y > TT_GRAV_Y1:
+		return 0.0
+	var edge: float = smoothstep(TT_BLEND_IN, TT_BLEND_OUT, _tt_sdf_local(q))
+	var high: float = smoothstep(TT_GRAV_Y0, TT_GRAV_Y1, q.y)
+	return (1.0 - edge) * (1.0 - high)
+
+
+## Player up: radial everywhere, tower +Y over the tower footprint, slerped across the blend margin.
+func _hab_up_at(p: Vector3) -> Vector3:
+	var radial: Vector3 = _drum_up_at(p)
+	var w: float = _tt_weight(p)
+	if w <= 0.0:
+		return radial
+	return _drum_blend_up(radial, _tower_up, w)
+
+
+func _hab_gravity_at(p: Vector3) -> Vector3:
+	var g: Vector3 = _drum_gravity_at(p)
+	var w: float = _tt_weight(p)
+	if w <= 0.0:
+		return g
+	return -_hab_up_at(p) * g.length()
+
+
+# ------------------------------------------------------------------------------
+# [TT] --qa-tower-walk. Real input: drum floor -> S door -> F1 S lobby -> back out.
+# Every frame: no fall-through, tower-down inside the footprint, radial outside the
+# blend, no up/position snap. Then F2/F3 gravity on the stair-core landings.
+# ------------------------------------------------------------------------------
+func _tt_floor_feet(q_plan: Vector3) -> Vector3:
+	# Drum floor point under a building-plan (X, *, Z) point, outside the building.
+	var w: Vector3 = _tower_xf * Vector3(q_plan.x, 0.0, q_plan.z)
+	var a: float = _drum_alpha(w)
+	return Vector3(w.x, DRUM_AXIS_Y, DRUM_AXIS_Z) + _drum_outward(a) * _tt_facet_rho(a)
+
+
+func _qa_tower_place(feet: Vector3, up: Vector3, look_at_w: Vector3) -> void:
+	var fwd: Vector3 = look_at_w - feet
+	fwd -= up * fwd.dot(up)
+	_player_body.velocity = Vector3.ZERO
+	_player_body.global_transform = Transform3D(_shot_ring_basis(fwd, up), feet + up * 0.08)
+	_player_body.up_direction = up
+
+
+func _qa_tower_check(nm: String, ok: bool, detail: String) -> void:
+	print("QA_TOWER_WALK %s | %s | %s" % ["PASS" if ok else "FAIL", nm, detail])
+	if not ok:
+		_qa_failures += 1
+
+
+func _qa_tower_walk_leg(label: String, goal_plan: Vector3, budget: int) -> Dictionary:
+	var goal_w: Vector3 = _tower_xf * goal_plan
+	var frames: int = 0
+	var air: int = 0
+	var max_air: int = 0
+	var worst_snap_deg: float = 0.0
+	var worst_jump: float = 0.0
+	var worst_in: float = 1.0
+	var worst_out: float = 1.0
+	var min_q_y_inside: float = INF
+	var max_rho_out: float = 0.0
+	var prev_up: Vector3 = _player_body.up_direction
+	var prev_p: Vector3 = _player_body.global_position
+	var arrived: bool = false
+	_qa_key(KEY_W, true)
+	await _qa_idle(2)
+	while frames < budget:
+		var p: Vector3 = _player_body.global_position
+		var q: Vector3 = _tower_inv * p
+		var sdf: float = _tt_sdf_local(q)
+		var up: Vector3 = _player_body.up_direction
+		worst_snap_deg = maxf(worst_snap_deg, rad_to_deg(prev_up.angle_to(up)))
+		worst_jump = maxf(worst_jump, p.distance_to(prev_p))
+		prev_up = up
+		prev_p = p
+		if sdf < 0.0 and q.y > TT_GRAV_Y_MIN and q.y < TT_GRAV_Y0:
+			worst_in = minf(worst_in, up.dot(_tower_up))
+			min_q_y_inside = minf(min_q_y_inside, q.y)
+		elif sdf > TT_BLEND_OUT + 0.25:
+			worst_out = minf(worst_out, up.dot(_drum_up_at(p)))
+			max_rho_out = maxf(max_rho_out, _drum_rho(p))
+		if _player_body.is_on_floor():
+			air = 0
+		else:
+			air += 1
+			max_air = maxi(max_air, air)
+		var gq: Vector3 = _tower_inv * goal_w
+		if Vector2(q.x - gq.x, q.z - gq.z).length() < 0.8:
+			arrived = true
+			break
+		_qa_ring_steer(goal_w - p)
+		await get_tree().physics_frame
+		frames += 1
+	var blocker: String = ""
+	if not arrived:
+		for sc: int in range(_player_body.get_slide_collision_count()):
+			var kc: KinematicCollision3D = _player_body.get_slide_collision(sc)
+			var cn: Node = kc.get_collider() as Node
+			blocker += "%s n=%s; " % [str(cn.get_path()) if cn != null else "?", str((_tower_xf.basis.inverse() * kc.get_normal()).snapped(Vector3.ONE * 0.01))]
+		print("QA_TOWER_WALK info | %s | blocked_by=%s" % [label, blocker])
+	_qa_key(KEY_W, false)
+	await _qa_idle(2)
+	await _qa_frames(20)
+	var pe: Vector3 = _player_body.global_position
+	var qe: Vector3 = _tower_inv * pe
+	return {"label": label, "arrived": arrived, "frames": frames, "max_air": max_air, "snap_deg": worst_snap_deg,
+		"jump": worst_jump, "in_dot": worst_in, "out_dot": worst_out, "min_qy_in": min_q_y_inside, "max_rho_out": max_rho_out,
+		"pos": pe, "q": qe, "on_floor": _player_body.is_on_floor(), "sdf": _tt_sdf_local(qe)}
+
+
+func _qa_tower_leg_report(r: Dictionary) -> void:
+	# Walk speed 5.2 m/s at 60 Hz is 0.087 m/frame; 0.35 m allows a step-up, not a teleport.
+	var no_fall: bool = int(r["max_air"]) <= 30 and (is_inf(float(r["min_qy_in"])) or float(r["min_qy_in"]) > -0.25) and (float(r["max_rho_out"]) <= DRUM_FLOOR_R + 0.5)
+	var grav_ok: bool = float(r["in_dot"]) >= 0.9995 and float(r["out_dot"]) >= 0.9995
+	var no_snap: bool = float(r["snap_deg"]) <= 1.5 and float(r["jump"]) <= 0.35
+	var ok: bool = bool(r["arrived"]) and no_fall and grav_ok and no_snap and bool(r["on_floor"])
+	_qa_tower_check(String(r["label"]), ok, "arrived=%s frames=%d q=(%.2f, %.3f, %.2f) on_floor=%s max_air=%d min_qy_in=%.3f max_rho_out=%.3f up_in=%.5f up_out=%.5f snap_deg=%.3f jump=%.3f" % [
+		str(r["arrived"]), int(r["frames"]), (r["q"] as Vector3).x, (r["q"] as Vector3).y, (r["q"] as Vector3).z, str(r["on_floor"]),
+		int(r["max_air"]), float(r["min_qy_in"]) if not is_inf(float(r["min_qy_in"])) else 0.0, float(r["max_rho_out"]),
+		float(r["in_dot"]), float(r["out_dot"]), float(r["snap_deg"]), float(r["jump"])])
+
+
+func _qa_tower_settle_on(label: String, q_plan: Vector3, expect_y: float) -> void:
+	var feet: Vector3 = _tower_xf * Vector3(q_plan.x, expect_y, q_plan.z)
+	_qa_tower_place(feet, _tower_up, _tower_xf * Vector3(q_plan.x + 4.0, expect_y, q_plan.z))
+	await _qa_frames(90)
+	var q: Vector3 = _tower_inv * _player_body.global_position
+	var up_dot: float = _player_body.up_direction.dot(_tower_up)
+	var g_dot: float = -_hab_gravity_at(_player_body.global_position).normalized().dot(_tower_up)
+	var ok: bool = _player_body.is_on_floor() and absf(q.y - expect_y) < 0.2 and up_dot >= 0.9995 and g_dot >= 0.9995
+	_qa_tower_check(label, ok, "q=(%.2f, %.3f, %.2f) expect_y=%.2f on_floor=%s up_dot=%.5f g_dot=%.5f" % [q.x, q.y, q.z, expect_y, str(_player_body.is_on_floor()), up_dot, g_dot])
+
+
+func _run_qa_tower_walk() -> void:
+	_qa_failures = 0
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 600:
+		await get_tree().physics_frame
+		guard += 1
+	if _player_body == null or _tower == null:
+		print("QA_TOWER_WALK FAIL | setup | player=%s tower=%s" % [str(_player_body != null), str(_tower != null)])
+		print("QA_TOWER_WALK DONE failures=1")
+		get_tree().quit(1)
+		return
+	# S door: tt_secondary_entrance_s at X 72, Z -0.98 (8 m module). Start 14 m south of it on the drum floor.
+	var start: Vector3 = _tt_floor_feet(Vector3(70.915, 0.0, -14.0))
+	_qa_tower_place(start, _drum_up_at(start), _tower_xf * Vector3(70.915, 0.0, 6.0))
+	await _qa_frames(40)
+	var q0: Vector3 = _tower_inv * _player_body.global_position
+	var r0: float = _drum_rho(_player_body.global_position)
+	_qa_tower_check("start_on_drum", _player_body.is_on_floor() and absf(r0 - DRUM_FLOOR_R) < 0.3 and _player_body.up_direction.dot(_drum_up_at(_player_body.global_position)) > 0.9995,
+		"pos=%s q=%s rho=%.3f w=%.3f" % [str(_player_body.global_position), str(q0), r0, _tt_weight(_player_body.global_position)])
+	# The module has a centre mullion (Jamb-colonly) at X 72; each half opens 1.71 m once its inner leaf slides.
+	# Use the west half, centre X 72 - 1.085.
+	var legs: Array = [
+		["drum_floor_to_apron", Vector3(70.915, 0.0, -3.0), 900],
+		["apron_to_S_door", Vector3(70.915, 0.0, 1.2), 600],
+		["S_door_to_F1_lobby", Vector3(72.0, 0.0, 6.0), 600],
+	]
+	for leg: Array in legs:
+		var r: Dictionary = await _qa_tower_walk_leg(String(leg[0]), leg[1] as Vector3, int(leg[2]))
+		_qa_tower_leg_report(r)
+	# F1 floor under the lobby stand, along tower-down.
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var from_w: Vector3 = _player_body.global_position + _tower_up * 1.0
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from_w, from_w - _tower_up * 3.0)
+	rq.exclude = [_player_body.get_rid()]
+	var hit: Dictionary = space.intersect_ray(rq)
+	var hy: float = (_tower_inv * (hit["position"] as Vector3)).y if hit.has("position") else -999.0
+	_qa_tower_check("F1_floor_ray", absf(hy) < 0.03, "floor_q_y=%.4f" % hy)
+	# Stairs are switchback cores (no scripted route yet). Check F2/F3 gravity on the stair-core landings and Rook's probe decks.
+	await _qa_tower_settle_on("F2_W_gallery_tower_down", Vector3(-5.0, 0.0, 40.0), 6.112)
+	await _qa_tower_settle_on("F3_deck_tower_down", Vector3(70.0, 0.0, 4.0), 12.2)
+	# Back out through the S door to the drum floor: gravity returns to radial.
+	await _qa_tower_settle_on("F1_lobby_again", Vector3(72.0, 0.0, 6.0), 0.0)
+	var back_in: Dictionary = await _qa_tower_walk_leg("F1_lobby_to_S_door", Vector3(70.915, 0.0, 1.2), 600)
+	_qa_tower_leg_report(back_in)
+	var back: Dictionary = await _qa_tower_walk_leg("S_door_to_drum_floor", Vector3(70.915, 0.0, -10.0), 900)
+	_qa_tower_leg_report(back)
+	var pe: Vector3 = _player_body.global_position
+	_qa_tower_check("radial_outside", _player_body.up_direction.dot(_drum_up_at(pe)) > 0.9995 and absf(_drum_rho(pe) - DRUM_FLOOR_R) < 0.3,
+		"pos=%s rho=%.3f up_dot_radial=%.5f w=%.3f" % [str(pe), _drum_rho(pe), _player_body.up_direction.dot(_drum_up_at(pe)), _tt_weight(pe)])
+	_qa_ring_release()
+	print("QA_TOWER_WALK DONE failures=%d" % _qa_failures)
+	get_tree().quit(0 if _qa_failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [TT] --shot-tower. Windowed. Exterior from across the drum, base on the curved floor, F1 lobby.
+# ------------------------------------------------------------------------------
+func _tt_shot_dir() -> String:
+	return _shot_dir_override if _shot_dir_override != "" else SHOT_TOWER_DIR
+
+
+func _run_shot_tower() -> void:
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 600:
+		await get_tree().physics_frame
+		guard += 1
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if _hud != null:
+		_hud.visible = false
+	if _reticle_box != null:
+		_reticle_box.visible = false
+	_third_person = false
+	_apply_view_mode()
+	await _qa_frames(8)
+	if _player_body == null or _camera == null or _tower == null:
+		print("[SHOT-TOWER] FAIL | setup")
+		print("[SHOT-TOWER] DONE failures=1")
+		get_tree().quit(1)
+		return
+	var failures: int = 0
+	var dir: String = _tt_shot_dir()
+	var centre: Vector3 = _tower_xf * Vector3(64.0, 8.0, 39.5)
+	# Across the drum: strip 7 floor (alpha 108), 30 m up, looking at the tower centre.
+	var a_ext: float = deg_to_rad(108.0)
+	var ext_eye: Vector3 = Vector3(10.0, DRUM_AXIS_Y, DRUM_AXIS_Z) + _drum_outward(a_ext) * (DRUM_FLOOR_R - 30.0)
+	_player_body.global_position = _tower_xf * Vector3(64.0, 0.5, 40.0)
+	_qa_free_cam(ext_eye, centre, _drum_up_at(ext_eye), 60.0)
+	_camera.current = true
+	await _qa_frames(30)
+	if not await _shot_curve_save(dir + "/tower_exterior.png"):
+		failures += 1
+	# Base: on the drum floor 26 m south of the S face, eye 1.7 m, looking at the S face foot near the door.
+	var base_feet: Vector3 = _tt_floor_feet(Vector3(40.0, 0.0, -26.0))
+	var base_up: Vector3 = _drum_up_at(base_feet)
+	var base_eye: Vector3 = base_feet + base_up * 1.7
+	_qa_free_cam(base_eye, _tower_xf * Vector3(72.0, 2.0, 0.0), base_up, 70.0)
+	await _qa_frames(20)
+	if not await _shot_curve_save(dir + "/tower_base.png"):
+		failures += 1
+	# Lobby: W foyer, eye 1.7 m over F1, looking at the arrival desk and kiosks.
+	var lob_eye: Vector3 = _tower_xf * Vector3(-9.0, 1.7, 44.0)
+	_player_body.global_position = _tower_xf * Vector3(-9.5, 0.3, 46.0)
+	_qa_free_cam(lob_eye, _tower_xf * Vector3(2.0, 1.4, 30.0), _tower_up, 75.0)
+	await _qa_frames(20)
+	if not await _shot_curve_save(dir + "/tower_lobby.png"):
+		failures += 1
+	print("[SHOT-TOWER] dir=%s exterior_eye=%s base_eye=%s lobby_eye=%s" % [dir, str(ext_eye), str(base_eye), str(lob_eye)])
+	print("[SHOT-TOWER] DONE failures=%d" % failures)
+	get_tree().quit(0 if failures == 0 else 1)
+
+
+# ------------------------------------------------------------------------------
+# [TT] --qa-tower-draw. Windowed. RenderingServer frame stats from the spawn view and the lobby.
+# Run with --no-tower / --tower-no-batch for the before numbers.
+# ------------------------------------------------------------------------------
+func _qa_tower_draw_sample(label: String, eye: Vector3, at: Vector3, up: Vector3, mode: String) -> void:
+	_qa_free_cam(eye, at, up, 70.0)
+	_camera.current = true
+	await _qa_frames(60)
+	var n: int = 90
+	var dc: float = 0.0
+	var ob: float = 0.0
+	var pr: float = 0.0
+	for _i: int in range(n):
+		await get_tree().process_frame
+		dc += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
+		ob += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME))
+		pr += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME))
+	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n))])
+
+
+func _run_qa_tower_draw() -> void:
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 600:
+		await get_tree().physics_frame
+		guard += 1
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(Vector2i(1920, 1080))
+	if _hud != null:
+		_hud.visible = false
+	var mode: String = "no_tower" if _tt_disabled else ("unbatched" if _tt_no_batch else "batched")
+	var xf: Transform3D = _tt_drop_transform()
+	var spawn: Vector3 = bend_point(SPAWN_POS)
+	var stand: Basis = _bend_stand_basis(spawn, SPAWN_YAW_DEG)
+	var eye: Vector3 = spawn + stand * Vector3(0.0, 1.62, 0.15)
+	_player_body.global_position = spawn
+	await _qa_tower_draw_sample("spawn_yaw", eye, spawn + stand * Vector3(0.0, 1.35, -3.5), stand.y, mode)
+	await _qa_tower_draw_sample("spawn_to_tower", eye, xf * Vector3(64.0, 8.0, 39.5), stand.y, mode)
+	_player_body.global_position = xf * Vector3(-9.5, 0.3, 46.0)
+	await _qa_tower_draw_sample("lobby", xf * Vector3(-9.0, 1.7, 44.0), xf * Vector3(2.0, 1.4, 30.0), xf.basis.y, mode)
+	print("[TT-DRAW] mode=%s build_ms=%d batch_ms=%.1f" % [mode, int(_tower_stats.get("ms", 0)), float(_tower_batch_stats.get("ms", 0.0))])
+	print("[TT-DRAW] DONE")
+	get_tree().quit(0)
+
+
+
+# ------------------------------------------------------------------------------
+# [TT] Secondary entrances (S/N/E). Rook modelled the glass leaves closed and the
+# invisible Wall-colonly glass-line collider runs across the door opening (y 0.5..6.1).
+# Runtime only (GLB untouched): that collider shape is disabled and rebuilt as
+# header + side boxes around the leaf opening; the two inner leaves slide behind the
+# outer pair when the player is near, and an inner-leaf box blocks while they are shut.
+# ------------------------------------------------------------------------------
+const TT_DOOR_WALL_Z0 := -1.061
+const TT_DOOR_WALL_Z1 := -0.961
+const TT_DOOR_HALF_W := 3.999
+const TT_DOOR_LEAF_HALF := 3.74
+const TT_DOOR_INNER_HALF := 1.94
+const TT_DOOR_TOP := 2.45
+const TT_DOOR_SLIDE := 1.713
+const TT_DOOR_OPEN_DIST := 4.0
+const TT_DOOR_SPEED := 1.6
+
+
+func _tt_box_shape(body: StaticBody3D, nm: String, x0: float, x1: float, y0: float, y1: float, z0: float, z1: float) -> CollisionShape3D:
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	cs.name = nm
+	var bs: BoxShape3D = BoxShape3D.new()
+	bs.size = Vector3(x1 - x0, y1 - y0, z1 - z0)
+	cs.shape = bs
+	cs.position = Vector3((x0 + x1) * 0.5, (y0 + y1) * 0.5, (z0 + z1) * 0.5)
+	body.add_child(cs)
+	return cs
+
+
+func _tt_setup_doors(tower: Node3D) -> int:
+	var roots: Array[Node3D] = []
+	var stack: Array[Node] = [tower]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		for ch: Node in c.get_children():
+			stack.append(ch)
+		if c is Node3D and String(c.name).begins_with("tt_secondary_entrance_"):
+			roots.append(c as Node3D)
+	for r: Node3D in roots:
+		var wall: StaticBody3D = r.get_node_or_null("Wall-colonly") as StaticBody3D
+		if wall == null:
+			continue
+		for ch2: Node in wall.get_children():
+			if ch2 is CollisionShape3D:
+				(ch2 as CollisionShape3D).disabled = true
+		var z0: float = TT_DOOR_WALL_Z0
+		var z1: float = TT_DOOR_WALL_Z1
+		_tt_box_shape(wall, "TT_Header", -TT_DOOR_HALF_W, TT_DOOR_HALF_W, TT_DOOR_TOP, 6.1, z0, z1)
+		_tt_box_shape(wall, "TT_SideW", -TT_DOOR_HALF_W, -TT_DOOR_LEAF_HALF, 0.5, TT_DOOR_TOP, z0, z1)
+		_tt_box_shape(wall, "TT_SideE", TT_DOOR_LEAF_HALF, TT_DOOR_HALF_W, 0.5, TT_DOOR_TOP, z0, z1)
+		_tt_box_shape(wall, "TT_OuterLeafW", -TT_DOOR_LEAF_HALF, -TT_DOOR_INNER_HALF, 0.18, TT_DOOR_TOP, z0, z1)
+		_tt_box_shape(wall, "TT_OuterLeafE", TT_DOOR_INNER_HALF, TT_DOOR_LEAF_HALF, 0.18, TT_DOOR_TOP, z0, z1)
+		var inner: CollisionShape3D = _tt_box_shape(wall, "TT_InnerLeaves", -TT_DOOR_INNER_HALF, TT_DOOR_INNER_HALF, 0.18, TT_DOOR_TOP, z0, z1)
+		var leaves: Array = []
+		for nm: String in ["Door_Scissor_01", "Door_Scissor_10"]:
+			var mi: MeshInstance3D = r.get_node_or_null(nm) as MeshInstance3D
+			if mi == null:
+				continue
+			mi.set_meta("tt_no_batch", true)
+			leaves.append({"mi": mi, "base": mi.position, "dir": -1.0 if nm.ends_with("01") else 1.0})
+		_tt_doors.append({"root": r, "inner": inner, "leaves": leaves, "t": 0.0})
+	return _tt_doors.size()
+
+
+func _tt_update_doors(delta: float) -> void:
+	if _tt_doors.is_empty() or _player_body == null:
+		return
+	var pp: Vector3 = _player_body.global_position
+	for d: Dictionary in _tt_doors:
+		var r: Node3D = d["root"] as Node3D
+		if r == null or not is_instance_valid(r):
+			continue
+		var c: Vector3 = r.global_transform * Vector3(0.0, 1.2, -1.0)
+		var want: float = 1.0 if pp.distance_to(c) < TT_DOOR_OPEN_DIST else 0.0
+		var t: float = move_toward(float(d["t"]), want, TT_DOOR_SPEED * delta)
+		d["t"] = t
+		var e: float = smoothstep(0.0, 1.0, t)
+		for lf: Dictionary in d["leaves"]:
+			var mi: MeshInstance3D = lf["mi"] as MeshInstance3D
+			# Slide along local X behind the outer leaf (3 cm inboard so the glass does not z-fight).
+			mi.position = (lf["base"] as Vector3) + Vector3(float(lf["dir"]) * TT_DOOR_SLIDE * e, 0.0, -0.03 * minf(e * 4.0, 1.0))
+		(d["inner"] as CollisionShape3D).disabled = t > 0.85
