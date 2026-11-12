@@ -2,8 +2,8 @@
 
 Merges assemble_preview's structure / envelope / site / hull with every committed
 temp-*_placements.json on main. Owner files win for their room contents; Courts is
-canonical for stands and court doors. temp-Services_placements.json is untracked /
-unverified and is excluded. Writes a placement report + optional Godot tour under
+canonical for stands and court doors. r7e: temp-Services_placements.json is committed and
+loaded (0 world placements today: fountains/family rooms are proposed_unplaced). Writes a placement report + optional Godot tour under
 /workspace/renders/tennis_tower/complex_tour/.
 
 Usage: python3 assemble_complex.py [--no-render] [--sanity-only] [--shots name,name]
@@ -24,7 +24,7 @@ MD = AP.MD
 OUT = "/workspace/renders/tennis_tower/complex_tour"
 ROOMS = os.path.join(MD, "rooms")
 
-# Committed placement files only (Services is untracked — do not load it).
+# Committed placement files only. r7e: Services committed (placements [] + proposed_unplaced, skipped).
 OWNER_FILES = {
     "Arrival": "temp-Arrival_placements.json",
     "Aquatics": "temp-Aquatics_placements.json",
@@ -32,6 +32,7 @@ OWNER_FILES = {
     "Courts": "temp-Courts_placements.json",
     "Active": "temp-Active_placements.json",
     "Rooftop": "temp-Rooftop_placements.json",
+    "Services": "temp-Services_placements.json",
 }
 
 # Categories assemble_preview still emits that owners now own. Dropped from the
@@ -266,7 +267,7 @@ def rook_core():
     put("tt_core_clad_aqn", -3.075, 0, 58.359, 180, "f1")   # r3: foyer-side S face of ST-AQN (wall plane Z 58.40), relief <= 0.08
     put("tt_slide_tower_t1", 22.5, 1.0, 53.5, 0, "f1")
     put("tt_slide_tower_t2", 22.5, 1.0, 59.5, 0, "f1")
-    # Services world placements were never committed; keep Rook's restroom shells.
+    # Services has no committed world placements (r7e: file loaded, 0 placed); keep Rook's restroom shells.
     for (x, z), y, t in [
         ((107.5, 4), 0, "f1"), ((107.5, 9), 0, "f1"),
         ((37, 70), 0, "f1"), ((37, 74.5), 0, "f1"),
@@ -573,9 +574,9 @@ def assemble():
         "marks them as temp-Active judgement rather than spec-dimensioned. "
         "The 4 withheld items (C1 desks, C6 benches) are in a separate list and were not placed."
     )
-    log["services_excluded"] = (
-        "temp-Services_placements.json is untracked/unverified (0 verified world "
-        "placements, family rooms and fountains gated). Excluded. Rook still places "
+    log["services"] = (
+        "temp-Services_placements.json committed r7e and loaded: 0 verified world placements "
+        "(19 fountain stations and 6 family rooms are proposed_unplaced, gated). Rook still places "
         "the four committed plant-stack shells and the restroom placeholder shells."
     )
 
@@ -620,7 +621,7 @@ def main():
     for n in log["notes"]:
         print("note:", n)
     print("Active policy:", log["active_status_choice"])
-    print("Services:", log["services_excluded"])
+    print("Services:", log["services"])
     for owner, info in log["owners"].items():
         print(f"  {owner}: kept {info['kept']} of {info['read']} skipped={info['skipped']}")
 

@@ -1,0 +1,50 @@
+{
+ "owner": "temp-Services",
+ "spec": "design/strip5_tennis_tower_v1.md Rev 3.0 (2a0d7c3) + Vance review-only reservations; Rook scoped decision: 19 combined stations",
+ "axes": "Y up, X axial, Z across; yaw deg about +Y; p = building coords of GLB pivot (bottom centre)",
+ "note": "Only verified world placements go in 'placements'. Fountain station world positions and all six family rooms are GATED (Vance spec OK + Rook shared-wall recess review + F3 >=2.1 m headroom section pending), so none are placed.",
+ "placements": [],
+ "proposed_unplaced": {
+  "fountain_stations": {
+   "asset": "tt_services_fountain_station",
+   "status": "proposed/unplaced",
+   "stations": {
+    "F1": 6,
+    "F2": 5,
+    "F3": 8,
+    "total": 19
+   },
+   "outlets_per_station": {
+    "accessible_low": 1,
+    "standing": 1,
+    "bottle_filler": 1
+   },
+   "outlets_total": {
+    "accessible_low": 19,
+    "standing": 19,
+    "bottle_filler": 19,
+    "drinking_outlets": 38,
+    "all_outlets": 57
+   },
+   "module_reservations_local": {
+    "recess_clear_m": [
+     2.4,
+     1.3,
+     2.4
+    ],
+    "approach_low": "x -1.13..-0.37, z 0..1.22 from back-wall face",
+    "approach_standing": "x 0.37..1.13, z 0..1.22",
+    "knee": "y>=0.69 for z<=0.48; toe clear y 0..0.23 to z 0.64",
+    "needs_host": "2.62 m wide x 1.41 m deep wall niche (shared wall/slab cut = Rook)"
+   },
+   "withheld": [
+    "F3 X24.1 Z30 (near tree column)",
+    "F3 X118.9 Z30 (near tree column)"
+   ]
+  },
+  "family_rooms": {
+   "count": 6,
+   "status": "gated; candidate module not promoted"
+  }
+ }
+}

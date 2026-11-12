@@ -1,7 +1,7 @@
 """Rook r7 (2026-11-11): writes the cylinder-drop manifest godot/assets/models/tt_tower_manifest.json for
 godot/scenes/tennis_tower/tennis_tower.tscn (loader godot/scripts/tennis_tower/tennis_tower_loader.gd).
-Same placement list as assemble_complex.assemble() (structure + committed temp-*_placements.json; Services excluded,
-untracked), minus the box-only preview_hull: the drum floor is the cylinder's own. Building coords, F1 = 0, origin SW corner.
+Same placement list as assemble_complex.assemble() (structure + committed temp-*_placements.json, Services included
+since r7e with 0 world placements), minus the box-only preview_hull: the drum floor is the cylinder's own. Building coords, F1 = 0, origin SW corner.
 Also prints the Strip 5 drop transform from preface_playable_area.gd constants (read-only copy below)."""
 import json, math, os, sys, collections
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
@@ -27,7 +27,7 @@ def main():
         out.append(dict(glb="res://" + os.path.relpath(g, GODOT), p=p["p"], yaw=p["yaw"], tag=p["tag"], owner=p["owner"], asset=p["asset"]))
     man = dict(note="Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
                count=len(out), by_owner=dict(collections.Counter(q["owner"] for q in out)), skipped=skipped,
-               services="temp-Services_placements.json is untracked: not included", drop=drop(), placements=out)
+               services="temp-Services_placements.json included (r7e): %d world placements; fountains/family rooms proposed_unplaced" % sum(q["owner"] == "Services" for q in out), drop=drop(), placements=out)
     json.dump(man, open(OUT, "w"), indent=0)
     print("manifest", len(out), "skipped", skipped, man["by_owner"]); print("drop", json.dumps(man["drop"]))
 if __name__ == "__main__": main()
