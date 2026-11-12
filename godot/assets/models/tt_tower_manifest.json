@@ -13,7 +13,7 @@
 "skipped": [
 "preview_hull"
 ],
-"services": "temp-Services_placements.json is untracked: not included",
+"services": "temp-Services_placements.json included (r7e): 0 world placements; fountains/family rooms proposed_unplaced",
 "drop": {
 "alpha_deg": 36.0,
 "rotation_deg": [
@@ -27623,7 +27623,7 @@
 {
 "glb": "res://assets/models/tt_dome_climber.glb",
 "p": [
-136.32,
+136.5,
 12.2,
 42.0
 ],
