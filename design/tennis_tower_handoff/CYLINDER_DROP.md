@@ -16,7 +16,7 @@ Not sent. Kept as a file for Gage, as with GAGE_NOTES.md. Rook did not edit any 
   - `axial_offset`.
   - The `tower_built(stats)` signal.
 - The manifest is generated, so don't hand-edit it. To regenerate: `python3 assets/src/tennis_tower/structure/tower_drop.py`. It uses the same list as `assemble_complex.assemble()`, minus the box-only `preview_hull`.
-- Services: `temp-Services_placements.json` is still untracked or unverified, so it is **not** in the manifest. Rook's 4 plant-stack shells and the restroom placeholder shells are in it.
+- Services: `temp-Services_placements.json` is committed and loaded since r7e (9702bd1). It has 0 world placements: the fountain stations and family rooms are still `proposed_unplaced`. Rook's 4 plant-stack shells and the restroom placeholder shells are in the manifest.
 - Water: Aquatics' existing solid placeholder (GLB material). Jared said a solid placeholder is fine; a simulated water scope comes later. The `temp-Aquatics_water.gdshader` bind in `temp-Aquatics_rooms.tscn` is not used here. If you want the shader look, bind it to the water nodes after `tower_built`.
 - Plinth: new `tt_struct_plinth_fill.glb` (Rook, `structure/plinth_fill.py`, 2,840 tris, colliders):
   - It is a cast fill from the F1 slab underside (−0.403) and the W/E terrace undersides (−0.313) down to the **true R 200 hull − 0.15 m**.
@@ -101,7 +101,7 @@ No script errors, no leaks at exit.
 
 ## Known open items
 - The axial datum (`axial_offset`) and the gravity blend over the footprint are Gage's calls (see above).
-- Services placements are not included until they are committed.
+- Services: included since r7e, but 0 world placements until the fountain stations and family rooms are promoted.
 - Mesh clash r3: 228 instance pairs (was 231). The remaining items per owner are in `/workspace/renders/tennis_tower/cylinder_drop_r1/` (box only) and in Rook's report.
 - `tt_gallery_lockers_b` reads as "floating" by AABB. It is a door chunk on `_a` (Aquatics), so this is intended. The 12 `tt_lift_core` pits read as "sunk", also intended.
 
@@ -117,3 +117,9 @@ No script errors, no leaks at exit.
 ## r7c (Aquatics 667f3cc)
 - S facade bays X 2..26 (Z -0.21, yaw 180) now use `tt_facade_bay_pool.glb`: plinth ledge upper box and edge fin trimmed to world Z <= 0.496 (hidden behind lap-tank wall at Z 0.504). Header kept, so bbox/pivot identical to tt_facade_bay. Colliders unchanged (Plinth-colonly reaches Z 0.071, Wall-colonly at glass line).
 - Focused clash tt_pool_* vs tt_facade_bay_pool: 0 pairs. tt_pool_deck_finish_c confirmed at [24.0225, 1.92, 17.237].
+
+## r7d/r7e (Thu Nov 12): Services included, F3 dome pad fixed
+- Services: `temp-Services_placements.json` committed (9702bd1) and added to `assemble_complex.OWNER_FILES`. It adds 0 placements (19 fountain stations and 6 family rooms remain `proposed_unplaced`). The only GLB it names, `tt_services_fountain_station.glb`, is already on main.
+- F3 dome climber (4c00171): `Fall_Zone_Pad` trimmed on +X to local x <= 2.89 by `rooms/temp-Rooftop/dome_pad_trim.py` (in-place GLB edit, tris unchanged at 3,642, pivot unchanged at the dome centre). The dome moved back to X 136.50, because d8cc043's 136.32 pushed the frame into the balance-trail stones. The pad edge is now at X 139.39, with no contact with the E kick fence posts (139.41) or the `Fin_Branch` feet (139.54). The old 0.120 m fin overlap is gone.
+- Still open (Rooftop, existed before this fix): the dome, play-surface and balance-trail safety pads are all 0-0.03 m and overlap with coplanar tops, so they can z-fight where they stack. The dome frame feet sit 3 mm into `Stone_Inlay`, which is within the limit.
+- Manifest: 2,659 placements, 229 GLBs (Rook 1022, Arrival 42, Aquatics 66, Leisure 236, Courts 352, Active 537, Rooftop 404, Services 0). Headless check: placed 2,659, 229 GLBs, missing 0, surfaces 24,281, tris 3,077,386, colliders 3,361, PASS.
