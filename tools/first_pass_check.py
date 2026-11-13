@@ -752,9 +752,19 @@ func _check_dup_colliders(bodies):
 					ex.append(str(c.get_path()) + " == " + seen[k])
 				else: seen[k] = str(c.get_path())
 	_emit("FAIL" if dup else "PASS", "godot.duplicate_static_colliders", "%d identical shape+transform duplicates" % dup, ex)
+func _gravity_up_of(n):
+	# FPC-13: a building posed in its own gravity frame (e.g. the Strip 5 Tennis Tower, tilted onto the drum)
+	# marks its root with meta "gravity_up_basis_y". Its colliders are judged against that root's basis Y,
+	# which is the player's up inside it. Everything else keeps world up (spin floors are skipped by radial_up_re).
+	var a = n
+	while a != null:
+		if a is Node3D and a.has_meta("gravity_up_basis_y"):
+			return a.global_transform.basis.y.normalized()
+		a = a.get_parent()
+	return Vector3.UP
 func _check_slopes(bodies):
 	# FPC-02: per collider, judge its main walk face (largest-area upward face group), not every upward facet.
-	var steep = 0; var stair = 0; var sx = []; var wx = []; var radial = 0
+	var steep = 0; var stair = 0; var sx = []; var wx = []; var radial = 0; var framed = 0; var framed_stair = 0
 	var smax = C.stair_collider_max_deg; var wmax = C.walkable_max_deg
 	var rr = RegEx.new(); rr.compile(C.radial_up_re)
 	var ra = RegEx.new(); ra.compile(C.walkable_slope_allow_re)
@@ -767,6 +777,9 @@ func _check_slopes(bodies):
 				radial += 1
 				continue
 			var xf = c.global_transform
+			var up_ref = _gravity_up_of(c)
+			if up_ref != Vector3.UP:
+				framed += 1
 			var walk_deg = -1.0
 			var walk_area = 0.0
 			if c.shape is ConcavePolygonShape3D or c.shape is ConvexPolygonShape3D:
@@ -778,8 +791,9 @@ func _check_slopes(bodies):
 					var area = n.length() * 0.5
 					if area < 1e-6: continue
 					n = n.normalized()
-					if n.y <= 0.05: continue
-					var deg = int(round(rad_to_deg(acos(clamp(n.y, -1, 1)))))
+					var ny = n.dot(up_ref)
+					if ny <= 0.05: continue
+					var deg = int(round(rad_to_deg(acos(clamp(ny, -1, 1)))))
 					bins[deg] = bins.get(deg, 0.0) + area
 				var best = 0.0
 				for d in bins:
@@ -789,12 +803,14 @@ func _check_slopes(bodies):
 				walk_area = best
 			elif c.shape is BoxShape3D:
 				var up = xf.basis.y.normalized()
-				walk_deg = rad_to_deg(acos(clamp(abs(up.dot(Vector3.UP)), 0, 1)))
+				walk_deg = rad_to_deg(acos(clamp(abs(up.dot(up_ref)), 0, 1)))
 				var sc = xf.basis.get_scale()
 				walk_area = c.shape.size.x * sc.x * c.shape.size.z * sc.z
 			else:
 				continue
 			if walk_deg < 1.0 or walk_deg > 70.0: continue
+			if is_stair and up_ref != Vector3.UP:
+				framed_stair += 1
 			var label = "%s %.0fdeg" % [c.get_path(), walk_deg]
 			if is_stair and walk_deg > smax:
 				stair += 1
@@ -806,7 +822,7 @@ func _check_slopes(bodies):
 				steep += 1
 				wx.append(label)
 	_emit("WARN" if steep else "PASS", "godot.walkable_slope", "%d colliders whose main walk face is %.0f-70 deg (min area %.2f m2, %d allowlisted)" % [steep, wmax, C.walkable_min_area_m2, allowed], wx)
-	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair colliders whose main walk face is steeper than %.0f deg (%d spin-gravity shapes skipped)" % [stair, smax, radial], sx)
+	_emit("FAIL" if stair else "PASS", "godot.stair_slope", "%d stair colliders whose main walk face is steeper than %.0f deg (%d spin-gravity shapes skipped; %d shapes, %d sloped stair colliders judged against their building's gravity up)" % [stair, smax, radial, framed, framed_stair], sx)
 func _check_meshes(meshes):
 	var noup = 0; var nomat = 0; var heavy = 0; var ex = []
 	for m in meshes:

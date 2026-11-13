@@ -253,6 +253,11 @@ const TT_GRAV_Y1 := 36.0
 const TT_ROOK_ORIGIN := Vector3(-40.0, 18.0743, 81.5712)
 const TT_ROOK_F1_HD := 4.0408
 const SHOT_TOWER_DIR := "C:/Users/upchu/aegis_shots/tower"
+# Extra collision layer bit on every tower body (layer 1 stays, so the player and physics are unchanged).
+# QA probes that measure the drum floor itself exclude these bodies.
+const TT_QA_LAYER_BIT := 1 << 18
+# --qa-ring end-cap lane detour past the tower: axial margin beyond the terrace ends.
+const TT_RING_DETOUR_MARGIN_X := 20.0
 
 # [t38u] Rotating distant outer starfield sphere & RFID doors ([t45u] force-field)
 # Old barrel, kept only so the density print can name the previous field.
@@ -478,6 +483,7 @@ var _tower_up: Vector3 = Vector3.UP
 var _tower_stats: Dictionary = {}
 var _tower_batch_stats: Dictionary = {}
 var _tt_doors: Array[Dictionary] = []
+var _tower_body_rids: Array[RID] = []
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
 var _ff_shader: Shader = null
@@ -10093,6 +10099,26 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 	return {"ok": false, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "fell": fell, "start": start_strip, "end": end_strip}
 
 
+## [TT] End-cap lane past the Strip 5 tower. Off the tower's axial span (terraces +/- TT_RING_DETOUR_MARGIN_X)
+## the lane stays at hold_a. Inside that span, when hold_a falls in the tower's angular span (S face to N face,
+## widened by the gravity blend), the lane steps to the open floor between the start deck's north edge and the
+## tower's S face (both widened by their blend margins), so the run goes round the building on the walkable floor.
+func _qa_ring_lane_alpha(hold_a: float, x: float) -> float:
+	if _tower == null:
+		return hold_a
+	var mid_x: float = (TT_FOOT_X0 + TT_FOOT_X1) * 0.5
+	var a_s: float = _drum_alpha(_tower_xf * Vector3(mid_x, 0.0, TT_FOOT_Z0)) - TT_BLEND_OUT / DRUM_FLOOR_R
+	var a_n: float = _drum_alpha(_tower_xf * Vector3(mid_x, 0.0, TT_FOOT_Z1)) + TT_BLEND_OUT / DRUM_FLOOR_R
+	if hold_a < a_s or hold_a > a_n:
+		return hold_a
+	var x0: float = TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X0 - TT_RING_DETOUR_MARGIN_X
+	var x1: float = TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X1 + TT_RING_DETOUR_MARGIN_X
+	if x < x0 or x > x1:
+		return hold_a
+	var a_deck: float = (EXT_GROUND_Z1 + DRUM_BLEND_OUT - DRUM_AXIS_Z) / DRUM_FLOOR_R
+	return (a_deck + a_s) * 0.5
+
+
 func _qa_ring_to_alpha(x_hold: float, target_a: float) -> bool:
 	var frames: int = 0
 	while frames < 1000:
@@ -10123,7 +10149,7 @@ func _qa_ring_to_x(hold_alpha: float, sign: float, mode: int, goal_x: float) -> 
 		if p.x > DRUM_X_MAX + 0.25 or p.x < DRUM_X_MIN - 0.25:
 			return {"ok": false, "why": "through", "x": p.x, "rho": max_rho, "frames": frames}
 		var a: float = _drum_alpha(p)
-		var err: float = wrapf(hold_alpha - a, -PI, PI)
+		var err: float = wrapf(_qa_ring_lane_alpha(hold_alpha, p.x) - a, -PI, PI)
 		var axial: float = sign
 		if mode == 0:
 			axial = clampf((goal_x - p.x) * 0.12, -1.0, 1.0)
@@ -10242,10 +10268,19 @@ func _run_qa_ring() -> void:
 		failures += 1
 	# z = 110 is ~67 m north of the deck, clear of the east ramps if the lane drifts.
 	var safe_a: float = asin(clampf((110.0 - DRUM_AXIS_Z) / DRUM_FLOOR_R, -1.0, 1.0))
-	if not await _qa_ring_to_alpha(x_hold, safe_a):
+	# [TT] If the loop ends inside the tower's axial span, align to the detour lane first; the cap runs
+	# then hold the original safe_a lane everywhere off the tower's span (_qa_ring_lane_alpha).
+	var align_a: float = _qa_ring_lane_alpha(safe_a, x_hold)
+	if not await _qa_ring_to_alpha(x_hold, align_a):
 		failures += 1
 		print("QA_RING FAIL | align | alpha=%.2f pos=%s" % [rad_to_deg(_drum_alpha(_player_body.global_position)), str(_player_body.global_position)])
 	var hold_a: float = _drum_alpha(_player_body.global_position)
+	if align_a != safe_a:
+		hold_a = safe_a
+	if _tower != null:
+		print("QA_RING lane | safe_deg=%.2f detour_deg=%.2f detour_x=[%.1f, %.1f] align_deg=%.2f" % [rad_to_deg(safe_a),
+			rad_to_deg(_qa_ring_lane_alpha(safe_a, 0.0)), TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X0 - TT_RING_DETOUR_MARGIN_X,
+			TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X1 + TT_RING_DETOUR_MARGIN_X, rad_to_deg(align_a)])
 	var pos_cap: Dictionary = await _qa_ring_to_x(hold_a, 1.0, 1, 0.0)
 	var pos_ok: bool = bool(pos_cap["ok"]) and float(pos_cap["rho"]) <= DRUM_FLOOR_R + 2.0
 	print("QA_RING %s | cap_pos | x=%.2f z=%.2f frames=%d %s" % ["PASS" if pos_ok else "FAIL", float(pos_cap["x"]), _player_body.global_position.z, int(pos_cap["frames"]), String(pos_cap["why"])])
@@ -10449,6 +10484,9 @@ func _drum_align_collider(space: PhysicsDirectSpaceState3D, origin: Vector3, out
 	var exclude: Array[RID] = []
 	if _player_body != null:
 		exclude.append(_player_body.get_rid())
+	# The check measures the drum floor against the hull. Buildings standing on the floor (the Strip 5
+	# tower, TT_QA_LAYER_BIT) are not the floor, so their bodies are excluded; every station is still sampled.
+	exclude.append_array(_tower_body_rids)
 	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ray_from, ray_to, 1, exclude)
 	rq.hit_from_inside = false
 	var hit: Dictionary = space.intersect_ray(rq)
@@ -11958,6 +11996,8 @@ func _build_tennis_tower(hab_root: Node3D) -> void:
 	var t0: int = Time.get_ticks_msec()
 	var tower: Node3D = ps.instantiate() as Node3D
 	tower.transform = _tower_xf
+	# tools/first_pass_check.py judges this building's colliders against its own up (the player's up inside it).
+	tower.set_meta("gravity_up_basis_y", true)
 	tower.tower_built.connect(_on_tennis_tower_built.bind(tower))
 	hab_root.add_child(tower)
 	_tower = tower
@@ -11973,6 +12013,16 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 	print("[TT] water placeholder surfaces=%d" % nw)
 	var nd: int = _tt_setup_doors(tower)
 	print("[TT] sliding doors=%d (secondary entrances S/N/E)" % nd)
+	_tower_body_rids.clear()
+	var stack_b: Array[Node] = [tower]
+	while not stack_b.is_empty():
+		var nb: Node = stack_b.pop_back()
+		for chb: Node in nb.get_children():
+			stack_b.append(chb)
+		if nb is CollisionObject3D:
+			(nb as CollisionObject3D).collision_layer |= TT_QA_LAYER_BIT
+			_tower_body_rids.append((nb as CollisionObject3D).get_rid())
+	print("[TT] tower bodies tagged TT_QA_LAYER_BIT (layer 19): %d" % _tower_body_rids.size())
 	if _tt_no_batch:
 		print("[TT] batching off (--tower-no-batch)")
 		return
