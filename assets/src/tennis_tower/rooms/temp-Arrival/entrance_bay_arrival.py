@@ -89,8 +89,12 @@ def build(q):
     # slate walk mat only — kerb, hedge and planted edge stay out of the 6 m egress
     p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, .012, .122, 1.4))
     # w>=3: pair at +-h/2 (4.0 m -> +-1.0, pitch 2.0 m). w<3: one bollard at x=0 so pitch stays >= 1.5 m.
-    # r8b Rev 3.7 #12: W bays get individual posts at +-0.55 (in front of the mullions), dia 0.15, 0.95 m clear between
-    boll = (0.0,) if w < 3 else (-.55, .55)
+    # r8b Rev 3.7 #12 placed posts at +-0.55 (0.95 m clear between, in front of the centre mullion). That
+    # put Bollard0 on the W-entrance walk line (bay_z 39.005 through bay 582: local x -0.495, collider
+    # to -0.475). Posts move to +-1.50 (outer half of each leaf, in front of the side jambs): 1.35 m
+    # clear from the inner face to the centre jamb, 0.93 m from the walk line to the collider; adjacent
+    # bays' outer posts stay 1.00 m apart (0.85 m clear). 3l (unplaced) keeps +-0.55 at the mullions.
+    boll = (0.0,) if w < 3 else ((-.55, .55) if L3 else (-1.50, 1.50))
     br, bb = (.1, .11) if w < 3 else (.075, .085)
     for x in boll:
         p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), br, 10)); p.add("Bollard_Balls", BA, node((x, .85 + bb - E, 1.55), bb, 1))
