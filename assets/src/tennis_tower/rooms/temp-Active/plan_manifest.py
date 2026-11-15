@@ -26,6 +26,8 @@ GL = {  # candidate -> (glb path, builder, params)
  "tt_rink_board_2m_crest":(str(MD / "tt_rink_board_2m_crest.glb"), B2.board, B2.SETS["tt_rink_board_2m"][1][0]),
  "tt_rink_board_corner":  (str(MD / "tt_rink_board_corner.glb"), B2.corner, B2.SETS["tt_rink_board_corner"][1][0]),
  "tt_rink_board_gate":    (str(MD / "tt_rink_board_gate.glb"), B2.gate, B2.SETS["tt_rink_board_gate"][1][0]),
+ "tt_rink_board_gate_open": (str(MD / "tt_rink_board_gate_open.glb"), B2.gate_open, B2.SETS["tt_rink_board_gate_open"][1][0]),
+ "tt_rink_board_zamboni": (str(MD / "tt_rink_board_zamboni.glb"), B2.gate_open, B2.SETS["tt_rink_board_zamboni"][1][0]),
  "tt_rink_players_bench": (str(MD / "tt_rink_players_bench.glb"), B2.pbench, B2.SETS["tt_rink_players_bench"][1][0]),
  "tt_rink_goal":          (str(MD / "tt_rink_goal.glb"), B1.goal, B1.SETS["tt_rink_goal"][1][0]),
  "tt_rink_goal_futsal":   (str(MD / "tt_rink_goal_futsal.glb"), B1.goal, B1.SETS["tt_rink_goal"][1][1]),
@@ -105,10 +107,12 @@ gates = {xs[10][0], xs[16][0]}
 for i, (x, L) in enumerate(xs):
     nm = "tt_rink_board_1m" if L == 1 else ("tt_rink_board_2m_crest" if i in (6, 20) else "tt_rink_board_2m")
     put("F2-RINK", nm, x, Z0, 0, src=S)
-    put("F2-RINK", "tt_rink_board_gate" if x in gates else nm, x, Z1, 180, src=S, note="players' gate (position proposal)" if x in gates else "")
+    put("F2-RINK", "tt_rink_board_gate_open" if x in gates else nm, x, Z1, 180, src=S, note="players' gate, 1.2 m clear (Rev 3.7 #3)" if x in gates else "")
 for j in range(9):
     z = Z0 + RC + 1 + 2*j
-    put("F2-RINK", "tt_rink_board_2m", X0, z, 90, src=S); put("F2-RINK", "tt_rink_board_2m", X1, z, -90, src=S)
+    put("F2-RINK", "tt_rink_board_2m", X0, z, 90, src=S)
+    if j == 2: put("F2-RINK", "tt_rink_board_zamboni", X1, z + 1, -90, src=S, note="Zamboni gate Z 34.85..37.85 (Rev 3.7 #3)")
+    elif j != 3: put("F2-RINK", "tt_rink_board_2m", X1, z, -90, src=S)
 for (cx, cz, yaw) in ((X1 - RC, Z1 - RC, 0), (X0 + RC, Z1 - RC, -90), (X0 + RC, Z0 + RC, 180), (X1 - RC, Z0 + RC, 90)):
     put("F2-RINK", "tt_rink_board_corner", cx, cz, yaw, src=S, note="raw origin = corner arc centre; R 4.0 board line kept (not shortened)")
     put("F2-RINK", "tt_rink_surface_corner", cx, cz, yaw, src=S, note="raw origin = arc centre; R 3.93 = board line - 0.07 kick plate")

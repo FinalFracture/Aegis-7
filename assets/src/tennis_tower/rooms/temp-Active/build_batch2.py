@@ -273,11 +273,35 @@ def platetree(q):
     p.add("Ball_Finial", BA, node((0, 1.25 + .05 - E, 0), .055, 1))
     col(p, "PlateTree", (-.36, 0, -.35), (.36, 1.31, .35)); return p
 
+def gate_open(q):
+    """r8 (Rook, spec Rev 3.7 #3): rink board module with a clear opening c0..c1 (players' gate 2.0 m / 1.2 m clear; Zamboni
+    4.0 m / 3.0 m clear). Fixed board panels either side, steel opening posts, header at 2.40. The parked leaves are omitted:
+    parking them flat on the neighbour's concourse face (<= 0.1 m) clashes with its sill braces / rail brackets (flagged to Vance)."""
+    p = Part(); L = q["L"]; a, b = -L/2 + .001, L/2 - .001; c0, c1 = q["c0"], q["c1"]
+    for (x0, x1) in ((a, c0 - .045), (c1 + .045, b)):
+        w = x1 - x0; emit(p, board_seg(w, stanchion=w > .5, crest=False, rail=w > .55, clamps=w > .5), (np.eye(4), ((x0 + x1) / 2, 0, 0)))
+        col(p, f"Fixed{0 if x0 == a else 1}", (x0, 0, -.33), (x1 + (.045 if x0 == a else -.045) * 0 , GT + .02, .09))
+    p.add("Gate_Posts", ST, box(c0 - .045 + E, c0 - .005, 0, GT - .02 + E, -.056, .056), box(c1 + .005, c1 + .045 - E, 0, GT - .02 + E, -.056, .056))
+    p.add("Gate_Header", ST, box(c0 - .045 + E, c1 + .045 - E, GT - .02, GT + .02, -.05, .05))
+    p.add("Gate_Sign_LED", CY, box(c0 + .02, c0 + .3, 2.2, 2.3, -.05 - .004, -.05 + E))
+    col(p, "Posts", (c0 - .045, 0, -.06), (c0 - .005, GT + .02, .06)); col(p, "PostsE", (c1 + .005, 0, -.06), (c1 + .045, GT + .02, .06))
+    return p
+
+def export_rev37(name, b, prm):
+    import shutil
+    p = b(prm); p = ML.recenter(p); out = str(ROOT / "godot" / "assets" / "models" / f"{name}.glb")
+    chk = ML.cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=300)
+    tris, _ = ML.export_final(p.P, [out]); ML.finish_glb(out); fine_scissor(out)
+    ok = ML.vm.validate_file(out, check_tri_range=(1, 6000), require_textures=False, require_blend_glass=False)
+    print(json.dumps(dict(glb=name, tris=int(tris), clip=bool(chk["pass"]), worst=chk["worst_overlap"], bad=[o for o in chk["overlap"] if not o[3]][:3], coplanar=chk["coplanar"][:3], validate=bool(ok))))
+
 SETS = {
  "tt_rink_board_1m": (board, [dict(label="Rink board 1.0 m filler: same section as 2 m, own stanchion", L=1.0)]),
  "tt_rink_board_2m": (board, [dict(label="Rink board 2.0 m: 1.07 board, pad cap, 1.3 m scissor glass, spectator rail, leaf crest", L=2.0, crest=True), dict(label="Rink board 2.0 m plain", L=2.0)]),
  "tt_rink_board_corner": (corner, [dict(label="Rink corner 90 deg, R 4.0 m board line, 6 chords", R=4.0, n=6, crest=True)]),
  "tt_rink_board_gate": (gate, [dict(label="Rink gate 2.0 m: 1.0 m leaf board+scissor glass, hinges, latch")]),
+ "tt_rink_board_gate_open": (gate_open, [dict(label="r8 Rev 3.7 #3 players' gate 2.0 m, 1.2 m clear X -0.6..0.6", L=2.0, c0=-.6, c1=.6)]),
+ "tt_rink_board_zamboni": (gate_open, [dict(label="r8 Rev 3.7 #3 Zamboni gate 4.0 m, 3.0 m clear (local -1.65..1.35)", L=4.0, c0=-1.65, c1=1.35)]),
  "tt_rink_players_bench": (pbench, [dict(label="Players bench 4.0 m, padded back, bottle shelf", L=4.0), dict(label="Players bench 4.0 m backless", L=4.0, back=False)]),
  "tt_rink_players_bench_slim": (pbench, [dict(label="Slim players bench 4.0 m, depth 0.24 m, >=0.9 m walkway in 1.16 m board-to-pad gap", L=4.0, slim=True)]),
  "tt_climb_rental_desk": (desk, [dict(label="Rental desk 4.5 m module, stone fascia, shoe cubbies", L=4.5), dict(label="Rental desk 4.5 m, accessible 0.86 m bay", L=4.5, acc=(.6, 1.5), seed=3)]),
@@ -295,6 +319,9 @@ SETS = {
  "tt_gym_squat_rack": (squat, [dict(label="Power rack 1.22 x 1.22 x 2.3, J-hooks, safeties, loaded bar")]),
  "tt_gym_plate_tree": (platetree, [dict(label="Plate tree 3 tiers, 12 bumper plates")]),
 }
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1:2] == ["rev37"]:
+    for mod in ("tt_rink_board_gate_open", "tt_rink_board_zamboni"):
+        b, prm = SETS[mod]; export_rev37(mod, b, prm[0])
+elif __name__ == "__main__":
     for mod in (sys.argv[1:] or list(SETS)):
         b, prm = SETS[mod]; run(mod, b, prm, title="temp-Active batch 2", names=[f"{mod}_v{i+1}" for i in range(len(prm))], post=fine_scissor)

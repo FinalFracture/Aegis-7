@@ -1,13 +1,13 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2673,
+"count": 2672,
 "by_owner": {
 "Rook": 1036,
 "Arrival": 42,
 "Aquatics": 66,
 "Leisure": 236,
 "Courts": 352,
-"Active": 537,
+"Active": 536,
 "Rooftop": 404
 },
 "skipped": [
@@ -21081,7 +21081,7 @@
 "asset": "tt_rink_board_2m"
 },
 {
-"glb": "res://assets/models/tt_rink_board_gate.glb",
+"glb": "res://assets/models/tt_rink_board_gate_open.glb",
 "p": [
 66.5,
 6.1,
@@ -21090,7 +21090,7 @@
 "yaw": 180.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_rink_board_gate"
+"asset": "tt_rink_board_gate_open"
 },
 {
 "glb": "res://assets/models/tt_rink_board_2m.glb",
@@ -21225,7 +21225,7 @@
 "asset": "tt_rink_board_2m"
 },
 {
-"glb": "res://assets/models/tt_rink_board_gate.glb",
+"glb": "res://assets/models/tt_rink_board_gate_open.glb",
 "p": [
 77.5,
 6.1,
@@ -21234,7 +21234,7 @@
 "yaw": 180.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_rink_board_gate"
+"asset": "tt_rink_board_gate_open"
 },
 {
 "glb": "res://assets/models/tt_rink_board_2m.glb",
@@ -21537,16 +21537,16 @@
 "asset": "tt_rink_board_2m"
 },
 {
-"glb": "res://assets/models/tt_rink_board_2m.glb",
+"glb": "res://assets/models/tt_rink_board_zamboni.glb",
 "p": [
 102.6175,
 6.1,
-35.5
+36.5
 ],
 "yaw": -90.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_rink_board_2m"
+"asset": "tt_rink_board_zamboni"
 },
 {
 "glb": "res://assets/models/tt_rink_board_2m.glb",
@@ -21556,18 +21556,6 @@
 37.5
 ],
 "yaw": 90.0,
-"tag": "f2",
-"owner": "Active",
-"asset": "tt_rink_board_2m"
-},
-{
-"glb": "res://assets/models/tt_rink_board_2m.glb",
-"p": [
-102.6175,
-6.1,
-37.5
-],
-"yaw": -90.0,
 "tag": "f2",
 "owner": "Active",
 "asset": "tt_rink_board_2m"

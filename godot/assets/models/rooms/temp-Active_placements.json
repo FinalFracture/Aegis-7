@@ -55,10 +55,11 @@
   "assets/src/tennis_tower/tree_column.py (trunk clad 1.2 m sq)"
  ],
  "counts": {
-  "tt_rink_board_2m": 64,
+  "tt_rink_board_2m": 62,
   "tt_rink_board_2m_crest": 4,
-  "tt_rink_board_gate": 2,
+  "tt_rink_board_gate_open": 2,
   "tt_rink_board_1m": 2,
+  "tt_rink_board_zamboni": 1,
   "tt_rink_board_corner": 4,
   "tt_rink_surface_corner": 4,
   "tt_rink_surface_panel": 40,
@@ -766,8 +767,8 @@
   },
   {
    "room": "F2-RINK",
-   "asset": "tt_rink_board_gate",
-   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_gate.glb",
+   "asset": "tt_rink_board_gate_open",
+   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_gate_open.glb",
    "pos": [
     66.5,
     6.1,
@@ -775,7 +776,7 @@
    ],
    "yaw_deg": 180,
    "size": [
-    1.998,
+    1.996,
     2.42,
     0.405
    ],
@@ -785,12 +786,12 @@
     52.5
    ],
    "src": "\u00a72 table (rink ~61x26), \u00a73.4 clear 4.6 m, ROOM_OWNERSHIP #16; R 4.0 m corner = temp-Active proposal",
-   "note": "players' gate (position proposal)",
+   "note": "players' gate, 1.2 m clear (Rev 3.7 #3)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    65.501,
-    67.499,
+    65.502,
+    67.498,
     52.415,
     52.82
    ]
@@ -1138,8 +1139,8 @@
   },
   {
    "room": "F2-RINK",
-   "asset": "tt_rink_board_gate",
-   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_gate.glb",
+   "asset": "tt_rink_board_gate_open",
+   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_gate_open.glb",
    "pos": [
     77.5,
     6.1,
@@ -1147,7 +1148,7 @@
    ],
    "yaw_deg": 180,
    "size": [
-    1.998,
+    1.996,
     2.42,
     0.405
    ],
@@ -1157,12 +1158,12 @@
     52.5
    ],
    "src": "\u00a72 table (rink ~61x26), \u00a73.4 clear 4.6 m, ROOM_OWNERSHIP #16; R 4.0 m corner = temp-Active proposal",
-   "note": "players' gate (position proposal)",
+   "note": "players' gate, 1.2 m clear (Rev 3.7 #3)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    76.501,
-    78.499,
+    76.502,
+    78.498,
     52.415,
     52.82
    ]
@@ -1944,33 +1945,33 @@
   },
   {
    "room": "F2-RINK",
-   "asset": "tt_rink_board_2m",
-   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_2m.glb",
+   "asset": "tt_rink_board_zamboni",
+   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_zamboni.glb",
    "pos": [
     102.6175,
     6.1,
-    35.5
+    36.5
    ],
    "yaw_deg": -90,
    "size": [
-    1.998,
+    3.996,
     2.42,
     0.405
    ],
    "raw_origin_world": [
     102.5,
     6.1,
-    35.5
+    36.5
    ],
    "src": "\u00a72 table (rink ~61x26), \u00a73.4 clear 4.6 m, ROOM_OWNERSHIP #16; R 4.0 m corner = temp-Active proposal",
-   "note": "",
-   "placement_status": "valid",
+   "note": "Zamboni gate Z 34.85..37.85 (Rev 3.7 #3)",
+   "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
     102.415,
     102.82,
-    34.501,
-    36.499
+    34.502,
+    38.498
    ]
   },
   {
@@ -2000,37 +2001,6 @@
    "footprint_xz": [
     41.18,
     41.585,
-    36.501,
-    38.499
-   ]
-  },
-  {
-   "room": "F2-RINK",
-   "asset": "tt_rink_board_2m",
-   "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_2m.glb",
-   "pos": [
-    102.6175,
-    6.1,
-    37.5
-   ],
-   "yaw_deg": -90,
-   "size": [
-    1.998,
-    2.42,
-    0.405
-   ],
-   "raw_origin_world": [
-    102.5,
-    6.1,
-    37.5
-   ],
-   "src": "\u00a72 table (rink ~61x26), \u00a73.4 clear 4.6 m, ROOM_OWNERSHIP #16; R 4.0 m corner = temp-Active proposal",
-   "note": "",
-   "placement_status": "valid",
-   "asset_qa": "pass (clip/validate/first_pass)",
-   "footprint_xz": [
-    102.415,
-    102.82,
     36.501,
     38.499
    ]
