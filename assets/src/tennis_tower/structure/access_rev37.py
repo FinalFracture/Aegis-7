@@ -120,8 +120,13 @@ def stair(x_top, sgn, z0, z1, n1, n2, land, centre_rail):
         x += sgn * w
     foot0, foot1 = x, x + sgn * 2.0; yl = y - R               # last riser lands on the pad (-4.0296), pad warps to the drum by its far end
     D.append(huv([(xx, yy, zz) for xx in (foot0 - sgn * .02, foot1) for zz in (z0, z1) for yy in (YB, (yl if xx != foot1 else drum(zz) + .003))]))
-    body = U(D); k.add("Stair_Body", SSL, body); k.add("Nosing_Court_Line", WH, *NOS); k.col(body.copy())
+    body = U(D); k.add("Stair_Body", SSL, body); k.add("Nosing_Court_Line", WH, *NOS)
     f1 = (n1 - 1) * TR; d2 = f1 + land; d3 = d2 + (n2 - 1) * TR
+    # TTQA-052: smooth Flight_Ramp-style collider along the nosing line (cores never snag) instead of the stepped tread body:
+    # top landing flat, flight 1 nosing line 0 -> -n1*R reached one tread onto the landing, landing flat, flight 2 the same onto the pad.
+    RP = [(0.0, 0.0), (f1 + TR, -n1 * R), (d2, -n1 * R), (d3 + TR, -(n1 + n2) * R)]
+    ramp = [huv([(x_top + sgn * dd, yy, zz) for dd, yt in (RP[j], RP[j + 1]) for zz in (z0, z1) for yy in (YB, yt)]) for j in range(3)]
+    k.col(D[0].copy(), D[1].copy(), *ramp, D[-1].copy())
     PD = [0, f1, f1 + .001, d2, d3, d3 + .001, d3 + 2.0]; PY = [0, -(n1 - 1) * R, -n1 * R, -n1 * R, -(n1 + n2 - 1) * R, -(n1 + n2) * R, -(n1 + n2) * R]
     nose = lambda xx: float(np.interp(sgn * (xx - x_top), PD, PY))
     bp = [x_top + sgn * d for d in (0, f1, d2, d3, d3 + 2.0)]
