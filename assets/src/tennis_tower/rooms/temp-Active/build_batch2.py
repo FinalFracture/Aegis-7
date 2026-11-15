@@ -289,7 +289,7 @@ def gate_open(q):
     # (keeps the full clear width), each on a floor stop and with its own convcolonly
     for i, (hx, L) in enumerate(q.get("leaves", [])):
         xc = hx - .05 if hx <= c0 + 1e-6 else hx + .05; z0 = .095
-        emit(p, leaf_seg(L), (RY(-np.pi / 2), (xc, 0, z0)))
+        emit(p, {f"Leaf{i}_{k}": v for k, v in leaf_seg(L).items()}, (RY(-np.pi / 2), (xc, 0, z0)))   # TTQA-055: per-leaf nodes, grouped by _group_leaves()
         p.add("Leaf_Floor_Stop", G, box(xc - .04, xc + .04, .008, .068, z0 + L + .01, z0 + L + .07))
         col(p, f"Leaf{i}", (xc - .045, 0, z0), (xc + .045, GT - .05, z0 + L + .07))
     return p
@@ -308,13 +308,31 @@ def leaf_seg(L):
     add("Gate_Hinge_Hardware", G, *[box(-.04, l0 + .03, y - .05, y + .05, .045 - E, .062) for y in (.18, .9, 1.9)])
     return P
 
+
+LEAF_PZ = .07   # TTQA-055: swing pivot 70 mm in front of the parked leaf's hinge end, so the closed leaf (yaw +-90) clears the posts, Fixed colliders (+0.09) and board pads (+0.08)
+def _group_leaves(out):
+    """Group Leaf<i>_* mesh nodes + Leaf<i>-convcolonly under a 'Leaf<i>' node whose origin is the swing pivot (children offset by -pivot)."""
+    import pygltflib as pg
+    g = pg.GLTF2().load(out); sc = g.scenes[g.scene or 0]; s = trimesh.load(out, force="scene"); piv = {}
+    i = 0
+    while any(n.name == f"Leaf{i}-convcolonly" for n in g.nodes):
+        b = s.geometry[s.graph[f"Leaf{i}-convcolonly"][1]].bounds
+        P = [float((b[0][0] + b[1][0]) / 2), float(b[0][1]), float(b[0][2] + LEAF_PZ)]; piv[f"Leaf{i}"] = [round(v, 4) for v in P]
+        kids = [j for j, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf{i}_") or n.name == f"Leaf{i}-convcolonly")]
+        for j in kids:
+            t = g.nodes[j].translation or [0, 0, 0]; g.nodes[j].translation = [t[0] - P[0], t[1] - P[1], t[2] - P[2]]
+        g.nodes.append(pg.Node(name=f"Leaf{i}", translation=P, children=kids)); sc.nodes = [j for j in sc.nodes if j not in kids] + [len(g.nodes) - 1]
+        i += 1
+    g.save_binary(out); return piv
+
 def export_rev37(name, b, prm):
     import shutil
     p = b(prm); p = ML.recenter(p); out = str(ROOT / "godot" / "assets" / "models" / f"{name}.glb")
     chk = ML.cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=300)
     tris, _ = ML.export_final(p.P, [out]); ML.finish_glb(out); fine_scissor(out)
+    piv = _group_leaves(out)
     ok = ML.vm.validate_file(out, check_tri_range=(1, 6000), require_textures=False, require_blend_glass=False)
-    print(json.dumps(dict(glb=name, tris=int(tris), clip=bool(chk["pass"]), worst=chk["worst_overlap"], bad=[o for o in chk["overlap"] if not o[3]][:3], coplanar=chk["coplanar"][:3], validate=bool(ok))))
+    print(json.dumps(dict(glb=name, tris=int(tris), clip=bool(chk["pass"]), worst=chk["worst_overlap"], bad=[o for o in chk["overlap"] if not o[3]][:3], coplanar=chk["coplanar"][:3], validate=bool(ok), leaf_pivots=piv)))
 
 SETS = {
  "tt_rink_board_1m": (board, [dict(label="Rink board 1.0 m filler: same section as 2 m, own stanchion", L=1.0)]),
