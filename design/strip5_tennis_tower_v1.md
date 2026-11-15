@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.7**, 2026-11-15 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.8**, 2026-11-15 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -813,3 +813,79 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 6. **Confirmed:** the added guard at X 57.03, the gallery guard starting at X −11.36, and the ST+S1 cross guard starting at X 59.36.
 7. **Plaza corner X 168..171.4, Z 12.6..16:** don't add an overlapping piece. Trim the existing E/S terrace skirts to a mitred meet, with no overlap and no slit, and close the joint with a 0.2 m corner post (convcolonly). The same detail fixes TTQA-043.
 8. **Still to build:** the 0.15 m lift-pit recesses (#9), the pool stairs and ladders (#5), the W bay leaves and bollards (#12), and the slide-bridge guards (#15). The F3 stand-back guards on Z 9.0 are accepted.
+
+### Rev 3.8, 2026-11-15 (Vance): r2 QA items (`context/TT_QA_AUDIT_r2.md`)
+All layout calls below are **Vance proposal** under the Rev 3.5 rules (1.8 m clear links, 1.07 m guards with < 100 mm openings, 2.1 m headroom). Every footprint was box-checked against the r2 placements (audit clone at `03de15a`) plus the Rook commits since (pools, ramps, skirts, rink leaves, court doors, grand-stair colliders), none of which touch these footprints. Clash rule: overlap ≤ 0.010 m, ≥ 0.02 m free-standing clearance. The only hits listed below are the pieces this revision removes or swaps. Owners follow Rev 3.7: Rook builds GLB pieces with `*-colonly` / `*-convcolonly` plus manifest rows, room owners swap their own assets, and Gage owns runtime (doors, step-up).
+
+1. **TTQA-050, bowling entrances (blocker).**
+   - **Why the lanes change:** the hall X 30..57, Z 0.3..14.7 is filled edge to edge by 4 lane pairs, X 32.4..56.9 (8 lanes). The only non-lane floor is the settee strip at X 30..32.4, and core a_961 sits right behind it (X 29.99..40.2, Z 15..20.5). A door anywhere on the Z 15 wall therefore lands on a lane bed (the foul line is at X 37.02).
+   - **Fix (Vance proposal, Leisure):** remove lane pair **1150** (Z 11.05..14.65) and settee **1151**, leaving **6 lanes**. That frees an entry aisle at **X 30.0..56.9, Z 11.16..14.70** (3.54 m), which opens at its W end onto the bowlers' area and approaches (X 30..37), behind the foul line.
+   - **Divider:** Rook adds a 1.07 m colonly divider rail at **Z 11.06..11.16, X 37.0..56.9**, 0.01 m off lane pair 1148 and meeting the acoustic wall 1152. It keeps players off the lanes past the foul line.
+   - **Main door:**
+     - Courts removes stand **3p8_1620** (X 40.22..43.99), giving gap A at X 40.20..44.01. Courts also swaps stand **1622** for `tt_stand_module_6p5` at X 44.01..50.48.
+     - Rook adds a stand-end cheek guard at X 43.91..44.01 (1.07 m over the rake) and cuts a new **1.8 m pair-door opening in Walls_F1 line Z 15 (Z 14.70..15.00) at X 40.35..42.15**, 2.4 m high.
+     - The door is 0.15 m clear of the a_961 E wall (X 40.20). It opens from the S concourse (Z ≥ 19.76) through gap A into the aisle.
+   - **Second exit:**
+     - Courts swaps stand **1624** for `tt_stand_module_6p5` at X 52.51..58.98, giving gap B at X 50.48..52.51. Rook adds cheeks at X 50.48..50.58 and 52.41..52.51 (1.83 m clear).
+     - The existing **Walls_F1 Z 15 opening X 50..53 becomes a 1.8 m pair-door opening at X 50.6..52.4**, 2.4 m high, with infill at X 50.0..50.6 and 52.4..53.0.
+   - **Doors:** both are built like the Rev 3.7 #4 door (frame, no leaf collider; Gage may add proximity leaves). They are 10.25 m apart, which meets the 1/3-diagonal rule (30.6 m / 3 = 10.2 m, *real-world ref*).
+   - **Clearances:** both doors are clear of b977 (X ≥ 58) and of the pin-end masking (X ≥ ~54.6 on the remaining pairs). The PT column at X 39.5, Z 24.5 is outside gap A. Headroom is to the F2 slab underside at 5.70.
+   - **Open (Jared):** this takes the house from 8 lanes to 6. No layout keeps 8 lanes without moving core a_961 or the X 30 wall.
+
+2. **TTQA-051, F2 slot beside b977 (blocker): infill (Vance proposal, Rook).**
+   - **Cause:** the F2 `CORE_HOLES` entry for ST+S1 is the nominal X 57..64. The as-built core b977 is X 58.00..64.00, Z 2.60..13.21; the Rev 2.6 thickened W wall was never built.
+   - **Fix:** make the F2 hole for ST+S1 **X 58.00..64.00, Z 2.60..13.21**, which infills **X 57.00..58.00, Z 2.60..13.21** at y 5.70..6.10 (butting the core W wall face, overlap ≤ 0.005).
+   - **TC-S1 tree hole:** trim it (now X 56.8..58.2, Z 7.8..9.2) to **0.02 m off the trunk faces** (trunk about X 57.05..57.95, Z 8.05..8.95; Rook probes the as-built faces at y 5.7..6.1). That closes the 0.25 m ring the probe dropped through at X 56.5, Z 7.5..9.0.
+   - **Checks:**
+     - The acoustic wall 1152 (X 56.90..57.00, top 5.54) is 0.16 m below the infill underside.
+     - The acoustic stubs (X 57..58, Z 0.3..2.6 / 13.2..14.7, top 5.71) touch only the infill ends (≤ 0.01).
+     - F2 climbing pieces are ≥ 0.75 m away (lead routes to X 56.0, frame to X 56.15, lockers to X 56.3).
+   - **F3:** no change. The F3 slot stays guarded at X 57.03 (Rev 3.7.1 #6).
+   - A guard isn't needed because the drop is removed.
+
+3. **TTQA-053, zone links (major).** Two F1 links and two F2 links between the S-door zone and the W/N/E zone, each at a point where the r2 grid has the two zones ≤ 1.5 m apart across one wall.
+   - **L1-N, F1 concourse ↔ food court:**
+     - Courts swaps stands **1631 / 1633** for `tt_stand_module_6p5` at **X 84.01..90.48 and X 92.51..98.98**, giving gap X 90.48..92.51. Rook adds cheeks (1.83 m clear).
+     - The **Walls_F1 Z 64 opening X 90..93 becomes a 1.8 m pair-door opening at X 90.6..92.4**, 2.4 m high, with infill on the rest.
+     - On the food side the door meets the strip Z 64.3..65.79 (b983 at X 86..92 is 1.49 m N) and the passage **X 92.0..94.0** to stall 1174 (2.0 m).
+     - Optional: Leisure moves bin 1186 (X 86..87.2), which pinches the W strip to 0.63 m.
+     - This mirrors the Rev 3.7 #4 axe door.
+   - **L2-N, F2 concourse ↔ gym:**
+     - Courts swaps stands **1655 / 1657** the same way (X 84.01..90.48 / 92.51..98.98). Rook converts the **Walls_F2 Z 64 opening X 90..93 to a pair-door opening at X 90.6..92.4** (F2 + 2.4).
+     - temp-Active moves treadmills **2116–2119 +0.9 m in X** (to X 94.0..98.4, Z 65.05..67.16; the floor there is clear) to open the passage **X 92.0..94.0**.
+   - **L1-E, F1 concourse ↔ arcade:**
+     - Courts swaps **6p5_1639** (Z 28.01..34.48) for `tt_stand_module_3p8` at **Z 28.01..31.78** (X 108.25..112.56, yaw −90). Rook adds a cheek at Z 31.78..31.88 over X 108.25..113.0, which also closes the dead pocket behind the stand.
+     - The gap Z 31.88..34.48 joins the lift-E corridor. Rook cuts a new **1.8 m pair-door opening in Walls_F1 line X 113 (X 113.0..113.3) at Z 32.4..34.2**, 2.4 m high.
+     - It is 0.30 m S of lift E (X 113.38..116.63, Z 34.5..38.5) and 4.8 m from the TC-E1 trunk.
+   - **L2-E, F2 concourse ↔ arcade L2:** the same detail with **6p5_1663 → 3p8 at Z 28.01..31.78** and a **Walls_F2 X 113 opening at Z 32.4..34.2** (F2 + 2.4). Arcade video 1324 (to Z 31.96, X ≥ 116.22) is clear.
+   - **Rejected:**
+     - W side: the aquarium corridor's E end is fully closed by lift W and LW at every floor.
+     - F2 X 113 at Z 0..15: the bouldering mats fill the approach, and only a 1.0 m strip is free.
+     - Z 64 X 50..53: food stalls 1172/1173 stand in front of it.
+
+4. **TTQA-011 remainder, NE plant opening F2-ARC / F3-PLAY (blocker): guards (Vance proposal, Rook).**
+   - The r2 drop edges run on the slab edge of the NE `PLANT_HOLES` cut (X 128..140, Z 69..79) along its W side (X 128.0) and S side (Z 69.0), so the stack shell collides only at its door module.
+   - At **F2 (+6.1) and F3 (+12.2)**, 1.07 m colonly guards with < 100 mm openings, on the slab and 0.02 m off the stack faces (X 128.02 / Z 69.02):
+     - **W guard X 127.90..128.00, Z 69.00..78.38**, ending on the façade-bay inner face;
+     - **S guard Z 68.90..69.00, X 127.90..134.00**, ending on core b_m 993/994 (F2) and the Rev 3.7 #7 ARN ring guard X 134.0..134.2 (F3).
+   - **Gap:** one gap at **X 131.25..133.24** in front of the staff-door module (Z 69.19..69.39). The slab is infilled at Z 69.00..69.19 under that span, so the locked door is reachable and no slot is left.
+   - **Stair side:** no public stair lands in this opening. The ST-ARN portals and arrival face Z 58.4 / Z 61.34 and stay open as built, so nothing else is left open.
+   - **Clearances:** F3 track (X ≤ 127.60, corner Z 75.34..78.34) 0.30 m; F2 redemption 1293/1294 (Z ≤ 67.75) 1.15 m.
+   - **Also for Rook:** the NE stack's W and S shell faces should get the same convcolonly as SW/SE (Rev 3.7 #10). The guards stay either way.
+
+5. **TTQA-052, grand-stair snags (major, Rook): smooth ramp colliders.**
+   - The stepped tread collider is replaced by straight colonly ramps whose top passes through the nosing line (≤ 0.01 m), full clear width, meeting the cheek walls. The landings are flat and the visual treads are unchanged, the same scheme as the cores' `Flight*_Ramp`. Slope 2.102 / 3.60 = **30.3°**.
+   - **W stair** (Z 36.5..42.5):
+     - ramp 1 X −63.50 (y 0) → −67.10 (−2.102);
+     - landing X −67.10..−68.80 (−2.102);
+     - ramp 2 X −68.80 → −72.10 (−4.030), onto the pad X −71.80..−73.80.
+   - **E stair** (Z 36.5..39.5):
+     - ramp 1 X 171.50 → 175.10;
+     - landing X 175.10..176.30;
+     - ramp 2 X 176.30 → 179.60, onto the pad X 179.30..181.30.
+   - Centre-rail posts (W) keep their own colliders.
+   - **Status:** built in `921ef1b`. Gage confirms the player's `floor_max_angle` is ≥ 35° and that step-up doesn't fight the ramp. r3 re-walks lanes Z 37–42 (W) and Z 38.5 / 39.0 (E).
+
+6. **Already answered:**
+   - **TTQA-055:** rink gate leaves, Rev 3.7.1 #2 (parked 90° into the rink on floor stops, own convcolonly). Built in `f216e2f`, after r2.
+   - **TTQA-009:** pool exits, Rev 3.7 #5. Built in `a7e7d35`, after the r2 snapshot (`03de15a`), so r2 couldn't see them. Gage still owns the ladder climb areas and swim. Both go to r3 for verification.
