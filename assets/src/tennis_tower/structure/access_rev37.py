@@ -214,6 +214,40 @@ def guards_cores():
     # ST-ARN b_m_980: cross Z 61.30 over X 134.0..136.9, W guard X 134.1 over Z 61.39..69.0 (E side = facade, N side = NE plant stack)
     gd(k, 134.0, 136.9, 61.30, "x", y); gd(k, 61.39, 69.0, 134.1, "z", y, (False, True))
     return k
+# TTQA-004 r2: core-top guards for the remaining 11 F2 cores whose F3 top is open to the sky (#7 covered 970/972/974/994, cap_b 978/980).
+# Same layout as #7 in each core's local frame (stair_core.stair_full): S wall-head guard, W/E wall-head guards to the top landing,
+# cross guard on the top-landing edge over flight 1; open at the flight-2 arrival. (manifest index, cx, cz, yaw, type, z-mirror)
+CORES_R2 = [(962, 35.1, 17.75, 90, "A", 1), (964, 107.9, 17.75, 90, "A", 1), (966, 35.1, 61.25, 90, "A", 1), (968, 107.9, 61.25, 90, "A", 1),
+            (976, 113.4, 41.75, 90, "A", 1), (982, 61.0, 71.1, 0, "B", 1), (984, 89.0, 71.1, 0, "B", 1), (986, 122.5, 55.3, 0, "B", 1),
+            (988, -3.0, 15.3, 0, "B", 1), (990, -3.0, 63.7, 0, "B", -1), (992, 137.0, 15.3, 0, "B", 1)]
+def guards_cores_r2(sel):
+    CD = {"A": (5.5, 10.2, 2.5), "B": (6.0, 10.6, 2.7)}; k = Kit(); y = F3
+    for idx, cx, cz, yaw, ty, mz in CORES_R2:
+        if idx not in sel: continue
+        W, L, FW = CD[ty]; xi, zi = W/2 - .2, L/2 - .2; zs = -zi; z2t = zs + FW + 17 * .28; zw = zs - .1
+        segs = [((-xi - .2, zw), (xi + .2, zw), (True, True)),                    # S wall head
+                ((-xi - .1, zw + .09), (-xi - .1, z2t + .09), (False, True)),     # W wall head (flight-1 side) to the landing
+                ((xi + .1, zw + .09), (xi + .1, z2t + .01), (False, True)),       # E wall head (flight-2 side)
+                ((-xi + .09, z2t + .04), (-W/2 + .2 + FW, z2t + .04), (False, True))]   # cross on the top-landing edge over flight 1
+        # S of 982/984 = the F3 stand back (tiers solid to +15.8 at Z 65.95, probed); E of 992 = facade curtain wall (as 994 in #7)
+        drop = {982: {0}, 984: {0}, 992: {2}}.get(idx, set()); segs = [sg for j, sg in enumerate(segs) if j not in drop]
+        if idx in (982, 984):   # the F3 stand modules overhang the core S end to Z 67.05 (probed; flagged to Vance): side runs start past the stand front
+            segs = [((p0[0], zs + 1.1), p1, pe) if p0[1] == zw + .09 else (p0, p1, pe) for p0, p1, pe in segs]
+        if idx == 984:          # stand 1704's aisle plate laps over the E wall head and into the core to X ~91.75 for Z 67.05..69.9 (flagged): E run starts past it
+            segs = [((p0[0], 69.95 - cz), p1, pe) if p0[0] == xi + .1 else (p0, p1, pe) for p0, p1, pe in segs]
+        if idx == 992:          # S run stops 0.1 m short of the curtain wall line
+            segs = [((p0[0], p0[1]), (xi + .1, p1[1]), pe) if j == 0 else (p0, p1, pe) for j, (p0, p1, pe) in enumerate(segs)]
+        a = np.radians(yaw); c, s_ = np.cos(a), np.sin(a)
+        T = lambda lx, lz: (cx + lx * c + lz * mz * s_, cz - lx * s_ + lz * mz * c)
+        for p0, p1, pe in segs:
+            (x0, z0), (x1, z1) = T(*p0), T(*p1)
+            if abs(z1 - z0) < 1e-6:   # world X run
+                if x1 < x0: x0, x1, pe = x1, x0, pe[::-1]
+                gd(k, round(x0, 4), round(x1, 4), round(z0, 4), "x", y, pe)
+            else:
+                if z1 < z0: z0, z1, pe = z1, z0, pe[::-1]
+                gd(k, round(z0, 4), round(z1, 4), round(x0, 4), "z", y, pe)
+    return k
 def guards_gallery():
     """#8 gallery N edge guard (Z 68.70..68.80) with the staff-door gap X -8.7..-7.5 and its floor infill to the plant-stack face,
     plus the wall collider for the 0.2 m slot at X -6.1..-5.9 (Z 58.4..69.0) north of the F2 wall end."""
@@ -261,6 +295,10 @@ if __name__ == "__main__":
     export_kit("tt_struct_stair_e", stair(171.5, 1, 36.5, 39.5, 12, 11, 1.5, False), REP, LAY, "Rev 3.7 #2 E stair Z 36.5..39.5, 23 x 0.1752 / 0.30")
     export_kit("tt_struct_guards_holes_f3", guards_holes(), REP, LAY, "Rev 3.7 #6 F3 track guards at the ST+S1/S2 core holes, 1.07 m")
     export_kit("tt_struct_guards_cores_f3", guards_cores(), REP, LAY, "Rev 3.7 #7 F3 core-top guard rings + flight-1 cross guards, 1.07 m")
+    export_kit("tt_struct_guards_cores_f3_r2a", guards_cores_r2({962, 964, 966}), REP, LAY, "TTQA-004 r2 core-top guards, F2 cores 962/964/966 (Type A)")
+    export_kit("tt_struct_guards_cores_f3_r2b", guards_cores_r2({968, 976}), REP, LAY, "TTQA-004 r2 core-top guards, F2 cores 968/976 (Type A)")
+    export_kit("tt_struct_guards_cores_f3_r2c", guards_cores_r2({982, 984, 986}), REP, LAY, "TTQA-004 r2 core-top guards, F2 cores 982/984/986 (Type B)")
+    export_kit("tt_struct_guards_cores_f3_r2d", guards_cores_r2({988, 990, 992}), REP, LAY, "TTQA-004 r2 core-top guards, F2 cores 988/990/992 (Type B)")
     export_kit("tt_struct_guards_gallery", guards_gallery(), REP, LAY, "Rev 3.7 #8 gallery N edge guard + staff-door infill")
     export_kit("tt_struct_slot_wall_f2", slot_wall(), REP, LAY, "Rev 3.7 #8 slot wall collider X -6.1..-5.9 Z 58.4..69.0")
     export_kit("tt_plant_stack_staff_doors_l", stack_doors(-.25), REP, None, "Rev 3.7 #10 SW/SE stack openings, 1.0 m locked staff door per floor")

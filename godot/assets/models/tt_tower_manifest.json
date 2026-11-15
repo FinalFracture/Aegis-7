@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2678,
+"count": 2682,
 "by_owner": {
-"Rook": 1036,
+"Rook": 1040,
 "Arrival": 42,
 "Aquatics": 72,
 "Leisure": 236,
@@ -439,6 +439,54 @@
 "tag": "struct",
 "owner": "Rook",
 "asset": "tt_plinth_skirt_mitre_se"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_cores_f3_r2a.glb",
+"p": [
+70.2213,
+12.196,
+39.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_cores_f3_r2a"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_cores_f3_r2b.glb",
+"p": [
+109.3713,
+12.196,
+51.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_cores_f3_r2b"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_cores_f3_r2c.glb",
+"p": [
+91.7963,
+12.196,
+61.8213
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_cores_f3_r2c"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_cores_f3_r2d.glb",
+"p": [
+66.95,
+12.196,
+39.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_cores_f3_r2d"
 },
 {
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",

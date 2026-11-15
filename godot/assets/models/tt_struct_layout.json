@@ -262,5 +262,37 @@
    11.5
   ],
   "note": "TTQA-043 / Rev 3.7.1 #7 SE inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_struct_guards_cores_f3_r2a": {
+  "world_offset": [
+   70.2213,
+   12.196,
+   39.5
+  ],
+  "note": "TTQA-004 r2 core-top guards, F2 cores 962/964/966 (Type A)"
+ },
+ "tt_struct_guards_cores_f3_r2b": {
+  "world_offset": [
+   109.3713,
+   12.196,
+   51.5
+  ],
+  "note": "TTQA-004 r2 core-top guards, F2 cores 968/976 (Type A)"
+ },
+ "tt_struct_guards_cores_f3_r2c": {
+  "world_offset": [
+   91.7963,
+   12.196,
+   61.8213
+  ],
+  "note": "TTQA-004 r2 core-top guards, F2 cores 982/984/986 (Type B)"
+ },
+ "tt_struct_guards_cores_f3_r2d": {
+  "world_offset": [
+   66.95,
+   12.196,
+   39.5
+  ],
+  "note": "TTQA-004 r2 core-top guards, F2 cores 988/990/992 (Type B)"
  }
 }

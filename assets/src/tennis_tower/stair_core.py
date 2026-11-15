@@ -175,9 +175,9 @@ def stair_full(q):
         s = 1 if fx > 0 else -1; gx = fx + s*.04; gl, po = [], []
         for k in ks:
             zc, yt = zfun(k), yfun(k)
-            gl.append(box(gx - .006, gx + .006, yt + .06, yt + .85, zc - t/2 + .015, zc + t/2 - .015))
-            if k % 4 == 1: po.append(box(*sorted((gx + s*.015, gx + s*.045)), yt - E, yt + .966 - .012 + E - .02, zc - .02, zc + .02))
-        a, b = np.array([gx + s*.03, yfun(ks[0]) + 1.0, zfun(ks[0])]), np.array([gx + s*.03, yfun(ks[-1]) + 1.0, zfun(ks[-1])])
+            gl.append(box(gx - .006, gx + .006, yt + .06, yt + .92, zc - t/2 + .015, zc + t/2 - .015))   # TTQA-004 r2: guard raised +0.07 to 1.07 m
+            if k % 4 == 1: po.append(box(*sorted((gx + s*.015, gx + s*.045)), yt - E, yt + 1.036 - .012 + E - .02, zc - .02, zc + .02))
+        a, b = np.array([gx + s*.03, yfun(ks[0]) + 1.07, zfun(ks[0])]), np.array([gx + s*.03, yfun(ks[-1]) + 1.07, zfun(ks[-1])])
         p.add("Guard_Scissor", SCR, *gl); p.add("Guard_Posts", ALY, *po); p.add("Guard_Cap_Rail", ALY, tube(a, b, .025, 6))
     hr = []
     for x, (y0, z0, y1, z1) in ((-xi + .07, (r + .9, z1b - .5*t, (n-1)*r + .9, zl + .5*t)), (xi - .07, (yl + r + .9, zl + .5*t, yl + (n-1)*r + .9, z2t - .5*t))):
@@ -192,7 +192,8 @@ def stair_full(q):
     p.add("Flight1_Ramp-colonly", G, slab_between(*f1, z1b + t, 0.0, zl, yl)); p.add("Flight2_Ramp-colonly", G, slab_between(*f2, zl - t, yl, z2t, H))
     p.add("Mid_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, yl - .25, zs], [xi, yl, zl]])); p.add("Top_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, H - .3, z2t], [xi, H, zn]]))
     for gname, fx in (("Well_Guard_F1-convcolonly", f1[1] - .04), ("Well_Guard_F2-convcolonly", f2[0] + .04)):
-        pts = [(x, y, z) for x in (fx - .006, fx + .006) for (y, z) in ((0, zl), (0, z1b + t) if fx < 0 else (yl, zl), (yl + 1.0, zl), (1.0 if fx < 0 else H + 1.0, z1b + t if fx < 0 else z2t))]
+        # TTQA-004 r2: 1.07 m over the nosing line; the F2 guard now runs to the floor over its whole length (it tapered to nothing at the top landing)
+        pts = [(x, y, z) for x in (fx - .006, fx + .006) for (y, z) in ((0, zl), (0, z1b + t) if fx < 0 else (0, z2t), (yl + 1.07, zl), (1.07 if fx < 0 else H + 1.07, z1b + t if fx < 0 else z2t))]
         p.add(gname, G, trimesh.convex.convex_hull(np.array(pts)))
     for k, (mk, m) in list(p.P.items()):
         if "colonly" in k:
