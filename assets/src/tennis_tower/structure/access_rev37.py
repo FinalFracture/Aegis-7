@@ -61,7 +61,14 @@ def ramp_sw():
     D = []
     for a, b in zip(xA[:-1], xA[1:]):                        # lane A Z 10.5..12.3 (segments overlap 2 cm, unioned)
         D.append(prism(a - .02 if a > -43 else a, b, 10.5, 12.3, lambda x, z: fA(x), YB))
-    D.append(prism(-27.0, -25.0, 10.5, 13.37, lambda x, z: 0.0, YB))       # top landing fill; skirt 795 holds reach Z 13.39
+    # Top landing: solid fill only under lane A (Z 10.5..12.30). The 1.15 m alley between
+    # lane A's N face (Z 12.30) and the terrace-skirt south face (Z 13.45, Skirt-colonly) is
+    # the --qa-ring S-face drum lane (player pinned at bldg (155.4, -2.3, 12.9) when the fill
+    # ran to Z 13.37). A 0.08 m deck bridges the alley (headroom 2.03 m at Z 12.30, 2.12 m at
+    # 12.90; capsule 1.75) so the landing still meets the terrace; the cantilever over the
+    # skirt cap is unchanged. SW/NW mirrors keep the same undercroft on the N/S edges.
+    D.append(prism(-27.0, -25.0, 10.5, 12.30, lambda x, z: 0.0, YB))        # solid fill under lane A
+    D.append(prism(-27.0, -25.0, 12.30 - .01, 13.37, lambda x, z: 0.0, -.08))  # thin deck over the ring lane
     D.append(box(-27.0, -25.0, -.29, 0.0, 13.3, 13.5))                       # cantilever slab over the skirt cap (top -0.30)
     D.append(prism(-43.42, -41.9, 8.3, 12.3, lambda x, z: L2, YB))           # turn landing spans both lanes
     D.append(prism(-41.92, XE, 8.3, 10.25, fB, YB))                          # lane B run 3
@@ -288,9 +295,15 @@ EDGE_VARIANTS = {   # manifest index (bfe716e) -> (asset, local opening a..b)
 }
 if __name__ == "__main__":
     REP = []; LAY = json.load(open(LAYOUT))
-    export_kit("tt_struct_ramp_sw", ramp_sw()[0], REP, LAY, "Rev 3.7.1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, level 1.5 m foot landing + 1:20 fillet onto the drum")
+    ramps_only = "--ramps-only" in sys.argv
+    export_kit("tt_struct_ramp_sw", ramp_sw()[0], REP, LAY, "Rev 3.7.1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, 0.08 m deck over the Z 12.30..13.37 ring-lane undercroft, level 1.5 m foot landing + 1:20 fillet onto the drum")
     export_kit("tt_struct_ramp_nw", mirror(ramp_sw()[0], MZ), REP, LAY, "Rev 3.7 #1 NW ramp (SW mirrored about Z 40)")
     export_kit("tt_struct_ramp_e", mirror(ramp_sw()[0], MX), REP, LAY, "Rev 3.7 #2 E ramp X 153..171.42 (SW mirrored in X)")
+    if ramps_only:
+        json.dump(LAY, open(LAYOUT, "w"), indent=1)
+        rd = os.path.join(RENDER_OUT, "access_rev37"); os.makedirs(rd, exist_ok=True); json.dump(REP, open(os.path.join(rd, "report.json"), "w"), indent=1, default=str)
+        print("ASSETS", len(REP), "FAILED", [r["asset"] for r in REP if not r["passed"]])
+        raise SystemExit(0)
     export_kit("tt_struct_stair_w", stair(-63.5, -1, 36.5, 42.5, 12, 11, 2.0, True), REP, LAY, "Rev 3.7 #1 W grand stair Z 36.5..42.5, 23 x 0.1752 / 0.30")
     export_kit("tt_struct_stair_e", stair(171.5, 1, 36.5, 39.5, 12, 11, 1.5, False), REP, LAY, "Rev 3.7 #2 E stair Z 36.5..39.5, 23 x 0.1752 / 0.30")
     export_kit("tt_struct_guards_holes_f3", guards_holes(), REP, LAY, "Rev 3.7 #6 F3 track guards at the ST+S1/S2 core holes, 1.07 m")
