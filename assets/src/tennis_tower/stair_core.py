@@ -249,6 +249,10 @@ def cap_b():   # r7 (Courts cc9a204): tt_stair_core_b_cap for the ST+S1 / ST+S2 
     p = stair_full(dict(type="B"))
     for k in CAP_PARTS:
         mk, m = p.P[k]; uv = np.array(m.metadata["uv"]); keep = m.vertices[:, 1] <= ST_H - .003
+        if k == "Well_Guard_F2-convcolonly":   # r8 Rev 3.7 #6: kept whole and raised to 1.07 m over the flight-1 well at the F3 top landing
+            v = np.array(m.vertices); v[v[:, 1] > ST_H + .5, 1] = ST_H + 1.07; zt = v[:, 2].max()
+            v = np.vstack([v, [(x, ST_H - .3, zt) for x in (v[:, 0].min(), v[:, 0].max())]]); m2 = trimesh.convex.convex_hull(v)   # full height at the landing edge
+            m2.metadata["uv"] = np.zeros((len(v), 2)); p.P[k] = (mk, m2); continue
         m2 = m.slice_plane([0, ST_H - .003, 0], [0, -1, 0], cap=True)
         m2.metadata["uv"] = m2.vertices[:, [0, 2]] / 2.0; p.P[k] = (mk, m2)
     p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", "tt_stair_core_b_cap.glb")

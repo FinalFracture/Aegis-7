@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2664,
+"count": 2668,
 "by_owner": {
-"Rook": 1027,
+"Rook": 1031,
 "Arrival": 42,
 "Aquatics": 66,
 "Leisure": 236,
@@ -271,6 +271,54 @@
 "tag": "struct",
 "owner": "Rook",
 "asset": "tt_struct_stair_e"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_holes_f3.glb",
+"p": [
+74.5613,
+12.196,
+6.4037
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_holes_f3"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_cores_f3.glb",
+"p": [
+80.7463,
+12.196,
+39.2963
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_cores_f3"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_gallery.glb",
+"p": [
+-8.73,
+5.7,
+68.858
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_gallery"
+},
+{
+"glb": "res://assets/models/tt_struct_slot_wall_f2.glb",
+"p": [
+-6.0,
+6.1,
+63.7
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_slot_wall_f2"
 },
 {
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",

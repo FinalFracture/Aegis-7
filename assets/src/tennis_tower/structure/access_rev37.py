@@ -165,6 +165,49 @@ def export_kit(name, k, REP, LAY, note):
     for pn, mk, m in k.I: groups.setdefault((pn, mk), []).append(m)
     return export_chunk(name, [(pn, mk, ms) for (pn, mk), ms in groups.items()], [("Access-colonly", k.C)], REP, layout=LAY, note=note)
 
+
+# ------------------------------------------------------------------ #6 / #7 / #8 guards (1.07 m Court Line glass, kerb -> < 100 mm openings)
+F3 = 12.2
+def gd(k, a, b, line, axis, y, pe=(True, True)):
+    k.guard(a, b, line, axis, lambda t: y, lambda t: y + GT, pe, kerb=True)
+def guards_holes():
+    """#6 F3 track side of the ST+S1 (X 57..64) and ST+S2 (X 86..92) core holes. Corners: the abutting run starts 0.04 m clear of
+    the through run's rail and its kerb 0.09 m clear (no clip). The F3 stand back (Z 9.07) is open under the rake between its
+    aisle walls (probed), so the N side gets a guard on Z 9.0 as Rev 3.7 asks."""
+    k = Kit(); y = F3
+    # ST+S1: connector X 57.03 Z 2.50..2.93 closes the 0.36 m gap to the existing void guard kerb (Z 2.94) - not in Rev 3.7
+    gd(k, 2.50, 2.93, 57.03, "z", y, (True, False))
+    gd(k, 57.07, 64.05, 2.54, "x", y, (False, True)); gd(k, 2.60, 8.92, 64.05, "z", y, (False, False))
+    gd(k, 57.06, 64.10, 9.0, "x", y)
+    gd(k, 59.36, 61.0, 10.30, "x", y)     # cross over flight 1 at the top landing; W of X 59.32 the F3 stand aisle wall (Courts) closes it
+    # ST+S2
+    gd(k, 85.9, 92.1, 2.54, "x", y); gd(k, 2.60, 8.92, 85.95, "z", y, (False, False)); gd(k, 2.60, 8.92, 92.05, "z", y, (False, False))
+    gd(k, 85.9, 92.1, 9.0, "x", y); gd(k, 86.2, 88.9, 10.30, "x", y)
+    return k
+def guards_cores():
+    """#7 F3 core-top guard rings on the wall heads (y 12.2) + cross guards over flight 1, open at the flight-2 arrival."""
+    k = Kit(); y = F3
+    for z0, zc in ((9.6, 17.0), (59.4, 66.82)):          # LS a_956 / LN a_958 (X 71..76.5)
+        gd(k, 71.0, 76.5, z0, "x", y); gd(k, z0 + .09, zc + .05, 71.1, "z", y, (False, True)); gd(k, z0 + .09, zc - .03, 76.4, "z", y, (False, True))
+        gd(k, 71.19, 73.7, zc, "x", y, (False, True))
+    # LW a_960 (yaw 90): W X 24.6, S Z 39.1 / N Z 44.4 to X 31.97, cross along X 32.02 over Z 41.8..44.31
+    gd(k, 39.0, 44.5, 24.6, "z", y); gd(k, 24.69, 31.97, 39.1, "x", y, (False, True)); gd(k, 24.69, 32.07, 44.4, "x", y, (False, True))
+    gd(k, 41.8, 44.31, 32.02, "z", y, (True, False))
+    # ST-ARN b_m_980: cross Z 61.30 over X 134.0..136.9, W guard X 134.1 over Z 61.39..69.0 (E side = facade, N side = NE plant stack)
+    gd(k, 134.0, 136.9, 61.30, "x", y); gd(k, 61.39, 69.0, 134.1, "z", y, (False, True))
+    return k
+def guards_gallery():
+    """#8 gallery N edge guard (Z 68.70..68.80) with the staff-door gap X -8.7..-7.5 and its floor infill to the plant-stack face,
+    plus the wall collider for the 0.2 m slot at X -6.1..-5.9 (Z 58.4..69.0) north of the F2 wall end."""
+    k = Kit(); y = 6.106
+    gd(k, -11.36, -8.7, 68.75, "x", y); gd(k, -7.5, -6.1, 68.75, "x", y)   # W end stops at facade bay 577 (X <= -11.38), not -11.80
+    inf = box(-8.7, -7.5, 5.7, y, 68.80 - E, 69.02 - E); k.add("Door_Infill", SL, inf); k.add("Door_Infill_Line", AM, box(-8.65, -7.55, y - E, y + .003, 68.95, 69.0)); k.col(inf.copy())
+    return k
+def slot_wall():
+    """#8 'also found': wall collider for the 0.2 m slot at X -6.1..-5.9, Z 58.4..69.0 (F2), with a slate base trim as its visual."""
+    k = Kit(); k.add("Slot_Base_Trim", SL, box(-6.1 + E, -5.9 - E, 6.1, 6.2, 58.4 + E, 69.0 - E)); k.col(box(-6.1, -5.9, 6.1, 8.4, 58.4 + E, 69.0 - E))
+    return k
+
 EDGE_VARIANTS = {   # manifest index (bfe716e) -> (asset, local opening a..b)
     "tt_terrace_edge_open_c2": (-1.0, 1.0),     # 793 SW / 794 NW / 929 E ramp top landings (clear 2.0 m centred)
     "tt_terrace_edge_open_w38": (-1.5, 2.0),    # 747 W stair (Z 36..40, yaw -90: world Z = 38 + x) -> clear Z 36.5..40
@@ -178,6 +221,10 @@ if __name__ == "__main__":
     export_kit("tt_struct_ramp_e", mirror(ramp_sw()[0], MX), REP, LAY, "Rev 3.7 #2 E ramp X 153..171.42 (SW mirrored in X)")
     export_kit("tt_struct_stair_w", stair(-63.5, -1, 36.5, 42.5, 12, 11, 2.0, True), REP, LAY, "Rev 3.7 #1 W grand stair Z 36.5..42.5, 23 x 0.1752 / 0.30")
     export_kit("tt_struct_stair_e", stair(171.5, 1, 36.5, 39.5, 12, 11, 1.5, False), REP, LAY, "Rev 3.7 #2 E stair Z 36.5..39.5, 23 x 0.1752 / 0.30")
+    export_kit("tt_struct_guards_holes_f3", guards_holes(), REP, LAY, "Rev 3.7 #6 F3 track guards at the ST+S1/S2 core holes, 1.07 m")
+    export_kit("tt_struct_guards_cores_f3", guards_cores(), REP, LAY, "Rev 3.7 #7 F3 core-top guard rings + flight-1 cross guards, 1.07 m")
+    export_kit("tt_struct_guards_gallery", guards_gallery(), REP, LAY, "Rev 3.7 #8 gallery N edge guard + staff-door infill")
+    export_kit("tt_struct_slot_wall_f2", slot_wall(), REP, LAY, "Rev 3.7 #8 slot wall collider X -6.1..-5.9 Z 58.4..69.0")
     for nm, (a, b) in EDGE_VARIANTS.items():
         export_part(nm, edge_open(a, b, nm), REP, None, "Rev 3.7 terrace edge opening variant")
     json.dump(LAY, open(LAYOUT, "w"), indent=1)
