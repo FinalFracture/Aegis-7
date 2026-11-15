@@ -8,9 +8,9 @@
    "tt_court_partition": 112,
    "tt_court_net": 120,
    "tt_court_partition_door_closed": 8,
-   "tt_stand_module_3p8": 8,
-   "tt_stand_module": 30,
-   "tt_stand_module_6p5": 10,
+   "tt_stand_module_3p8": 10,
+   "tt_stand_module": 26,
+   "tt_stand_module_6p5": 12,
    "tt_stand_module_f3_3p8": 4,
    "tt_stand_module_f3_3p8_seats": 4,
    "tt_stand_module_f3": 16,
@@ -3199,17 +3199,17 @@
     "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.7 #4 axe door gap)"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     87.75,
+     87.245,
      0.0,
      61.4
     ],
     "yaw": 180,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "N long"
+    "note": "N long; 6.5 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module_6p5.glb",
@@ -3225,17 +3225,17 @@
     "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.7 #4 axe door gap)"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     95.25,
+     95.745,
      0.0,
      61.4
     ],
     "yaw": 180,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "N long"
+    "note": "N long; 6.5 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module_3p8.glb",
@@ -3303,17 +3303,17 @@
     "note": "W short; 6.5 m at lift-gap end"
    },
    {
-    "glb": "res://assets/models/tt_stand_module_6p5.glb",
-    "asset": "tt_stand_module_6p5",
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
     "p": [
      110.4,
      0.0,
-     31.25
+     29.895
     ],
     "yaw": -90,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "E short; 6.5 m at lift-gap end"
+    "note": "E short; 3.8 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module_6p5.glb",
@@ -3513,17 +3513,17 @@
     "note": "S long; put z 17.6 keeps preview back-face convention"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     87.75,
+     87.245,
      6.1,
      61.4
     ],
     "yaw": 180,
     "tag": "f2",
     "room": "F2-CON",
-    "note": "N long"
+    "note": "N long; 6.5 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module.glb",
@@ -3539,17 +3539,17 @@
     "note": "S long; put z 17.6 keeps preview back-face convention"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     95.25,
+     95.745,
      6.1,
      61.4
     ],
     "yaw": 180,
     "tag": "f2",
     "room": "F2-CON",
-    "note": "N long"
+    "note": "N long; 6.5 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module_3p8.glb",
@@ -3617,17 +3617,17 @@
     "note": "W short; 6.5 m at lift-gap end"
    },
    {
-    "glb": "res://assets/models/tt_stand_module_6p5.glb",
-    "asset": "tt_stand_module_6p5",
+    "glb": "res://assets/models/tt_stand_module_3p8.glb",
+    "asset": "tt_stand_module_3p8",
     "p": [
      110.4,
      6.1,
-     31.25
+     29.895
     ],
     "yaw": -90,
     "tag": "f2",
     "room": "F2-CON",
-    "note": "E short; 6.5 m at lift-gap end"
+    "note": "E short; 3.8 m (Rev 3.8 #3 link door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module_6p5.glb",

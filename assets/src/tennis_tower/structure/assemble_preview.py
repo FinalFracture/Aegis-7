@@ -32,6 +32,8 @@ def structure():
     put("tt_plant_stack_staff_doors_l", -7.8495, 0, 9.71, 0, "plant"); put("tt_plant_stack_staff_doors_l", 132.2495, 0, 9.71, 0, "plant")
     put("tt_plant_stack_staff_doors_r", -7.8495, 0, 69.29, 180, "plant"); put("tt_plant_stack_staff_doors_r", 132.2495, 0, 69.29, 180, "plant")
     put("tt_plant_stack_sill_sw", -8.1, 6.1 - .25, 10.095, 0, "plant")
+    for x, y, z, yaw in ((91.5, 0.0, 64.15, 0), (91.5, 6.1, 64.15, 0), (113.15, 0.0, 33.3, 90), (113.15, 6.1, 33.3, 90)):   # Rev 3.8 #3 TTQA-053 link doors
+        put("tt_door_pair_18", x, y, z, yaw, "door")
     put("tt_services_plant_stack_m", 133.7275, 0, 5.27, 0, "plant")
     put("tt_services_plant_stack_m_nw", -5.7275, 0, 73.73, 180, "plant")
     put("tt_services_plant_stack", 133.7275, 0, 73.73, 180, "plant")

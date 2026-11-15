@@ -73,10 +73,16 @@ def stands():
             if y == Y1 and x in (87.75, 95.25):   # r8 Rev 3.7 #4: 6.5 m modules leave the X 90.48..92.51 gap to the axe pair door
                 xs_, as_, note = (87.245 if x == 87.75 else 95.745), "tt_stand_module_6p5", note + "; 6.5 m (Rev 3.7 #4 axe door gap)"
             out.append(item(as_, (xs_, y, 17.6), 0, tag, room, note))
-            out.append(item(a, (x, y, 61.4), 180, tag, room, "N long"))
+            xn, an, nn = x, a, "N long"
+            if x in (87.75, 95.25):   # Rev 3.8 #3 L1-N / L2-N: 6.5 m modules leave the X 90.48..92.51 gap to the Z 64 pair door
+                xn, an, nn = (87.245 if x == 87.75 else 95.745), "tt_stand_module_6p5", "N long; 6.5 m (Rev 3.8 #3 link door gap)"
+            out.append(item(an, (xn, y, 61.4), 180, tag, room, nn))
         for z, a in short_s + short_n:
             out.append(item(a, (32.6, y, z), 90, tag, room, "W short; 6.5 m at lift-gap end"))
-            out.append(item(a, (110.4, y, z), -90, tag, room, "E short; 6.5 m at lift-gap end"))
+            if z == 31.25:   # Rev 3.8 #3 L1-E / L2-E: 3.8 m module at Z 28.01..31.78 leaves the Z 31.88..34.48 gap to the X 113 pair door
+                out.append(item("tt_stand_module_3p8", (110.4, y, 29.895), -90, tag, room, "E short; 3.8 m (Rev 3.8 #3 link door gap)"))
+            else:
+                out.append(item(a, (110.4, y, z), -90, tag, room, "E short; 6.5 m at lift-gap end"))
     # F3: rake + seats co-placed
     for x, a in long_west + long_east:
         af, seat = f3_name(a), f3_name(a) + "_seats"

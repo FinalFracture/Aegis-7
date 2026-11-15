@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2682,
+"count": 2688,
 "by_owner": {
-"Rook": 1040,
+"Rook": 1046,
 "Arrival": 42,
 "Aquatics": 72,
 "Leisure": 236,
@@ -489,6 +489,30 @@
 "asset": "tt_struct_guards_cores_f3_r2d"
 },
 {
+"glb": "res://assets/models/tt_struct_stand_cheeks_r38.glb",
+"p": [
+101.739,
+0.0,
+47.6415
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_stand_cheeks_r38"
+},
+{
+"glb": "res://assets/models/tt_struct_guards_ne_plant.glb",
+"p": [
+130.9287,
+5.7,
+73.6613
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_guards_ne_plant"
+},
+{
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",
 "p": [
 15.0,
@@ -667,6 +691,54 @@
 "tag": "plant",
 "owner": "Rook",
 "asset": "tt_plant_stack_sill_sw"
+},
+{
+"glb": "res://assets/models/tt_door_pair_18.glb",
+"p": [
+91.5,
+0.0,
+64.15
+],
+"yaw": 0,
+"tag": "door",
+"owner": "Rook",
+"asset": "tt_door_pair_18"
+},
+{
+"glb": "res://assets/models/tt_door_pair_18.glb",
+"p": [
+91.5,
+6.1,
+64.15
+],
+"yaw": 0,
+"tag": "door",
+"owner": "Rook",
+"asset": "tt_door_pair_18"
+},
+{
+"glb": "res://assets/models/tt_door_pair_18.glb",
+"p": [
+113.15,
+0.0,
+33.3
+],
+"yaw": 90,
+"tag": "door",
+"owner": "Rook",
+"asset": "tt_door_pair_18"
+},
+{
+"glb": "res://assets/models/tt_door_pair_18.glb",
+"p": [
+113.15,
+6.1,
+33.3
+],
+"yaw": 90,
+"tag": "door",
+"owner": "Rook",
+"asset": "tt_door_pair_18"
 },
 {
 "glb": "res://assets/models/tt_services_plant_stack_m.glb",
@@ -19737,16 +19809,16 @@
 "asset": "tt_stand_module_6p5"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-87.75,
+87.245,
 0.0,
 61.4
 ],
 "yaw": 180.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module_6p5.glb",
@@ -19761,16 +19833,16 @@
 "asset": "tt_stand_module_6p5"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-95.25,
+95.745,
 0.0,
 61.4
 ],
 "yaw": 180.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module_3p8.glb",
@@ -19833,16 +19905,16 @@
 "asset": "tt_stand_module_6p5"
 },
 {
-"glb": "res://assets/models/tt_stand_module_6p5.glb",
+"glb": "res://assets/models/tt_stand_module_3p8.glb",
 "p": [
 110.4,
 0.0,
-31.25
+29.895
 ],
 "yaw": -90.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module_6p5"
+"asset": "tt_stand_module_3p8"
 },
 {
 "glb": "res://assets/models/tt_stand_module_6p5.glb",
@@ -20025,16 +20097,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-87.75,
+87.245,
 6.1,
 61.4
 ],
 "yaw": 180.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -20049,16 +20121,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-95.25,
+95.745,
 6.1,
 61.4
 ],
 "yaw": 180.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module_3p8.glb",
@@ -20121,16 +20193,16 @@
 "asset": "tt_stand_module_6p5"
 },
 {
-"glb": "res://assets/models/tt_stand_module_6p5.glb",
+"glb": "res://assets/models/tt_stand_module_3p8.glb",
 "p": [
 110.4,
 6.1,
-31.25
+29.895
 ],
 "yaw": -90.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module_6p5"
+"asset": "tt_stand_module_3p8"
 },
 {
 "glb": "res://assets/models/tt_stand_module_6p5.glb",

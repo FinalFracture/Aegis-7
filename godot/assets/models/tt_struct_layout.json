@@ -294,5 +294,21 @@
    39.5
   ],
   "note": "TTQA-004 r2 core-top guards, F2 cores 988/990/992 (Type B)"
+ },
+ "tt_struct_stand_cheeks_r38": {
+  "world_offset": [
+   101.739,
+   0.0,
+   47.6415
+  ],
+  "note": "Rev 3.8 #3 TTQA-053 stand-end cheeks (L1/L2-N X 90.48..90.58 / 92.41..92.51, L1/L2-E Z 31.78..31.88)"
+ },
+ "tt_struct_guards_ne_plant": {
+  "world_offset": [
+   130.9287,
+   5.7,
+   73.6613
+  ],
+  "note": "Rev 3.8 #4 TTQA-011 NE plant opening guards F2/F3 + slab infill Z 69.00..69.19"
  }
 }

@@ -66,9 +66,9 @@ def walls_f1():
     y0, y1 = F1 - E, F2 - SLAB[F2] + E; W = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
     W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled
-    W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90, 93, 3.0)])
+    W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # Rev 3.8 #3 L1-N: 1.8 m pair-door opening, rest infilled
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
-    W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0)])
+    W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0), (32.4, 34.2, 2.4)])   # Rev 3.8 #3 L1-E pair door
     W += wall(20.6, 58.4, y0, y1, axis="z", line=0, openings=[(34.5, 42.5, 4.5), (45, 47, 3.0)], piers=aqp0)
     W += wall(0.3, 26, y0, y1, axis="x", line=34.5, side=-1, openings=[(8.5, 10, 3.0)], piers=[(-.3, .3)])   # r4 Rev 3.6: 1.5 m ramp passage opening
     W += wall(0.3, 24.5, y0, y1, axis="x", line=44.5, side=1)
@@ -86,9 +86,9 @@ def walls_f2():
     y0, y1 = F2 - E, F3 - SLAB[F3] + E; W = []; P = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
     W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (44, 46, F2 + 2.4)])   # r8 Rev 3.7 #4: dead X 86.3..89 opening infilled
-    W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, F2 + 3.0), (90, 93, F2 + 3.0)])
+    W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, F2 + 3.0), (90.6, 92.4, F2 + 2.4)])   # Rev 3.8 #3 L2-N pair door
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
-    W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, F2 + 3.0), (52, 55, F2 + 3.0), (70, 73, F2 + 3.0)])
+    W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, F2 + 3.0), (52, 55, F2 + 3.0), (70, 73, F2 + 3.0), (32.4, 34.2, F2 + 2.4)])   # Rev 3.8 #3 L2-E pair door
     win = [(22, 29.5), (31, 33.8), (45.2, 47.8), (49.2, 55.5)]                                     # gallery viewing windows (scissor)
     W += wall(20.6, 58.4, y0, y1, axis="z", line=0, openings=[(a, b, F2 + 3.0, F2 + 1.0) for a, b in win] + [(35, 44, F2 + 3.0), (56, 58.4, F2 + 3.0)], piers=aqp0)
     P += [box(-.011, .011, F2 + 1.0 - E, F2 + 3.0 + E, a - E, b + E) for a, b in win]
