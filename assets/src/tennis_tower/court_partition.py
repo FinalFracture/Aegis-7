@@ -106,14 +106,17 @@ def _door_frame(p, closed):
     p.add("Leaf_Capital", LF, *_leaf_crest(xp, GH + NH + .02))
     p.add("Moss_Tufts", LF2, *_moss_on_post(xp))
     if closed:
-        # leaf in opening; scissor inset by E from frame so no coplanar faces
-        p.add("Door_Leaf_Frame", G,
-              box(open_x0 + .02, open_x0 + .06, 0.02, oh - .02, -.02, .02),
-              box(open_x1 - .06, open_x1 - .02, 0.02, oh - .02, -.02, .02),
-              box(open_x0 + .02, open_x1 - .02, oh - .06, oh - .02, -.02, .02),
-              box(open_x0 + .02, open_x1 - .02, 0.02, 0.06, -.02, .02))
-        p.add("Door_Leaf_Scissor", SCR, box(open_x0 + .06 + E, open_x1 - .06 - E, 0.06 + E, oh - .06 - E, -.004, .004))
-        p.add("Pull_Handle", ST, box(open_x1 - .08, open_x1 - .05, .9, 1.2, .02 + E, .05))
+        # TTQA-049: bi-parting pair Leaf_L (-X) / Leaf_R (+X), 4 mm meeting gap; each leaf = frame + scissor + pull,
+        # regrouped under Leaf_L / Leaf_R parent nodes (with their own *-colonly child) after export by _group_leaves()
+        mid = (open_x0 + open_x1) / 2
+        for tag, a, b, hx in (("L", open_x0 + .02, mid - .002, (mid - .062, mid - .032)), ("R", mid + .002, open_x1 - .02, (mid + .032, mid + .062))):
+            p.add(f"Leaf_{tag}_Frame", G,
+                  box(a, a + .04, 0.02, oh - .02, -.02, .02),
+                  box(b - .04, b, 0.02, oh - .02, -.02, .02),
+                  box(a, b, oh - .06, oh - .02, -.02, .02),
+                  box(a, b, 0.02, 0.06, -.02, .02))
+            p.add(f"Leaf_{tag}_Scissor", SCR, box(a + .04 + E, b - .04 - E, 0.06 + E, oh - .06 - E, -.004, .004))
+            p.add(f"Leaf_{tag}_Pull_Handle", ST, box(*hx, .9, 1.2, .02 + E, .05))
     else:
         # parked open 90° on court side (+Z); pane starts past frame face (+E)
         p.add("Door_Leaf_Frame", G, box(.93, .97, 0.02, oh - .02, .05, .1))
@@ -126,7 +129,9 @@ def _door_frame(p, closed):
           box(jx[1] - E, .999, oh, oh + .1, -.04, .04),
           box(-.999, jx[0] + E, 0, .08, -.04, .04))
     if closed:
-        p.add("DoorLeaf-colonly", G, box(open_x0 + .02, open_x1 - .02, 0.02, oh - .02, -.02, .02))
+        mid = (open_x0 + open_x1) / 2
+        p.add("Leaf_L-colonly", G, box(open_x0 + .02, mid - .002, 0.02, oh - .02, -.02, .02))
+        p.add("Leaf_R-colonly", G, box(mid + .002, open_x1 - .02, 0.02, oh - .02, -.02, .02))
     else:
         p.add("DoorLeaf-colonly", G, box(.93, .97, 0.02, oh - .02, .05, .96))
     return p
@@ -169,6 +174,20 @@ def _check_scissor_mats(path):
     blend = [m.name for m in (g.materials or []) if m.alphaMode == "BLEND"]
     return dict(scissor_ok=(not bad and not blend), scissor_bad=bad, blend=blend)
 
+
+def _group_leaves(gp):
+    """TTQA-049: reparent Leaf_<T>_* mesh nodes and Leaf_<T>-colonly under one identity-transform node Leaf_<T> per leaf."""
+    g = pg.GLTF2().load(gp); sc = g.scenes[g.scene or 0]
+    par = {c: i for i, n in enumerate(g.nodes) for c in (n.children or [])}
+    for tag in ("L", "R"):
+        kids = [i for i, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf_{tag}_") or n.name == f"Leaf_{tag}-colonly")]
+        assert kids, tag
+        pi = {par.get(i) for i in kids}; assert len(pi) == 1, pi; pi = pi.pop()
+        g.nodes.append(pg.Node(name=f"Leaf_{tag}", children=kids)); new = len(g.nodes) - 1
+        if pi is None: sc.nodes = [i for i in sc.nodes if i not in kids] + [new]
+        else: g.nodes[pi].children = [i for i in g.nodes[pi].children if i not in kids] + [new]
+    g.save_binary(gp)
+
 def promote(name, builder, label=""):
     os.makedirs(GODOT, exist_ok=True)
     p = recenter(builder({})); glass_z = _pane_z(p)
@@ -186,6 +205,7 @@ def promote(name, builder, label=""):
             if m.alphaMode != "MASK" or abs((m.alphaCutoff or 0) - .5) > 1e-6:
                 m.alphaMode = "MASK"; m.alphaCutoff = .5; dirty = True
     if dirty: g.save_binary(gp)
+    if name == "tt_court_partition_door_closed": _group_leaves(gp)
     nchk = _check_normals(gp); schk = _check_scissor_mats(gp)
     try:
         ok_v = vm.validate_file(gp, check_tri_range=(1, TRI_MAX), require_textures=False, require_blend_glass=False)
