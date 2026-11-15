@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.6**, 2026-11-10 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.7**, 2026-11-15 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -641,3 +641,165 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 4. **Landings:** turning landings at X 1.0..2.5, Z 29.0..32.0 (+0.5) and Z 26.0..29.0 (+1.5), and at X 8.5..10.0, Z 27.5..30.5 (+1.0, guarded from the F1 bottom landing next to it). The top landing is at X 8.5..10.0, Z 26.0..27.5 (+2.0). It exits +X onto the deck along Z 26.0..27.5, 0.5 m north of the 3 m board stair.
 5. **Guards:** 1.07 m on the deck edge around the whole cut and between landings at different levels.
 6. **Footbridges:** each spans only the channel, S at Z 47.0..50.0 and N at Z 72.0..75.0. They bear flush on the +1.0 deck edges, so no recesses are cut. The S bridge is at X 18..20 and the N bridge at X 8..10. The other Rev 3.5 terms are unchanged.
+
+**Rev 3.7: QA access, gates and guards (TTQA)** (2026-11-15, Vance; answers `context/TT_QA_AUDIT.md`, TTQA-001/002/007/008/009/010/011/021/022/023/024/029/031/035/048). All layout calls here are **Vance proposal** under the Rev 3.5 access rules: ramps ≤ 1:12, each run ≤ 0.76 m rise and ≤ 9 m long, 1.5 m landings, 1.8 m clear on exterior ramps, 1.07 m guards with < 100 mm openings wherever the drop is > 0.76 m, stairs riser ≤ 0.18 and tread ≥ 0.28. Sports stay decoration (Jared). Reuse shared assets (edge/skirt opening variants, `tt_stand_module_6p5`, `tt_struct_void_guard`, rink board modules).
+- **Ownership:** Rook builds every new piece in the GLBs with `*-colonly` (trimesh) / `*-convcolonly` (convex) colliders that match the visuals, and adds the manifest rows (`tower_drop.py`). Room-owned assets (temp-Active, Leisure, temp-Aquatics, Courts, temp-Arrival) are swapped by their owners at the coordinates given. Gage owns runtime: drum gravity, water volumes and swim, ladder climb areas, and door behaviour.
+- **Drum floor:** level along X, `y(Z) = 195.9592 − √(40000 − (Z − 40)²)` (building frame; −2.34 at Z 14, −4.04 at Z 39.5). Probe values vary by about ±0.12 m, so Rook ray-probes every foot and landing and sets each one on the probed top within ±0.005. All terrace ramps run along X, so their slope lines up with drum gravity; the cross-fall where they meet the drum (Z 8.3..12.5) is 7.5–9°. Gage's gravity volume must cover every ramp and stair footprint below.
+- **Clash rules applied to every footprint** (3d-part-clipping-check, game-first-pass-check): overlap ≤ 0.010 m, ≥ 0.02 m clear for free-standing parts, drops > 0.5 m guarded, 2.1 m headroom, ≥ 0.9 m clear aisles. Each item says which existing pieces it touches. Anything not listed was box-checked against the audit placements and is clear.
+
+1. **W terrace (TTQA-001/002): two switchback ramps plus a grand stair.**
+   - **SW ramp** sits outside the S skirt and runs along X with solid fill underneath. It has handrails both sides and 1.07 m guards on every open side.
+     - Lanes: N cheek/guard Z 12.3..12.5 (0.10 m off the skirt base at Z 12.6); lane A clear Z 10.5..12.3; median guard Z 10.25..10.5; lane B clear Z 8.45..10.25; S guard Z 8.3..8.45.
+     - Total rise 1.678 m (drum −1.537..−1.816 under lane B), split into 3 runs of 0.559 m over 6.71 m (1:12).
+     - Top landing **X −27.0..−25.0, Z 10.25..13.5, y 0.00.** The terrace edge module 793 (X −28..−24) becomes the opening variant, clear X −27..−25 through Z 13.5..16.01, and skirt 795 is notched for the landing.
+     - Run 1 descends −X in lane A from X −27.0 to −33.71 (to −0.56). Intermediate landing X −33.71..−35.21 (−0.56). Run 2 continues from X −35.21 to −41.92 (to −1.12).
+     - Turn landing X −41.92..−43.42, Z 8.3..12.5 (−1.12), spanning both lanes.
+     - Run 3 climbs back +X in lane B from X −41.92 to −35.21 (to −1.68). Foot landing X −35.21..−33.71 on the drum, exiting +X onto the drum. Its last 1.0 m is warped to the drum cross-fall (±0.14 m).
+     - The median guard runs the full length X −43.42..−25.0, because lane B and the drum sit up to 2.4 m below lane A. The S guard runs X −43.42..−35.21; handrails extend 0.3 m past the foot.
+     - **Footprint X −43.42..−25.0, Z 8.3..13.5.** It touches only skirts 779–795 (the lanes stay at Z ≤ 12.5, 0.10 m clear) and module 793/795 at the landing (opening variants). It is 4.56 m clear of the Fore Hub Station Walk (X ≤ −48) and 1.0 m clear of the SW corner link (X ≥ −24).
+   - **NW ramp:** the SW ramp mirrored about Z 40, at the same X values and levels.
+     - Lanes: cheek Z 67.5..67.7; lane A Z 67.7..69.5; median Z 69.5..69.75; lane B Z 69.75..71.55; guard Z 71.55..71.7.
+     - Top landing X −27..−25, Z 66.5..69.75. Edge module 794 gets the opening variant (clear X −27..−25) and skirt 796 is notched.
+     - Footprint X −43.42..−25.0, Z 66.5..71.7. Same clearances as SW (NW corner link X ≥ −24).
+   - **W grand stair** on the axis:
+     - 6.0 m clear at Z 36.5..42.5. Cheek/guard walls at Z 36.3..36.5 and 42.5..42.7, plus a centre handrail on Z 39.5.
+     - Rise 4.03 m (drum −4.010..−4.040) in 23 risers of 0.1752 on 0.30 treads.
+     - Top landing X −63.5..−60.0 at y 0, through openings in edge modules 747/749 (Z 36.5..42.5) and notches in skirts 748/750.
+     - Flight 1: 12 risers, X −63.5 → −66.8 (to −2.10). Landing X −66.8..−68.8. Flight 2: 11 risers, X −68.8 → −71.8 (to −4.03).
+     - Foot clear zone X −71.8..−73.8. Solid fill under, closed sides.
+     - **Clash:** the stair sits inside the §3.8 Fore cap portal reservation (X −60, Z 34..46). It is valid only while the drop leaves drum floor west of X −62.5 (69.5 m today). If the portal is built, the stair is redesigned with it.
+
+2. **E plaza (TTQA-001/002): one switchback ramp plus one stair.**
+   - **E ramp:** same lanes, Z values and levels as the SW ramp, mirrored in X.
+     - Top landing **X 153.0..155.0, Z 10.25..13.5.** Edge module 929 (X 152..156) gets the opening variant (clear X 153..155) and skirt 931 is notched.
+     - Run 1 goes +X from 155.0 to 161.71. Landing 161.71..163.21. Run 2 goes from 163.21 to 169.92. Turn landing 169.92..171.42.
+     - Run 3 comes back −X from 169.92 to 163.21. Foot landing 163.21..161.71, exiting −X onto the drum.
+     - **Footprint X 153.0..171.42, Z 8.3..13.5.** It is 1.0 m clear of the SE corner link (X ≤ 152) and clear of the x 200 Station Walk (X 134..146, Z < 0).
+     - **Open check:** the plaza corner X 168..171.4, Z 12.6..16 has no skirt piece (cf. TTQA-043). The ramp, at Z ≤ 12.5, clears it, but Rook should close that gap.
+   - **E stair** to the E door (X 140.98, Z 37.5):
+     - Clear Z 36.5..39.5, through an opening in edge module 903 and a notch in skirt 904. Cheeks at Z 36.3..36.5 and 39.5..39.7.
+     - Top landing X 168.0..171.5. Flight 1: 12 risers, X 171.5 → 174.8. Landing 174.8..176.3. Flight 2: 11 risers, X 176.3 → 179.3. Foot zone X 179.3..181.3.
+     - 23 × 0.1752 risers on 0.30 treads.
+     - **Clash:** it overlaps the unbuilt East Spine ramp reservation (X 170..250, Z 34..46). Revisit if the Spine is built.
+   - **Interim match (Gage):** Gage's interim runtime ramps go at exactly the item 1–2 footprints and levels (SW, NW and E ramps), so the final GLB pieces replace them one for one. Stairs are not needed in the interim.
+
+3. **Rink (TTQA-007).** The boards are temp-Active placements: S Z 26.18..26.58, N Z 52.42..52.82, ends X 41.18..41.58 / 102.42..102.82.
+   - **Players' gates:**
+     - Replace `tt_rink_board_gate` 1739 (X 65.5..67.5) with a 2.0 m module that has 1.2 m clear at **X 65.9..67.1** and 0.4 m fixed panels. Its leaf is parked open at 180° against the concourse face of the next board panel, projecting ≤ 0.1 m.
+     - Vance proposal: do the same at 1751 for the second bench (clear **X 76.9..78.1**).
+     - Both open onto the N concourse (Z 52.82..59.25) between the PT columns at X 63.5 / 71.5 / 79.5 (Z 54.05..54.95), facing the N lift gap X 66.5..76.5 (lift 985, stair LN a_958). The existing leaves carry a static closed collider (0.976 m), which goes away.
+   - **Zamboni gate:**
+     - Replace boards 1777 + 1779 (X 102.42..102.82, Z 34.5..38.5) with one 4.0 m double-leaf module, opening **Z 34.85..37.85** (2 × 1.5 m leaves parked flat against boards 1775/1781).
+     - Service route: E concourse X 102.82..108.25 → the gap between the E stands (Z 34.48..44.51) → corridor Z 34.5..39.0 between stand 1649 and stair a_962 (4.5 m) → lift E 991 (X 113.38..116.63, Z 34.5..38.5).
+     - **Clash:** goal 1846 (X 98.35..99.49, Z 37.9..41.1) is 0.05 m N of the opening line. Leave it as is; the story says goals are lifted off for resurfacing.
+
+4. **Axe throwing (TTQA-008).** The bays are Leisure assets; the walls are Rook's `walls_f1`.
+   - **Deviation from the brief:** the spectator rails 1146/1154 (Z 13.85..14.75) back onto the dead Z 15 wall (Z 14.7..15.0) and only touch the N bay, so a gate in them would lead nowhere. They stay closed.
+   - **Clash (Rook/Leisure):** the rail overlaps the wall by 0.05 m. Trim the rail to Z ≤ 14.68.
+   - **Row 1** (X 77.2..84.0; throw lines X 79.25 / 80.52, target face X 84.0):
+     - 1.0 m gates in the X 77 wall (X 76.85..77.15) at **Z 4.9..5.9** (bay 1140) and **Z 8.3..9.3** (bay 1141), entered from the S lobby. Stair core a_955 starts at Z 9.5, X 71..76.5, so the approach stays clear.
+     - Bay 1142 gets a 1.0 m gate in partition 1145 at **X 77.4..78.4**, 0.85 m behind the far throw line.
+     - The existing bay 1139 opening (Z 2..4.5) stays.
+   - **Row 2** (X 94.2..101):
+     - 1.0 m gates in the X 93.85 wall (X 93.7..94.0) at **Z 4.9..5.9, 8.3..9.3 and 11.7..12.7** (bays 1148/1149/1150), entered from the corridor strip X 92.0..93.7 beside core b_965. Each gate is ≥ 0.9 m from the partitions and 2.4 m behind the throw lines (X 96.25 / 97.52).
+     - The existing bay 1147 opening (Z 0.6..2.5) stays.
+   - **F1 concourse door:**
+     - Courts replaces stands 1616 (X 84.01..91.48) and 1618 (X 91.51..98.98) with `tt_stand_module_6p5` at **X 84.01..90.48 and X 92.51..98.98**. That leaves a gap of X 90.48..92.51 with end-cheek guards, 1.83 m clear.
+     - Rook puts a 1.8 m pair door at **X 90.6..92.4** in the existing Z 15 opening (X 90..93) and infills the rest.
+     - The PT columns at X 87.5 / 95.5 (Z 24.05..24.95) are clear.
+   - **F2 climbing pocket:** Vance proposal, replacing a second stand cut. Restore the Rev 3.1 spine.
+     - Rook cuts the X 84.5 kids'-wall backing wall at **Z 13.2..14.7 (1.5 m clear, 2.2 m high)**. The kids' panels end at Z 12.95 and the mats at Z 13.1, so the cut clears both.
+     - That links the S entry lobby (reached through the N lift gap / S cores) along Z 13.2..14.7 behind b_cap_966 to the bouldering entry at X 94.
+     - The dead F2 Z 15 opening X 86.3..89 (behind stand 1640) is infilled.
+
+5. **Pools (TTQA-009/010).** temp-Aquatics handles the deck-finish trims and placements. Gage handles water volumes, swim, and a climb Area3D on every ladder; the stairs are the guaranteed walk-out without swim.
+   - **Lap tank** (X 2.5..27.5, Z 0.5..21.5; floor +0.04; deck +2.0):
+     - **Deviations:** the S long side has no deck (Z 0.32..0.5 to the façade), so it gets no ladder. The W end has start blocks across Z 1.87..20.13, so the stair goes at the E end.
+     - Recessed stair in an E-deck alcove at **X 27.5..29.6, Z 0.5..3.8**, rising +Z: bottom at Z 0.5..1.0 on the tank floor, then 11 risers of 0.178 and 10 treads of 0.28 over Z 1.0..3.8, exiting onto the E deck. Handrails on both sides.
+     - The alcove trims deck finishes b/c/d. Column X 30, Z 3.5 (X 29.7..30.3) is 0.1 m clear, and the façade bays end at Z 0.62.
+     - Ladders:
+       - N side at **X 12.5, Z 21.5**, exiting onto the N deck (3 m board edge at Z 24.49);
+       - W end at **X 2.5, Z 20.8** (N of the blocks);
+       - E end at **X 27.5, Z 19.5** (lifeguard chair Z 11.5..12.66).
+     - Every water point is within 21 m of an exit (limit 23 m).
+   - **Diving well** (X 15..28, Z 22..34; pit −2.5):
+     - **Deviation:** the boards are on the W side, and the N (0.2 m deck) and S (0.5 m strip) sides are unusable. The stair goes against the E wall.
+     - In-tank stair **X 26.6..28.0**:
+       - flight 1 from Z 33.7 rising −Z: 13 risers × 0.18 to Z 30.34 (y −0.16);
+       - landing Z 30.34..29.14;
+       - flight 2: 12 risers to Z 26.06 (+2.0);
+       - top landing Z 26.06..24.56, exiting +X onto the E deck (X 28..29.68).
+       - The stair is ≥ 9 m from the board tips.
+     - Ladders at **Z 23.0** on the E wall (X 28.0) and on the W wall (X 15.0), the W one exiting onto the deck at X 13.5..15, 1.5 m from the 3 m board edge.
+   - **Lazy river** (floor 0.0, water +0.85, deck +1.0):
+     - **Deviation:** 4 steps would need a 0.19 m riser, over the 0.18 limit. Each entry is 6 risers × 0.16 and 5 treads × 0.28 (1.4 m projection), 1.2 m clear plus rails, perpendicular to the bank.
+     - Positions:
+       - S outer **X 21.0..22.4, Z 47.0→48.4**;
+       - S island **X 15.6..17.0, Z 50.0→48.6**;
+       - N outer **X 10.6..12.0, Z 75.0→73.6**;
+       - N island **X 6.0..7.4, Z 72.0→73.4**.
+     - Each pair straddles its footbridge (S X 18..20, N X 8..10) and leaves ≥ 1.6 m of channel open. They clear the S-strip ramp (X ≤ 15.6), T1 (X ≥ 19.9) and the mounds (Z ≥ 76.17).
+   - **Runout exit** (Vance proposal, TTQA-010): stair along the W end wall at **X 5.0..6.4**, rising +Z with 6 × 0.16 risers over Z 69.6..70.99, onto the island strip Z 71..72.
+   - **Splash pad:** zero-depth. Raise the basin floor from +0.40 to **+0.98**, remove the splash hole from the +1.0 deck, and raise the sprays by 0.58 (temp-Aquatics). Gage: no water volume, spray VFX only.
+
+6. **F3 track guards (TTQA-011/048).** The track runs at track_sn Z 0.7..2.5.
+   - **Deviation from the brief:** the b_cap top landing is at the N end (Z 10.26..13.0), under the F3 stand, whose back is at Z 9.07, not on the track side. So the track side is fully guarded and the painted crossing is dropped.
+   - **ST+S1 hole (X 57..64, Z 2.6..10.26):**
+     - 1.07 m glass guard on **Z 2.50..2.58, X 57.06..64.0**, joining the existing `tt_struct_void_guard` (X 34.94..57.06);
+     - E guard **X 64.0..64.1, Z 2.58..9.0**;
+     - the W side is the thickened core wall around TC-S1 (X 57.05..57.95, Z 8.05..8.95, inside the hole);
+     - N side: the stand back. Rook confirms it is solid to the floor; otherwise add a guard on Z 9.0.
+     - Raise Well_Guard_F2 to 1.07 m over the flight-1 well at the top landing, with a cross guard along Z 10.26 over X 57.0..61.0 and open at the flight-2 arrival X 61.1..63.8.
+   - **ST+S2 hole (X 86..92):**
+     - S guard **Z 2.50..2.58, X 85.9..92.1**;
+     - W guard **X 85.9..86.0** and E guard **X 92.0..92.1**, both Z 2.58..9.0;
+     - well cross guard Z 10.26, X 86.2..88.9, with the arrival open at X 89.1..91.8;
+     - TC-S3 is 0.95 m clear.
+
+7. **Slab openings (TTQA-011).**
+   - F2 core openings are closed by the core walls (TTQA-004 colliders). Lift openings are closed by the shaft walls and landing doors (TTQA-003).
+   - Each F3 core top gets a 1.07 m guard ring on the wall heads, plus a cross guard over flight 1 that is open at the arrival:
+     - **LS a_956:** S Z 9.5..9.7; W X 71.0..71.2 and E X 76.3..76.5 (Z 9.5..16.97); cross Z 16.97 over X 71.2..73.7; arrival X 73.8..76.3.
+     - **LN a_958:** S Z 59.3..59.5; W/E as LS over Z 59.3..66.77; cross Z 66.77 over X 71.2..73.7; arrival X 73.8..76.3.
+     - **LW a_960 (yaw 90):** W X 24.5..24.7; S Z 39.0..39.2 and N Z 44.3..44.5 (X 24.5..31.97); cross along X 31.97 over Z 41.8..44.3; arrival Z 39.2..41.7.
+     - **ST-ARN b_m_980:** top landing Z 58.6..61.34; W guard X 134.0..134.2, Z 61.34..69.01; cross Z 61.34 over X 134.2..136.9; arrival X 137.1..139.8; the E side is closed by the façade.
+   - F2-ARC and F3-PLAY are this ARN core plus the NE plant stack, which item 10 closes.
+
+8. **Gallery edge (TTQA-024):**
+   - 1.07 m glass guard (< 100 mm openings) at **Z 68.70..68.80, X −11.80..−6.10**, on the `tt_gallery_floor` N edge.
+   - It has a 1.2 m gap at **X −8.7..−7.5**, where the 0.22 m gap to the plant-stack face is infilled at Z 68.80..69.02 for the item 10 staff door.
+   - The showers end at Z 66.88, so the guard is clear. It touches façade bay 577 (X ≤ −11.38) at its W end.
+   - **Also found:** a 0.2 m slot under the non-colliding partition at X −6.1..−5.9. Rook adds a wall collider there. The ST-AQN edge at Z 58.4 is TTQA-004.
+
+9. **Plinth fill (TTQA-021):**
+   - Fill top **−0.403** under X −12..140, Z 0..79 (the F1 slab underside); **−0.313** under the terraces.
+   - Diving pit: the fill top drops to **−2.903** under the pit slab, with liner walls at **X 14.7..28.3, Z 21.7..34.3**.
+   - Lift pits: recess the F1 slab top by 0.15 m, keeping 0.25 m of slab beneath, instead of letting the cores overlap the slab. Locations: S X 66.5..70.5, Z 11..15; N X 66.5..70.5, Z 64..68; W X 26..30, Z 34.5..38.5; E X 113..117, Z 34.5..38.5.
+   - **Open:** check the fill outside the terraces separately.
+
+10. **Plant stacks (TTQA-022):**
+    - Close all four shells with convcolonly walls and lids: SW X −11.44..−0.02, Z 0.56..9.97; NW Z 69.02..78.43; SE / NE X 128.02..139.44.
+    - Each stack gets one locked, static 1.0 m staff door per floor (F1 0, F2 6.1, F3 12.2):
+      - **SW** at X −8.6..−7.6 on the Z 9.97 face. The F2 sill meets the gallery floor through a 0.23 m infill at Z 9.97..10.2, and the door is 0.6 m clear of changing (X ≤ −9.2).
+      - **NW** at X −8.6..−7.6 on the Z 69.02 face.
+      - **SE** at X 131.5..132.5 on the Z 9.97 face.
+      - **NE** at X 131.5..132.5 on the Z 69.02 face, clear of arcade redemption 1185 (X ≤ 131.01) and 1279/1280 (X ≤ 128.16).
+
+11. **Court size (TTQA-029):** won't fix. The courts stay 10 × 20 m and keep their name (decoration, Jared).
+
+12. **W entrance bays (TTQA-031):**
+    - **Deviation:** 4 leaves of 1.0 m don't fit the 3.864 m stile span, and 2 sliders per bay give only 22 m, under the §5.3 need of 29.9 m.
+    - Each of the 11 bays gets **3 leaves × 1.0 m clear** at Zc −1.6..−0.6, −0.5..+0.5 and +0.6..+1.6 (0.10 m mullions), which gives **33.0 m ≥ 29.9 m ✓**.
+    - Bollards: split the single colonly box (X −13.63..−13.47, Zc ± 1.08, 0.96 m high) into individual posts, Ø ≤ 0.15 at Zc ± 0.55, with ≥ 0.915 m clear between them.
+    - Owners: Rook / temp-Arrival for the pieces, Gage for the proximity doors.
+
+13. **Under-flight pockets (TTQA-035):**
+    - The low-headroom nodes sit under the solid-cast flight-1 / mid-landing visuals, which have no colliders. Add convcolonly hulls matching the casts. Where a pocket is genuinely open, put a 0.9 m planter colonly at the 2.1 m headroom line.
+    - Instances:
+      - F1: a_947/949/951/953/955/957/959/961, b_963/965/967/969/971/973/977, b_m_975/979;
+      - F2: a_948..962 (even), b_cap_964/966, b_968/970/972/974/978, b_m_976/980.
+    - Flagged for Rook: 1,247 other F1 nodes under stands and decks have < 2.1 m headroom. Close each one with the stand or deck colliders.
+
+14. **TTQA-048:** info only, covered by item 6.
+
+15. **Slide bridges (TTQA-023, Vance proposal; missing from the decision list, added under the Rev 3.5 rule):** 1.07 m colonly guards with < 100 mm openings on every open edge of the F2 slide bridges and decks (X 20.5..24.5, Z 51.5..61.5, at +6.1 / +7.0). The only openings are the slide tube mouths.
