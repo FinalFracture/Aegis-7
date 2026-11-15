@@ -200,14 +200,18 @@ def guards_holes():
     the through run's rail and its kerb 0.09 m clear (no clip). The F3 stand back (Z 9.07) is open under the rake between its
     aisle walls (probed), so the N side gets a guard on Z 9.0 as Rev 3.7 asks."""
     k = Kit(); y = F3
-    # ST+S1: connector X 57.03 Z 2.50..2.93 closes the 0.36 m gap to the existing void guard kerb (Z 2.94) - not in Rev 3.7
-    gd(k, 2.50, 2.93, 57.03, "z", y, (True, False))
-    gd(k, 57.07, 64.05, 2.54, "x", y, (False, True)); gd(k, 2.60, 8.92, 64.05, "z", y, (False, False))
-    gd(k, 57.06, 64.10, 9.0, "x", y)
-    gd(k, 59.36, 61.0, 10.30, "x", y)     # cross over flight 1 at the top landing; W of X 59.32 the F3 stand aisle wall (Courts) closes it
+    # TTQA-042 (Rook 2026-11-15): kerb faces kept 3 mm off the slab-hole edges / core outer wall faces (X 64.0, 86.0, 92.0) and the
+    # track-bed edge (Z 2.50) instead of flush on them (coplanar contacts); the S runs sit on Z 2.548 so the kerb laps the track bed
+    # 2 mm (was 10 mm); the ST+S1 cross guard starts 52 mm off the stand 1696 aisle-wall face (X 59.596; end post r .035, finial r .05)
+    # (it ran 0.236 m into it); both cross guards on Z 10.303 so the kerb's S face is 3 mm inside the Top_Landing_Slate edge (Z 10.25), not flush.
+    # ST+S1: connector X 57.03 Z 2.503..2.93 closes the 0.36 m gap to the existing void guard kerb (Z 2.94) - not in Rev 3.7
+    gd(k, 2.503, 2.93, 57.03, "z", y, (True, False))
+    gd(k, 57.07, 64.05, 2.548, "x", y, (False, True)); gd(k, 2.60, 8.92, 64.053, "z", y, (False, False))
+    gd(k, 57.06, 64.10, 9.0, "x", y)      # stand-back rail: bears on the TC-S1 trunk clad (X 56.9..58.1), core 988 W/E wall heads and the slab E of X 64
+    gd(k, 59.648, 61.0, 10.303, "x", y)   # cross over flight 1 at the top landing; W of it the F3 stand 1696 aisle wall (X 59.015..59.596) closes it
     # ST+S2
-    gd(k, 85.9, 92.1, 2.54, "x", y); gd(k, 2.60, 8.92, 85.95, "z", y, (False, False)); gd(k, 2.60, 8.92, 92.05, "z", y, (False, False))
-    gd(k, 85.9, 92.1, 9.0, "x", y); gd(k, 86.2, 88.9, 10.30, "x", y)
+    gd(k, 85.9, 92.1, 2.548, "x", y); gd(k, 2.60, 8.92, 85.947, "z", y, (False, False)); gd(k, 2.60, 8.92, 92.053, "z", y, (False, False))
+    gd(k, 85.9, 92.1, 9.0, "x", y); gd(k, 86.2, 88.9, 10.303, "x", y)
     return k
 def guards_cores():
     """#7 F3 core-top guard rings on the wall heads (y 12.2) + cross guards over flight 1, open at the flight-2 arrival."""
@@ -296,6 +300,9 @@ EDGE_VARIANTS = {   # manifest index (bfe716e) -> (asset, local opening a..b)
 if __name__ == "__main__":
     REP = []; LAY = json.load(open(LAYOUT))
     ramps_only = "--ramps-only" in sys.argv
+    if "--guards-holes-only" in sys.argv:   # TTQA-042: re-export just the F3 hole guards (+ its layout entry)
+        export_kit("tt_struct_guards_holes_f3", guards_holes(), REP, LAY, "Rev 3.7 #6 F3 track guards at the ST+S1/S2 core holes, 1.07 m")
+        json.dump(LAY, open(LAYOUT, "w"), indent=1); print("ASSETS", len(REP), "FAILED", [r["asset"] for r in REP if not r["passed"]]); raise SystemExit(0)
     export_kit("tt_struct_ramp_sw", ramp_sw()[0], REP, LAY, "Rev 3.7.1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, 0.08 m deck over the Z 12.30..13.37 ring-lane undercroft, level 1.5 m foot landing + 1:20 fillet onto the drum")
     export_kit("tt_struct_ramp_nw", mirror(ramp_sw()[0], MZ), REP, LAY, "Rev 3.7 #1 NW ramp (SW mirrored about Z 40)")
     export_kit("tt_struct_ramp_e", mirror(ramp_sw()[0], MX), REP, LAY, "Rev 3.7 #2 E ramp X 153..171.42 (SW mirrored in X)")

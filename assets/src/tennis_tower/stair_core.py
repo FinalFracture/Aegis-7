@@ -151,6 +151,12 @@ PATH = [(-1.25, 2.3), (-1.25, ZL - .2), (-1.25, ZS + .6), (1.25, ZS + .6), (1.25
 
 # ================= Rev 2.7 full-storey cores (Type A / B), V5 Court Wayfinding =================
 CORE = {"A": dict(W=5.5, L=10.2, FW=2.5), "B": dict(W=6.0, L=10.6, FW=2.7)}
+# TTQA-042 (Rook 2026-11-15): parts that embed E into a neighbour no longer share its floor / wall-head plane (the old
+# tt_stair_core_b_m coplanar clip fail: Flight1_Cast / Mid_Landing / Front_Wall bottoms on the Core_Walls y 0 plane, Front_Wall
+# head on the Core_Walls head). Core_Walls + Door_Jambs keep y 0 (pivot), Flight1_Cast + Front_Wall sit 1.5 mm up, the
+# Mid_Landing block (laps Core_Walls and Flight1_Cast) 3 mm up and 1.5 mm deeper into the side walls than the flights
+# (their wall-side faces were on the same plane), Front_Wall head 1.5 mm under the Core_Walls head.
+YB_F1, YB_FW, YB_ML, YT_FW = .0015, .0015, .003, ST_H - .0035
 def stair_full(q):
     c = CORE[q["type"]]; WT2 = .2; xi = c["W"]/2 - WT2; zi = c["L"]/2 - WT2; FWc = c["FW"]; H = ST_H; n = 18; r = H/(2*n); t = .28
     f1, f2 = (-xi, -xi + FWc), (xi - FWc, xi); zs, zn = -zi, zi; zl = zs + FWc; z1b = zl + (n-1)*t; z2t = zl + (n-1)*t; yl = n*r
@@ -158,17 +164,17 @@ def stair_full(q):
     p = Part()
     for k in range(1, n):
         za, zb, yt = z1b - k*t - (E if k == n-1 else 0), z1b - (k-1)*t, k*r
-        p.add("Flight1_Cast", WH, box(f1[0] - E, f1[1], 0, yt - FIN + E, za, zb))
+        p.add("Flight1_Cast", WH, box(f1[0] - E, f1[1], YB_F1, yt - FIN + E, za, zb))
         p.add("Treads_Slate", SSL, box(f1[0] - E + .002, f1[1] - .002, yt - FIN, yt, za + .002, zb + .005)); p.add("Nosing_Emergency", AM, box(f1[0] + .03, f1[1] - .03, yt - .003, yt + .002, zb - NOSE, zb - .002))
     for j in range(1, n):
         za, zb, yt = zl + (j-1)*t - (E if j == 1 else 0), zl + j*t - (.002 if j == n-1 else 0), yl + j*r
         p.add("Flight2_Modules", WH, box(f2[0], f2[1] + E, yt - .25, yt - FIN + E, za, zb))
         p.add("Treads_Slate", SSL, box(f2[0] + .002, f2[1] + E - .002, yt - FIN, yt, za - .005, zb - .002)); p.add("Nosing_Emergency", AM, box(f2[0] + .03, f2[1] - .03, yt - .003, yt + .002, za + .002, za + NOSE))
-    p.add("Mid_Landing", WH, box(-xi - E, xi + E, 0, yl - FIN + E, zs - E, zl)); p.add("Mid_Landing_Slate", SSL, box(-xi + .002, xi - .002, yl - FIN, yl, zs + .002, zl + .005))
+    p.add("Mid_Landing", WH, box(-xi - E - .0015, xi + E + .0015, YB_ML, yl - FIN + E, zs - E, zl)); p.add("Mid_Landing_Slate", SSL, box(-xi + .002, xi - .002, yl - FIN, yl, zs + .002, zl + .005))
     p.add("Top_Landing", WH, box(-xi - E, xi + E, H - .30, H - FIN + E, z2t, zn + E)); p.add("Top_Landing_Slate", SSL, box(-xi + .002, xi - .002, H - FIN, H, z2t - .005, zn - .002))
     p.add("Core_Walls", WH, box(-xi - WT2, -xi, 0, H - .002, zs - WT2, zn + WT2), box(xi, xi + WT2, 0, H - .002, zs - WT2, zn + WT2), box(-xi, xi, 0, H - .002, zs - WT2, zs))
     # front wall (corridor side) with the storey door opening on the flight-1 side (2.2 m high); next storey's opening sits on this top landing
-    p.add("Front_Wall", WH, box(-xi + E*0 - E, f1[0] + .3, 0, H - .002, zn, zn + WT2 - .002), box(f1[1] - .3, xi + E, 0, H - .002, zn, zn + WT2 - .002), box(f1[0] + .3 - E, f1[1] - .3 + E, 2.2, H - .002, zn, zn + WT2 - .002))
+    p.add("Front_Wall", WH, box(-xi + E*0 - E, f1[0] + .3, YB_FW, YT_FW, zn, zn + WT2 - .002), box(f1[1] - .3, xi + E, YB_FW, YT_FW, zn, zn + WT2 - .002), box(f1[0] + .3 - E, f1[1] - .3 + E, 2.2, YT_FW, zn, zn + WT2 - .002))
     p.add("Door_Jambs", SGM, box(f1[0] + .28, f1[0] + .3 + E, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01), box(f1[1] - .3 - E, f1[1] - .28, 0, 2.2 + .02, zn + WT2 - .002 - E, zn + WT2 + .01))
     # well guards (closed scissor boxes + alloy posts + cap rail) on both flight edges, Rev C stair_guard language
     for fx, (zfun, yfun, ks) in ((f1[1], (lambda k: z1b - (k - .5)*t, lambda k: k*r, range(1, n))), (f2[0], (lambda j: zl + (j - .5)*t, lambda j: yl + j*r, range(1, n)))):
