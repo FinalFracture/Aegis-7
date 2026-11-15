@@ -42,10 +42,12 @@ def build(q):
     if L3:
         for i, (a0, b0) in enumerate(((-1.6, -.6), (-.5, .5), (.6, 1.6))):
             a, b = a0 + .003, b0 - .003
-            p.add("Door_Stiles", ALY, box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03),
+            # Rev 3.8.1: each leaf is its own node set (Leaf_<i>_*) + Leaf_<i>-colonly; group_leaves3() parents them under Leaf_<i>
+            p.add(f"Leaf_{i}_Stiles", ALY, box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03),
                   *[box(a + .07 - E, b - .07 + E, u, v, -.03, .03) for (u, v) in ((.06, .18), (TD - .2, TD - .08))])
-            p.add(f"Door_Scissor_{i}", SCR, pane(a + .072, b - .072, .18 - E, TD - .2 + E, 0, t=.016))
-            p.add("Push_Bars", ALY, tube((a + .15, 1.05, .07), (b - .15, 1.05, .07), .02, 8), tube((a + .15, 1.05, .03 - E), (a + .15, 1.05, .07), .012, 6), tube((b - .15, 1.05, .03 - E), (b - .15, 1.05, .07), .012, 6))
+            p.add(f"Leaf_{i}_Door_Scissor", SCR, pane(a + .072, b - .072, .18 - E, TD - .2 + E, 0, t=.016))
+            p.add(f"Leaf_{i}_Push_Bar", ALY, tube((a + .15, 1.05, .07), (b - .15, 1.05, .07), .02, 8), tube((a + .15, 1.05, .03 - E), (a + .15, 1.05, .07), .012, 6), tube((b - .15, 1.05, .03 - E), (b - .15, 1.05, .07), .012, 6))
+            p.add(f"Leaf_{i}-colonly", ALY, box(a, b, .06, TD - .08, -.03, .03))
         for k, (a0, b0) in enumerate(((lj1, -1.65), (1.65, rj0))):
             p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .05, TD - .075 + E, 0))
         for i, (a0, b0) in enumerate(((lj1, -.6), (-.5, .5), (.6, rj0))):
@@ -93,9 +95,16 @@ def build(q):
     for x in boll:
         p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), br, 10)); p.add("Bollard_Balls", BA, node((x, .85 + bb - E, 1.55), bb, 1))
     # colliders. Wall starts at y=.5; DoorClear is a floor strip and does not fill the door volume.
-    p.add("Wall-colonly", G, box(X0, X1, .5, H, -.08, .02))
+    if L3:
+        # Rev 3.8.1: fixed Frame-colonly = the wall plane minus the three leaf openings (X -1.6..-0.6 / -0.5..0.5 / 0.6..1.6,
+        # Y 0.05..2.525); mullions/leaf jambs/side lights/transom are solid. Leaves (3 mm clear all round) carry their own colliders.
+        ot = TD - .075
+        p.add("Frame-colonly", G, box(X0, X1, ot, H, -.08, .02),
+              *[box(u, v, .05, ot + E, -.08, .02) for u, v in ((X0, -1.6), (-.6, -.5), (.5, .6), (1.6, X1))])
+    else:
+        p.add("Wall-colonly", G, box(X0, X1, .5, H, -.08, .02))
     p.add("DoorClear-colonly", SL, box(X0, X1, 0, .02, -.3, 1.4))
-    for a, b in cols:
+    for a, b in ([] if L3 else cols):
         p.add("Jamb-colonly", G, box(a - .02, a + .02, 0, H, -.08, .14), box(b - .02, b + .02, 0, H, -.08, .14))
     p.add("Canopy-colonly", SL, box(cx0, cx1, y0, y1, .061, zt))
     if w < 3: p.add("Bollard-colonly", G, *[box(x - .08, x + .08, 0, .96, 1.55 - .08, 1.55 + .08) for x in boll])
@@ -122,10 +131,27 @@ def _promote_one(width, filename):
     V = np.vstack([m.vertices for n, (mk, m) in p.P.items() if "colonly" not in n])
     lo, hi = V.min(0), V.max(0)
     print(filename, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
+# Rev 3.8.1 3l hinges: inswing (-Z, away from the canopy/push-bar side). Leaf_0 and Leaf_1 hinge on their -X stile edge,
+# Leaf_2 on its +X stile edge, all on the leaf back face (z -0.03), so the leaf sweeps inside its own opening.
+# Open pose = rotate Leaf_<i> about +Y by OPEN_YAW[i] degrees (closed = 0).
+HINGE3 = ((0, -1), (1, -1), (2, +1)); OPEN_YAW3 = (90.0, 90.0, -90.0)
+def group_leaves3(gp, p):
+    import pygltflib as pg
+    g = pg.GLTF2().load(gp); sc = g.scenes[g.scene or 0]; piv = {}
+    for i, side in HINGE3:
+        lo, hi = p.P[f"Leaf_{i}_Stiles"][1].bounds
+        P = [float(lo[0] if side < 0 else hi[0]), 0.0, float(lo[2])]; piv[f"Leaf_{i}"] = [round(v, 4) for v in P]
+        kids = [j for j, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf_{i}_") or n.name == f"Leaf_{i}-colonly")]
+        assert len(kids) == 4, kids
+        for j in kids:
+            t = g.nodes[j].translation or [0, 0, 0]; g.nodes[j].translation = [t[0] - P[0], t[1] - P[1], t[2] - P[2]]
+        g.nodes.append(pg.Node(name=f"Leaf_{i}", translation=P, children=kids)); sc.nodes = [j for j in sc.nodes if j not in kids] + [len(g.nodes) - 1]
+    g.save_binary(gp); return piv
 def _promote_one3(filename):
     p = recenter(build(dict(width=4.0, leaves3=True)))
     gp = os.path.join(ROOT, "godot/assets/models", filename)
     tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    print(filename, "pivots", group_leaves3(gp, p), "open_yaw", OPEN_YAW3)
     print(filename, "tris", int(tris), "clip", cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=60)["pass"])
 def promote():
     """Export 4.0 m tt_entrance_bay and 2.0 m tt_entrance_bay_half. Half is not placed on the 44 m W run.
