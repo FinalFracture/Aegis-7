@@ -9,8 +9,8 @@
    "tt_court_net": 120,
    "tt_court_partition_door_closed": 8,
    "tt_stand_module_3p8": 8,
-   "tt_stand_module": 32,
-   "tt_stand_module_6p5": 8,
+   "tt_stand_module": 30,
+   "tt_stand_module_6p5": 10,
    "tt_stand_module_f3_3p8": 4,
    "tt_stand_module_f3_3p8_seats": 4,
    "tt_stand_module_f3": 16,
@@ -3186,17 +3186,17 @@
     "note": "N long"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     87.75,
+     87.245,
      0.0,
      17.6
     ],
     "yaw": 0,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "S long; put z 17.6 keeps preview back-face convention"
+    "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.7 #4 axe door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module.glb",
@@ -3212,17 +3212,17 @@
     "note": "N long"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     95.25,
+     95.745,
      0.0,
      17.6
     ],
     "yaw": 0,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "S long; put z 17.6 keeps preview back-face convention"
+    "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.7 #4 axe door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module.glb",

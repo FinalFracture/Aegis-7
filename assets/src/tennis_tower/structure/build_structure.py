@@ -57,7 +57,7 @@ def f3_slab():
 def walls_f1():
     y0, y1 = F1 - E, F2 - SLAB[F2] + E; W = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
-    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90, 93, 3.0)])
+    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled
     W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90, 93, 3.0)])
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0)])
@@ -66,9 +66,9 @@ def walls_f1():
     W += wall(0.3, 24.5, y0, y1, axis="x", line=44.5, side=1)
     W += [box(0.3, 1.0, y0, y1, 42.5, 44.5 + E), box(23, 24.5, y0, y1, 42.5, 44.5 + E)]          # tank end closures
     W += wall(0.3, 2.6, y0, y1, axis="z", line=57.5, t=1.0) + wall(13.2, 14.7, y0, y1, axis="z", line=57.5, t=1.0)   # bowling acoustic wall stubs
-    W += wall(0.3, 14.7, y0, y1, axis="z", line=77, t=.3, openings=[(2, 4.5, 3.0)])
+    W += wall(0.3, 14.7, y0, y1, axis="z", line=77, t=.3, openings=[(2, 4.5, 3.0), (4.9, 5.9, 2.4), (8.3, 9.3, 2.4)])   # r8 Rev 3.7 #4 axe row-1 gates (bays 1140/1141)
     W += wall(0.3, 14.7, y0, y1, axis="z", line=84.5, t=1.0, piers=[(7.8, 9.2)])                 # AXE 1 target wall (TC-S3 inside)
-    W += wall(0.3, 14.7, y0, y1, axis="z", line=93.85, t=.3, openings=[(0.6, 2.5, 3.0)])
+    W += wall(0.3, 14.7, y0, y1, axis="z", line=93.85, t=.3, openings=[(0.6, 2.5, 3.0), (4.9, 5.9, 2.4), (8.3, 9.3, 2.4), (11.7, 12.7, 2.4)])   # r8 Rev 3.7 #4 row-2 gates
     W += wall(0.3, 14.7, y0, y1, axis="z", line=101.5, t=1.0, piers=[(7.8, 9.2)])                # AXE 2 target wall (TC-S4 inside)
     W += wall(64.3, 78.7, y0, y1, axis="z", line=44, openings=[(70, 72.5, 3.0)])
     W += wall(64.3, 78.7, y0, y1, axis="z", line=102, openings=[(70, 72.5, 3.0)])
@@ -77,7 +77,7 @@ def walls_f1():
 def walls_f2():
     y0, y1 = F2 - E, F3 - SLAB[F3] + E; W = []; P = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
-    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (44, 46, F2 + 2.4), (86.3, 89, F2 + 2.4)])
+    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (44, 46, F2 + 2.4)])   # r8 Rev 3.7 #4: dead X 86.3..89 opening infilled
     W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, F2 + 3.0), (90, 93, F2 + 3.0)])
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, F2 + 3.0), (52, 55, F2 + 3.0), (70, 73, F2 + 3.0)])
@@ -86,7 +86,7 @@ def walls_f2():
     P += [box(-.011, .011, F2 + 1.0 - E, F2 + 3.0 + E, a - E, b + E) for a, b in win]
     W += wall(20.6, 58.4, y0, y1, axis="z", line=-6, t=.2, openings=[(26, 28, F2 + 2.2), (38, 40, F2 + 2.2), (50, 52, F2 + 2.2)])
     W += wall(30, 57, y0, y1, axis="x", line=10.5, side=1, t=.2, openings=[(40, 42, F2 + 2.2)])    # climbing changing wall
-    W += wall(0.3, 14.7, y0, F2 + 5.0, axis="z", line=84.5, t=.3, side=1, piers=[(7.8, 9.2)])     # kids' wall backing (TC-S3 pillar)
+    W += wall(0.3, 14.7, y0, F2 + 5.0, axis="z", line=84.5, t=.3, side=1, piers=[(7.8, 9.2)], openings=[(13.2, 14.7, F2 + 2.2)])     # kids' wall backing (TC-S3 pillar); r8 Rev 3.7 #4 climbing link cut
     W += wall(0.3, 14.7, y0, F2 + 4.5, axis="z", line=94, t=.3, side=-1, openings=[(13.4, 14.7, F2 + 2.2)])  # training wall backing
     W += wall(64.3, 78.7, y0, y1, axis="z", line=44, openings=[(70, 72.5, F2 + 2.4)])
     W += wall(64.3, 78.7, y0, y1, axis="z", line=102, openings=[(70, 72.5, F2 + 2.4)])

@@ -19605,16 +19605,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-87.75,
+87.245,
 0.0,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -19629,16 +19629,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-95.25,
+95.745,
 0.0,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",

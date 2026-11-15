@@ -69,7 +69,10 @@ def stands():
     # F1 / F2
     for y, tag, room in ((Y1, "f1", "F1-CON"), (Y2, "f2", "F2-CON")):
         for x, a in long_west + long_east:
-            out.append(item(a, (x, y, 17.6), 0, tag, room, "S long; put z 17.6 keeps preview back-face convention"))
+            xs_, as_, note = x, a, "S long; put z 17.6 keeps preview back-face convention"
+            if y == Y1 and x in (87.75, 95.25):   # r8 Rev 3.7 #4: 6.5 m modules leave the X 90.48..92.51 gap to the axe pair door
+                xs_, as_, note = (87.245 if x == 87.75 else 95.745), "tt_stand_module_6p5", note + "; 6.5 m (Rev 3.7 #4 axe door gap)"
+            out.append(item(as_, (xs_, y, 17.6), 0, tag, room, note))
             out.append(item(a, (x, y, 61.4), 180, tag, room, "N long"))
         for z, a in short_s + short_n:
             out.append(item(a, (32.6, y, z), 90, tag, room, "W short; 6.5 m at lift-gap end"))
