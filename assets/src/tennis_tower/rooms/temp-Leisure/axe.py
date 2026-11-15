@@ -4,7 +4,7 @@ Row 1 X77.15..84 (target wall face X84), row 2 = same assets +17 m (X94.15..101,
 Targets stand on frames at X83.3 / 100.3 to clear the TC-S3 / TC-S4 trunk flare (r 1.0 at grade) in bay 3."""
 from lz_lib import *
 BAY_W = 3.4; X0, XF, XT = 77.2, 83.95, 83.3
-def bay(w=BAY_W, south_trim=False, tree_notch=False):
+def bay(w=BAY_W, south_trim=False, tree_notch=False, rack_dz=0.0, tablet_dz=0.0):
     it = It(); a, b = .3 + .05 + D, .3 + w - .05 - D; zc = (a + b)/2
     # S facade inner ledge Z 0.621; k=0 bay origin at Z 0 so local z >= 0.631
     za = 0.631 if south_trim else a
@@ -51,11 +51,14 @@ def bay(w=BAY_W, south_trim=False, tree_notch=False):
     for k in range(7): it.a('Target_LeafCrown', LF2, wall_leaf((XT - .1, 2.55, zc - .9 + .3*k), (k - 3)*.3, .4, .15, face=-1))
     it.a('Target_Ball', BA, node((XT - .05, 3.1, zc), .09, 1))
     it.a('Target_Ball_Stem', ST, tube((XT - .05, 2.596, zc), (XT - .05, 3.016, zc), .018, 6))
-    rp0 = max(a + .25, za); it.b('Rack_Post', G, 77.35, 77.45, .021, 1.5, rp0, rp0 + .10, col=True)
-    it.b('Rack_Bar', G, 77.45, 77.6, 1.25, 1.35, a + .1, a + .9)
+    # r8b Rev 3.7.1 #3: rack_dz slides the rack along the bay (bay 1142) so the partition-1145 gate keeps >= 1.0 m clear in front
+    rp0 = max(a + .25, za) + rack_dz; it.b('Rack_Post', G, 77.35, 77.45, .021, 1.5, rp0, rp0 + .10, col=True)
+    it.b('Rack_Bar', G, 77.45, 77.6, 1.25, 1.35, a + .1 + rack_dz, a + .9 + rack_dz)
     for k in range(3):
-        z = a + .3 + k*.25; it.a('Axe_Handles', ALY, tube((77.62, .796, z), (77.62, 1.34, z), .018, 6))
+        z = a + .3 + k*.25 + rack_dz; it.a('Axe_Handles', ALY, tube((77.62, .796, z), (77.62, 1.34, z), .018, 6))
         it.b('Axe_Heads', ALY, 77.6, 77.82, .7, .8, z - .012, z + .012)
+    # r8b: tablet_dz slides the score tablet off the partition-1145 gate approach (bay 1141)
+    b0 = b; b = b + tablet_dz
     it.b('Tablet_Post', G, 77.35, 77.45, .021, 1.25, b - .35, b - .25, col=True)
     it.b('Tablet', SL, 77.452, 77.5, 1.05, 1.45, b - .55, b - .05)
     # legible tablet score art (face +X)
@@ -64,7 +67,8 @@ def bay(w=BAY_W, south_trim=False, tree_notch=False):
         yy = 1.14 + i * 0.06
         it.b('Tablet_Rows', CY if i % 2 == 0 else AM, 77.508, 77.514, yy, yy + 0.035, b - .46, b - .14)
     it.b('Tablet_Ticker', AM, 77.508, 77.514, 1.38, 1.395, b - .46, b - .14)
-    nm = 'tt_axe_bay_s' if south_trim else 'tt_axe_bay_tree' if tree_notch else 'tt_axe_bay'
+    b = b0
+    nm = 'tt_axe_bay_s' if south_trim else ('tt_axe_bay_tree_gate' if tablet_dz else 'tt_axe_bay_tree') if tree_notch else 'tt_axe_bay_gate' if rack_dz else 'tt_axe_bay'
     return emit(nm, it, f'one axe bay {w} m wide, throw +X, target face X{XT}; place at Z offsets 3.4k, row 2 +17 m in X')
 
 def partition(gate=None):
@@ -133,11 +137,11 @@ def spectator():
     return emit('tt_axe_spectator', it, 'aisle screen Z13.9; 0.8 m clear to stand Z14.7; 3 gates swing +Z into aisle')
 
 def build(PL):
-    bb = bay(); bbs = bay(south_trim=True); bbt = bay(tree_notch=True)
+    bb = bay(); bbs = bay(south_trim=True); bbt = bay(tree_notch=True); bbg = bay(rack_dz=1.0); bbtg = bay(tree_notch=True, tablet_dz=-1.0)
     pt = partition(); ptg = partition(gate=(77.4, 78.4)); sp = spectator()
     for dx in (0, 17):
         for k in range(4):
-            place(PL, bbs if k == 0 else bbt if k == 2 else bb, dx, 0, BAY_W*k)
+            place(PL, bbs if k == 0 else (bbtg if dx == 0 else bbt) if k == 2 else bbg if (dx == 0 and k == 3) else bb, dx, 0, BAY_W*k)
         for k in range(1, 4): place(PL, ptg if (dx == 0 and k == 3) else pt, dx, 0, .3 + BAY_W*k)
         place(PL, sp, dx, 0, 0)
 if __name__ == '__main__':

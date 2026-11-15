@@ -13905,7 +13905,7 @@
 "asset": "tt_axe_bay"
 },
 {
-"glb": "res://assets/models/tt_axe_bay_tree.glb",
+"glb": "res://assets/models/tt_axe_bay_tree_gate.glb",
 "p": [
 80.601,
 0.0,
@@ -13914,10 +13914,10 @@
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay_tree"
+"asset": "tt_axe_bay_tree_gate"
 },
 {
-"glb": "res://assets/models/tt_axe_bay.glb",
+"glb": "res://assets/models/tt_axe_bay_gate.glb",
 "p": [
 80.601,
 0.0,
@@ -13926,7 +13926,7 @@
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_bay"
+"asset": "tt_axe_bay_gate"
 },
 {
 "glb": "res://assets/models/tt_axe_partition.glb",

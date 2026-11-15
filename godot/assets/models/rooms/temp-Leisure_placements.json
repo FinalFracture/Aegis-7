@@ -166,8 +166,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_bay_tree.glb",
-    "asset": "tt_axe_bay_tree",
+    "glb": "res://assets/models/tt_axe_bay_tree_gate.glb",
+    "asset": "tt_axe_bay_tree_gate",
     "p": [
      80.601,
      0.0,
@@ -177,8 +177,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_bay.glb",
-    "asset": "tt_axe_bay",
+    "glb": "res://assets/models/tt_axe_bay_gate.glb",
+    "asset": "tt_axe_bay_gate",
     "p": [
      80.601,
      0.0,
