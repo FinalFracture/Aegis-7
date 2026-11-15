@@ -285,7 +285,28 @@ def gate_open(q):
     p.add("Gate_Header", ST, box(c0 - .045 + E, c1 + .045 - E, GT - .02, GT + .02, -.05, .05))
     p.add("Gate_Sign_LED", CY, box(c0 + .02, c0 + .3, 2.2, 2.3, -.05 - .004, -.05 + E))
     col(p, "Posts", (c0 - .045, 0, -.06), (c0 - .005, GT + .02, .06)); col(p, "PostsE", (c1 + .005, 0, -.06), (c1 + .045, GT + .02, .06))
+    # r8b Rev 3.7.1 #2: leaves parked open 90 deg into the rink (+Z), perpendicular to the boards, in front of the jamb post
+    # (keeps the full clear width), each on a floor stop and with its own convcolonly
+    for i, (hx, L) in enumerate(q.get("leaves", [])):
+        xc = hx - .05 if hx <= c0 + 1e-6 else hx + .05; z0 = .095
+        emit(p, leaf_seg(L), (RY(-np.pi / 2), (xc, 0, z0)))
+        p.add("Leaf_Floor_Stop", G, box(xc - .04, xc + .04, .008, .068, z0 + L + .01, z0 + L + .07))
+        col(p, f"Leaf{i}", (xc - .045, 0, z0), (xc + .045, GT - .05, z0 + L + .07))
     return p
+
+def leaf_seg(L):
+    """rink gate leaf built along +X from 0..L (thickness +-0.045 in Z): board, pad, alloy frame, frit + scissor glass, hinges."""
+    P = {}; l0, l1 = .01, L - .01
+    def add(k, mat, *ms): P.setdefault(k, [mat, []])[1].extend(ms)
+    add("Gate_Leaf_Board", WH, box(l0, l1, .015, BH, -.045, .045))
+    add("Gate_Leaf_Pad", PAD, box(l0 + .01, l1 - .01, .88, BH - .01, .045 - E, .08), box(l0 + .01, l1 - .01, .88, BH - .01, -.08, -.045 + E))
+    add("Gate_Leaf_Stripe", BA, box(l0 + .01, l1 - .01, .52, .58, .045 - E, .051))
+    add("Gate_Leaf_Frame", ALY, box(l0, l1, BH - E, CAP, -.06, .06), box(l0, l0 + .04, CAP - E, GT - .05, -.025, .025), box(l1 - .04, l1, CAP - E, GT - .05, -.025, .025),
+        box(l0 + .04 - E, l1 - .04 + E, GT - .09, GT - .05, -.025, .025))
+    add("Gate_Leaf_Pane_Frit", SL, *frit(l0 + .042, l1 - .042, CAP + .005, GT - .092))
+    add("Gate_Leaf_Pane_Scissor", SCR, puv(box(l0 + .063, l1 - .063, CAP + .026, GT - .113, -.008, .008)))
+    add("Gate_Hinge_Hardware", G, *[box(-.04, l0 + .03, y - .05, y + .05, .045 - E, .062) for y in (.18, .9, 1.9)])
+    return P
 
 def export_rev37(name, b, prm):
     import shutil
@@ -300,8 +321,8 @@ SETS = {
  "tt_rink_board_2m": (board, [dict(label="Rink board 2.0 m: 1.07 board, pad cap, 1.3 m scissor glass, spectator rail, leaf crest", L=2.0, crest=True), dict(label="Rink board 2.0 m plain", L=2.0)]),
  "tt_rink_board_corner": (corner, [dict(label="Rink corner 90 deg, R 4.0 m board line, 6 chords", R=4.0, n=6, crest=True)]),
  "tt_rink_board_gate": (gate, [dict(label="Rink gate 2.0 m: 1.0 m leaf board+scissor glass, hinges, latch")]),
- "tt_rink_board_gate_open": (gate_open, [dict(label="r8 Rev 3.7 #3 players' gate 2.0 m, 1.2 m clear X -0.6..0.6", L=2.0, c0=-.6, c1=.6)]),
- "tt_rink_board_zamboni": (gate_open, [dict(label="r8 Rev 3.7 #3 Zamboni gate 4.0 m, 3.0 m clear (local -1.65..1.35)", L=4.0, c0=-1.65, c1=1.35)]),
+ "tt_rink_board_gate_open": (gate_open, [dict(label="r8 Rev 3.7 #3 players' gate 2.0 m, 1.2 m clear X -0.6..0.6", L=2.0, c0=-.6, c1=.6, leaves=[(-.6, 1.2)])]),
+ "tt_rink_board_zamboni": (gate_open, [dict(label="r8 Rev 3.7 #3 Zamboni gate 4.0 m, 3.0 m clear (local -1.65..1.35)", L=4.0, c0=-1.65, c1=1.35, leaves=[(-1.65, 1.5), (1.35, 1.5)])]),
  "tt_rink_players_bench": (pbench, [dict(label="Players bench 4.0 m, padded back, bottle shelf", L=4.0), dict(label="Players bench 4.0 m backless", L=4.0, back=False)]),
  "tt_rink_players_bench_slim": (pbench, [dict(label="Slim players bench 4.0 m, depth 0.24 m, >=0.9 m walkway in 1.16 m board-to-pad gap", L=4.0, slim=True)]),
  "tt_climb_rental_desk": (desk, [dict(label="Rental desk 4.5 m module, stone fascia, shoe cubbies", L=4.5), dict(label="Rental desk 4.5 m, accessible 0.86 m bay", L=4.5, acc=(.6, 1.5), seed=3)]),

@@ -772,13 +772,13 @@
    "pos": [
     66.5,
     6.1,
-    52.6175
+    51.9775
    ],
    "yaw_deg": 180,
    "size": [
     1.996,
     2.42,
-    0.405
+    1.685
    ],
    "raw_origin_world": [
     66.5,
@@ -792,7 +792,7 @@
    "footprint_xz": [
     65.502,
     67.498,
-    52.415,
+    51.135,
     52.82
    ]
   },
@@ -1144,13 +1144,13 @@
    "pos": [
     77.5,
     6.1,
-    52.6175
+    51.9775
    ],
    "yaw_deg": 180,
    "size": [
     1.996,
     2.42,
-    0.405
+    1.685
    ],
    "raw_origin_world": [
     77.5,
@@ -1164,7 +1164,7 @@
    "footprint_xz": [
     76.502,
     78.498,
-    52.415,
+    51.135,
     52.82
    ]
   },
@@ -1948,7 +1948,7 @@
    "asset": "tt_rink_board_zamboni",
    "glb": "/workspace/game-project/godot/assets/models/tt_rink_board_zamboni.glb",
    "pos": [
-    102.6175,
+    101.8275,
     6.1,
     36.5
    ],
@@ -1956,7 +1956,7 @@
    "size": [
     3.996,
     2.42,
-    0.405
+    1.985
    ],
    "raw_origin_world": [
     102.5,
@@ -1968,7 +1968,7 @@
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)",
    "footprint_xz": [
-    102.415,
+    100.835,
     102.82,
     34.502,
     38.498
