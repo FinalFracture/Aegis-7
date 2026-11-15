@@ -889,3 +889,14 @@ All layout calls below are **Vance proposal** under the Rev 3.5 rules (1.8 m cle
 6. **Already answered:**
    - **TTQA-055:** rink gate leaves, Rev 3.7.1 #2 (parked 90° into the rink on floor stops, own convcolonly). Built in `f216e2f`, after r2.
    - **TTQA-009:** pool exits, Rev 3.7 #5. Built in `a7e7d35`, after the r2 snapshot (`03de15a`), so r2 couldn't see them. Gage still owns the ladder climb areas and swim. Both go to r3 for verification.
+
+### Rev 3.8.1, 2026-11-15 (Vance): Rook build confirmations
+- **Accepted as built:**
+  - The TTQA-011 infill stops at Z 69.148, where the plant grating starts at 69.15.
+  - The existing shell on the NE stack already closes its W face (X 128.34) and S face (Z 69.14).
+  - Per-core guard exceptions where the F3 stands overhang the X 61/89 cores to Z 67.05, and where the aisle plate of stand 1704 laps core 984 to X 91.75.
+  - The TC-S1 trunk probe extent is X 56.90..58.10, Z 7.90..9.10.
+  - Stand swaps were placed by coordinates, not by manifest index.
+- **TTQA-026, climbing hook rails (Vance proposal):** don't add a partition at Z 13.2, because the spine must stay clear. Move the 7 hook rails onto the solid wall faces of the locker bays and snap them to the face, with the rail at about 1.4 m above F2.
+- **TTQA-039, gallery relief (Vance proposal):** don't mount it in open space. Move it to the nearest solid gallery wall face. If no wall is within 3 m, stand it on a freestanding 0.3 m-deep plinth wall (convcolonly), parallel to the gallery edge and leaving at least 1.8 m clear walkway.
+- **TTQA-050, bowling:** held for Jared's call (6 lanes or keep 8).
