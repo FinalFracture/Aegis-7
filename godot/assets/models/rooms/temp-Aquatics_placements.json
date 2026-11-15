@@ -14,7 +14,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2; E end open Z 0.5..3.8 to the stair alcove"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_b.glb",
@@ -26,7 +26,7 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2; E end open Z 0.5..3.8 to the stair alcove"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_c.glb",
@@ -38,19 +38,19 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2; E end open Z 0.5..3.8 to the stair alcove"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_lap_tank_d.glb",
       "p": [
         25.628,
         0.0,
-        11.0
+        11.1989
       ],
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2"
+      "note": "8 axial 25m lanes; opaque water; floor y=0, deck y=2; E end open Z 0.5..3.8 to the stair alcove"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_diving_tank.glb",
@@ -62,7 +62,55 @@
       "yaw": 0,
       "tag": "finish",
       "room": "F1-POOL",
-      "note": "4.5m depth; floor y=-2.5, water y=1.92"
+      "note": "4.5m depth; floor y=-2.5, water y=1.92 (cut at the in-tank stair top landing)"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_access_lap_a.glb",
+      "p": [
+        15.0,
+        0.031,
+        11.3195
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Rev 3.7 #5 lap E-alcove stair (11 risers to +2.012, rails both sides) + 3 ladders"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_access_lap_b.glb",
+      "p": [
+        28.4495,
+        0.0,
+        9.8875
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Rev 3.7 #5 lap E-alcove stair (11 risers to +2.012, rails both sides) + 3 ladders"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_access_dive_a.glb",
+      "p": [
+        21.2605,
+        -2.469,
+        28.2135
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Rev 3.7 #5 diving-well in-tank stair (13 + landing + 12 risers, top landing exits +X) + 2 ladders at Z 23.0"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_pool_access_dive_b.glb",
+      "p": [
+        28.1065,
+        -2.469,
+        28.1545
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-POOL",
+      "note": "Rev 3.7 #5 diving-well in-tank stair (13 + landing + 12 risers, top landing exits +X) + 2 ladders at Z 23.0"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_a.glb",
@@ -91,7 +139,7 @@
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_pool_deck_finish_c.glb",
       "p": [
-        24.0225,
+        24.0645,
         1.92,
         17.237
       ],
@@ -440,13 +488,13 @@
       "glb": "/workspace/game-project/godot/assets/models/tt_leisure_splash.glb",
       "p": [
         11.0,
-        0.4,
+        0.98,
         56.5
       ],
       "yaw": 0,
       "tag": "finish",
       "room": "F1-LEIS",
-      "note": "Opaque water splash pool; ball-crown sprays"
+      "note": "Rev 3.7 #5 zero-depth splash pad, tile top +1.015; ball-crown sprays, no water"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_leisure_runout.glb",
@@ -459,6 +507,30 @@
       "tag": "finish",
       "room": "F1-LEIS",
       "note": "Opaque water; slide runouts enter axially (-X) from the NE helices"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_river_entries_a.glb",
+      "p": [
+        8.511,
+        0.031,
+        72.2585
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Rev 3.7 #5 lazy-river bank entries (6 x 0.16 / 5 x 0.28, rails) x4 + runout W-end stair onto the island strip"
+    },
+    {
+      "glb": "/workspace/game-project/godot/assets/models/tt_leisure_river_entries_b.glb",
+      "p": [
+        16.5,
+        0.031,
+        61.0
+      ],
+      "yaw": 0,
+      "tag": "finish",
+      "room": "F1-LEIS",
+      "note": "Rev 3.7 #5 lazy-river bank entries (6 x 0.16 / 5 x 0.28, rails) x4 + runout W-end stair onto the island strip"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_leisure_deck.glb",
@@ -488,7 +560,7 @@
       "glb": "/workspace/game-project/godot/assets/models/tt_leisure_splash_sprays.glb",
       "p": [
         11.0,
-        0.435,
+        1.015,
         56.5
       ],
       "yaw": 0,

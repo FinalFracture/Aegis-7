@@ -27,11 +27,12 @@ def f1_slab():
     it += [("Slab_F1", CON, m) for m in (box(x0 - .3, x0 + E, pit - .4, F1, z0 - .3, z1 + .3), box(x1 - E, x1 + .3, pit - .4, F1, z0 - .3, z1 + .3),
                                             box(x0 + E, x1 - E, pit - .4, F1, z0 - .3, z0 + E), box(x0 + E, x1 - E, pit - .4, F1, z1 - E, z1 + .3))]
     # S deck +2.0 (lap / diving). r4 Rev 3.5: the X 4..7 deck stair is replaced by the switchback cut (tt_struct_pool_ramp, Rev 3.6)
-    it += [("Deck_S_+2.0", SSL, m) for m in slab((0, 30, 0, 34.2), [WATER["lap"][:4], WATER["diving"][:4]] + POOL_CUT, 2.0, 2.0 + E)]
+    LAP_ALCOVE = (27.5, 29.6, .5, 3.8)   # r8b Rev 3.7 #5: lap E-alcove stair (temp-Aquatics tt_pool_access_lap)
+    it += [("Deck_S_+2.0", SSL, m) for m in slab((0, 30, 0, 34.2), [WATER["lap"][:4], WATER["diving"][:4], LAP_ALCOVE] + POOL_CUT, 2.0, 2.0 + E)]
     # N deck +1.0 (river channel, splash -0.6, runout -1.0), N-deck access steps from the foyer door Z 45..47
     holes = RIVER + [WATER["splash"][:4], WATER["runout"][:4]]
     it += [("Deck_N_+1.0", SSL, m) for m in slab((0, 30, 44.8, 79), holes + LEIS_CUT, 1.0, 1.0 + E)]   # r4: S-strip ramp cut
-    sx0, sx1, sz0, sz1, sd = WATER["splash"]; it += [("Deck_N_+1.0", SSL, box(sx0, sx1, -E, 1.0 - sd, sz0, sz1))]
+    sx0, sx1, sz0, sz1, sd = WATER["splash"]; it += [("Deck_N_+1.0", SSL, box(sx0, sx1, -E, .98, sz0, sz1))]   # r8b Rev 3.7 #5: zero-depth splash pad, basin floor +0.98
     return it
 
 def f2_slab():

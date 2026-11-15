@@ -30,7 +30,7 @@ for name,entry in layout.items():
                 if room=='leisure' and gn=='RiverStone_Mound': expected=1.012
                 # Rev 3.5 flush footbridges span the channel and bear on the river-lining tops (+0.904), same ±5 mm rule.
                 if room=='leisure' and gn=='RiverBridge_Deck': expected=.904
-                if room=='leisure' and gn=='Spray_Foot': expected=.435
+                if room=='leisure' and gn=='Spray_Foot': expected=1.015   # r8b Rev 3.7 #5 zero-depth pad tile top
                 if expected is not None:
                     delta=float(piece.bounds[0,1]-expected)
                     contacts.append(dict(asset=name,part=gn,delta=round(delta,5),passed=abs(delta)<=.005+1e-6))

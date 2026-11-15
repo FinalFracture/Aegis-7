@@ -1,10 +1,10 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2672,
+"count": 2678,
 "by_owner": {
 "Rook": 1036,
 "Arrival": 42,
-"Aquatics": 66,
+"Aquatics": 72,
 "Leisure": 236,
 "Courts": 352,
 "Active": 536,
@@ -13021,7 +13021,7 @@
 "p": [
 25.628,
 0.0,
-11.0
+11.1989
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13039,6 +13039,54 @@
 "tag": "f1",
 "owner": "Aquatics",
 "asset": "tt_pool_diving_tank"
+},
+{
+"glb": "res://assets/models/tt_pool_access_lap_a.glb",
+"p": [
+15.0,
+0.031,
+11.3195
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_pool_access_lap_a"
+},
+{
+"glb": "res://assets/models/tt_pool_access_lap_b.glb",
+"p": [
+28.4495,
+0.0,
+9.8875
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_pool_access_lap_b"
+},
+{
+"glb": "res://assets/models/tt_pool_access_dive_a.glb",
+"p": [
+21.2605,
+-2.469,
+28.2135
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_pool_access_dive_a"
+},
+{
+"glb": "res://assets/models/tt_pool_access_dive_b.glb",
+"p": [
+28.1065,
+-2.469,
+28.1545
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_pool_access_dive_b"
 },
 {
 "glb": "res://assets/models/tt_pool_deck_finish_a.glb",
@@ -13067,7 +13115,7 @@
 {
 "glb": "res://assets/models/tt_pool_deck_finish_c.glb",
 "p": [
-24.0225,
+24.0645,
 1.92,
 17.237
 ],
@@ -13416,7 +13464,7 @@
 "glb": "res://assets/models/tt_leisure_splash.glb",
 "p": [
 11.0,
-0.4,
+0.98,
 56.5
 ],
 "yaw": 0.0,
@@ -13435,6 +13483,30 @@
 "tag": "f1",
 "owner": "Aquatics",
 "asset": "tt_leisure_runout"
+},
+{
+"glb": "res://assets/models/tt_leisure_river_entries_a.glb",
+"p": [
+8.511,
+0.031,
+72.2585
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_leisure_river_entries_a"
+},
+{
+"glb": "res://assets/models/tt_leisure_river_entries_b.glb",
+"p": [
+16.5,
+0.031,
+61.0
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Aquatics",
+"asset": "tt_leisure_river_entries_b"
 },
 {
 "glb": "res://assets/models/tt_leisure_deck.glb",
@@ -13464,7 +13536,7 @@
 "glb": "res://assets/models/tt_leisure_splash_sprays.glb",
 "p": [
 11.0,
-0.435,
+1.015,
 56.5
 ],
 "yaw": 0.0,

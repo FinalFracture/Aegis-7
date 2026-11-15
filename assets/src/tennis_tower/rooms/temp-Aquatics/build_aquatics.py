@@ -11,6 +11,7 @@ import modlib as ml
 import corridor_access as ca
 import slides as sl
 import bridges_finish as bf
+import pool_access as PA   # r8b Rook Rev 3.7 #5 / 3.7.1 pool walk-outs
 OUT=Path('/workspace/renders/tennis_tower/rooms/temp-Aquatics'); OUT.mkdir(parents=True,exist_ok=True)
 ml._m('aq_tile','TT_PoolCeramic',(.64,.75,.78),0,.45)
 ml._m('aq_water','TT_OpaquePoolWater',(.025,.31,.37),0,.19)
@@ -85,24 +86,24 @@ def carve(it,holes,ymin=.596):
         for a,b,c,d in rect_minus((lo[0],hi[0],lo[2],hi[2]),hit):
             if min(b-a,d-c)>=.02: out.append((n,m,box(a,b,lo[1],hi[1],c,d)))
     it[:]=out
-def rim(it,r,y):
-    a,b,c,d=r
+def rim(it,r,y,e_from=None):
+    a,b,c,d=r; ce=c if e_from is None else e_from   # r8b: lap E end starts at the alcove (Z 3.8)
     for z in (c-.09,d+.09):
         B(it,'Gutter_DarkSlot',G,a-.184,b+.184,y-E+.002,y+.008,z-.06,z+.06)  # ends embed 4 mm in the deck-hole edge (no flush end caps)
         for x in np.arange(a,b,.27): B(it,'Gutter_Grate',ST,x,x+.11,y+.004,y+.016,z-.064,z+.064)
-    for x in (a-.09,b+.09):
-        B(it,'Gutter_DarkSlot',G,x-.06,x+.06,y-E+.002,y+.008,c,d)
-        for z in np.arange(c+.1,d-.1,.27): B(it,'Gutter_Grate',ST,x-.064,x+.064,y+.004,y+.016,z,min(z+.11,d-.004))  # last grate stops short of the slot end
+    for x,c0 in ((a-.09,c),(b+.09,ce)):
+        B(it,'Gutter_DarkSlot',G,x-.06,x+.06,y-E+.002,y+.008,c0,d)
+        for z in np.arange(c0+.1,d-.1,.27): B(it,'Gutter_Grate',ST,x-.064,x+.064,y+.004,y+.016,z,min(z+.11,d-.004))  # last grate stops short of the slot end
     B(it,'Coping',WH,a,a+.06,y-.08,y+.016,c,d)
-    B(it,'Coping',WH,b-.06,b,y-.08,y+.016,c,d)
+    B(it,'Coping',WH,b-.06,b,y-.08,y+.016,ce,d)
     B(it,'Coping',WH,a+.064,b-.064,y-.08,y+.016,c,c+.06)
     B(it,'Coping',WH,a+.064,b-.064,y-.08,y+.016,d-.06,d)
-def tank(it,r,y,depth,lanes=False):
+def tank(it,r,y,depth,lanes=False,e_from=None,water_holes=()):
     a,b,c,d=r; bot=y-depth
     B(it,'Tank_Floor',TI,a+.064,b-.064,bot,bot+.035,c+.064,d-.064)
-    for x in (a+.03,b-.03): B(it,'Tank_Ends',TI,x-.026,x+.026,bot,bot+depth-.09,c+.064,d-.064)
+    for x in (a+.03,b-.03): B(it,'Tank_Ends',TI,x-.026,x+.026,bot,bot+depth-.09,(e_from if (e_from and x>a+1) else c+.064),d-.064)   # r8b lap E-alcove opening
     for z in (c+.03,d-.03): B(it,'Tank_Sides',TI,a+.004,b-.004,bot,bot+depth-.09,z-.026,z+.026)
-    B(it,'Water_Opaque',WA,a+.064,b-.064,y-.085,y-.08,c+.064,d-.064)
+    for x0,x1,z0,z1 in rect_minus((a+.064,b-.064,c+.064,d-.064),list(water_holes)): B(it,'Water_Opaque',WA,x0,x1,y-.085,y-.08,z0,z1)
     if lanes:
         for k in range(8):
             z=c+.5+1.25+2.5*k
@@ -118,12 +119,14 @@ def tank(it,r,y,depth,lanes=False):
                 B(it,'Water_Ripple',CY,x,x+.32,y-.077,y-.072,z,z+.014)
 def pool():
     lap=(2.5,27.5,.5,21.5); dive=(15,28,22,34)
-    it=[]; tank(it,lap,2,2,True); emit('tt_pool_lap_tank',it,'8 axial 25m lanes; opaque water; floor y=0, deck y=2')
-    it=[]; tank(it,dive,2,4.5); emit('tt_pool_diving_tank',it,'4.5m depth; floor y=-2.5, water y=1.92')
+    it=[]; tank(it,lap,2,2,True,e_from=3.8); emit('tt_pool_lap_tank',it,'8 axial 25m lanes; opaque water; floor y=0, deck y=2; E end open Z 0.5..3.8 to the stair alcove')
+    it=[]; tank(it,dive,2,4.5,water_holes=[(26.6,27.94,24.56,26.06)]); emit('tt_pool_diving_tank',it,'4.5m depth; floor y=-2.5, water y=1.92 (cut at the in-tank stair top landing)')
+    emit('tt_pool_access_lap',PA.lap_access(),'Rev 3.7 #5 lap E-alcove stair (11 risers to +2.012, rails both sides) + 3 ladders')
+    emit('tt_pool_access_dive',PA.dive_access(),'Rev 3.7 #5 diving-well in-tank stair (13 + landing + 12 risers, top landing exits +X) + 2 ladders at Z 23.0')
     # Rev 3.6 switchback (along X, north of the 3 m board): cut X1.0..10.0 @ Z26..32 + passage X8.5..10 @ Z32..34.5.
     # The top landing exits +X along Z 26..27.5 onto finished deck (X 10..14.82).
-    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(1.0,10.0,26.0,32.0),(8.5,10.0,32.0,34.5)]
-    finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2); rim(it,dive,2); carve(it,FIN_S)
+    it=[]; holes=[(2.32,27.68,.32,21.68),(14.82,28.18,21.82,34.18),(1.0,10.0,26.0,32.0),(8.5,10.0,32.0,34.5),(27.68,29.6,.5,3.8)]   # r8b + lap stair alcove
+    finish(it,(.32,29.68,.32,34.2),holes,2); rim(it,lap,2,e_from=3.8); rim(it,dive,2); carve(it,FIN_S)
     emit('tt_pool_deck_finish',it,'finish on existing +2 deck; Rev 3.6 switchback cut X1..10/Z26..32 + passage X8.5..10/Z32..34.5 left open')
     it=[]
     for k in range(8):
@@ -317,13 +320,12 @@ def leisure():
         B(it,'River_Lining',TI,a,b,.039,.904,c,d)   # top +0.904: the flush footbridges bear 4 mm onto the channel-wall linings
     emit('tt_leisure_river',it,'Open continuous 3m rectangular river, surface +0.85 (0.85 m deep); no corner dams')
     for name,r,dep in (('splash',(5,17,51,62),.6),('runout',(5,23,64,71),1)):
-        it=[]; tank(it,r,1,dep)
-        if name=='splash':
-            it=[i for i in it if i[0]!='Water_Opaque']
-            holes=[(x-.05,x+.05,z-.05,z+.05) for x,z in ((7,53),(15,54),(8,59),(15,60))]
-            a,b,c,d=r
-            for x0,x1,z0,z1 in rect_minus((a+.064,b-.064,c+.064,d-.064),holes): B(it,'Water_Opaque',WA,x0,x1,.915,.92,z0,z1)
-        emit('tt_leisure_'+name,it,('Opaque water; slide runouts enter axially (-X) from the NE helices' if name=='runout' else 'Opaque water splash pool; ball-crown sprays'))
+        it=[]
+        if name=='splash':   # r8b Rev 3.7 #5: zero-depth splash pad - basin floor +0.98 (tile top +1.015, flush with the +1.012 deck finish), no water
+            B(it,'Tank_Floor',TI,5.004,16.996,.98,1.015,51.004,61.996)
+        else: tank(it,r,1,dep)
+        emit('tt_leisure_'+name,it,('Opaque water; slide runouts enter axially (-X) from the NE helices' if name=='runout' else 'Rev 3.7 #5 zero-depth splash pad, tile top +1.015; ball-crown sprays, no water'))
+    emit('tt_leisure_river_entries',PA.river_access(),'Rev 3.7 #5 lazy-river bank entries (6 x 0.16 / 5 x 0.28, rails) x4 + runout W-end stair onto the island strip')
     it=[]
     holes=[(1,29,47,75)]
     # Rev 3.5 S-strip ramp (Rook): landing X0.3..1.8 @ Z44.8..47.0, legs X0.3..15.3 @ Z44.8..46.3.
@@ -347,12 +349,13 @@ def leisure():
                 B(it,'RiverBridge_Pane_Scissor',SCR,x-.008,x+.008,1.142,2.042,a+.016,b-.016)
     emit('tt_leisure_footbridges',it,'Rev 3.5 flush island footbridges (N X8..10, S X18..20): top +1.012 = deck finish, underside +0.9 over +0.85 water; 1.1 m scissor guards')
     it=[]
+    SP=.58   # r8b Rev 3.7 #5: sprays raised with the zero-depth pad
     for x,z in ((7,53),(15,54),(8,59),(15,60)):
-        B(it,'Spray_Foot',G,x-.18,x+.18,.435,.48,z-.18,z+.18)
-        add(it,'Spray_Stem',ST,tube((x,.476,z),(x,1.894,z),.045,8))
-        add(it,'Spray_Crown',BA,node((x,2.01,z),.12,1))
+        B(it,'Spray_Foot',G,x-.18,x+.18,.435+SP,.48+SP,z-.18,z+.18)
+        add(it,'Spray_Stem',ST,tube((x,.476+SP,z),(x,1.894+SP,z),.045,8))
+        add(it,'Spray_Crown',BA,node((x,2.01+SP,z),.12,1))
         for dx,dz in ((.4,0),(-.4,0),(0,.4),(0,-.4)):
-            add(it,'Spray_OpaqueStream',CY,tube((x+dx*.28,1.96,z+dz*.28),(x+dx,1.5,z+dz),.012,5))
+            add(it,'Spray_OpaqueStream',CY,tube((x+dx*.28,1.96+SP,z+dz*.28),(x+dx,1.5+SP,z+dz),.012,5))
     emit('tt_leisure_splash_sprays',it,'Sports ball spray crowns; stylized opaque streams, no alpha blending')
     it=[]
     for x,z in ((5,77),(17,77),(24,76.6)):
