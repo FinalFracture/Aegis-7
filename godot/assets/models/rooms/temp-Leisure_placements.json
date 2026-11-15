@@ -210,8 +210,8 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_axe_partition.glb",
-    "asset": "tt_axe_partition",
+    "glb": "res://assets/models/tt_axe_partition_gate.glb",
+    "asset": "tt_axe_partition_gate",
     "p": [
      80.575,
      0.0,
@@ -226,7 +226,7 @@
     "p": [
      80.575,
      -0.0015,
-     14.3
+     14.265
     ],
     "yaw": 0,
     "tag": "f1"
@@ -314,7 +314,7 @@
     "p": [
      97.575,
      -0.0015,
-     14.3
+     14.265
     ],
     "yaw": 0,
     "tag": "f1"

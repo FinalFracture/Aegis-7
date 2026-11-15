@@ -9,7 +9,8 @@ def bay(w=BAY_W, south_trim=False, tree_notch=False):
     # S facade inner ledge Z 0.621; k=0 bay origin at Z 0 so local z >= 0.631
     za = 0.631 if south_trim else a
     it.b('Floor_Mat', RU, X0, XF, 0, .025, za, b, col=True)
-    for x in (XT - 3.66, XT - 4.88): it.b('Throw_Lines', AM, x, x + .05, .021, .03, max(a + .1, za), b - .1)
+    # TTQA-047 (Rook 2026-11-15): WATL distances from the target board face (XT - 0.1) to the target-side edge of each line
+    for d in (3.66, 4.57): x = XT - .1 - d; it.b('Throw_Lines', AM, x - .05, x, .021, .03, max(a + .1, za), b - .1)
     z_in_s = max(a + .06, za)
     for z in (z_in_s, b - .09): it.b('Court_Inlay', BA, X0 + .1, XF - .1, .021, .029, z, z + .03)
     # optional notch around TC-S3/S4 Trunk_Clad (r=0.6 + 12 mm) in bay k=2 (origin Z 6.8 -> local 1.088..2.312)
@@ -66,20 +67,37 @@ def bay(w=BAY_W, south_trim=False, tree_notch=False):
     nm = 'tt_axe_bay_s' if south_trim else 'tt_axe_bay_tree' if tree_notch else 'tt_axe_bay'
     return emit(nm, it, f'one axe bay {w} m wide, throw +X, target face X{XT}; place at Z offsets 3.4k, row 2 +17 m in X')
 
-def partition():
+def partition(gate=None):
+    """gate=(xa, xb): Rev 3.7 #4 1.0 m walk-through gap (bay 1142 entry, partition 1145 at X 77.4..78.4); sill, acoustic panel and
+    lower vine stop at the gap, a 0.06 m post stands at each side, net + rails above 2.4 m stay."""
     it = It(); z0, z1 = -.05, .05
-    it.b('Part_Sill', G, X0, XF, 0, .08, z0, z1, col=True)
+    sills = [(X0, XF)] if gate is None else [(X0, gate[0] - .06), (gate[1] + .06, XF)]
+    for u, v in sills:
+        if v - u > .04: it.b('Part_Sill', G, u, v, 0, .08, z0, z1, col=True)
     xs = np.linspace(X0 + .03, XF - .03, 5)
+    gp = [] if gate is None else [gate[0] - .03, gate[1] + .03]
     for x in xs: it.b('Part_Posts', G, x - .03, x + .03, .076, 3.4, z0, z1)
+    for x in gp: it.b('Part_Posts', G, x - .03, x + .03, 0, 2.4, z0, z1, col=True)   # tops 4 mm into the mid rail, net stays above
     for xa, xb in zip(xs[:-1], xs[1:]):
-        it.b('Part_Acoustic', FA, xa + .032, xb - .032, .084, 2.4, z0 + .01, z1 - .01, col=True)
+        if gate is not None and xa < gate[1] + .06 and xb > gate[0] - .06:
+            for u, v in ((xa + .032, gate[0] - .062), (gate[1] + .062, xb - .032)):
+                if v - u > .05: it.b('Part_Acoustic', FA, u, v, .084, 2.4, z0 + .01, z1 - .01, col=True)
+        else:
+            it.b('Part_Acoustic', FA, xa + .032, xb - .032, .084, 2.4, z0 + .01, z1 - .01, col=True)
         it.b('Part_Net_Scissor', NET, xa + .032, xb - .032, 2.44, 3.36, -.008, .008)
-        for za, zb in ((z0 + .006, z0 + .014), (z1 - .014, z1 - .006)): it.b('Part_Reveal', CY, xa + .05, xb - .05, 1.2, 1.23, za, zb)
+        rv = [(xa + .05, xb - .05)]
+        if gate is not None and xa < gate[1] + .06 and xb > gate[0] - .06: rv = [(xa + .05, gate[0] - .07), (gate[1] + .07, xb - .05)]
+        for u, v in rv:
+            if v - u < .05: continue
+            for za, zb in ((z0 + .006, z0 + .014), (z1 - .014, z1 - .006)): it.b('Part_Reveal', CY, u, v, 1.2, 1.23, za, zb)
         it.b('Part_MidRail', ST, xa + .034, xb - .034, 2.396, 2.444, z0 - .005, z1 + .005)
     it.b('Part_TopRail', ST, X0, XF, 3.396, 3.46, z0 - .01, z1 + .01)
     for x in xs[1:-1]:
+        if gate is not None and gate[0] - .2 < x < gate[1] + .2: continue
         st, lv = vine([(x, .1, z1 + .06), (x + .02, 1.2, z1 + .06), (x - .02, 2.3, z1 + .06)], seed=int(x*10), outward=True)
         it.a('Vine_Stems', LF, st); it.a('Vine_Leaves', LF2, lv)
+    if gate is not None:
+        return emit('tt_axe_partition_gate', it, 'bay partition with 1.0 m gate X %.2f..%.2f (Rev 3.7 #4, partition 1145)' % gate)
     return emit('tt_axe_partition', it, 'bay partition 0.1 m (acoustic lined, net above 2.4); place at Z 3.7/7.1/10.5')
 
 def spectator():
@@ -106,7 +124,8 @@ def spectator():
         it.b('Gate_Jamb', G, g0 - .04, g0 - .01, .056, 1.2, z - .04, z + .04, col=True)
         it.b('Gate_Jamb', G, g1 + .01, g1 + .04, .056, 1.2, z - .04, z + .04, col=True)
         # leaf parked OPEN into aisle (+Z), clear of posts (>=30 mm)
-        it.b('Gate_Leaf', WH, g0 + 0.05, g1 - 0.05, .1, 1.1, z + 0.06, z + 0.85, col=True)
+        # Rev 3.7 #4: leaf stops at Z 14.68 (was 14.75, 0.05 m into the Z 14.7 wall)
+        it.b('Gate_Leaf', WH, g0 + 0.05, g1 - 0.05, .1, 1.1, z + 0.06, z + 0.78, col=True)
         it.a('Gate_Balls', BA, node(((g0 + g1) / 2, 1.18, z + 0.45), .055, 1))
     for k, x in enumerate(np.arange(78.55, 83.4, 1.15)):
         if any(g0 - 0.15 < x < g1 + 0.15 for g0, g1 in gaps): continue
@@ -115,11 +134,11 @@ def spectator():
 
 def build(PL):
     bb = bay(); bbs = bay(south_trim=True); bbt = bay(tree_notch=True)
-    pt = partition(); sp = spectator()
+    pt = partition(); ptg = partition(gate=(77.4, 78.4)); sp = spectator()
     for dx in (0, 17):
         for k in range(4):
             place(PL, bbs if k == 0 else bbt if k == 2 else bb, dx, 0, BAY_W*k)
-        for k in range(1, 4): place(PL, pt, dx, 0, .3 + BAY_W*k)
+        for k in range(1, 4): place(PL, ptg if (dx == 0 and k == 3) else pt, dx, 0, .3 + BAY_W*k)
         place(PL, sp, dx, 0, 0)
 if __name__ == '__main__':
     PL = []; build(PL)

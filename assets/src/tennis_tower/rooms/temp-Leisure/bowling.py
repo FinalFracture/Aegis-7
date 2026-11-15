@@ -1,15 +1,20 @@
 """F1-BOWL (X 30..57, Z 0.25..14.65). Rev 3.2 s5: 4 lane pairs x 3.6 m, settees X30..32.4, approach X32.4..37,
 head pin X54, pin deck X54..57 (masking only; pinsetter machinery is in the SE plant stack, not ours).
+Rook TTQA-030 (2026-11-15): regulation 60 ft foul line -> head pin: head pin X 37.0 + 18.288 = 55.288, pit edge at
+foul + 19.157 = 56.157 (lane surface / gutters end there); capping, kickbacks and masking move east with it.
+TTQA-019: pit curtain, masking unit and acoustic panels get colliders.
 50 mm clear of stand face Z14.7. Rev 3.0 #4: 50 mm panels on ST+S1 W face X57 (Z2.6..13.2) + stubs."""
 from lz_lib import *
 LZ = [(.14, .38, 'G'), (.38, 1.446, 'L'), (1.446, 1.686, 'G'), (1.686, 1.914, 'C'), (1.914, 2.154, 'G'), (2.154, 3.22, 'L'), (3.22, 3.46, 'G')]
+FOUL = 37.0; HP = FOUL + 18.288; PIT = FOUL + 19.157      # TTQA-030 regulation (60 ft / 62 ft 10 3/16 in)
+CAP1 = HP - .34; MS = HP - .35 - 54.3     # capping ends / kickbacks start 0.34 m before the head pin; masking front 0.35 m before it
 def lane_pair():
     it = It(); x0, x1 = 32.4, 56.9
     it.b('Lane_Bed', G, x0, x1, 0, .03, 0, 3.6, col=True)
     for a, b, k in LZ:
         if k == 'L':
             it.b('Lane_Approach', LN, x0 + D, 36.98, .026, .058, a + D, b - D)
-            it.b('Lane_Surface', LN, 37.02, 56.2, .026, .06, a + D, b - D)
+            it.b('Lane_Surface', LN, 37.02, PIT, .026, .06, a + D, b - D)
             it.b('Foul_Line', AM, 36.982, 37.018, .026, .05, a + .01, b - .01)
             for j in range(7):  # target arrows
                 zz = a + .13 + j*(b - a - .26)/6; xa = 41.2 + abs(j - 3)*.3
@@ -20,30 +25,30 @@ def lane_pair():
             zc = (a + b)/2; s = .3048
             for r in range(4):
                 for q in range(r + 1):
-                    it.a('Pins', WH, pin((54.0 + r*s*.866, .058, zc + (q - r/2)*s)))
+                    it.a('Pins', WH, pin((HP + r*s*.866, .058, zc + (q - r/2)*s)))
         elif k == 'G':
-            it.b('Gutters', SL, 37.02, 56.2, .026, .04, a + D, b - D)
+            it.b('Gutters', SL, 37.02, PIT, .026, .04, a + D, b - D)
             it.b('Gutters', SL, x0 + D, 36.98, .026, .052, a + D, b - D)
         else:
-            it.b('Capping', ST, 37.3, 54.55, .026, .12, a + D, b - D)
-            it.b('Capping_Reveal', CY, 37.3, 54.55, .116, .124, a + .08, b - .08)
+            it.b('Capping', ST, 37.3, CAP1, .026, .12, a + D, b - D)
+            it.b('Capping_Reveal', CY, 37.3, CAP1, .116, .124, a + .08, b - .08)
             it.b('Approach_Divider', SL, x0 + D, 36.98, .026, .054, a + D, b - D)
-    for a, b in ((0, .14), (3.46, 3.6)): it.b('Capping', ST, 37.3, 54.55, .026, .14, a + D, b - D); it.b('Approach_Edge', SL, x0 + D, 36.98, .026, .054, a + D, b - D)
+    for a, b in ((0, .14), (3.46, 3.6)): it.b('Capping', ST, 37.3, CAP1, .026, .14, a + D, b - D); it.b('Approach_Edge', SL, x0 + D, 36.98, .026, .054, a + D, b - D)
     # pin deck kickbacks + pit curtain (masking side only)
     for z in (.02, 1.75, 3.5):
         # east end stops 10 mm west of TC-S2 Pedestal_Concrete (x 56.5..58.5)
-        it.b('Kickbacks', G, 54.6, 56.49, .026, 1.1, z, z + .08, col=True)
-        it.b('Kickback_LED', AM, 54.62, 56.47, 1.096, 1.11, z + .01, z + .07)
-    it.b('Pit_Curtain', FA, 56.62, 56.85, .026, 1.2, .1, 3.5)
+        it.b('Kickbacks', G, CAP1 + .05, 56.49, .026, 1.1, z, z + .08, col=True)
+        it.b('Kickback_LED', AM, CAP1 + .07, 56.47, 1.096, 1.11, z + .01, z + .07)
+    it.b('Pit_Curtain', FA, 56.62, 56.85, .026, 1.2, .1, 3.5, col=True)
     # masking unit: sculpted panel with leaf crests + ball medallions
-    it.b('Masking_Frame', G, 54.3, 54.5, 1.35, 2.55, .02, 3.58)
-    it.b('Masking_Face', SL, 54.25, 54.304, 1.4, 2.5, .07, 3.53)
-    it.b('Masking_Reveal', CY, 54.246, 54.256, 1.43, 1.46, .1, 3.5)
+    it.b('Masking_Frame', G, 54.3 + MS, 54.5 + MS, 1.35, 2.55, .02, 3.58, col=True)
+    it.b('Masking_Face', SL, 54.25 + MS, 54.304 + MS, 1.4, 2.5, .07, 3.53)
+    it.b('Masking_Reveal', CY, 54.246 + MS, 54.256 + MS, 1.43, 1.46, .1, 3.5)
     for zc in (.9, 2.7):
-        it.a('Masking_Ball', BA, cap((54.232, 2.05, zc), .22, .03, 16, 'x'))
-        it.a('Masking_Seam', WH, cap((54.214, 2.05, zc), .03, .01, 8, 'x'))
-        for k in range(6): it.a('Masking_LeafCrest', LF2, wall_leaf((54.25, 1.55, zc - .5 + .2*k), (k - 2.5)*.25, .5, .16, face=-1))
-    for z in (.3, 3.3): it.a('Masking_Hangers', ST, tube((54.4, 2.546, z), (54.4, 5.71, z), .025, 6))
+        it.a('Masking_Ball', BA, cap((54.232 + MS, 2.05, zc), .22, .03, 16, 'x'))
+        it.a('Masking_Seam', WH, cap((54.214 + MS, 2.05, zc), .03, .01, 8, 'x'))
+        for k in range(6): it.a('Masking_LeafCrest', LF2, wall_leaf((54.25 + MS, 1.55, zc - .5 + .2*k), (k - 2.5)*.25, .5, .16, face=-1))
+    for z in (.3, 3.3): it.a('Masking_Hangers', ST, tube((54.4 + MS, 2.546, z), (54.4 + MS, 5.71, z), .025, 6))
     # ball return between the pair (on the approach)
     it.b('Return_Plinth', G, 33.0, 35.6, .05, .16, 1.62, 1.98, col=True)
     hood = rrect(.7, .36, .12, 4)
@@ -115,7 +120,7 @@ def acoustic():
         for y in np.arange(.15, 5.5, 1.35):
             cut = PED if y < 0.62 else TRUNK
             for u, v in segs(z + .01, z1 - .01, cut):
-                it.b('Acoustic_Panels', FA, 56.95, 57.002, y + .01, y + 1.34, u, v)
+                it.b('Acoustic_Panels', FA, 56.95, 57.002, y + .01, y + 1.34, u, v, col=True)
         for u, v in segs(z + .1, z1 - .1, TRUNK):
             it.b('Panel_Reveal', CY, 56.946, 56.95 + D, 2.9, 2.94, u, v)
     for k, z in enumerate(np.arange(1.0, 14.5, 1.8)):

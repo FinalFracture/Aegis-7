@@ -13785,7 +13785,7 @@
 "asset": "tt_axe_partition"
 },
 {
-"glb": "res://assets/models/tt_axe_partition.glb",
+"glb": "res://assets/models/tt_axe_partition_gate.glb",
 "p": [
 80.575,
 0.0,
@@ -13794,14 +13794,14 @@
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Leisure",
-"asset": "tt_axe_partition"
+"asset": "tt_axe_partition_gate"
 },
 {
 "glb": "res://assets/models/tt_axe_spectator.glb",
 "p": [
 80.575,
 -0.0015,
-14.3
+14.265
 ],
 "yaw": 0.0,
 "tag": "f1",
@@ -13897,7 +13897,7 @@
 "p": [
 97.575,
 -0.0015,
-14.3
+14.265
 ],
 "yaw": 0.0,
 "tag": "f1",

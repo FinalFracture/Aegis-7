@@ -264,7 +264,7 @@ def layout(floor):
     if floor == 1:
         # ST-ARS F1 N door approach X 134.48..136.62, Z 20.61..22.1: keep 0.05 m clear
         _shift = {21.3: 26.8, 22.4: 27.9}
-        out = [(a, x, _shift[z] if a == 'tt_arc_video' and abs(x - 135.0) < 0.02 and z in _shift else z, yaw) for a, x, z, yaw in out]
+        out = [(a, x, _shift[round(z, 3)] if a == 'tt_arc_video' and abs(x - 135.0) < 0.02 and round(z, 3) in _shift else z, yaw) for a, x, z, yaw in out]
         # S facade inner ledge Z>=0.621: cab extends 0.36 m along yaw-X; nudge the Z0.8 video to Z1.00 (still 0.18 m clear of Z1.9)
         out = [(a, x, 1.00 if a == 'tt_arc_video' and abs(z - .8) < .02 else z, yaw) for a, x, z, yaw in out]
     if floor == 1: out.append(('tt_arc_prize_counter', 122.5, 61.15, 0))

@@ -23,6 +23,10 @@ def main():
         s = p.stdout.strip().splitlines(); fp[r['asset']] = dict(exit=p.returncode, summary=[l for l in s if 'FAIL' in l or 'WARN' in l or 'SUMMARY' in l.upper()][-12:])
         r['first_pass_exit'] = p.returncode
     json.dump(REP, open(OUT / 'model_report.json', 'w'), indent=1, default=str); json.dump(fp, open(OUT / 'first_pass.json', 'w'), indent=1)
+    # Rook TTQA: re-apply the post-export '-colonly' colliders (assets/src/tennis_tower/qa_colliders.py) to the GLBs just written
+    import qa_colliders as QC
+    for r in REP:
+        if r['asset'] in QC.SPEC: print('qa_colliders', r['asset'], QC.add_colliders(str(GM / f"{r['asset']}.glb"), QC.SPEC[r['asset']], drop_nodes=QC.DROP.get(r['asset'], ())))
     for r in REP: print(f"{r['asset']:32s} {r['tris']:5d} clip+val={r['passed']} reval={r['validate_recheck']} fp_exit={r['first_pass_exit']}")
     print(json.dumps(stats)); print('placements', len(PL), pp)
 if __name__ == '__main__': main()
