@@ -23761,7 +23761,7 @@
 "p": [
 32.5,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23771,9 +23771,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-36.5,
+35.5,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23783,9 +23783,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-40.5,
+38.3,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23795,9 +23795,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-44.5,
+43.5,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23807,9 +23807,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-48.5,
+47.0,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23819,9 +23819,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-52.5,
+50.5,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",
@@ -23831,9 +23831,9 @@
 {
 "glb": "res://assets/models/tt_climb_hook_rail.glb",
 "p": [
-55.5,
+54.5,
 7.51,
-12.9
+10.3735
 ],
 "yaw": 180.0,
 "tag": "f2",

@@ -7144,7 +7144,7 @@
    "pos": [
     32.5,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7155,10 +7155,10 @@
    "raw_origin_world": [
     32.5,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7167,9 +7167,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    36.5,
+    35.5,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7178,12 +7178,12 @@
     0.1
    ],
    "raw_origin_world": [
-    36.5,
+    35.5,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7192,9 +7192,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    40.5,
+    38.3,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7203,12 +7203,12 @@
     0.1
    ],
    "raw_origin_world": [
-    40.5,
+    38.3,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7217,9 +7217,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    44.5,
+    43.5,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7228,12 +7228,12 @@
     0.1
    ],
    "raw_origin_world": [
-    44.5,
+    43.5,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7242,9 +7242,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    48.5,
+    47.0,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7253,12 +7253,12 @@
     0.1
    ],
    "raw_origin_world": [
-    48.5,
+    47.0,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7267,9 +7267,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    52.5,
+    50.5,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7278,12 +7278,12 @@
     0.1
    ],
    "raw_origin_world": [
-    52.5,
+    50.5,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },
@@ -7292,9 +7292,9 @@
    "asset": "tt_climb_hook_rail",
    "glb": "/workspace/game-project/godot/assets/models/tt_climb_hook_rail.glb",
    "pos": [
-    55.5,
+    54.5,
     7.51,
-    12.9
+    10.3735
    ],
    "yaw_deg": 180,
    "size": [
@@ -7303,12 +7303,12 @@
     0.1
    ],
    "raw_origin_world": [
-    55.5,
+    54.5,
     6.1,
-    12.95
+    10.4235
    ],
-   "src": "r6 changing room X30..57 Z10.5..13.2",
-   "note": "yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2",
+   "src": "r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face",
+   "note": "yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)",
    "placement_status": "proposed",
    "asset_qa": "pass (clip/validate/first_pass)"
   },

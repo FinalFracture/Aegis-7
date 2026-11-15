@@ -206,8 +206,10 @@ for x in (31.0, 32.3, 33.6, 34.9, 36.2, 37.5, 38.8, 42.7, 44.0, 45.3, 46.6, 47.9
     put("F2-CLIMB", "tt_climb_locker_bay", x, 10.70, 0, src="r6 changing room X30..57 Z10.5..13.2", note="front +Z; stop before ST+S1 X57; lockers Z<=13.0; door clear X40..42 skipped")
 for x in (33, 36, 39, 42, 45, 48, 51, 54):
     put("F2-CLIMB", "tt_climb_change_bench", x, 11.8, 0, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 0")
-for x in (32.5, 36.5, 40.5, 44.5, 48.5, 52.5, 55.5):
-    put("F2-CLIMB", "tt_climb_hook_rail", x, 12.95, 180, src="r6 changing room X30..57 Z10.5..13.2", note="yaw 180 hooks toward -Z; rail depth 0.1 so Z footprint <13.2")
+# TTQA-026 / Rev 3.8.1: no Z 13.2 partition (spine stays clear), so the 7 rails go on the solid back face of the locker-bay runs
+# (Z 10.4245, facing -Z; runs X 30.4..39.4 and 42.1..56.3, door gap X 39.4..42.1 kept clear); rail back 1 mm off the face, rail 1.41 m above F2
+for x in (32.5, 35.5, 38.3, 43.5, 47.0, 50.5, 54.5):
+    put("F2-CLIMB", "tt_climb_hook_rail", x, 10.4235, 180, src="r6 changing room + Rev 3.8.1 TTQA-026 locker-bay back face", note="yaw 180 hooks toward -Z; back on the locker face Z 10.4245 (1 mm gap)")
 # r9: first tile at z=1 entered the S facade inner ledge at Z 0.621; shift the 2 m grid +0.631 m (same as the training-wall mats).
 for z in (1.631, 3.631, 5.631, 7.631):
     put("F2-CLIMB", "tt_climb_mat_300", 112.0, z, 0, src="Rev 3.1: X113 wall 15 m (mat zone not dimensioned; 2 m assumed); r9 S facade ledge Z 0.621", note="r9 shifted +0.631; foot z0>=0.631")
