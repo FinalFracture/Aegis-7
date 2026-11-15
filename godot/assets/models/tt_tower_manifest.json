@@ -529,18 +529,6 @@
 "p": [
 15.0,
 9.68,
-12.5
-],
-"yaw": 0,
-"tag": "f2",
-"owner": "Rook",
-"asset": "tt_struct_aquatic_truss"
-},
-{
-"glb": "res://assets/models/tt_struct_aquatic_truss.glb",
-"p": [
-15.0,
-9.68,
 21.5
 ],
 "yaw": 0,
@@ -554,18 +542,6 @@
 15.0,
 9.68,
 30.5
-],
-"yaw": 0,
-"tag": "f2",
-"owner": "Rook",
-"asset": "tt_struct_aquatic_truss"
-},
-{
-"glb": "res://assets/models/tt_struct_aquatic_truss.glb",
-"p": [
-15.0,
-9.68,
-39.5
 ],
 "yaw": 0,
 "tag": "f2",
@@ -601,7 +577,7 @@
 "p": [
 15.0,
 9.68,
-66.5
+75.5
 ],
 "yaw": 0,
 "tag": "f2",
@@ -609,16 +585,40 @@
 "asset": "tt_struct_aquatic_truss"
 },
 {
-"glb": "res://assets/models/tt_struct_aquatic_truss.glb",
+"glb": "res://assets/models/tt_struct_aquatic_truss_wtrim.glb",
 "p": [
-15.0,
+15.075,
 9.68,
-75.5
+12.5
 ],
 "yaw": 0,
 "tag": "f2",
 "owner": "Rook",
-"asset": "tt_struct_aquatic_truss"
+"asset": "tt_struct_aquatic_truss_wtrim"
+},
+{
+"glb": "res://assets/models/tt_struct_aquatic_truss_wtrim.glb",
+"p": [
+15.075,
+9.68,
+66.5
+],
+"yaw": 0,
+"tag": "f2",
+"owner": "Rook",
+"asset": "tt_struct_aquatic_truss_wtrim"
+},
+{
+"glb": "res://assets/models/tt_struct_aquatic_truss_etrim.glb",
+"p": [
+12.165,
+9.68,
+39.5
+],
+"yaw": 0,
+"tag": "f2",
+"owner": "Rook",
+"asset": "tt_struct_aquatic_truss_etrim"
 },
 {
 "glb": "res://assets/models/tt_services_plant_stack_sw.glb",

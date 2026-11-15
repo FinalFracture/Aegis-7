@@ -6,6 +6,7 @@ import os, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 from struct_lib import *
 import pygltflib as pg
+import numpy as np
 from ramps import Kit
 from access_rev37 import export_kit, gd
 
@@ -81,6 +82,22 @@ def guards_ne():
         k.add("Slab_Infill", CON, inf); k.add("Infill_Court_Line", AM, box(131.3, 133.19, y - E, y + .003, 69.06, 69.10)); k.col(inf.copy())
     return k
 
+# ------------------------------------------------------------------ TTQA-027: transfer-truss variants trimmed to the stair-core wall faces
+# (same section as build_structure.truss(); building X, soffit y 0 = +9.7). W-trim: Z 12.5 / 66.5 start on the b / b_m core wall face
+# X 0.0 (was X -0.15, 0.15 m into Core_Walls). E-trim: Z 39.5 stops on the core-a W wall face X 24.49 (was through the core to 30.15).
+TRUSS_V = {"tt_struct_aquatic_truss_wtrim": (0.0, 30.15), "tt_struct_aquatic_truss_etrim": (-0.15, 24.48)}
+def truss_span(xa, xb):
+    P = []; h0, h1 = .2, 1.8; a, b = xa + .15, xb - .15
+    P += [box(a, b, 0, .4, -.3, .3), box(a, b, 1.6, 2.0, -.3, .3)]
+    n = max(2, int(round((b - a) / 3.0))); xs = np.linspace(a, b, n + 1)
+    for i, x in enumerate(xs):
+        P.append(box(max(x - .15, xa), min(x + .15, xb), .4 - E, 1.6 + E, -.2, .2))
+        if i < n:
+            p0, p1 = ((x, h0 + .1, 0), (xs[i + 1], h1 - .1, 0)) if i % 2 == 0 else ((x, h1 - .1, 0), (xs[i + 1], h0 + .1, 0))
+            P.append(beam(p0, p1, .26, .26))
+    P += [box(xa, xa + .6, -E, 2.0, -.35, .35), box(xb - .6, xb, -E, 2.0, -.35, .35)]
+    return [("Truss_Steel", G, P), ("Truss_Soffit_LED", CY, [box(xa + .7, xb - .7, -.02, E, -.06, .06)])]
+
 if __name__ == "__main__":
     REP = []; LAY = json.load(open(LAYOUT))
     P, C = door_pair()
@@ -88,5 +105,7 @@ if __name__ == "__main__":
     piv = group_leaves(os.path.join(GODOT_MODELS, "tt_door_pair_18.glb")); print("LEAF_PIVOTS", piv)
     export_kit("tt_struct_stand_cheeks_r38", cheeks(), REP, LAY, "Rev 3.8 #3 TTQA-053 stand-end cheeks (L1/L2-N X 90.48..90.58 / 92.41..92.51, L1/L2-E Z 31.78..31.88)")
     export_kit("tt_struct_guards_ne_plant", guards_ne(), REP, LAY, "Rev 3.8 #4 TTQA-011 NE plant opening guards F2/F3 + slab infill Z 69.00..69.19")
+    for nm, (xa, xb) in TRUSS_V.items():
+        export_chunk(nm, truss_span(xa, xb), None, REP, layout=None, note="TTQA-027 transfer truss trimmed to the stair-core wall face")
     json.dump(LAY, open(LAYOUT, "w"), indent=1)
     print("ASSETS", len(REP), "FAILED", [x["asset"] for x in REP if not x["passed"]])

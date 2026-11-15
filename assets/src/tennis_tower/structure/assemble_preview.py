@@ -25,7 +25,11 @@ def structure():
     tags = dict(f1_slab="f1", f1_walls="f1", f2_slab="f2", f2_walls="f2", f3_slab="f3", f3_walls="f3", columns="cols", climb_frame="f2", void_guard="f3", diving_coffer="f3")
     for nm, d in LAYOUT.items():
         t = next((v for k, v in tags.items() if k in nm), "struct"); put(nm, *d["world_offset"], tag=t)
-    for z in AQ_Z: put("tt_struct_aquatic_truss", 15, 9.7, z, tag="f2", grid=True)
+    for z in AQ_Z:
+        if z in (12.5, 39.5, 66.5): continue   # TTQA-027: trimmed variants below
+        put("tt_struct_aquatic_truss", 15, 9.7, z, tag="f2", grid=True)
+    for z, nm, xc in ((12.5, "tt_struct_aquatic_truss_wtrim", 15.075), (66.5, "tt_struct_aquatic_truss_wtrim", 15.075), (39.5, "tt_struct_aquatic_truss_etrim", 12.165)):
+        put(nm, xc, 9.68, z, tag="f2")
     # Services 4e634a0 shells at recorded transforms (not the old tt_struct_plant_stack kit)
     put("tt_services_plant_stack_sw", -5.7275, 0, 5.27, 0, "plant")
     # r8 Rev 3.7 #10: locked 1.0 m staff doors close the four stacks' 2.0 m openings on F1/F2/F3 (access_rev37.py)
