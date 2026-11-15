@@ -321,6 +321,126 @@
 "asset": "tt_struct_slot_wall_f2"
 },
 {
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_s.glb",
+"p": [
+167.698,
+-4.0,
+13.7
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_s"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_e.glb",
+"p": [
+170.3,
+-4.0,
+16.3027
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_e"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_sw.glb",
+"p": [
+-14.0,
+-4.0,
+13.7
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_sw"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_mitre_sw.glb",
+"p": [
+-12.0,
+-4.0,
+11.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_mitre_sw"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_nw.glb",
+"p": [
+-14.0,
+-4.0,
+66.3
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_nw"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_mitre_nw.glb",
+"p": [
+-12.0,
+-4.0,
+67.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_mitre_nw"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_ne.glb",
+"p": [
+142.0,
+-4.0,
+66.3
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_ne"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_mitre_ne.glb",
+"p": [
+140.0,
+-4.0,
+67.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_mitre_ne"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_terrace_mitre_se.glb",
+"p": [
+142.0,
+-4.0,
+13.7
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_terrace_mitre_se"
+},
+{
+"glb": "res://assets/models/tt_plinth_skirt_mitre_se.glb",
+"p": [
+140.0,
+-4.0,
+11.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_plinth_skirt_mitre_se"
+},
+{
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",
 "p": [
 15.0,
@@ -6453,30 +6573,6 @@
 "asset": "tt_facade_bay"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt.glb",
-"p": [
--12,
--4.0,
-11.5
-],
-"yaw": -90,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt.glb",
-"p": [
-140,
--4.0,
-11.5
-],
-"yaw": 90,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt"
-},
-{
 "glb": "res://assets/models/tt_curtain_wall_panel.glb",
 "p": [
 -11.715,
@@ -7161,30 +7257,6 @@
 "asset": "tt_facade_bay"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt.glb",
-"p": [
--12,
--4.0,
-67.5
-],
-"yaw": -90,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt.glb",
-"p": [
-140,
--4.0,
-67.5
-],
-"yaw": 90,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt"
-},
-{
 "glb": "res://assets/models/tt_curtain_wall_panel.glb",
 "p": [
 -11.715,
@@ -9165,16 +9237,16 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 -62.3,
--4.0,
+-4.2,
 34.0
 ],
 "yaw": -90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge_open_w38.glb",
@@ -9189,16 +9261,16 @@
 "asset": "tt_terrace_edge_open_w38"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 -62.3,
--4.0,
+-4.2,
 38.0
 ],
 "yaw": -90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge_open_w42.glb",
@@ -9213,16 +9285,16 @@
 "asset": "tt_terrace_edge_open_w42"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 -62.3,
--4.0,
+-4.2,
 42.0
 ],
 "yaw": -90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -9237,16 +9309,16 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 -62.3,
--4.0,
+-4.2,
 46.0
 ],
 "yaw": -90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -9897,30 +9969,6 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
--14.0,
--4.0,
-13.7
-],
-"yaw": 180,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
--14.0,
--4.0,
-66.3
-],
-"yaw": 0,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
-},
-{
 "glb": "res://assets/models/tt_terrace_deck.glb",
 "p": [
 142.0,
@@ -10941,18 +10989,6 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
-170.3,
--4.0,
-18.0
-],
-"yaw": 90,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
-},
-{
 "glb": "res://assets/models/tt_terrace_edge.glb",
 "p": [
 169.25,
@@ -11037,16 +11073,16 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 170.3,
--4.0,
+-4.2,
 34.0
 ],
 "yaw": 90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge_open_e38.glb",
@@ -11061,16 +11097,16 @@
 "asset": "tt_terrace_edge_open_e38"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 170.3,
--4.0,
+-4.2,
 38.0
 ],
 "yaw": 90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -11085,16 +11121,16 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 170.3,
--4.0,
+-4.2,
 42.0
 ],
 "yaw": 90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -11109,16 +11145,16 @@
 "asset": "tt_terrace_edge"
 },
 {
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
+"glb": "res://assets/models/tt_plinth_skirt_terrace_footed.glb",
 "p": [
 170.3,
--4.0,
+-4.2,
 46.0
 ],
 "yaw": 90,
 "tag": "site",
 "owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
+"asset": "tt_plinth_skirt_terrace_footed"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -11239,30 +11275,6 @@
 "tag": "site",
 "owner": "Rook",
 "asset": "tt_terrace_edge"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
-142.0,
--4.0,
-13.7
-],
-"yaw": 180,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
-142.0,
--4.0,
-66.3
-],
-"yaw": 0,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
 },
 {
 "glb": "res://assets/models/tt_terrace_edge.glb",
@@ -11527,18 +11539,6 @@
 "tag": "site",
 "owner": "Rook",
 "asset": "tt_terrace_edge"
-},
-{
-"glb": "res://assets/models/tt_plinth_skirt_terrace.glb",
-"p": [
-166.0,
--4.0,
-13.7
-],
-"yaw": 180,
-"tag": "site",
-"owner": "Rook",
-"asset": "tt_plinth_skirt_terrace"
 },
 {
 "glb": "res://assets/models/tt_plinth_skirt_terrace.glb",

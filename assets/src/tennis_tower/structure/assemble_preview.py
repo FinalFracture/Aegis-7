@@ -119,7 +119,8 @@ def envelope():
             if abs(z - 35.5) < .1: put("tt_secondary_entrance_e", 140 + .98, 0, 37.5, 90, "facade")
         else: put("tt_facade_bay", 140 + .21, 0, z, 90, "facade")
         if not 16 < z < 64:                                   # exposed plinth below the façade outside the terraces
-            put("tt_plinth_skirt", -12, -4.0, z, -90, "site"); put("tt_plinth_skirt", 140, -4.0, z, 90, "site")
+            if z not in (11.5, 67.5):                         # r8b TTQA-043: the four terrace inside-corner modules -> skirt_corner.py mitre pieces
+                put("tt_plinth_skirt", -12, -4.0, z, -90, "site"); put("tt_plinth_skirt", 140, -4.0, z, 90, "site")
 
 EDGE_OPEN = {(-26.0, 14.75): "tt_terrace_edge_open_c2", (-26.0, 65.25): "tt_terrace_edge_open_c2", (154.0, 14.75): "tt_terrace_edge_open_c2",
              (-61.25, 38.0): "tt_terrace_edge_open_w38", (-61.25, 42.0): "tt_terrace_edge_open_w42", (169.25, 38.0): "tt_terrace_edge_open_e38"}   # r8 Rev 3.7 #1/#2 openings (access_rev37.py)
@@ -132,10 +133,14 @@ def site():
             for z in np.arange(18, 64, 4): put("tt_terrace_deck", float(x), -.3, float(z), tag="site")
         xo, yaw = (x0, -90) if x0 < 0 else (x1, 90)
         for z in np.arange(18, 64, 4):
-            put_edge(xo + (-1.25 if x0 < 0 else 1.25), -.3, float(z), yaw, "site"); put("tt_plinth_skirt_terrace", xo + (-2.3 if x0 < 0 else 2.3), -4.0, float(z), yaw, "site")
+            put_edge(xo + (-1.25 if x0 < 0 else 1.25), -.3, float(z), yaw, "site")
+            if 32 < z < 48: put("tt_plinth_skirt_terrace_footed", xo + (-2.3 if x0 < 0 else 2.3), -4.2, float(z), yaw, "site")   # r8b TTQA-043 slit: drum dips below -4.0
+            elif not (x0 > 0 and z == 18): put("tt_plinth_skirt_terrace", xo + (-2.3 if x0 < 0 else 2.3), -4.0, float(z), yaw, "site")   # r8b: E z18 -> skirt_corner mitre_e
         for x in np.arange(x0 + 2, x1, 4):
             put_edge(float(x), -.3, 16 - 1.25, 180, "site"); put_edge(float(x), -.3, 64 + 1.25, 0, "site")
-            put("tt_plinth_skirt_terrace", float(x), -4.0, 16 - 2.3, 180, "site"); put("tt_plinth_skirt_terrace", float(x), -4.0, 64 + 2.3, 0, "site")
+            inner = x == (x1 - 2 if x0 < 0 else x0 + 2)          # r8b TTQA-043: row end at the building -> skirt_corner mitre_sw/nw/se/ne
+            if not (inner or (x0 > 0 and x == x1 - 2)): put("tt_plinth_skirt_terrace", float(x), -4.0, 16 - 2.3, 180, "site")   # r8b: SE x166 -> mitre_s
+            if not inner: put("tt_plinth_skirt_terrace", float(x), -4.0, 64 + 2.3, 0, "site")
     for x in (70, 74): put("tt_terrace_apron", x, -.27, 79.5, 0, "site")
 
 def interiors():

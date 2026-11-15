@@ -182,5 +182,85 @@
    63.7
   ],
   "note": "Rev 3.7 #8 slot wall collider X -6.1..-5.9 Z 58.4..69.0"
+ },
+ "tt_plinth_skirt_terrace_mitre_s": {
+  "world_offset": [
+   167.698,
+   -4.0,
+   13.7
+  ],
+  "note": "Rev 3.7.1 #7 plaza corner: terrace skirt re-cut 7.4 m, mitred on X+Z=184"
+ },
+ "tt_plinth_skirt_terrace_mitre_e": {
+  "world_offset": [
+   170.3,
+   -4.0,
+   16.3027
+  ],
+  "note": "Rev 3.7.1 #7 plaza corner: terrace skirt re-cut 7.4 m, mitred on X+Z=184 + 0.2 m corner post"
+ },
+ "tt_plinth_skirt_terrace_mitre_sw": {
+  "world_offset": [
+   -14.0,
+   -4.0,
+   13.7
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 SW inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_mitre_sw": {
+  "world_offset": [
+   -12.0,
+   -4.0,
+   11.5
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 SW inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_terrace_mitre_nw": {
+  "world_offset": [
+   -14.0,
+   -4.0,
+   66.3
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 NW inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_mitre_nw": {
+  "world_offset": [
+   -12.0,
+   -4.0,
+   67.5
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 NW inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_terrace_mitre_ne": {
+  "world_offset": [
+   142.0,
+   -4.0,
+   66.3
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 NE inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_mitre_ne": {
+  "world_offset": [
+   140.0,
+   -4.0,
+   67.5
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 NE inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_terrace_mitre_se": {
+  "world_offset": [
+   142.0,
+   -4.0,
+   13.7
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 SE inside corner: skirt trimmed to the mitre (no overlap, no slit)"
+ },
+ "tt_plinth_skirt_mitre_se": {
+  "world_offset": [
+   140.0,
+   -4.0,
+   11.5
+  ],
+  "note": "TTQA-043 / Rev 3.7.1 #7 SE inside corner: skirt trimmed to the mitre (no overlap, no slit)"
  }
 }
