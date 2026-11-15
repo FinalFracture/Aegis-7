@@ -117,15 +117,20 @@ def envelope():
         if not 16 < z < 64:                                   # exposed plinth below the façade outside the terraces
             put("tt_plinth_skirt", -12, -4.0, z, -90, "site"); put("tt_plinth_skirt", 140, -4.0, z, 90, "site")
 
+EDGE_OPEN = {(-26.0, 14.75): "tt_terrace_edge_open_c2", (-26.0, 65.25): "tt_terrace_edge_open_c2", (154.0, 14.75): "tt_terrace_edge_open_c2",
+             (-61.25, 38.0): "tt_terrace_edge_open_w38", (-61.25, 42.0): "tt_terrace_edge_open_w42", (169.25, 38.0): "tt_terrace_edge_open_e38"}   # r8 Rev 3.7 #1/#2 openings (access_rev37.py)
+def put_edge(x, y, z, yaw, tag):
+    put(EDGE_OPEN.get((round(float(x), 2), round(float(z), 2)), "tt_terrace_edge"), x, y, z, yaw, tag)
+
 def site():
     for x0, x1 in ((-60, -12), (140, 168)):
         for x in np.arange(x0 + 2, x1, 4):
             for z in np.arange(18, 64, 4): put("tt_terrace_deck", float(x), -.3, float(z), tag="site")
         xo, yaw = (x0, -90) if x0 < 0 else (x1, 90)
         for z in np.arange(18, 64, 4):
-            put("tt_terrace_edge", xo + (-1.25 if x0 < 0 else 1.25), -.3, float(z), yaw, "site"); put("tt_plinth_skirt_terrace", xo + (-2.3 if x0 < 0 else 2.3), -4.0, float(z), yaw, "site")
+            put_edge(xo + (-1.25 if x0 < 0 else 1.25), -.3, float(z), yaw, "site"); put("tt_plinth_skirt_terrace", xo + (-2.3 if x0 < 0 else 2.3), -4.0, float(z), yaw, "site")
         for x in np.arange(x0 + 2, x1, 4):
-            put("tt_terrace_edge", float(x), -.3, 16 - 1.25, 180, "site"); put("tt_terrace_edge", float(x), -.3, 64 + 1.25, 0, "site")
+            put_edge(float(x), -.3, 16 - 1.25, 180, "site"); put_edge(float(x), -.3, 64 + 1.25, 0, "site")
             put("tt_plinth_skirt_terrace", float(x), -4.0, 16 - 2.3, 180, "site"); put("tt_plinth_skirt_terrace", float(x), -4.0, 64 + 2.3, 0, "site")
     for x in (70, 74): put("tt_terrace_apron", x, -.27, 79.5, 0, "site")
 

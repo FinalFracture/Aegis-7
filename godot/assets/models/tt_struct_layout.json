@@ -110,5 +110,45 @@
    40.0
   ],
   "note": "r7 cylinder drop: cast fill from slab / terrace undersides to the R 200 hull - 0.15 m"
+ },
+ "tt_struct_ramp_sw": {
+  "world_offset": [
+   -34.2313,
+   -2.3974,
+   10.9
+  ],
+  "note": "Rev 3.7 #1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, foot on the drum"
+ },
+ "tt_struct_ramp_nw": {
+  "world_offset": [
+   -34.2313,
+   -2.3974,
+   69.1
+  ],
+  "note": "Rev 3.7 #1 NW ramp (SW mirrored about Z 40)"
+ },
+ "tt_struct_ramp_e": {
+  "world_offset": [
+   162.2313,
+   -2.3974,
+   10.9
+  ],
+  "note": "Rev 3.7 #2 E ramp X 153..171.42 (SW mirrored in X)"
+ },
+ "tt_struct_stair_w": {
+  "world_offset": [
+   -68.15,
+   -4.1452,
+   39.5
+  ],
+  "note": "Rev 3.7 #1 W grand stair Z 36.5..42.5, 23 x 0.1752 / 0.30"
+ },
+ "tt_struct_stair_e": {
+  "world_offset": [
+   175.9,
+   -4.1602,
+   38.0
+  ],
+  "note": "Rev 3.7 #2 E stair Z 36.5..39.5, 23 x 0.1752 / 0.30"
  }
 }
