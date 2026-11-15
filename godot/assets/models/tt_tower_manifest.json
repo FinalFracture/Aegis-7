@@ -1,6 +1,6 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2688,
+"count": 2690,
 "by_owner": {
 "Rook": 1046,
 "Arrival": 42,
@@ -8,7 +8,7 @@
 "Leisure": 236,
 "Courts": 352,
 "Active": 536,
-"Rooftop": 404
+"Rooftop": 406
 },
 "skipped": [
 "preview_hull"
@@ -28475,7 +28475,7 @@
 {
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-129.3,
+129.34,
 12.2,
 20.6
 ],
@@ -28487,19 +28487,31 @@
 {
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-129.3,
+131.34,
 12.2,
-58.4
+20.6
 ],
-"yaw": 0.0,
+"yaw": 180.0,
 "tag": "f3",
 "owner": "Rooftop",
 "asset": "tt_play_fence_kick"
 },
 {
+"glb": "res://assets/models/tt_play_fence_kick_096.glb",
+"p": [
+132.82,
+12.2,
+20.6
+],
+"yaw": 180.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_play_fence_kick_096"
+},
+{
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-131.3,
+135.95,
 12.2,
 20.6
 ],
@@ -28511,19 +28523,7 @@
 {
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-131.3,
-12.2,
-58.4
-],
-"yaw": 0.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_play_fence_kick"
-},
-{
-"glb": "res://assets/models/tt_play_fence_kick.glb",
-"p": [
-133.3,
+137.95,
 12.2,
 20.6
 ],
@@ -28533,33 +28533,21 @@
 "asset": "tt_play_fence_kick"
 },
 {
-"glb": "res://assets/models/tt_play_fence_kick.glb",
+"glb": "res://assets/models/tt_play_fence_kick_046.glb",
 "p": [
-133.3,
-12.2,
-58.4
-],
-"yaw": 0.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_play_fence_kick"
-},
-{
-"glb": "res://assets/models/tt_play_fence_kick.glb",
-"p": [
-135.3,
+139.18,
 12.2,
 20.6
 ],
 "yaw": 180.0,
 "tag": "f3",
 "owner": "Rooftop",
-"asset": "tt_play_fence_kick"
+"asset": "tt_play_fence_kick_046"
 },
 {
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-135.3,
+129.34,
 12.2,
 58.4
 ],
@@ -28571,19 +28559,7 @@
 {
 "glb": "res://assets/models/tt_play_fence_kick.glb",
 "p": [
-137.3,
-12.2,
-20.6
-],
-"yaw": 180.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_play_fence_kick"
-},
-{
-"glb": "res://assets/models/tt_play_fence_kick.glb",
-"p": [
-137.3,
+131.34,
 12.2,
 58.4
 ],
@@ -28591,13 +28567,61 @@
 "tag": "f3",
 "owner": "Rooftop",
 "asset": "tt_play_fence_kick"
+},
+{
+"glb": "res://assets/models/tt_play_fence_kick_101.glb",
+"p": [
+132.845,
+12.2,
+58.4
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_play_fence_kick_101"
+},
+{
+"glb": "res://assets/models/tt_play_fence_kick.glb",
+"p": [
+136.0,
+12.2,
+58.4
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_play_fence_kick"
+},
+{
+"glb": "res://assets/models/tt_play_fence_kick.glb",
+"p": [
+138.0,
+12.2,
+58.4
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_play_fence_kick"
+},
+{
+"glb": "res://assets/models/tt_play_fence_kick_041.glb",
+"p": [
+139.205,
+12.2,
+58.4
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_play_fence_kick_041"
 },
 {
 "glb": "res://assets/models/tt_play_perch.glb",
 "p": [
-128.478,
+128.484,
 12.2,
-25.0
+25.6
 ],
 "yaw": 90.0,
 "tag": "f3",
@@ -28607,9 +28631,9 @@
 {
 "glb": "res://assets/models/tt_play_perch.glb",
 "p": [
-128.478,
+128.484,
 12.2,
-33.0
+33.6
 ],
 "yaw": 90.0,
 "tag": "f3",
@@ -28619,9 +28643,9 @@
 {
 "glb": "res://assets/models/tt_play_perch.glb",
 "p": [
-128.478,
+128.484,
 12.2,
-41.0
+41.6
 ],
 "yaw": 90.0,
 "tag": "f3",
@@ -28631,9 +28655,9 @@
 {
 "glb": "res://assets/models/tt_play_perch.glb",
 "p": [
-128.478,
+128.484,
 12.2,
-46.0
+45.6
 ],
 "yaw": 90.0,
 "tag": "f3",

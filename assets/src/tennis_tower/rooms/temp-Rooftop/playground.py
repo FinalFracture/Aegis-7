@@ -23,17 +23,17 @@ def _soft4():
     it.b('Wedge', WH, -1.4, -.4, .03 - E, .28, 1.2, 1.7)
     return it
 
-def _fence_panel():
-    """2.0 m panel: kick plate 0.35 m + pickets to 1.2 m. Local X -1..1, +Z outside."""
-    it = It(); H = 1.2; pw = .04
-    it.b('Post', ALY, -1.0, -1.0 + 2 * pw, 0, H + .02, -pw, pw, col=True)
-    it.b('Kick', KP, -1.0 + 2 * pw + D, 1.0, 0, .35, -.025, .025, col=True)
-    it.b('RailTop', ALY, -1.0 + 2 * pw + D, 1.0, H - .06, H - .02, -.018, .018)
-    it.b('RailLow', ALY, -1.0 + 2 * pw + D, 1.0, .35 - E, .41, -.018, .018)
-    n = 12; xs = [(-1.0 + 2 * pw + .05) + i * ((2.0 - 2 * pw - .1) / (n - 1)) for i in range(n)]
+def _fence_panel(L=2.0):
+    """L m panel (default 2.0): kick plate 0.35 m + pickets to 1.2 m. Local X -L/2..L/2 (post at -X end), +Z outside."""
+    it = It(); H = 1.2; pw = .04; h = L / 2
+    it.b('Post', ALY, -h, -h + 2 * pw, 0, H + .02, -pw, pw, col=True)
+    it.b('Kick', KP, -h + 2 * pw + D, h, 0, .35, -.025, .025, col=True)
+    it.b('RailTop', ALY, -h + 2 * pw + D, h, H - .06, H - .02, -.018, .018)
+    it.b('RailLow', ALY, -h + 2 * pw + D, h, .35 - E, .41, -.018, .018)
+    n = max(2, int(round(12 * L / 2.0))); xs = [(-h + 2 * pw + .05) + i * ((L - 2 * pw - .1) / (n - 1)) for i in range(n)]
     for x in xs:
         it.b('Picket', WH, x - .015, x + .015, .41 - E, H - .06 + E, -.012, .012)
-    it.a('Cap', ALY, cap((-1.0 + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
+    it.a('Cap', ALY, cap((-h + pw, H + .02 + .015 - E, 0), .038, .03, 8, 'y'))
     return it
 
 def _fence_gate():
@@ -56,6 +56,10 @@ def build(PL):
     A_f = emit('tt_play_fence_kick', _fence_panel(), '2m pickets over kick plate')
     A_g = emit('tt_play_fence_gate', _fence_gate(), '1.6m gate pickets+kick')
     A_p = emit('tt_play_perch', perch_it(), '1.8x0.3 fence perch')
+    # TTQA-044: S/N runs are laid out between the W/E fence faces (X 128.34..139.41) around the 1.6 m gate (X 133.35..134.95),
+    # so no panel overlaps the gate or the corner fences; 1.01 m and 0.46 m fillers close the runs
+    # the gate latch sticks 45 mm past its post, so the run on the latch side stops 50 mm short of the gate (S: W side, N: E side)
+    A_fl = {L: emit(f'tt_play_fence_kick_{int(round(L * 100)):03d}', _fence_panel(L), f'{L:.2f}m filler pickets over kick plate') for L in (1.01, .96, .46, .41)}
     Y = F3_Y
     PL.append(dict(glb=str(GM / 'tt_play_surface.glb'), asset='tt_play_surface', p=[134.15, Y, 39.5], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_play_tower.glb'), asset='tt_play_tower', p=[136.14, Y, 28.0], yaw=0, tag='f3'))
@@ -73,9 +77,11 @@ def build(PL):
     place(PL, A_g, 134.15, Y, 58.4, 0)
     for z in [21.6 + 2.0 * i for i in range(18)]:
         place(PL, A_f, 139.45, Y, z, 90)
-    for x in [129.3 + 2.0 * i for i in range(5)]:
-        place(PL, A_f, x, Y, 20.6, 180)
-        place(PL, A_f, x, Y, 58.4, 0)
-    for z in (25.0, 33.0, 41.0, 46.0):
-        place(PL, A_p, 128.478, Y, z, 90, local=False)
+    for zr, yw, run in ((20.6, 180, ((A_f, 128.34, 130.34), (A_f, 130.34, 132.34), (A_fl[.96], 132.34, 133.30), (A_f, 134.95, 136.95), (A_f, 136.95, 138.95), (A_fl[.46], 138.95, 139.41))),
+                        (58.4, 0, ((A_f, 128.34, 130.34), (A_f, 130.34, 132.34), (A_fl[1.01], 132.34, 133.35), (A_f, 135.0, 137.0), (A_f, 137.0, 139.0), (A_fl[.41], 139.0, 139.41)))):
+        for a_, x0, x1 in run:
+            place(PL, a_, (x0 + x1) / 2, Y, zr, yw)
+    # TTQA-044: perches centred between the W-run posts (posts at Z 20.6 + 2k) and 6 mm off the kick plate face
+    for z in (25.6, 33.6, 41.6, 45.6):
+        place(PL, A_p, 128.484, Y, z, 90, local=False)
     return dict(soft4=1, fences='kick+picket', perches=4, seesaw_yaw=90)

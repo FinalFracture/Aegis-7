@@ -1035,7 +1035,7 @@
     "glb": "res://assets/models/tt_play_fence_kick.glb",
     "asset": "tt_play_fence_kick",
     "p": [
-     129.3,
+     129.34,
      12.2,
      20.6
     ],
@@ -1046,7 +1046,62 @@
     "glb": "res://assets/models/tt_play_fence_kick.glb",
     "asset": "tt_play_fence_kick",
     "p": [
-     129.3,
+     131.34,
+     12.2,
+     20.6
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_kick_096.glb",
+    "asset": "tt_play_fence_kick_096",
+    "p": [
+     132.82,
+     12.2,
+     20.6
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_kick.glb",
+    "asset": "tt_play_fence_kick",
+    "p": [
+     135.95,
+     12.2,
+     20.6
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_kick.glb",
+    "asset": "tt_play_fence_kick",
+    "p": [
+     137.95,
+     12.2,
+     20.6
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_kick_046.glb",
+    "asset": "tt_play_fence_kick_046",
+    "p": [
+     139.18,
+     12.2,
+     20.6
+    ],
+    "yaw": 180,
+    "tag": "f3"
+   },
+   {
+    "glb": "res://assets/models/tt_play_fence_kick.glb",
+    "asset": "tt_play_fence_kick",
+    "p": [
+     129.34,
      12.2,
      58.4
     ],
@@ -1057,18 +1112,18 @@
     "glb": "res://assets/models/tt_play_fence_kick.glb",
     "asset": "tt_play_fence_kick",
     "p": [
-     131.3,
+     131.34,
      12.2,
-     20.6
+     58.4
     ],
-    "yaw": 180,
+    "yaw": 0,
     "tag": "f3"
    },
    {
-    "glb": "res://assets/models/tt_play_fence_kick.glb",
-    "asset": "tt_play_fence_kick",
+    "glb": "res://assets/models/tt_play_fence_kick_101.glb",
+    "asset": "tt_play_fence_kick_101",
     "p": [
-     131.3,
+     132.845,
      12.2,
      58.4
     ],
@@ -1079,18 +1134,7 @@
     "glb": "res://assets/models/tt_play_fence_kick.glb",
     "asset": "tt_play_fence_kick",
     "p": [
-     133.3,
-     12.2,
-     20.6
-    ],
-    "yaw": 180,
-    "tag": "f3"
-   },
-   {
-    "glb": "res://assets/models/tt_play_fence_kick.glb",
-    "asset": "tt_play_fence_kick",
-    "p": [
-     133.3,
+     136.0,
      12.2,
      58.4
     ],
@@ -1101,18 +1145,7 @@
     "glb": "res://assets/models/tt_play_fence_kick.glb",
     "asset": "tt_play_fence_kick",
     "p": [
-     135.3,
-     12.2,
-     20.6
-    ],
-    "yaw": 180,
-    "tag": "f3"
-   },
-   {
-    "glb": "res://assets/models/tt_play_fence_kick.glb",
-    "asset": "tt_play_fence_kick",
-    "p": [
-     135.3,
+     138.0,
      12.2,
      58.4
     ],
@@ -1120,21 +1153,10 @@
     "tag": "f3"
    },
    {
-    "glb": "res://assets/models/tt_play_fence_kick.glb",
-    "asset": "tt_play_fence_kick",
+    "glb": "res://assets/models/tt_play_fence_kick_041.glb",
+    "asset": "tt_play_fence_kick_041",
     "p": [
-     137.3,
-     12.2,
-     20.6
-    ],
-    "yaw": 180,
-    "tag": "f3"
-   },
-   {
-    "glb": "res://assets/models/tt_play_fence_kick.glb",
-    "asset": "tt_play_fence_kick",
-    "p": [
-     137.3,
+     139.205,
      12.2,
      58.4
     ],
@@ -1145,9 +1167,9 @@
     "glb": "res://assets/models/tt_play_perch.glb",
     "asset": "tt_play_perch",
     "p": [
-     128.478,
+     128.484,
      12.2,
-     25.0
+     25.6
     ],
     "yaw": 90,
     "tag": "f3"
@@ -1156,9 +1178,9 @@
     "glb": "res://assets/models/tt_play_perch.glb",
     "asset": "tt_play_perch",
     "p": [
-     128.478,
+     128.484,
      12.2,
-     33.0
+     33.6
     ],
     "yaw": 90,
     "tag": "f3"
@@ -1167,9 +1189,9 @@
     "glb": "res://assets/models/tt_play_perch.glb",
     "asset": "tt_play_perch",
     "p": [
-     128.478,
+     128.484,
      12.2,
-     41.0
+     41.6
     ],
     "yaw": 90,
     "tag": "f3"
@@ -1178,9 +1200,9 @@
     "glb": "res://assets/models/tt_play_perch.glb",
     "asset": "tt_play_perch",
     "p": [
-     128.478,
+     128.484,
      12.2,
-     46.0
+     45.6
     ],
     "yaw": 90,
     "tag": "f3"
