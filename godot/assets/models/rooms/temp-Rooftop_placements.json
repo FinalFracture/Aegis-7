@@ -19,14 +19,12 @@
   },
   "roof": {
    "cutouts": 4,
-   "aperture": [
-    11.8,
-    9.8
-   ],
-   "collar": 0.3,
+   "aperture": "facade sides open to the head track; inboard edges x 5.70 / z 4.90",
+   "collar": "L, inboard sides",
    "roof_y": 25.285,
    "transforms": [
     {
+     "asset": "tt_roof_plant_cutout",
      "p": [
       -6.0,
       25.285,
@@ -35,6 +33,7 @@
      "yaw": 0
     },
     {
+     "asset": "tt_roof_plant_cutout_m",
      "p": [
       134.0,
       25.285,
@@ -43,6 +42,7 @@
      "yaw": 0
     },
     {
+     "asset": "tt_roof_plant_cutout_m",
      "p": [
       -6.0,
       25.285,
@@ -51,6 +51,7 @@
      "yaw": 180
     },
     {
+     "asset": "tt_roof_plant_cutout",
      "p": [
       134.0,
       25.285,
@@ -541,7 +542,7 @@
     "asset": "tt_play_surface",
     "p": [
      134.15,
-     12.2,
+     12.202,
      39.5
     ],
     "yaw": 0,
@@ -563,7 +564,7 @@
     "asset": "tt_swing_set",
     "p": [
      136.0,
-     12.2,
+     12.2032,
      35.0
     ],
     "yaw": 0,
@@ -574,7 +575,7 @@
     "asset": "tt_dome_climber",
     "p": [
      136.5,
-     12.2,
+     12.2032,
      42.0
     ],
     "yaw": 0,
@@ -585,7 +586,7 @@
     "asset": "tt_see_saw",
     "p": [
      136.0,
-     12.2,
+     12.2012,
      48.0
     ],
     "yaw": 90,
@@ -596,7 +597,7 @@
     "asset": "tt_toddler_zone",
     "p": [
      134.5,
-     12.2,
+     12.2044,
      54.0
     ],
     "yaw": 0,
@@ -607,7 +608,7 @@
     "asset": "tt_balance_trail",
     "p": [
      132.5,
-     12.2,
+     12.2044,
      38.0
     ],
     "yaw": 90,
@@ -618,7 +619,7 @@
     "asset": "tt_play_soft4",
     "p": [
      136.5,
-     12.2,
+     12.202,
      24.5
     ],
     "yaw": 0,
@@ -1213,31 +1214,31 @@
     "glb": "res://assets/models/tt_roof_plant_cutout.glb",
     "asset": "tt_roof_plant_cutout",
     "p": [
-     -6.0,
+     -5.7625,
      25.245,
-     5.0
+     5.426
     ],
     "yaw": 0,
     "tag": "f3"
    },
    {
-    "glb": "res://assets/models/tt_roof_plant_cutout.glb",
-    "asset": "tt_roof_plant_cutout",
+    "glb": "res://assets/models/tt_roof_plant_cutout_m.glb",
+    "asset": "tt_roof_plant_cutout_m",
     "p": [
-     134.0,
+     133.7625,
      25.245,
-     5.0
+     5.426
     ],
     "yaw": 0,
     "tag": "f3"
    },
    {
-    "glb": "res://assets/models/tt_roof_plant_cutout.glb",
-    "asset": "tt_roof_plant_cutout",
+    "glb": "res://assets/models/tt_roof_plant_cutout_m.glb",
+    "asset": "tt_roof_plant_cutout_m",
     "p": [
-     -6.0,
+     -5.7625,
      25.245,
-     74.0
+     73.574
     ],
     "yaw": 180,
     "tag": "f3"
@@ -1246,9 +1247,9 @@
     "glb": "res://assets/models/tt_roof_plant_cutout.glb",
     "asset": "tt_roof_plant_cutout",
     "p": [
-     134.0,
+     133.7625,
      25.245,
-     74.0
+     73.574
     ],
     "yaw": 180,
     "tag": "f3"

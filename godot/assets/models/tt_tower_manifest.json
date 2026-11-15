@@ -277,7 +277,7 @@
 "p": [
 74.5613,
 12.196,
-6.4037
+6.4067
 ],
 "yaw": 0,
 "tag": "struct",
@@ -27936,7 +27936,7 @@
 "glb": "res://assets/models/tt_play_surface.glb",
 "p": [
 134.15,
-12.2,
+12.202,
 39.5
 ],
 "yaw": 0.0,
@@ -27960,7 +27960,7 @@
 "glb": "res://assets/models/tt_swing_set.glb",
 "p": [
 136.0,
-12.2,
+12.2032,
 35.0
 ],
 "yaw": 0.0,
@@ -27972,7 +27972,7 @@
 "glb": "res://assets/models/tt_dome_climber.glb",
 "p": [
 136.5,
-12.2,
+12.2032,
 42.0
 ],
 "yaw": 0.0,
@@ -27984,7 +27984,7 @@
 "glb": "res://assets/models/tt_see_saw.glb",
 "p": [
 136.0,
-12.2,
+12.2012,
 48.0
 ],
 "yaw": 90.0,
@@ -27996,7 +27996,7 @@
 "glb": "res://assets/models/tt_toddler_zone.glb",
 "p": [
 134.5,
-12.2,
+12.2044,
 54.0
 ],
 "yaw": 0.0,
@@ -28008,7 +28008,7 @@
 "glb": "res://assets/models/tt_balance_trail.glb",
 "p": [
 132.5,
-12.2,
+12.2044,
 38.0
 ],
 "yaw": 90.0,
@@ -28020,7 +28020,7 @@
 "glb": "res://assets/models/tt_play_soft4.glb",
 "p": [
 136.5,
-12.2,
+12.202,
 24.5
 ],
 "yaw": 0.0,
@@ -28667,9 +28667,9 @@
 {
 "glb": "res://assets/models/tt_roof_plant_cutout.glb",
 "p": [
--6.0,
+-5.7625,
 25.245,
-5.0
+5.426
 ],
 "yaw": 0.0,
 "tag": "roof",
@@ -28677,35 +28677,35 @@
 "asset": "tt_roof_plant_cutout"
 },
 {
-"glb": "res://assets/models/tt_roof_plant_cutout.glb",
+"glb": "res://assets/models/tt_roof_plant_cutout_m.glb",
 "p": [
-134.0,
+133.7625,
 25.245,
-5.0
+5.426
 ],
 "yaw": 0.0,
 "tag": "roof",
 "owner": "Rooftop",
-"asset": "tt_roof_plant_cutout"
+"asset": "tt_roof_plant_cutout_m"
 },
 {
-"glb": "res://assets/models/tt_roof_plant_cutout.glb",
+"glb": "res://assets/models/tt_roof_plant_cutout_m.glb",
 "p": [
--6.0,
+-5.7625,
 25.245,
-74.0
+73.574
 ],
 "yaw": 180.0,
 "tag": "roof",
 "owner": "Rooftop",
-"asset": "tt_roof_plant_cutout"
+"asset": "tt_roof_plant_cutout_m"
 },
 {
 "glb": "res://assets/models/tt_roof_plant_cutout.glb",
 "p": [
-134.0,
+133.7625,
 25.245,
-74.0
+73.574
 ],
 "yaw": 180.0,
 "tag": "roof",

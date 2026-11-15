@@ -18,8 +18,11 @@ def _soft4():
                 balls.append(node((px, .10 + .055 + .002, pz), .055, -1))
     if balls:
         it.a('Balls', BA, merge(balls))
-    it.a('Hill', RU, moss_mound((1.1, .03, 1.0), .45, 4))
-    it.a('Hill', RU, moss_mound((-1.2, .03, .6), .35, 5))
+    # TTQA-042: the moss mounds reached 0.1355 m below the pad, so the bottom-centre pivot sat on the mound and the whole
+    # soft-play floated 0.1355 m over the roof slab; cut them 4 mm into the pad top (pad bottom = pivot y 0 again)
+    for c_, r_, sd in (((1.1, .03, 1.0), .45, 4), ((-1.2, .03, .6), .35, 5)):
+        h = moss_mound(c_, r_, sd).slice_plane([0, .03 - E, 0], [0, 1, 0], cap=True); h.metadata["uv"] = h.vertices[:, [0, 2]] / 2.0
+        it.a('Hill', RU, h)
     it.b('Wedge', WH, -1.4, -.4, .03 - E, .28, 1.2, 1.7)
     return it
 
@@ -61,14 +64,20 @@ def build(PL):
     # the gate latch sticks 45 mm past its post, so the run on the latch side stops 50 mm short of the gate (S: W side, N: E side)
     A_fl = {L: emit(f'tt_play_fence_kick_{int(round(L * 100)):03d}', _fence_panel(L), f'{L:.2f}m filler pickets over kick plate') for L in (1.01, .96, .46, .41)}
     Y = F3_Y
-    PL.append(dict(glb=str(GM / 'tt_play_surface.glb'), asset='tt_play_surface', p=[134.15, Y, 39.5], yaw=0, tag='f3'))
+    # TTQA-042 rooftop safety pads: every 30 mm pad sat on the roof slab top (y 12.200) and the overlapping pads shared one top plane
+    # (z-fight). Each pad asset is lifted off the slab and the overlapping ones are staggered >= 1.2 mm apart (floor gap <= 4.4 mm,
+    # inside the +-5 mm contact rule): see-saw +1.2, surface/soft-play +2.0, swing/dome +3.2, balance trail/toddler +4.4 mm
+    # (toddler vs see-saw 3.2 mm apart: the see-saw Court_Line top sits 2 mm over its own pad top).
+    PAD = dict(tt_play_surface=.0020, tt_see_saw=.0012, tt_play_soft4=.0020, tt_swing_set=.0032, tt_dome_climber=.0032, tt_toddler_zone=.0044, tt_balance_trail=.0044)
+    PY = {k: round(Y + v, 4) for k, v in PAD.items()}
+    PL.append(dict(glb=str(GM / 'tt_play_surface.glb'), asset='tt_play_surface', p=[134.15, PY['tt_play_surface'], 39.5], yaw=0, tag='f3'))
     PL.append(dict(glb=str(GM / 'tt_play_tower.glb'), asset='tt_play_tower', p=[136.14, Y, 28.0], yaw=0, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_swing_set.glb'), asset='tt_swing_set', p=[136.0, Y, 35.0], yaw=0, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_dome_climber.glb'), asset='tt_dome_climber', p=[136.5, Y, 42.0], yaw=0, tag='f3'))  # r7e: back to 136.50 (clears balance-trail stones); pad trimmed by dome_pad_trim.py
-    PL.append(dict(glb=str(GM / 'tt_see_saw.glb'), asset='tt_see_saw', p=[136.0, Y, 48.0], yaw=90, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_toddler_zone.glb'), asset='tt_toddler_zone', p=[134.5, Y, 54.0], yaw=0, tag='f3'))
-    PL.append(dict(glb=str(GM / 'tt_balance_trail.glb'), asset='tt_balance_trail', p=[132.5, Y, 38.0], yaw=90, tag='f3'))
-    place(PL, A_s, 136.5, Y, 24.5, 0, local=False)
+    PL.append(dict(glb=str(GM / 'tt_swing_set.glb'), asset='tt_swing_set', p=[136.0, PY['tt_swing_set'], 35.0], yaw=0, tag='f3'))  # TTQA-042: pad trimmed to X 139.39 by dome_pad_trim.py
+    PL.append(dict(glb=str(GM / 'tt_dome_climber.glb'), asset='tt_dome_climber', p=[136.5, PY['tt_dome_climber'], 42.0], yaw=0, tag='f3'))  # r7e: back to 136.50 (clears balance-trail stones); pad trimmed by dome_pad_trim.py
+    PL.append(dict(glb=str(GM / 'tt_see_saw.glb'), asset='tt_see_saw', p=[136.0, PY['tt_see_saw'], 48.0], yaw=90, tag='f3'))
+    PL.append(dict(glb=str(GM / 'tt_toddler_zone.glb'), asset='tt_toddler_zone', p=[134.5, PY['tt_toddler_zone'], 54.0], yaw=0, tag='f3'))
+    PL.append(dict(glb=str(GM / 'tt_balance_trail.glb'), asset='tt_balance_trail', p=[132.5, PY['tt_balance_trail'], 38.0], yaw=90, tag='f3'))
+    place(PL, A_s, 136.5, PY['tt_play_soft4'], 24.5, 0, local=False)
     place(PL, A_g, 128.3, Y, 51.0, -90)
     for z in [21.6 + 2.0 * i for i in range(18)]:
         if 49.5 < z < 52.5: continue
