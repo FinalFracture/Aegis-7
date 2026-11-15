@@ -16,8 +16,10 @@ SKIP_X0 = {12.5, 66.5}; SKIP_X30 = {39.5}        # columns that land inside a st
 
 def f1_slab():
     it = []
-    DV = R(WATER["diving"][:4], .3); holes = [(0, 30, 0, 34.5), (0, 30, 44.5, 79), DV]
+    DV = R(WATER["diving"][:4], .3); holes = [(0, 30, 0, 34.5), (0, 30, 44.5, 79), DV] + LIFT_HOLES
     it += [("Slab_F1", CON, m) for m in slab(FOOT, holes, F1, SLAB[F1])]
+    # r8b Rev 3.7.1 / 3.7 #9: lift pits recessed 0.15 m (0.25 m slab kept below); pit slab bites 4 mm into the hole sides, bottom 4 mm up
+    it += [("Slab_F1", CON, box(x0 - E, x1 + E, F1 - SLAB[F1] + E, F1 - .15, z0 - E, z1 + E)) for x0, x1, z0, z1 in LIFT_HOLES]
     it += [("Slab_F1", CON, m) for m in slab((0, 30, 0, 34.5), [DV], F1, SLAB[F1])]
     it += [("Slab_F1", CON, m) for m in slab((0, 30, 44.5, 79), [], F1, SLAB[F1])]
     x0, x1, z0, z1, d = WATER["diving"]; pit = F1 + 2.0 - d          # pit floor -2.5
