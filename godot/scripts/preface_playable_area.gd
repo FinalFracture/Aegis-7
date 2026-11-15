@@ -7,7 +7,7 @@ extends Node3D
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
 ## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`
-## (tower measurement switches: `--no-tower`, `--tower-no-batch`; shot dir override `--shot-dir=<path>`).
+## (tower measurement switches: `--no-tower`, `--tower-no-batch`, `--tower-no-lights`; shot dir override `--shot-dir=<path>`).
 
 const SECTOR_GLB_PATHS := [
 	"res://assets/models/environments/preface_residential_sector.glb",
@@ -230,6 +230,7 @@ const DRUM_PREFACE_Y1 := 25.0
 # building is strip-4 x 100 (design/strip4_plan.md B1) and sits at world x 0 (EXT_GROUND_X0..X1 centre).
 const TENNIS_TOWER_SCENE := "res://scenes/tennis_tower/tennis_tower.tscn"
 const _TennisTowerBatcher := preload("res://scripts/tennis_tower_batcher.gd")
+const _TennisTowerLights := preload("res://scripts/tennis_tower_lighting.gd")
 const TT_STRIP := 5
 const TT_AXIAL_OFFSET := -100.0
 const TT_STRIP_X0 := 60.0
@@ -475,6 +476,8 @@ var _shot_tower: bool = false
 var _qa_tower_draw: bool = false
 var _tt_disabled: bool = false
 var _tt_no_batch: bool = false
+var _tt_no_lights: bool = false
+var _tt_moving_leaves: int = 0
 var _shot_dir_override: String = ""
 var _tower: Node3D = null
 var _tower_xf: Transform3D = Transform3D.IDENTITY
@@ -632,6 +635,8 @@ func _ready() -> void:
 			_tt_disabled = true
 		elif arg == "--tower-no-batch":
 			_tt_no_batch = true
+		elif arg == "--tower-no-lights":
+			_tt_no_lights = true
 		elif arg.begins_with("--shot-dir="):
 			_shot_dir_override = arg.substr(11)
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
@@ -5111,6 +5116,13 @@ func _physics_process(delta: float) -> void:
 			h = h.move_toward(Vector3.ZERO, GROUND_FRICTION * delta)
 	elif dir != Vector3.ZERO:
 		h = h.move_toward(target, AIR_ACCEL * delta)
+	# Godot skips floor snap when velocity.dot(up) > 0. A grounded slide can leave a
+	# +epsilon residual, which launches the body off a stair crest onto the down ramp.
+	# Clamp only that residual. Forcing a downward speed, or projecting the wish onto
+	# the floor normal, feeds back on promenade lip contacts and drops walk speed
+	# from 5.2 m/s to about 2 m/s. Jumps set v_up to JUMP_VELOCITY and stay free.
+	if b.is_on_floor() and v_up > 0.0 and v_up < JUMP_VELOCITY * 0.5:
+		v_up = 0.0
 	b.velocity = h + up_dir * v_up
 
 	# Smooth step-up over small ledges (thresholds, treads, slab lips) — only for wall-like hits,
@@ -5136,6 +5148,15 @@ func _physics_process(delta: float) -> void:
 	var was_on_floor: bool = b.is_on_floor()
 	var up_vel_before: float = v_up
 	_move_body_swept(b, delta, up_dir)
+	# Crest backup: if a downhill lip still leaves the body airborne without a jump,
+	# snap back onto the ramp. floor_snap_length is unchanged, so a real drop past
+	# that length still falls. A successful snap must not keep an upward residual.
+	if was_on_floor and not b.is_on_floor() and up_vel_before < JUMP_VELOCITY * 0.5:
+		b.apply_floor_snap()
+		if b.is_on_floor():
+			var vu_snap: float = b.velocity.dot(b.up_direction)
+			if vu_snap > 0.0:
+				b.velocity -= b.up_direction * vu_snap
 	# Orient ran at the pre-move position. On the 10 m ring a 63 m/s step is about 6 deg,
 	# so the basis would still lag the radial up when the frame is sampled.
 	var up_after: Vector3 = up_dir
@@ -12011,8 +12032,11 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		int(stats.get("meshes", 0)), int(stats.get("tris", 0)), int(stats.get("colliders", 0)), int(stats.get("ms", 0))])
 	var nw: int = _tt_bind_water(tower)
 	print("[TT] water placeholder surfaces=%d" % nw)
-	var nd: int = _tt_setup_doors(tower)
-	print("[TT] sliding doors=%d (secondary entrances S/N/E)" % nd)
+	_tt_setup_doors(tower)
+	if _tt_no_lights:
+		print("[TT] interior lights skipped (--tower-no-lights)")
+	else:
+		_TennisTowerLights.run(tower)
 	_tower_body_rids.clear()
 	var stack_b: Array[Node] = [tower]
 	while not stack_b.is_empty():
@@ -12028,9 +12052,11 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		return
 	_tower_batch_stats = _TennisTowerBatcher.run(tower)
 	var b: Dictionary = _tower_batch_stats
-	print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d ms=%.1f" % [
+	var still: int = _tt_count_moving_leaves(tower)
+	print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d nobatch=%d ms=%.1f" % [
 		int(b["mi_before"]), int(b["surfaces_before"]), int(b["mmi"]), int(b["instances_in_mmi"]), int(b["mi_after"]),
-		int(b["surfaces_after"]), int(b["ranged"]), float(b["ms"])])
+		int(b["surfaces_after"]), int(b["ranged"]), int(b["nobatch"]), float(b["ms"])])
+	print("[TT] moving leaves tagged=%d still_individual=%d" % [_tt_moving_leaves, still])
 
 
 func _tt_water_material() -> StandardMaterial3D:
@@ -12221,6 +12247,140 @@ func _qa_tower_settle_on(label: String, q_plan: Vector3, expect_y: float) -> voi
 	_qa_tower_check(label, ok, "q=(%.2f, %.3f, %.2f) expect_y=%.2f on_floor=%s up_dot=%.5f g_dot=%.5f" % [q.x, q.y, q.z, expect_y, str(_player_body.is_on_floor()), up_dot, g_dot])
 
 
+func _qa_tower_ray_hit(x: float, z: float, y0: float, depth: float) -> Dictionary:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var from_w: Vector3 = _tower_xf * Vector3(x, y0, z)
+	var to_w: Vector3 = _tower_xf * Vector3(x, y0 - depth, z)
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from_w, to_w)
+	if _player_body != null:
+		rq.exclude = [_player_body.get_rid()]
+	var hit: Dictionary = space.intersect_ray(rq)
+	if not hit.has("position"):
+		return {"y": -999.0, "name": ""}
+	var hy: float = (_tower_inv * (hit["position"] as Vector3)).y
+	var cn: Node = hit.get("collider") as Node
+	var nm: String = String(cn.name) if cn != null else ""
+	return {"y": hy, "name": nm}
+
+
+func _qa_tower_print_rays(tag: String, pts: Array) -> void:
+	for p: Array in pts:
+		var x: float = float(p[0])
+		var z: float = float(p[1])
+		var y0: float = float(p[2])
+		var h: Dictionary = _qa_tower_ray_hit(x, z, y0, y0 + 2.0)
+		print("[TT] ray %s (%.2f, %.2f) from_y=%.2f hit_y=%.3f %s" % [tag, x, z, y0, float(h["y"]), String(h["name"])])
+
+
+func _qa_tower_rows(rows: Array) -> void:
+	for leg: Array in rows:
+		var r: Dictionary = await _qa_tower_walk_leg(String(leg[0]), leg[1] as Vector3, int(leg[2]))
+		_qa_tower_leg_report(r)
+
+
+## Mouse-yaw onto the next goal before KEY_W. A reversal on the 2.5 m top landing
+## arcs off the slab if forward is held through the ~180 deg turn (max ~5.5 deg/frame).
+func _qa_tower_face(goal_plan: Vector3) -> void:
+	_qa_key(KEY_W, false)
+	var goal_w: Vector3 = _tower_xf * goal_plan
+	var spins: int = 0
+	while spins < 48:
+		var up: Vector3 = _player_body.global_transform.basis.y
+		var fwd: Vector3 = -_player_body.global_transform.basis.z
+		fwd = fwd - up * fwd.dot(up)
+		var want: Vector3 = goal_w - _player_body.global_position
+		want = want - up * want.dot(up)
+		if fwd.length_squared() < 0.0004 or want.length_squared() < 0.0004:
+			break
+		if absf(fwd.normalized().signed_angle_to(want.normalized(), up)) < 0.05:
+			break
+		_qa_ring_steer(want)
+		await get_tree().physics_frame
+		spins += 1
+
+
+func _qa_tower_faced_rows(rows: Array) -> void:
+	for leg: Array in rows:
+		await _qa_tower_face(leg[1] as Vector3)
+		var r: Dictionary = await _qa_tower_walk_leg(String(leg[0]), leg[1] as Vector3, int(leg[2]))
+		_qa_tower_leg_report(r)
+
+
+func _qa_tower_at_level(label: String, expect_y: float) -> void:
+	await _qa_frames(20)
+	var q: Vector3 = _tower_inv * _player_body.global_position
+	var up_dot: float = _player_body.up_direction.dot(_tower_up)
+	var ok: bool = _player_body.is_on_floor() and absf(q.y - expect_y) < 0.2 and up_dot >= 0.9995
+	_qa_tower_check(label, ok, "q=(%.2f, %.3f, %.2f) expect_y=%.2f on_floor=%s up_dot=%.5f" % [q.x, q.y, q.z, expect_y, str(_player_body.is_on_floor()), up_dot])
+
+
+## South half of the Z=39.5 bay. Centre mullion is local x ~0; the open half is local x ~-0.50 (plan Z 39.005).
+func _qa_tower_w_door_walk() -> void:
+	var bay_z: float = 39.005
+	var terr: Dictionary = _qa_tower_ray_hit(-22.5, bay_z, 1.5, 3.5)
+	var terr_y: float = float(terr["y"])
+	if terr_y < -2.0:
+		terr_y = 0.0
+	print("[TT] W terrace ray y=%.3f collider=%s" % [terr_y, String(terr["name"])])
+	var feet: Vector3 = _tower_xf * Vector3(-22.5, terr_y, bay_z)
+	_qa_tower_place(feet, _tower_up, _tower_xf * Vector3(-16.0, terr_y, bay_z))
+	await _qa_frames(40)
+	await _qa_tower_rows([
+		["W_terrace_to_apron", Vector3(-16.0, terr_y, bay_z), 800],
+		["W_apron_through_bay", Vector3(-10.5, terr_y, bay_z), 800],
+		["W_bay_to_foyer", Vector3(-6.0, terr_y, bay_z), 800],
+	])
+
+
+## tt_stair_core_a at (35.1, y, 17.75), yaw 90. Flight1 is north of the well guard (Z 18.9),
+## flight2 is south (Z 16.4). The guard's west end is X 32.7 and its east end is X 37.5,
+## so the switchback corners stay at X 31.2 and X 38.5. A stand module covers X>=40.2 at
+## Z 15.5..19.8, so the F1 start is X 39.2, not 42.
+func _qa_tower_stair_walk() -> void:
+	_qa_tower_print_rays("stair", [
+		[42.0, 18.9, 2.5], [39.2, 18.9, 2.5], [37.0, 18.9, 2.5], [33.0, 18.9, 4.0],
+		[31.2, 18.9, 5.0], [31.2, 16.4, 5.0], [34.8, 16.4, 6.5], [38.5, 16.4, 8.0], [38.6, 18.9, 8.0],
+		[38.6, 18.9, 14.5], [33.0, 18.9, 10.5], [38.5, 16.4, 14.0],
+	])
+	var foot: Dictionary = _qa_tower_ray_hit(39.2, 18.9, 2.0, 4.0)
+	var sy: float = float(foot["y"])
+	if sy < -2.0:
+		sy = 0.0
+	print("[TT] stair foot ray y=%.3f collider=%s" % [sy, String(foot["name"])])
+	_qa_tower_place(_tower_xf * Vector3(39.2, sy, 18.9), _tower_up, _tower_xf * Vector3(33.0, sy, 18.9))
+	await _qa_frames(40)
+	await _qa_tower_rows([
+		["stair_F1_flight1", Vector3(33.0, 2.6, 18.9), 700],
+		["stair_F1_mid", Vector3(31.2, 3.05, 18.9), 500],
+		["stair_F1_around_guard", Vector3(31.2, 3.05, 16.4), 500],
+		["stair_F1_flight2", Vector3(34.8, 4.3, 16.4), 600],
+		["stair_F1_top", Vector3(38.5, 6.1, 16.4), 600],
+		["stair_F1_to_F2_foot", Vector3(38.6, 6.1, 18.9), 500],
+	])
+	await _qa_tower_at_level("F2_stair_arrived", 6.1)
+	await _qa_tower_rows([
+		["stair_F2_flight1", Vector3(33.0, 8.7, 18.9), 700],
+		["stair_F2_mid", Vector3(31.2, 9.15, 18.9), 500],
+		["stair_F2_around_guard", Vector3(31.2, 9.15, 16.4), 500],
+		["stair_F2_flight2", Vector3(34.8, 10.4, 16.4), 600],
+		["stair_F2_top", Vector3(38.5, 12.2, 16.4), 600],
+		["stair_F2_to_F3_foot", Vector3(38.6, 12.2, 18.9), 500],
+	])
+	await _qa_tower_at_level("F3_stair_arrived", 12.2)
+	# Same walk back down: face each turn, then hold forward across the crest.
+	await _qa_tower_faced_rows([
+		["stair_F3_back_top", Vector3(38.5, 12.2, 16.4), 500],
+		["stair_F2_down_flight2", Vector3(31.2, 9.15, 16.4), 800],
+		["stair_F2_back_mid", Vector3(31.2, 9.15, 18.9), 500],
+		["stair_F2_down_flight1", Vector3(39.0, 6.1, 18.9), 800],
+		["stair_F2_back_top", Vector3(38.5, 6.1, 16.4), 500],
+		["stair_F1_down_flight2", Vector3(31.2, 3.05, 16.4), 800],
+		["stair_F1_back_mid", Vector3(31.2, 3.05, 18.9), 500],
+		["stair_F1_down_flight1", Vector3(39.0, 0.0, 18.9), 800],
+	])
+	await _qa_tower_at_level("F1_stair_arrived", 0.0)
+
+
 func _run_qa_tower_walk() -> void:
 	_qa_failures = 0
 	var guard: int = 0
@@ -12258,7 +12418,7 @@ func _run_qa_tower_walk() -> void:
 	var hit: Dictionary = space.intersect_ray(rq)
 	var hy: float = (_tower_inv * (hit["position"] as Vector3)).y if hit.has("position") else -999.0
 	_qa_tower_check("F1_floor_ray", absf(hy) < 0.03, "floor_q_y=%.4f" % hy)
-	# Stairs are switchback cores (no scripted route yet). Check F2/F3 gravity on the stair-core landings and Rook's probe decks.
+	# F2/F3 gravity on the stair-core landings and Rook's probe decks. The walked stair is after the drum return.
 	await _qa_tower_settle_on("F2_W_gallery_tower_down", Vector3(-5.0, 0.0, 40.0), 6.112)
 	await _qa_tower_settle_on("F3_deck_tower_down", Vector3(70.0, 0.0, 4.0), 12.2)
 	# Back out through the S door to the drum floor: gravity returns to radial.
@@ -12270,6 +12430,8 @@ func _run_qa_tower_walk() -> void:
 	var pe: Vector3 = _player_body.global_position
 	_qa_tower_check("radial_outside", _player_body.up_direction.dot(_drum_up_at(pe)) > 0.9995 and absf(_drum_rho(pe) - DRUM_FLOOR_R) < 0.3,
 		"pos=%s rho=%.3f up_dot_radial=%.5f w=%.3f" % [str(pe), _drum_rho(pe), _player_body.up_direction.dot(_drum_up_at(pe)), _tt_weight(pe)])
+	await _qa_tower_w_door_walk()
+	await _qa_tower_stair_walk()
 	_qa_ring_release()
 	print("QA_TOWER_WALK DONE failures=%d" % _qa_failures)
 	get_tree().quit(0 if _qa_failures == 0 else 1)
@@ -12329,14 +12491,28 @@ func _run_shot_tower() -> void:
 	await _qa_frames(20)
 	if not await _shot_curve_save(dir + "/tower_lobby.png"):
 		failures += 1
-	print("[SHOT-TOWER] dir=%s exterior_eye=%s base_eye=%s lobby_eye=%s" % [dir, str(ext_eye), str(base_eye), str(lob_eye)])
+	# W bay open: player stands within 4 m of the Z=39.5 bay so the south half slides open.
+	var bay_z: float = 39.005
+	_player_body.global_position = _tower_xf * Vector3(-8.5, 0.3, bay_z)
+	var w_eye: Vector3 = _tower_xf * Vector3(-6.0, 1.7, 41.0)
+	_qa_free_cam(w_eye, _tower_xf * Vector3(-13.2, 1.5, bay_z), _tower_up, 70.0)
+	await _qa_frames(50)
+	if not await _shot_curve_save(dir + "/tower_wdoor.png"):
+		failures += 1
+	# F1 floor at the stair-core foot, looking up Flight1.
+	var s_eye: Vector3 = _tower_xf * Vector3(39.0, 1.7, 18.9)
+	_qa_free_cam(s_eye, _tower_xf * Vector3(33.0, 2.6, 18.9), _tower_up, 70.0)
+	await _qa_frames(20)
+	if not await _shot_curve_save(dir + "/tower_stair.png"):
+		failures += 1
+	print("[SHOT-TOWER] dir=%s exterior_eye=%s base_eye=%s lobby_eye=%s wdoor_eye=%s stair_eye=%s" % [dir, str(ext_eye), str(base_eye), str(lob_eye), str(w_eye), str(s_eye)])
 	print("[SHOT-TOWER] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
 
 # ------------------------------------------------------------------------------
 # [TT] --qa-tower-draw. Windowed. RenderingServer frame stats from the spawn view and the lobby.
-# Run with --no-tower / --tower-no-batch for the before numbers.
+# Run with --no-tower / --tower-no-batch / --tower-no-lights for the before numbers.
 # ------------------------------------------------------------------------------
 func _qa_tower_draw_sample(label: String, eye: Vector3, at: Vector3, up: Vector3, mode: String) -> void:
 	_qa_free_cam(eye, at, up, 70.0)
@@ -12346,12 +12522,14 @@ func _qa_tower_draw_sample(label: String, eye: Vector3, at: Vector3, up: Vector3
 	var dc: float = 0.0
 	var ob: float = 0.0
 	var pr: float = 0.0
+	var fps: float = 0.0
 	for _i: int in range(n):
 		await get_tree().process_frame
 		dc += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
 		ob += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME))
 		pr += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME))
-	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n))])
+		fps += float(Engine.get_frames_per_second())
+	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d avg_fps=%d" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n)), int(round(fps / n))])
 
 
 func _run_qa_tower_draw() -> void:
@@ -12365,6 +12543,8 @@ func _run_qa_tower_draw() -> void:
 	if _hud != null:
 		_hud.visible = false
 	var mode: String = "no_tower" if _tt_disabled else ("unbatched" if _tt_no_batch else "batched")
+	if not _tt_disabled:
+		mode += "_nolights" if _tt_no_lights else "_lights"
 	var xf: Transform3D = _tt_drop_transform()
 	var spawn: Vector3 = bend_point(SPAWN_POS)
 	var stand: Basis = _bend_stand_basis(spawn, SPAWN_YAW_DEG)
@@ -12381,11 +12561,13 @@ func _run_qa_tower_draw() -> void:
 
 
 # ------------------------------------------------------------------------------
-# [TT] Secondary entrances (S/N/E). Rook modelled the glass leaves closed and the
-# invisible Wall-colonly glass-line collider runs across the door opening (y 0.5..6.1).
-# Runtime only (GLB untouched): that collider shape is disabled and rebuilt as
-# header + side boxes around the leaf opening; the two inner leaves slide behind the
-# outer pair when the player is near, and an inner-leaf box blocks while they are shut.
+# [TT] Secondary entrances (S/N/E) and the 11 west entrance bays.
+# Rook modelled the glass leaves closed. Wall-colonly spans the opening (y 0.5..6.1).
+# Runtime only (GLB untouched): that shape is disabled and rebuilt as header + side
+# boxes + closed-leaf blockers. The two inner leaves slide behind the outer pair
+# when the player is within TT_DOOR_OPEN_DIST, and the inner box drops once open.
+# West bay (module local, yaw -90): leaves ~0.82 m, centre mullion at x -0.07..0.07.
+# Sliding only the inner leaves leaves a clear half of ~0.95 m, so the outer leaves stay.
 # ------------------------------------------------------------------------------
 const TT_DOOR_WALL_Z0 := -1.061
 const TT_DOOR_WALL_Z1 := -0.961
@@ -12396,6 +12578,15 @@ const TT_DOOR_TOP := 2.45
 const TT_DOOR_SLIDE := 1.713
 const TT_DOOR_OPEN_DIST := 4.0
 const TT_DOOR_SPEED := 1.6
+# West bay wall slab z -1.15..-1.05. Outer leaves end at x -1.02 / 1.039; inner leaves are ~0.82 / 0.84 m.
+const TT_BAY_WALL_Z0 := -1.150
+const TT_BAY_WALL_Z1 := -1.050
+const TT_BAY_WALL_X0 := -1.999
+const TT_BAY_WALL_X1 := 1.999
+const TT_BAY_OUTER_W0 := -1.840
+const TT_BAY_OUTER_W1 := -1.020
+const TT_BAY_OUTER_E0 := 1.039
+const TT_BAY_OUTER_E1 := 1.880
 
 
 func _tt_box_shape(body: StaticBody3D, nm: String, x0: float, x1: float, y0: float, y1: float, z0: float, z1: float) -> CollisionShape3D:
@@ -12409,39 +12600,135 @@ func _tt_box_shape(body: StaticBody3D, nm: String, x0: float, x1: float, y0: flo
 	return cs
 
 
+func _tt_find_named(n: Node, nm: String) -> Node:
+	if String(n.name) == nm:
+		return n
+	for c: Node in n.get_children():
+		var f: Node = _tt_find_named(c, nm)
+		if f != null:
+			return f
+	return null
+
+
+func _tt_door_side(nm: String) -> String:
+	if nm.begins_with("tt_entrance_bay"):
+		return "W"
+	if nm.begins_with("tt_secondary_entrance_s"):
+		return "S"
+	if nm.begins_with("tt_secondary_entrance_n"):
+		return "N"
+	if nm.begins_with("tt_secondary_entrance_e"):
+		return "E"
+	return ""
+
+
+func _tt_setup_one_door(r: Node3D, spec: Dictionary, measure_slide: bool) -> bool:
+	var wall: StaticBody3D = _tt_find_named(r, "Wall-colonly") as StaticBody3D
+	if wall == null:
+		return false
+	for ch2: Node in wall.get_children():
+		if ch2 is CollisionShape3D:
+			(ch2 as CollisionShape3D).disabled = true
+	var z0: float = float(spec["z0"])
+	var z1: float = float(spec["z1"])
+	var wall0: float = float(spec["wall0"])
+	var wall1: float = float(spec["wall1"])
+	_tt_box_shape(wall, "TT_Header", wall0, wall1, TT_DOOR_TOP, 6.1, z0, z1)
+	_tt_box_shape(wall, "TT_SideW", wall0, float(spec["side_w1"]), 0.5, TT_DOOR_TOP, z0, z1)
+	_tt_box_shape(wall, "TT_SideE", float(spec["side_e0"]), wall1, 0.5, TT_DOOR_TOP, z0, z1)
+	_tt_box_shape(wall, "TT_OuterLeafW", float(spec["outer_w0"]), float(spec["outer_w1"]), 0.18, TT_DOOR_TOP, z0, z1)
+	_tt_box_shape(wall, "TT_OuterLeafE", float(spec["outer_e0"]), float(spec["outer_e1"]), 0.18, TT_DOOR_TOP, z0, z1)
+	var inner: CollisionShape3D = _tt_box_shape(wall, "TT_InnerLeaves", float(spec["inner0"]), float(spec["inner1"]), 0.18, TT_DOOR_TOP, z0, z1)
+	var leaves: Array = []
+	for nm: String in ["Door_Scissor_01", "Door_Scissor_10"]:
+		var mi: MeshInstance3D = _tt_find_named(r, nm) as MeshInstance3D
+		if mi == null:
+			continue
+		mi.set_meta("tt_no_batch", true)
+		var slide: float = TT_DOOR_SLIDE
+		if measure_slide and mi.mesh != null:
+			slide = mi.mesh.get_aabb().size.x
+		var leaf: Dictionary = {"mi": mi, "base": mi.position, "dir": -1.0 if nm.ends_with("01") else 1.0}
+		if measure_slide:
+			leaf["slide"] = slide
+		leaves.append(leaf)
+		_tt_moving_leaves += 1
+	_tt_doors.append({"root": r, "inner": inner, "leaves": leaves, "t": 0.0})
+	return true
+
+
 func _tt_setup_doors(tower: Node3D) -> int:
-	var roots: Array[Node3D] = []
+	var sec: Dictionary = {
+		"z0": TT_DOOR_WALL_Z0, "z1": TT_DOOR_WALL_Z1,
+		"wall0": -TT_DOOR_HALF_W, "wall1": TT_DOOR_HALF_W,
+		"side_w1": -TT_DOOR_LEAF_HALF, "side_e0": TT_DOOR_LEAF_HALF,
+		"outer_w0": -TT_DOOR_LEAF_HALF, "outer_w1": -TT_DOOR_INNER_HALF,
+		"outer_e0": TT_DOOR_INNER_HALF, "outer_e1": TT_DOOR_LEAF_HALF,
+		"inner0": -TT_DOOR_INNER_HALF, "inner1": TT_DOOR_INNER_HALF,
+	}
+	var bay: Dictionary = {
+		"z0": TT_BAY_WALL_Z0, "z1": TT_BAY_WALL_Z1,
+		"wall0": TT_BAY_WALL_X0, "wall1": TT_BAY_WALL_X1,
+		"side_w1": TT_BAY_OUTER_W0, "side_e0": TT_BAY_OUTER_E1,
+		"outer_w0": TT_BAY_OUTER_W0, "outer_w1": TT_BAY_OUTER_W1,
+		"outer_e0": TT_BAY_OUTER_E0, "outer_e1": TT_BAY_OUTER_E1,
+		"inner0": TT_BAY_OUTER_W1, "inner1": TT_BAY_OUTER_E0,
+	}
+	var ns: int = 0
+	var nn: int = 0
+	var ne: int = 0
+	var nw: int = 0
+	var printed_bay: bool = false
 	var stack: Array[Node] = [tower]
 	while not stack.is_empty():
 		var c: Node = stack.pop_back()
 		for ch: Node in c.get_children():
 			stack.append(ch)
-		if c is Node3D and String(c.name).begins_with("tt_secondary_entrance_"):
-			roots.append(c as Node3D)
-	for r: Node3D in roots:
-		var wall: StaticBody3D = r.get_node_or_null("Wall-colonly") as StaticBody3D
-		if wall == null:
+		if not (c is Node3D):
 			continue
-		for ch2: Node in wall.get_children():
-			if ch2 is CollisionShape3D:
-				(ch2 as CollisionShape3D).disabled = true
-		var z0: float = TT_DOOR_WALL_Z0
-		var z1: float = TT_DOOR_WALL_Z1
-		_tt_box_shape(wall, "TT_Header", -TT_DOOR_HALF_W, TT_DOOR_HALF_W, TT_DOOR_TOP, 6.1, z0, z1)
-		_tt_box_shape(wall, "TT_SideW", -TT_DOOR_HALF_W, -TT_DOOR_LEAF_HALF, 0.5, TT_DOOR_TOP, z0, z1)
-		_tt_box_shape(wall, "TT_SideE", TT_DOOR_LEAF_HALF, TT_DOOR_HALF_W, 0.5, TT_DOOR_TOP, z0, z1)
-		_tt_box_shape(wall, "TT_OuterLeafW", -TT_DOOR_LEAF_HALF, -TT_DOOR_INNER_HALF, 0.18, TT_DOOR_TOP, z0, z1)
-		_tt_box_shape(wall, "TT_OuterLeafE", TT_DOOR_INNER_HALF, TT_DOOR_LEAF_HALF, 0.18, TT_DOOR_TOP, z0, z1)
-		var inner: CollisionShape3D = _tt_box_shape(wall, "TT_InnerLeaves", -TT_DOOR_INNER_HALF, TT_DOOR_INNER_HALF, 0.18, TT_DOOR_TOP, z0, z1)
-		var leaves: Array = []
-		for nm: String in ["Door_Scissor_01", "Door_Scissor_10"]:
-			var mi: MeshInstance3D = r.get_node_or_null(nm) as MeshInstance3D
-			if mi == null:
-				continue
-			mi.set_meta("tt_no_batch", true)
-			leaves.append({"mi": mi, "base": mi.position, "dir": -1.0 if nm.ends_with("01") else 1.0})
-		_tt_doors.append({"root": r, "inner": inner, "leaves": leaves, "t": 0.0})
+		var side: String = _tt_door_side(String(c.name))
+		if side == "":
+			continue
+		var r: Node3D = c as Node3D
+		if side == "W" and not printed_bay:
+			printed_bay = true
+			var names: String = ""
+			for ch3: Node in r.get_children():
+				names += String(ch3.name) + " "
+			print("[TT] entrance bay nodes: %s" % names)
+			for lnm: String in ["Door_Scissor_00", "Door_Scissor_01", "Door_Scissor_10", "Door_Scissor_11"]:
+				var lmi: MeshInstance3D = _tt_find_named(r, lnm) as MeshInstance3D
+				if lmi != null and lmi.mesh != null:
+					var ab: AABB = lmi.mesh.get_aabb()
+					print("[TT] bay leaf %s x=%.3f..%.3f y=%.3f..%.3f w=%.3f" % [lnm, ab.position.x, ab.position.x + ab.size.x, ab.position.y, ab.position.y + ab.size.y, ab.size.x])
+		var ok: bool = _tt_setup_one_door(r, (bay if side == "W" else sec), side == "W")
+		if not ok:
+			continue
+		if side == "S":
+			ns += 1
+		elif side == "N":
+			nn += 1
+		elif side == "E":
+			ne += 1
+		else:
+			nw += 1
+	print("[TT] sliding doors=%d (S=%d N=%d E=%d W=%d)" % [ns + nn + ne + nw, ns, nn, ne, nw])
 	return _tt_doors.size()
+
+
+func _tt_count_moving_leaves(tower: Node3D) -> int:
+	var n: int = 0
+	var stack: Array[Node] = [tower]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		for ch: Node in c.get_children():
+			stack.append(ch)
+		if c is MeshInstance3D:
+			var mi: MeshInstance3D = c as MeshInstance3D
+			var nm: String = String(mi.name)
+			if mi.visible and mi.has_meta("tt_no_batch") and (nm == "Door_Scissor_01" or nm == "Door_Scissor_10"):
+				n += 1
+	return n
 
 
 func _tt_update_doors(delta: float) -> void:
@@ -12459,6 +12746,7 @@ func _tt_update_doors(delta: float) -> void:
 		var e: float = smoothstep(0.0, 1.0, t)
 		for lf: Dictionary in d["leaves"]:
 			var mi: MeshInstance3D = lf["mi"] as MeshInstance3D
+			var slide: float = float(lf["slide"]) if lf.has("slide") else TT_DOOR_SLIDE
 			# Slide along local X behind the outer leaf (3 cm inboard so the glass does not z-fight).
-			mi.position = (lf["base"] as Vector3) + Vector3(float(lf["dir"]) * TT_DOOR_SLIDE * e, 0.0, -0.03 * minf(e * 4.0, 1.0))
+			mi.position = (lf["base"] as Vector3) + Vector3(float(lf["dir"]) * slide * e, 0.0, -0.03 * minf(e * 4.0, 1.0))
 		(d["inner"] as CollisionShape3D).disabled = t > 0.85

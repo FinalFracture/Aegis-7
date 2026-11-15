@@ -81,7 +81,7 @@ static func _surfaces(mi: MeshInstance3D) -> int:
 static func run(tower: Node3D) -> Dictionary:
 	var t0: int = Time.get_ticks_usec()
 	var st: Dictionary = {"mi_before": 0, "surfaces_before": 0, "mmi": 0, "batched_mi": 0, "mi_after": 0,
-		"surfaces_after": 0, "instances_in_mmi": 0, "ranged": 0, "ms": 0.0}
+		"surfaces_after": 0, "instances_in_mmi": 0, "ranged": 0, "nobatch": 0, "ms": 0.0}
 	var inv_tower: Transform3D = tower.global_transform.affine_inverse()
 	for tag_node: Node in tower.get_children():
 		if not (tag_node is Node3D) or not String(tag_node.name).begins_with("Tag_"):
@@ -99,6 +99,8 @@ static func run(tower: Node3D) -> Dictionary:
 			var aabb: AABB = gx * mi.mesh.get_aabb()
 			var small: bool = aabb.size[aabb.get_longest_axis_index()] < SMALL_M
 			if _has_surface_override(mi) or _has_visual_child(mi) or mi.has_meta("tt_no_batch"):
+				if mi.has_meta("tt_no_batch"):
+					st["nobatch"] = int(st["nobatch"]) + 1
 				_apply_range(mi, _range_for(tag, small))
 				st["ranged"] = int(st["ranged"]) + 1
 				continue
