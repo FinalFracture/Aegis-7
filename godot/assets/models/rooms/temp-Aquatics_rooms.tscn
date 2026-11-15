@@ -153,7 +153,7 @@ position = Vector3(-10.565, 6.108, 63.0)
 position = Vector3(-6.0, 6.096, 39.5)
 
 [node name="tt_gallery_nature_relief_27" parent="." instance=ExtResource("27")]
-position = Vector3(-5.7593, 6.708, 38.5)
+position = Vector3(-5.7543, 6.708, 38.5)
 
 [node name="tt_gallery_window_frames_28" parent="." instance=ExtResource("28")]
 position = Vector3(-0.19, 7.104, 38.75)

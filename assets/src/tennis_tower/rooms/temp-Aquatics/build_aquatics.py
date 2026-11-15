@@ -229,12 +229,16 @@ def gallery():
     finish(it,(-5.8,-.2,20.8,58.2),[],6.1)
     emit('tt_gallery_floor',it,'12mm terrazzo finish, lockers and benches rest on top')
     it=[]
+    # TTQA-039 / Rev 3.8.1 (Rook): the relief hangs on the solid F2 gallery wall (tt_struct_f2_walls Walls_F2, X -6.1..-5.9,
+    # full height 6.096..11.704 between the door openings Z 26-28/38-40/50-52). Panels were 4 mm inside that face; snapped
+    # so the panel backs sit 1 mm off the +X wall face (X -5.899). Walkway in front to the window wall (X -0.151) stays 5.46 m.
+    GX=.005
     for z in (23,32,46,54):
-        B(it,'Gallery_CrestPanel',G,-5.904,-5.82,6.7,8.65,z-.47,z+.47)
-        B(it,'Gallery_SportStripe',CY,-5.824,-5.806,6.82,6.86,z-.4,z+.4)
-        for j in range(4): add(it,'Gallery_LeafCrests',LF2,leaf_dir((-5.77,7+j*.32,z-.25),(.5,1,.3),.36,.20))
-        add(it,'Gallery_BallCrest',BA,cap((-5.79,8.45,z+.22),.11,.025,12,axis='x'))
-    emit('tt_gallery_nature_relief',it,'Sculpted leaf and sport relief on gallery partition, clear of doors')
+        B(it,'Gallery_CrestPanel',G,-5.904+GX,-5.82+GX,6.7,8.65,z-.47,z+.47)
+        B(it,'Gallery_SportStripe',CY,-5.824+GX,-5.806+GX,6.82,6.86,z-.4,z+.4)
+        for j in range(4): add(it,'Gallery_LeafCrests',LF2,leaf_dir((-5.77+GX,7+j*.32,z-.25),(.5,1,.3),.36,.20))
+        add(it,'Gallery_BallCrest',BA,cap((-5.79+GX,8.45,z+.22),.11,.025,12,axis='x'))
+    emit('tt_gallery_nature_relief',it,'Sculpted leaf and sport relief on the solid F2 gallery wall face, clear of doors')
     it=[]
     for a,b in ((22,29.5),(31,33.8),(45.2,47.8),(49.2,55.5)):
         for y0,y1 in ((7.096,7.16),(9.04,9.104)): B(it,'Window_AlloyFrame',ST,-.22,-.146,y0,y1,a-.004,b+.004)

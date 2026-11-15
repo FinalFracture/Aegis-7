@@ -307,14 +307,14 @@
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_gallery_nature_relief.glb",
       "p": [
-        -5.7593,
+        -5.7543,
         6.708,
         38.5
       ],
       "yaw": 0,
       "tag": "finish",
       "room": "F2-GAL",
-      "note": "Sculpted leaf and sport relief on gallery partition, clear of doors"
+      "note": "Sculpted leaf and sport relief on the solid F2 gallery wall face, clear of doors"
     },
     {
       "glb": "/workspace/game-project/godot/assets/models/tt_gallery_window_frames.glb",
