@@ -130,7 +130,9 @@ def _hollow_rake(p, W, n, R, T, seats_only=False, structure_only=False):
             peds.append(box(x0 + HA + .14, x1 - HA - .14, y + GAP, y + .36, zc - .035, zc + .035))
             seats.append(box(x0 + HA + .16, x1 - HA - .16, y + .36 + GAP, y + .43, zc - .17, zc + .19))
             backs.append(box(x0 + HA + .16, x1 - HA - .16, y + .43 + GAP, y + .80, zc - .195, zc - .175))
-            col_rows.append(box(x0 + HA + .14, x1 - HA - .14, y + GAP, y + .80, zc - .17, zc + .19))
+            # TTQA-034: pan-height block + back slab instead of one box to back height over the whole seat depth
+            col_rows.append(box(x0 + HA + .14, x1 - HA - .14, y + GAP, y + .43, zc - .17, zc + .19))
+            col_rows.append(box(x0 + HA + .16, x1 - HA - .16, y + .43, y + .80, zc - .2, zc - .17))
         p.add("Seat_Beams", G, *peds)
         p.add("Seat_Pans", WH, *seats)
         p.add("Seat_Backs", WH, *backs)

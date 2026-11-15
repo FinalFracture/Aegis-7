@@ -51,7 +51,9 @@ def build(q):
             Lc += [clump((x0, y + .16, zt + .249), .17, int(y))]
         T += [node((x0, 11.4, zt), .12, 0)]
         for a in (0, np.pi/3, -np.pi/3, np.pi): Lc.append(xf(crest((0, 0, 0)), R=trimesh.transformations.rotation_matrix(a, [0, 1, 0]), t=(x0, 11.4 + .12 - .01, zt)))
-        p.add("Trunk-convcolonly", G, box(x0 - .2, x0 + .2, 0, 11.5, zt - .2, zt + .2))
+        # TTQA-034: fit the visible trunk (r .085 tube, crown node r .12) + pedestal instead of one 0.4 x 0.4 m box to 11.5 m
+        p.add("Trunk-convcolonly", G, box(x0 - .09, x0 + .09, .45, 11.52, zt - .09, zt + .09))
+        p.add("Pedestal-convcolonly", SL, box(x0 - .2, x0 + .2, 0, .45, .42 - E, .84))
     p.add("Branch_Trunk", G, *T); p.add("Fork_Leaves", LF, *Lc[:-4] if False else Lc)
     p.add("Wall-colonly", G, box(X0, X1, .6, H, -.08, .02)); p.add("Plinth-colonly", SL, box(X0, X1, 0, .7, -.1, .42))
     return p
