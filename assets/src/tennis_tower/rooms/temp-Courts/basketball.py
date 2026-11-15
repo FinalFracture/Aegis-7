@@ -201,6 +201,11 @@ def scoreboard(q=None):
     p.add("Ball_Caps", BA, node((-1.9, 1.20, 0), .05, 0), node((1.9, 1.20, 0), .05, 0))
     p.add("Leaf_Crest", LF, leaf_dir((0, 1.18, 0), (0, 1, 0), .22, .08, t=.008))
     p.add("Body-colonly", G, box(-2.0, 2.0, 0, 1.15, -.16, .16))
+    # TTQA-040: hanger cables from the two eyes to the tt_roof_bay underside (y 25.471; board placed at y 19.7) + ceiling cleats
+    HT = 25.471 - 19.7
+    # cables sit 0.06 m off the board centre line so they clear the ball-net seam edge cables at X 71.483..71.517
+    p.add("Hanger_Cables", ST, *[tube((xh, 1.15 - E, .06), (xh, HT - .03 + E, .06), .012, 6) for xh in (-.75, .75)])
+    p.add("Ceiling_Cleats", ST, *[box(xh - .06, xh + .06, HT - .03, HT + .004, 0, .12) for xh in (-.75, .75)])
     return p
 
 def _check_normals(path):
