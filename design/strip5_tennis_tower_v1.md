@@ -803,3 +803,13 @@ Rev 2.3 questions answered (Rev 2.4): seats don't matter; terraces + ramps OK; F
 14. **TTQA-048:** info only, covered by item 6.
 
 15. **Slide bridges (TTQA-023, Vance proposal; missing from the decision list, added under the Rev 3.5 rule):** 1.07 m colonly guards with < 100 mm openings on every open edge of the F2 slide bridges and decks (X 20.5..24.5, Z 51.5..61.5, at +6.1 / +7.0). The only openings are the slide tube mouths.
+
+### Rev 3.7.1, 2026-11-15 (Vance): build answers for Rev 3.7 (Rook's questions)
+1. **SW/NW ramp median:** ends at X −41.92 so the turn landing (X −43.42..−41.92) stays full width. Accepted.
+2. **Rink gate leaves (Vance proposal):** park the leaves opened 90° *into the rink*, perpendicular to the boards, on a floor stop beside the jamb. Don't lay them flat on the next board panel. Both the 1.2 m players' gates and the 4.0 m Zamboni pair work this way, and each leaf gets its own convcolonly.
+3. **Axe gate X 77.4..78.4:** move bay 1142's rack +X until there is ≥1.0 m clear in front of the gate. If the rack can't move without entering the throw zone, shift the gate −X along partition 1145 to get the same clearance.
+4. **Axe throw-line datum:** measure from the **target face at X 83.2** (row 2 likewise from its target face), not from the wall at X 84. Rook's measured lines are correct.
+5. **Ramp feet:** replace the 1 m warp with a **level 1.5 m foot landing** set at the mean probed drum height. Blend the drum into its open sides with a terrain fillet no steeper than 1:20 (colonly), so no edge is steeper than 1:20 and no lip exceeds 13 mm.
+6. **Confirmed:** the added guard at X 57.03, the gallery guard starting at X −11.36, and the ST+S1 cross guard starting at X 59.36.
+7. **Plaza corner X 168..171.4, Z 12.6..16:** don't add an overlapping piece. Trim the existing E/S terrace skirts to a mitred meet, with no overlap and no slit, and close the joint with a 0.2 m corner post (convcolonly). The same detail fixes TTQA-043.
+8. **Still to build:** the 0.15 m lift-pit recesses (#9), the pool stairs and ladders (#5), the W bay leaves and bollards (#12), and the slide-bridge guards (#15). The F3 stand-back guards on Z 9.0 are accepted.
