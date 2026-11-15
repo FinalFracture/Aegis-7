@@ -31,11 +31,28 @@ def build(q):
          box(lj0, lj1, .05 - E, H - .15 + E, .03 - .6, .03),
          box(rj0, rj1, .05 - E, H - .15 + E, -.04, .04)]
     cols = [(lj1, rj0)]
-    if w > 3:
+    L3 = bool(q.get("leaves3"))   # r8b Rev 3.7 #12 (TTQA-031): 3 x 1.0 m clear leaves at -1.6..-0.6 / -0.5..0.5 / 0.6..1.6, 0.10 m mullions
+    if w > 3 and not L3:
         F.append(box(-.05, .05, .05 - E, H - .15 + E, -.05, .05)); cols = [(lj1, -.05), (.05, rj0)]
+    if L3:
+        F += [box(a, b, .05 - E, H - .15 + E, -.05, .05) for a, b in ((-.6, -.5), (.5, .6))]
+        F += [box(a, b, .05 - E, TD - .075 + E, -.05, .05) for a, b in ((-1.6 - .05, -1.6), (1.6, 1.6 + .05))]   # leaf jambs; side lights beyond
     for t in (TD, T2): F.append(box(lj1 - E, rj0 + E, t - .075, t + .075, -.06, .06))
     p.add("Frame", G, *F)
-    for i, (a0, b0) in enumerate(cols):
+    if L3:
+        for i, (a0, b0) in enumerate(((-1.6, -.6), (-.5, .5), (.6, 1.6))):
+            a, b = a0 + .003, b0 - .003
+            p.add("Door_Stiles", ALY, box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03),
+                  *[box(a + .07 - E, b - .07 + E, u, v, -.03, .03) for (u, v) in ((.06, .18), (TD - .2, TD - .08))])
+            p.add(f"Door_Scissor_{i}", SCR, pane(a + .072, b - .072, .18 - E, TD - .2 + E, 0, t=.016))
+            p.add("Push_Bars", ALY, tube((a + .15, 1.05, .07), (b - .15, 1.05, .07), .02, 8), tube((a + .15, 1.05, .03 - E), (a + .15, 1.05, .07), .012, 6), tube((b - .15, 1.05, .03 - E), (b - .15, 1.05, .07), .012, 6))
+        for k, (a0, b0) in enumerate(((lj1, -1.65), (1.65, rj0))):
+            p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .05, TD - .075 + E, 0))
+        for i, (a0, b0) in enumerate(((lj1, -.6), (-.5, .5), (.6, rj0))):
+            for r, (y0, y1) in enumerate(((TD + .075, T2 - .075), (T2 + .075, H - .15))):
+                p.add(f"Upper_Scissor_{i}{r}", SCR, pane(a0 + .002, b0 - .002, y0 - E, y1 + E, 0))
+        cols = [(-1.6, -.6), (-.5, .5), (.6, 1.6)]
+    for i, (a0, b0) in enumerate([] if L3 else cols):
         a, b = a0 + .003, b0 - .003; m = (a + b)/2
         S = [box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03), box(m - .035, m + .035, .06, TD - .08, -.03, .03)]
         S += [box(a + .07 - E, b - .07 + E, u, v, -.03, .03) for (u, v) in ((.06, .18), (TD - .2, TD - .08))]
@@ -70,16 +87,20 @@ def build(q):
     # slate walk mat only — kerb, hedge and planted edge stay out of the 6 m egress
     p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, .012, .122, 1.4))
     # w>=3: pair at +-h/2 (4.0 m -> +-1.0, pitch 2.0 m). w<3: one bollard at x=0 so pitch stays >= 1.5 m.
-    boll = (0.0,) if w < 3 else (-h*.5, h*.5)
+    # r8b Rev 3.7 #12: W bays get individual posts at +-0.55 (in front of the mullions), dia 0.15, 0.95 m clear between
+    boll = (0.0,) if w < 3 else (-.55, .55)
+    br, bb = (.1, .11) if w < 3 else (.075, .085)
     for x in boll:
-        p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), .1, 10)); p.add("Bollard_Balls", BA, node((x, .85 + .11 - E, 1.55), .11, 1))
+        p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), br, 10)); p.add("Bollard_Balls", BA, node((x, .85 + bb - E, 1.55), bb, 1))
     # colliders. Wall starts at y=.5; DoorClear is a floor strip and does not fill the door volume.
     p.add("Wall-colonly", G, box(X0, X1, .5, H, -.08, .02))
     p.add("DoorClear-colonly", SL, box(X0, X1, 0, .02, -.3, 1.4))
     for a, b in cols:
         p.add("Jamb-colonly", G, box(a - .02, a + .02, 0, H, -.08, .14), box(b - .02, b + .02, 0, H, -.08, .14))
     p.add("Canopy-colonly", SL, box(cx0, cx1, y0, y1, .061, zt))
-    p.add("Bollard-colonly", G, *[box(x - .08, x + .08, 0, .96, 1.55 - .08, 1.55 + .08) for x in boll])
+    if w < 3: p.add("Bollard-colonly", G, *[box(x - .08, x + .08, 0, .96, 1.55 - .08, 1.55 + .08) for x in boll])
+    else:
+        for k, x in enumerate(boll): p.add(f"Bollard{k}-colonly", G, box(x - .075, x + .075, 0, .85 + 2 * bb, 1.55 - .075, 1.55 + .075))
     return p
 def run_layout(widths):
     A = {}; x = 0
@@ -101,9 +122,16 @@ def _promote_one(width, filename):
     V = np.vstack([m.vertices for n, (mk, m) in p.P.items() if "colonly" not in n])
     lo, hi = V.min(0), V.max(0)
     print(filename, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
+def _promote_one3(filename):
+    p = recenter(build(dict(width=4.0, leaves3=True)))
+    gp = os.path.join(ROOT, "godot/assets/models", filename)
+    tris, _ = export_final(p.P, [gp]); finish_glb(gp); finish_scissor(gp)
+    print(filename, "tris", int(tris), "clip", cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=60)["pass"])
 def promote():
-    """Export 4.0 m tt_entrance_bay and 2.0 m tt_entrance_bay_half. Half is not placed on the 44 m W run."""
+    """Export 4.0 m tt_entrance_bay and 2.0 m tt_entrance_bay_half. Half is not placed on the 44 m W run.
+    r8b: tt_entrance_bay_3l (Rev 3.7 #12, 3 x 1.0 m leaves) is exported for Gage's proximity doors and is NOT placed yet."""
     _promote_one(4.0, "tt_entrance_bay.glb")
-    _promote_one(2.0, "tt_entrance_bay_half.glb")
+    if "--half" in sys.argv: _promote_one(2.0, "tt_entrance_bay_half.glb")
+    _promote_one3("tt_entrance_bay_3l.glb")
 if __name__ == "__main__":
     promote(); print("SEAM", seam_check([4, 4]), seam_check([4, 2]), seam_check([2, 4]))
