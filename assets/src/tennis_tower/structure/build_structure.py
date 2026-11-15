@@ -38,7 +38,12 @@ def f1_slab():
 def f2_slab():
     it = []; y = F2; d = SLAB[F2]
     aq = [(0, 30, 0, 34.5), (0, 30, 44.5, 56), (2, 30, 56, 58), (20, 30, 58, 60.4), (0, 30, 60.4, 79)]
-    holes = aq + CORE_HOLES + LIFT_HOLES + TREE_HOLES + PLANT_HOLES + [FS_HOLE]   # r5: feature-stair opening
+    # Rev 3.8 #2 (TTQA-051): ST+S1 hole = as-built core b977 X 58.00..64.00, Z 2.60..13.21 (infills the X 57..58 slot); TC-S1 tree hole trimmed
+    # to 0.02 m off the probed trunk faces (Trunk_Clad / Trunk-colonly X 56.90..58.10, Z 7.90..9.10 at y 5.7..6.1)
+    ch = [(58.0, 64.0, 2.60, 13.21) if h == (57, 64, 2.6, 13.2) else h for h in CORE_HOLES]
+    th = [(56.88, 58.12, 7.88, 9.12) if h == (56.8, 58.2, 7.8, 9.2) else h for h in TREE_HOLES]
+    assert ch != CORE_HOLES and th != TREE_HOLES
+    holes = aq + ch + LIFT_HOLES + th + PLANT_HOLES + [FS_HOLE]   # r5: feature-stair opening
     it += [("Slab_F2", CON, m) for m in slab(FOOT, holes, y, d)]
     for x in (45.5, 71.5, 97.5): it.append(("Beams_F2", CON, box(x - .3, x + .3, y - 1.1, y - d + E, 24.5, 54.5)))
     it.append(("Beams_F2", CON, box(39.5, 103.5, y - 1.1, y - d + E, 39.2, 39.8)))
