@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2668,
+"count": 2673,
 "by_owner": {
-"Rook": 1031,
+"Rook": 1036,
 "Arrival": 42,
 "Aquatics": 66,
 "Leisure": 236,
@@ -439,6 +439,66 @@
 "tag": "plant",
 "owner": "Rook",
 "asset": "tt_services_plant_stack_sw"
+},
+{
+"glb": "res://assets/models/tt_plant_stack_staff_doors_l.glb",
+"p": [
+-7.8495,
+0,
+9.71
+],
+"yaw": 0,
+"tag": "plant",
+"owner": "Rook",
+"asset": "tt_plant_stack_staff_doors_l"
+},
+{
+"glb": "res://assets/models/tt_plant_stack_staff_doors_l.glb",
+"p": [
+132.2495,
+0,
+9.71
+],
+"yaw": 0,
+"tag": "plant",
+"owner": "Rook",
+"asset": "tt_plant_stack_staff_doors_l"
+},
+{
+"glb": "res://assets/models/tt_plant_stack_staff_doors_r.glb",
+"p": [
+-7.8495,
+0,
+69.29
+],
+"yaw": 180,
+"tag": "plant",
+"owner": "Rook",
+"asset": "tt_plant_stack_staff_doors_r"
+},
+{
+"glb": "res://assets/models/tt_plant_stack_staff_doors_r.glb",
+"p": [
+132.2495,
+0,
+69.29
+],
+"yaw": 180,
+"tag": "plant",
+"owner": "Rook",
+"asset": "tt_plant_stack_staff_doors_r"
+},
+{
+"glb": "res://assets/models/tt_plant_stack_sill_sw.glb",
+"p": [
+-8.1,
+5.85,
+10.095
+],
+"yaw": 0,
+"tag": "plant",
+"owner": "Rook",
+"asset": "tt_plant_stack_sill_sw"
 },
 {
 "glb": "res://assets/models/tt_services_plant_stack_m.glb",

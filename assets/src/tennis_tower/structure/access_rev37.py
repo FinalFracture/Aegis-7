@@ -208,6 +208,26 @@ def slot_wall():
     k = Kit(); k.add("Slot_Base_Trim", SL, box(-6.1 + E, -5.9 - E, 6.1, 6.2, 58.4 + E, 69.0 - E)); k.col(box(-6.1, -5.9, 6.1, 8.4, 58.4 + E, 69.0 - E))
     return k
 
+# ------------------------------------------------------------------ #10 plant-stack staff doors (locked, static) in the existing 2.0 x 2.4 openings
+def stack_doors(d):
+    """one 2.0 m stack opening (local X -1..1, wall Z -0.15..0.15) closed on all three floors: slate infill panel with a 1.0 m locked
+    staff leaf centred at X d (white composite, amber band, gunmetal lock plates), alloy frame. Collider: the full opening per floor."""
+    k = Kit()
+    for y0 in (0.0, 6.1, 12.2):
+        pan = U([box(-1 + E, d - .55, y0, y0 + 2.4 - E, -.1, .1), box(d + .55, 1 - E, y0, y0 + 2.4 - E, -.1, .1), box(d - .56, d + .56, y0 + 2.15 - E, y0 + 2.4 - E, -.1, .1)])
+        fr = U([box(d - .554, d - .5, y0, y0 + 2.1 + E, -.06, .06), box(d + .5, d + .554, y0, y0 + 2.1 + E, -.06, .06), box(d - .554, d + .554, y0 + 2.1, y0 + 2.15, -.06, .06)])
+        k.add("Infill_Panel", SL, pan); k.add("Door_Frame", ALY, fr)
+        k.add("Staff_Leaf", WH, box(d - .495, d + .495, y0 + .01, y0 + 2.095, -.03, .03))
+        for sz in (-1, 1):
+            k.add("Leaf_Amber_Band", AM, box(d - .45, d + .45, y0 + 1.4, y0 + 1.45, *sorted((sz * (.03 - E), sz * .034))))
+            k.add("Lock_Plate", G, box(d + .3, d + .38, y0 + .95, y0 + 1.15, *sorted((sz * (.03 - E), sz * .042))))
+        k.col(box(-1, 1, y0, y0 + 2.4, -.15, .15))
+    return k
+def stack_sill():
+    """SW stack F2 door sill: 0.23 m infill from the stack face (Z 9.98) to the gallery floor (Z 10.2), X -8.6..-7.6."""
+    k = Kit(); b = box(-.5, .5, -.25, 0.0, 0.0, .23); k.add("Sill_Infill", SL, b); k.add("Sill_Amber", AM, box(-.45, .45, -E, .003, .17, .21)); k.col(b.copy())
+    return k
+
 EDGE_VARIANTS = {   # manifest index (bfe716e) -> (asset, local opening a..b)
     "tt_terrace_edge_open_c2": (-1.0, 1.0),     # 793 SW / 794 NW / 929 E ramp top landings (clear 2.0 m centred)
     "tt_terrace_edge_open_w38": (-1.5, 2.0),    # 747 W stair (Z 36..40, yaw -90: world Z = 38 + x) -> clear Z 36.5..40
@@ -225,6 +245,9 @@ if __name__ == "__main__":
     export_kit("tt_struct_guards_cores_f3", guards_cores(), REP, LAY, "Rev 3.7 #7 F3 core-top guard rings + flight-1 cross guards, 1.07 m")
     export_kit("tt_struct_guards_gallery", guards_gallery(), REP, LAY, "Rev 3.7 #8 gallery N edge guard + staff-door infill")
     export_kit("tt_struct_slot_wall_f2", slot_wall(), REP, LAY, "Rev 3.7 #8 slot wall collider X -6.1..-5.9 Z 58.4..69.0")
+    export_kit("tt_plant_stack_staff_doors_l", stack_doors(-.25), REP, None, "Rev 3.7 #10 SW/SE stack openings, 1.0 m locked staff door per floor")
+    export_kit("tt_plant_stack_staff_doors_r", stack_doors(.25), REP, None, "Rev 3.7 #10 NW/NE stack openings (yaw 180)")
+    export_kit("tt_plant_stack_sill_sw", stack_sill(), REP, None, "Rev 3.7 #10 SW F2 sill infill Z 9.98..10.21")
     for nm, (a, b) in EDGE_VARIANTS.items():
         export_part(nm, edge_open(a, b, nm), REP, None, "Rev 3.7 terrace edge opening variant")
     json.dump(LAY, open(LAYOUT, "w"), indent=1)
