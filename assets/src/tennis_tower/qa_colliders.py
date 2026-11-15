@@ -112,11 +112,13 @@ def _grow(lo, hi, t):
     return lo, hi
 
 def _auto(V, F, min_thick, skip_small, mode):
-    """mode: auto | box (one AABB) | tris (verbatim) | boxes (one AABB per connected part)"""
+    """mode: auto | box (one AABB) | tris (verbatim) | boxes (one AABB per connected part) | hull (one convex hull)"""
     out = []; nb = nt = 0
     if mode == 'box':
         lo, hi = _grow(V.min(0), V.max(0), min_thick); return [_box(lo, hi)], 1, 0
     if mode == 'tris': return [(V, F)], 0, 1
+    if mode == 'hull':
+        h = trimesh.Trimesh(V, F, process=False).convex_hull; return [(h.vertices, h.faces)], 0, 1
     m = trimesh.Trimesh(V, F, process=False); m.merge_vertices(digits_vertex=4)
     for c in m.split(only_watertight=False):
         lo, hi = c.bounds; e = hi - lo
@@ -170,7 +172,10 @@ def add_colliders(glb_path, spec, out_path=None, drop_nodes=()):
         elif 'boxes' in it:
             parts = [_box(*_grow(*b, mt)) for b in it['boxes']]; nm = it['name']; nb, nt = len(parts), 0
         else:
-            V, F = _node_tris(g, blob, it['src']); parts, nb, nt = _auto(V, F, mt, sk, it.get('mode', 'auto')); nm = it.get('name', it['src'])
+            srcs = it['src'] if isinstance(it['src'], (list, tuple)) else [it['src']]
+            VF = [_node_tris(g, blob, x) for x in srcs]; off = np.cumsum([0] + [len(v) for v, _ in VF])
+            V = np.vstack([v for v, _ in VF]); F = np.vstack([f + o for (_, f), o in zip(VF, off)])
+            parts, nb, nt = _auto(V, F, mt, sk, it.get('mode', 'auto')); nm = it.get('name', srcs[0])
         if not parts: continue
         blob, ntri = _append_mesh(g, blob, f'{nm}-colonly', parts, mat)
         st['added'] += 1; st['boxes'] += nb; st['tri_components'] += nt; st['collider_tris'] += ntri
@@ -188,7 +193,8 @@ def count_colliders(glb_path):
 # Per-GLB spec (TTQA audit, Gage, main bfe716e). Each item turns a visible solid into a '-colonly' collider:
 # auto = one AABB box per box-like part (walls, panes, partitions), exact triangles for anything else (openings stay open).
 # Run after any generator re-export:  python3 assets/src/tennis_tower/qa_colliders.py [glb names...]
-_SC = [{'src': 'Core_Walls'}, {'src': 'Front_Wall'}, {'src': 'Door_Jambs'}, {'src': 'Mid_Landing', 'mode': 'box'}]
+_SC = [{'src': 'Core_Walls'}, {'src': 'Front_Wall'}, {'src': 'Door_Jambs'}, {'src': 'Mid_Landing', 'mode': 'box'},
+       {'src': 'Flight1_Cast', 'mode': 'hull'}]   # Rev 3.7 #13: solid cast under flight 1
 _PANE = dict(mode='box', min_thick=.04)
 SPEC = {
     # TTQA-003 lift: shaft walls on every side, door wall with its 2 openings, landing doors (L parked open beside the
@@ -205,6 +211,26 @@ SPEC = {
     # TTQA-006 restrooms: wet wall, partitions, pilasters, static closed stall doors, WCs.
     'tt_restroom': [{'src': s} for s in ('Wet_Wall', 'Partitions', 'Pilasters', 'Stall_Doors', 'WC_VacUnit')] + [{'src': 'WC', 'mode': 'boxes'}],
     'tt_restroom_6': [{'src': s} for s in ('Wet_Wall', 'Partitions', 'Pilasters', 'Stall_Doors', 'WC_VacUnit')] + [{'src': 'WC', 'mode': 'boxes'}],
+    # ---- TTQA majors / minors (r2) ----
+    # TTQA-014 facade: fins / branch twigs and bay frames
+    'tt_curtain_wall_panel': [{'src': 'Fin_Branch', 'mode': 'boxes'}],
+    'tt_facade_bay': [{'src': 'Frame'}],
+    # TTQA-015 F3 corner closures (glass + fins, 13.3 m)
+    'tt_struct_f3_corner_closure': [dict(src='Glass_Closure_Pane', **_PANE), {'src': 'Closure_Fins', 'mode': 'boxes'},
+                                    {'src': 'Closure_Sill_Head', 'mode': 'boxes'}, {'src': 'Closure_Transoms', 'mode': 'boxes'}],
+    # TTQA-016 arcade: VR pod shell hull, racer seat / screen, feature-stair guard panes + posts
+    'tt_arc_vr_pod': [{'src': ['Pod_Arcs', 'Pod_Floor'], 'mode': 'hull', 'name': 'Pod_Shell'}],
+    'tt_arc_racer': [{'src': 'Seat_Shell', 'mode': 'hull'}, {'src': 'Seat_Back', 'mode': 'hull'}, {'src': 'Screen_Housing', 'mode': 'hull'}],
+    'tt_arc_feature_stair': [{'src': 'Guard_Scissor', 'mode': 'boxes', 'min_thick': .04}, {'src': 'Guard_Posts', 'mode': 'boxes'}],
+    # TTQA-017 food court chairs (backs above the 0.75 m table/seat box)
+    'tt_food_table4': [{'src': 'Chair_Back', 'mode': 'boxes'}, {'src': 'Chair_BackPost', 'mode': 'boxes'}],
+    # TTQA-033 misc props
+    'tt_aquarium_bench': [{'src': s, 'mode': 'boxes'} for s in ('Bench_Seat', 'Seat_Edge', 'Bench_Plinths')],
+    'tt_foyer_stanchion': [{'src': 'Post', 'mode': 'boxes'}],
+    'tt_axe_partition': [{'src': 'Part_Posts', 'mode': 'boxes'}],
+    # moss mounds 0.44-0.68 m tall (over the 0.32 m step): hull so they are not walked through
+    'tt_cab_dress_mound': [{'src': ['Moss', 'Balls', 'Tuft'], 'mode': 'hull', 'name': 'Mound'}],
+    'tt_food_tree_moss': [{'src': 'Moss_Mound', 'mode': 'hull'}],
 }
 DROP = {'tt_court_net': ['Net_Rails-colonly'], 'tt_restroom_6': ['Stalls-colonly']}
 
