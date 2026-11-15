@@ -69,9 +69,10 @@ def build(q):
     # --- spine wall between the flights ---
     sw = []
     if zs2 - zs1 > .01: sw.append(box(XA[1], XB[0], 0, ys2 - TH2 - .002, zs1 - 2*E, zs2 + E))
-    sw.append(box(XA[1], XB[0], 0, yn2 + 1.0, zs2 + .006, ZN2 - .002))
+    sw.append(box(XA[1], XB[0], 0, yn2 + 1.1, zs2 + .006, ZN2 - .002))   # Rev 3.7 #15: 1.1 m guard over the flight-3 drop at the N2 (+6.1) arrival
     if t2: sw.append(box(XA[1], XB[0], 0, yn2 - TH2 - .002, ZN2 + .002, ZN1 - .002))
     p.add("Spine_Wall", q.get("spine_mat", WH), *sw)
+    p.add("Spine_Wall-colonly", G, *[U(m.copy()) for m in sw])
     # --- columns + roof (tree-column CHS language) ---
     p.add("Columns", G, *[tube((sx*C, 0, szc*C), (sx*C, YR + E, szc*C), .1, 16) for sx in (-1, 1) for szc in (-1, 1)])
     p.add("Roof", q.get("roof_mat", WH), box(-2.6, 2.6, YR, ROOF, -2.6, 2.6))
@@ -89,6 +90,7 @@ def build(q):
     panes += [box(-.05 - PG, -.05 + PG, 0, DECK + 1.1, ZS, ZN - .003), box(-.05 - PG, -.05 + PG, 0, yn2 - TH2 - .05, ZN + .003, ZI - .003)]  # inner screen (stair | shaft)
     panes += [box(-.035, x5, DECK + .002, DECK + 1.1, ZN - .03, ZN - .008), box(XA[0], XA[1] - .002, yn2 + .002, yn2 + 1.1, ZN2L + .008, ZN2L + .03)]  # deck + N2 edge guards
     p.add("Enclosure_Scissor", SCR, *panes)
+    p.add("Guards-colonly", G, *[U(m.copy()) for m in panes[len(outer):]])   # Rev 3.7 #15: inner screen + deck (+7.0) / N2 (+6.1) edge guards were visual only
     p.add("Enclosure-colonly", G, *[U(trimesh.creation.box(bounds=[[a[0], a[2], a[4]], [a[1], a[3], a[5]]])) for a in outer])
     p.add("Link_Sill", SGM, box(LX0 + .004, LX1 - .004, DECK - .05, DECK - .002, ZI - E, C + PG + .002))
     p.add("Link_Sill-colonly", G, U(trimesh.creation.box(bounds=[[LX0, DECK - TH, ZI - E], [LX1, DECK, C + PG + .002]])))
