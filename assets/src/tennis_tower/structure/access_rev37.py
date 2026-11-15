@@ -32,28 +32,41 @@ def U(ms):
     m.metadata["uv"] = m.vertices[:, [0, 2]] / 2.0 + m.vertices[:, [1, 1]] * [0, .5]; return m
 
 L1, L2, L3 = -.559, -1.118, -1.678     # 3 runs x 0.559 over 6.71 m (1:12)
-XW = -36.21                            # run 3 planar to here, last 1.0 m warped to the drum cross-fall
+# r8b Rev 3.7.1 #5: lane B run 3 (1:12) ends on a LEVEL 1.5 m foot landing; the drum cross-falls 0.30 m (1:6.4) across the 1.95 m lane
+# at Z 8.3..10.25, so a level landing at the mean drum height would leave the drum 0.15 m proud of its S half (flagged to Vance);
+# the landing is set to the highest drum point under it (Z 8.3 edge, circle + 3 mm, facets <= 7.6 mm lower) and a 1:20 terrain fillet
+# (part of the deck, colonly) runs off its open E end down onto the drum. S side meets the drum flush; N side is the median.
+LF = drum(8.3) + .003                  # foot landing level
+XE = -41.92 + (L2 - LF) * 12.0         # run 3 end / landing start (1:12)
+XF = XE + 1.5                          # landing end, fillet start
+def fillet(x0, z0, z1, ytop, ybot, dz=.1):
+    """<= 1:20 apron from a level edge (x = x0, height ytop) down +X onto the drum, in Z strips (each strip runs until the plane meets
+    the drum + 3 mm at its lower-drum side; strips overlap 1 cm and are unioned by the caller)."""
+    out = []; zs = list(np.arange(z0, z1 - 1e-6, dz)) + [z1]
+    for za, zb in zip(zs[:-1], zs[1:]):
+        zl = za if drum(za) < drum(zb) else zb                # lower drum side -> longest run
+        l = max((ytop - drum(zl) - .003) * 20.0, .02)
+        top = lambda x, z: max(ytop - (x - x0) / 20.0, drum(z) + .003)
+        out.append(prism(x0 - .01, x0 + l, max(z0, za - .005), min(z1, zb + .005), top, ybot))
+    return out
 def ramp_sw():
     """SW ramp in its own frame (= building coords of the SW ramp). NW = mirror Z about 40, E = mirror X about 64."""
     k = Kit()
     YB = drum(13.5) - .12                                    # common fill bottom (lowest drum point under the footprint - 0.12)
     xA = [-43.42, -41.92, -35.21, -33.71, -27.0, -25.0]; yA = [L2, L2, L1, L1, 0.0, 0.0]
     fA = pw(xA, yA)                                          # lane A walk line (turn -> run 2 -> landing -> run 1 -> top landing)
-    fBn = pw([-43.42, -41.92, -35.21], [L2, L2, L3])
+    fBn = pw([-43.42, -41.92, XE, XF], [L2, L2, LF, LF])
     def fB(x, z):
-        if x <= XW: return fBn(x)
-        if x <= -35.21: return fBn(x) + (x - XW) / (-35.21 - XW) * (drum(z) - L3 + .003)
-        return drum(z) + .003
+        return fBn(x) if x <= XF else max(LF - (x - XF) / 20.0, drum(z) + .003)
     D = []
     for a, b in zip(xA[:-1], xA[1:]):                        # lane A Z 10.5..12.3 (segments overlap 2 cm, unioned)
         D.append(prism(a - .02 if a > -43 else a, b, 10.5, 12.3, lambda x, z: fA(x), YB))
     D.append(prism(-27.0, -25.0, 10.5, 13.37, lambda x, z: 0.0, YB))       # top landing fill; skirt 795 holds reach Z 13.39
     D.append(box(-27.0, -25.0, -.29, 0.0, 13.3, 13.5))                       # cantilever slab over the skirt cap (top -0.30)
     D.append(prism(-43.42, -41.9, 8.3, 12.3, lambda x, z: L2, YB))           # turn landing spans both lanes
-    D.append(prism(-41.92, XW, 8.3, 10.25, fB, YB))                          # lane B run 3
-    for s0 in np.linspace(XW, -35.21, 6)[:-1]:                               # warped tail, 0.2 m planar slices
-        D.append(prism(s0 - .01, s0 + .2, 8.3, 10.25, fB, YB))
-    D.append(prism(-35.22, -33.71, 8.3, 10.25, fB, YB))                       # foot landing on the drum
+    D.append(prism(-41.92, XE, 8.3, 10.25, fB, YB))                          # lane B run 3
+    D.append(prism(XE - .01, XF, 8.3, 10.25, lambda x, z: LF, YB))           # level 1.5 m foot landing
+    D += fillet(XF, 8.3, 10.25, LF, YB)                                      # 1:20 terrain fillet off the open E end
     deck = U(D); k.add("Ramp_Deck", SSL, deck); k.col(deck.copy())
     # cast walls 1.07 over lane A: N cheek Z 12.3..12.5 (X -43.42..-27); median Z 10.25..10.5 stops at the turn landing X -41.92
     # (Rev 3.7 lists the median as X -43.42..-25.0, which would cut the turn landing: flagged to Vance)
@@ -67,20 +80,20 @@ def ramp_sw():
     # glass guards: S edge (turn landing / run 3 / warped tail), turn landing W end, top landing E edge + its W return
     bS = lambda t: fB(t, 8.3) if t > -41.92 else L2
     k.guard(-43.42, -41.92, 8.375, "x", bS, lambda t: bS(t) + GT, (True, True), kerb=False)
-    k.guard(-41.92, XW, 8.375, "x", bS, lambda t: bS(t) + GT, (False, True), kerb=False)
-    k.guard(XW, -35.21, 8.375, "x", bS, lambda t: bS(t) + GT, (False, True), kerb=False)
+    k.guard(-41.92, XE, 8.375, "x", bS, lambda t: bS(t) + GT, (False, True), kerb=False)
+    k.guard(XE, XE + .35, 8.375, "x", bS, lambda t: bS(t) + GT, (False, True), kerb=False)
     k.guard(8.45, 12.3 - 2 * E, -43.37, "z", lambda t: L2, lambda t: L2 + GT, (False, False))
     k.guard(10.5 + 2 * E, 13.44, -25.05, "z", lambda t: 0.0, lambda t: GT, (False, True))
     k.guard(12.5, 13.44, -26.95, "z", lambda t: 0.0, lambda t: GT, (False, False))
     # court lines (V1): white centre line per run, amber run-end bands
-    CL = [strip(-33.61, -27.1, 11.375, 11.425, fA, "x"), strip(-41.82, -35.31, 11.375, 11.425, fA, "x"), strip(-41.82, XW - .1, 9.325, 9.375, fBn, "x")]
+    CL = [strip(-33.61, -27.1, 11.375, 11.425, fA, "x"), strip(-41.82, -35.31, 11.375, 11.425, fA, "x"), strip(-41.82, XE - .1, 9.325, 9.375, fBn, "x")]
     AL = [strip(a, a + .05, z0 + .05, z1 - .05, f, "x") for a, f, z0, z1 in ((-27.06, fA, 10.5, 12.3), (-33.70, fA, 10.5, 12.3), (-35.26, fA, 10.5, 12.3),
-                                                                             (-41.91, fA, 10.5, 12.3), (-41.91, fBn, 8.45, 10.25))]
+                                                                             (-41.91, fA, 10.5, 12.3), (-41.91, fBn, 8.45, 10.25), (XE, fBn, 8.45, 10.2))]
     k.add("Court_Lines", WH, *CL); k.add("Court_Line_Amber", AM, *AL)
     # handrails both sides of each lane (0.865 m), 0.3 m extensions
     pa = [(-26.7, RH), (-27.0, RH), (-33.71, L1 + RH), (-35.21, L1 + RH), (-41.92, L2 + RH), (-42.22, L2 + RH)]
     k.rail(pa, 12.3 - RO, "x", 12.3 - 2 * E); k.rail(pa, 10.5 + RO, "x", 10.5 + 2 * E)
-    pb = [(-42.22, L2 + RH), (-41.92, L2 + RH), (XW, fBn(XW) + RH), (-35.21, L3 + RH), (-34.91, L3 + RH)]
+    pb = [(-42.22, L2 + RH), (-41.92, L2 + RH), (XE, LF + RH), (XE + .3, LF + RH)]
     k.rail(pb, 10.25 - RO, "x", 10.25 - 2 * E); k.rail(pb, 8.45 + RO, "x", 8.375 + .035)
     return k, fB
 
@@ -236,7 +249,7 @@ EDGE_VARIANTS = {   # manifest index (bfe716e) -> (asset, local opening a..b)
 }
 if __name__ == "__main__":
     REP = []; LAY = json.load(open(LAYOUT))
-    export_kit("tt_struct_ramp_sw", ramp_sw()[0], REP, LAY, "Rev 3.7 #1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, foot on the drum")
+    export_kit("tt_struct_ramp_sw", ramp_sw()[0], REP, LAY, "Rev 3.7.1 SW switchback ramp X -43.42..-25 Z 8.3..13.5, top landing y 0, level 1.5 m foot landing + 1:20 fillet onto the drum")
     export_kit("tt_struct_ramp_nw", mirror(ramp_sw()[0], MZ), REP, LAY, "Rev 3.7 #1 NW ramp (SW mirrored about Z 40)")
     export_kit("tt_struct_ramp_e", mirror(ramp_sw()[0], MX), REP, LAY, "Rev 3.7 #2 E ramp X 153..171.42 (SW mirrored in X)")
     export_kit("tt_struct_stair_w", stair(-63.5, -1, 36.5, 42.5, 12, 11, 2.0, True), REP, LAY, "Rev 3.7 #1 W grand stair Z 36.5..42.5, 23 x 0.1752 / 0.30")
