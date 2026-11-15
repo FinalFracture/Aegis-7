@@ -22725,64 +22725,64 @@
 "asset": "tt_climb_auto_belay"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_180x20.glb",
 "p": [
-83.5,
+83.4,
 6.1,
 3.3
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_180x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_180x20.glb",
 "p": [
-83.5,
+83.4,
 6.1,
 5.3
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_180x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_180x20.glb",
 "p": [
-83.5,
+83.4,
 6.1,
 10.1
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_180x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_180x20.glb",
 "p": [
-83.5,
+83.4,
 6.1,
 12.1
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_180x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300_2x15.glb",
+"glb": "res://assets/models/tt_climb_mat_300_180x158.glb",
 "p": [
-83.5,
+83.4,
 6.1,
 1.42
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300_2x15"
+"asset": "tt_climb_mat_300_180x158"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_14x28.glb",
@@ -22797,16 +22797,16 @@
 "asset": "tt_climb_mat_300_14x28"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300_06x16.glb",
+"glb": "res://assets/models/tt_climb_mat_300_040x16.glb",
 "p": [
-84.2,
+84.1,
 6.1,
 7.1
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300_06x16"
+"asset": "tt_climb_mat_300_040x16"
 },
 {
 "glb": "res://assets/models/tt_climb_anchor.glb",
@@ -22881,52 +22881,52 @@
 "asset": "tt_climb_anchor"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 99.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 101.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 103.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 105.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_edge.glb",
@@ -22953,16 +22953,16 @@
 "asset": "tt_climb_mat_300"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 107.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_edge.glb",
@@ -22989,16 +22989,16 @@
 "asset": "tt_climb_mat_300"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 109.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_edge.glb",
@@ -23025,16 +23025,16 @@
 "asset": "tt_climb_mat_300"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x18.glb",
 "p": [
 111.0,
 6.1,
-13.7
+13.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x18"
 },
 {
 "glb": "res://assets/models/tt_climb_mat_300_2x15.glb",
@@ -23243,7 +23243,7 @@
 {
 "glb": "res://assets/models/tt_climb_entry_guard.glb",
 "p": [
-98.1,
+97.945,
 6.1,
 13.75
 ],
@@ -23373,76 +23373,76 @@
 "asset": "tt_climb_train_board"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 1.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 3.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 5.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 7.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 9.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_187x20.glb",
 "p": [
-95.0,
+95.064,
 6.1,
 11.631
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_187x20"
 },
 {
 "glb": "res://assets/models/tt_climb_locker_bay.glb",
@@ -27333,124 +27333,124 @@
 "asset": "tt_climb_lead_routes_h"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 37.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 39.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 41.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 43.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 45.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 47.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 49.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 51.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 53.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
-"glb": "res://assets/models/tt_climb_mat_300.glb",
+"glb": "res://assets/models/tt_climb_mat_300_2x192.glb",
 "p": [
 55.0,
 6.1,
-7.0
+6.96
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Active",
-"asset": "tt_climb_mat_300"
+"asset": "tt_climb_mat_300_2x192"
 },
 {
 "glb": "res://assets/models/tt_cabana.glb",

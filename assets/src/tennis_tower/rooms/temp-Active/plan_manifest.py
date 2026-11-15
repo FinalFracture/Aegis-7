@@ -54,6 +54,12 @@ GL = {  # candidate -> (glb path, builder, params)
  "tt_climb_mat_300_188x40": (str(MD / "tt_climb_mat_300_188x40.glb"), B2.mat, B2.SETS["tt_climb_mat_300_188x40"][1][0]),
  "tt_climb_mat_300_14x28": (str(MD / "tt_climb_mat_300_14x28.glb"), B2.mat, B2.SETS["tt_climb_mat_300_14x28"][1][0]),
  "tt_climb_mat_300_06x16": (str(MD / "tt_climb_mat_300_06x16.glb"), B2.mat, B2.SETS["tt_climb_mat_300_06x16"][1][0]),
+ "tt_climb_mat_300_180x20": (str(MD / "tt_climb_mat_300_180x20.glb"), B2.mat, B2.SETS["tt_climb_mat_300_180x20"][1][0]),
+ "tt_climb_mat_300_180x158": (str(MD / "tt_climb_mat_300_180x158.glb"), B2.mat, B2.SETS["tt_climb_mat_300_180x158"][1][0]),
+ "tt_climb_mat_300_040x16": (str(MD / "tt_climb_mat_300_040x16.glb"), B2.mat, B2.SETS["tt_climb_mat_300_040x16"][1][0]),
+ "tt_climb_mat_300_187x20": (str(MD / "tt_climb_mat_300_187x20.glb"), B2.mat, B2.SETS["tt_climb_mat_300_187x20"][1][0]),
+ "tt_climb_mat_300_2x18": (str(MD / "tt_climb_mat_300_2x18.glb"), B2.mat, B2.SETS["tt_climb_mat_300_2x18"][1][0]),
+ "tt_climb_mat_300_2x192": (str(MD / "tt_climb_mat_300_2x192.glb"), B2.mat, B2.SETS["tt_climb_mat_300_2x192"][1][0]),
  "tt_climb_mat_ring_corner": (str(MD / "tt_climb_mat_ring_corner.glb"), B2.mat_ring_corner, B2.SETS["tt_climb_mat_ring_corner"][1][0]),
  "tt_climb_mat_ring_side":(str(MD / "tt_climb_mat_ring_side.glb"), B2.mat, B2.SETS["tt_climb_mat_ring_side"][1][0]),
  "tt_climb_auto_belay":   (str(MD / "tt_climb_auto_belay.glb"), B2.autobelay, B2.SETS["tt_climb_auto_belay"][1][0]),
@@ -144,19 +150,19 @@ for z in [.3 + .625 + 1.25*k for k in range(6)] + [9.2 + .625 + 1.25*k for k in 
 for z in (1.6, 4.9, 10.9):
     put("F2-CLIMB", "tt_climb_auto_belay", 84.5 - .094*2, z, -90, y=4.55, src="§3.7.1 kids' wall + auto-belays (5 m walls)", note="raw origin = wall plate back; on panel face")
 for zc in (3.3, 5.3, 10.1, 12.1):   # existing 2 m kids mats; TC-S3 collar follows (1.2 m sq trunk at (84.5, 8.5) occupies X83.9..85.1 Z7.9..9.1)
-    put("F2-CLIMB", "tt_climb_mat_300", 83.5, zc, 0, src="Rev 2.8 §3.12: kids' wall 2.0 m mat zone; Rev 3.1 spine clear", note="mats X 82.5..84.5")
+    put("F2-CLIMB", "tt_climb_mat_300_180x20", 83.40, zc, 0, src="Rev 2.8 §3.12: kids' wall 2.0 m mat zone; Rev 3.1 spine clear; TTQA-038", note="mats X 82.50..84.30, 5 mm short of the kids panels (84.308)")
 # r9: first kids mat was 2.0 m at z=1.3 (foot Z 0.301..2.299) and entered the S facade inner ledge at Z 0.621.
 # 2.0 x 1.58 cut at raw Z 1.420 keeps foot z0=0.631 and a 90 mm gap to the z=3.3 tile (starts 2.301).
-put("F2-CLIMB", "tt_climb_mat_300_2x15", 83.5, 1.420, 0, src="Rev 2.8 §3.12 + r9 S facade ledge Z 0.621", note="2.0 x 1.58 cut; foot z0>=0.631, X 82.5..84.5; not shifted (would overlap z=3.3)")
+put("F2-CLIMB", "tt_climb_mat_300_180x158", 83.40, 1.420, 0, src="Rev 2.8 §3.12 + r9 S facade ledge Z 0.621", note="2.0 x 1.58 cut; foot z0>=0.631, X 82.5..84.5; not shifted (would overlap z=3.3)")
 put("F2-CLIMB", "tt_climb_mat_300_14x28", 83.2, 7.7, 0, src=SC + "; C5 TC-S3 collar, 1.2 m sq clad", note="west of trunk: X82.5..83.9 Z6.3..9.1")
-put("F2-CLIMB", "tt_climb_mat_300_06x16", 84.2, 7.1, 0, src=SC + "; C5 TC-S3 collar, 1.2 m sq clad", note="south of trunk: X83.9..84.5 Z6.3..7.9; flush to trunk, not into X>=84.5 or Z>=7.9")
+put("F2-CLIMB", "tt_climb_mat_300_040x16", 84.10, 7.1, 0, src=SC + "; C5 TC-S3 collar, 1.2 m sq clad", note="south of trunk: X83.9..84.5 Z6.3..7.9; flush to trunk, not into X>=84.5 or Z>=7.9")
 for k, x in enumerate([37.65 + 3.3*i for i in range(6)]):
     put("F2-CLIMB", "tt_climb_anchor", x, 8.0 - .0, 180, y=11.2, src="§3.7.1 W-CL 20 x 11.5 m, ~6 rope lanes at 3.3 m, face Z 8", note="raw origin = plate back on Z 8 face; frame depth not verified")
 # Boulder N mats ONLY X98..113 (NOT the X94..98 entry landing). 2 m tiles centred 99..111 cover X98..112;
 # X112..113 has no 1 m mat. Entry landing X94..98 Z13.2..15 stays hard floor (keepout below).
 # Edge row at Z 9..11 chamfer toward -Z. No tile centre west of X99, so no mat enters X94..98.
 for x in [99 + 2*i for i in range(7)]:   # covers X98..112; rows shifted to end at wall face Z 14.7
-    for z, nm, yw in ((9.7, "tt_climb_mat_300_edge", 180), (11.7, "tt_climb_mat_300", 0), (13.7, "tt_climb_mat_300", 0)):
+    for z, nm, yw in ((9.7, "tt_climb_mat_300_edge", 180), (11.7, "tt_climb_mat_300", 0), (13.6, "tt_climb_mat_300_2x18", 0)):   # TTQA-038: wall row Z 12.70..14.50
         if x in (99, 101, 103, 105) and z < 12: continue   # 2 m tiles overlap the TC-S4 ring; cut-mat infill placed below
         put("F2-CLIMB", nm, x, z, yw, src="Rev 3.1 item 2: N wall Z15; r8 mats only X98..113 (entry X94..98 Z13.2..15 hard floor)",
             note="field X98..112; landing X94..98 Z13.2..15 kept hard floor")
@@ -173,7 +179,7 @@ for i in range(12):
     x = 98.625 + 1.25*i    # first covers X98.00..99.25, last covers X111.75..113.00
     put("F2-CLIMB", "tt_climbing_panel_boulder", x, 14.2933, 180, src=SC + "; r8 C2 N-wall starts X98", note="yaw 180; back at Z 14.685; face/kick into hall; pivot Z 14.2933; not in X94..98 landing")
 # r8: guard moved to X98, the east edge of the hard-floor landing, separating entry from the N-wall mat/fall zone.
-put("F2-CLIMB", "tt_climb_entry_guard", 98.10, 13.75, -90, src="r8 entry landing delineator", note="yaw -90: mat face (+Z) points +X into hall/mats; raw_X 98.10 -> pivot ~98.05, corridor face ~98.00 at the landing edge; Z 13.75 (L 1.90, north=14.70 exact, meets Z15 stand-back); landing X94..98 Z13.2..15 hard floor")
+put("F2-CLIMB", "tt_climb_entry_guard", 97.945, 13.75, -90, src="r8 entry landing delineator", note="TTQA-038: raw X 98.10 -> 97.945 so the guard (X ~97.895..97.995) stops 5 mm short of the N-row mat edge X 98.0; was: yaw -90: mat face (+Z) points +X into hall/mats; raw_X 98.10 -> pivot ~98.05, corridor face ~98.00 at the landing edge; Z 13.75 (L 1.90, north=14.70 exact, meets Z15 stand-back); landing X94..98 Z13.2..15 hard floor")
 # Training wall X94 Z0..13. put() adds rot(yaw, raw_center) and the exported GLB is recentered,
 # so pass raw X = 94.0 + 0.005 + 0.118 = 94.123 (wall + 5 mm gap + full depth).
 # raw_X 94.123 -> pivot ~94.064; back ~94.005.
@@ -192,7 +198,7 @@ for z in (1.631, 3.631, 5.631, 7.631, 9.631, 11.631):
     c, size = piv("tt_climb_mat_300", GL["tt_climb_mat_300"][1], GL["tt_climb_mat_300"][2])
     zmid = z + float(rot(0, c)[2]); hz = float(size[2]) / 2
     if zmid + hz > 13.0 and zmid - hz < 15.0: continue
-    put("F2-CLIMB", "tt_climb_mat_300", 95.0, z, 0, src="r6 training wall fall mats + r9 S facade ledge Z 0.621", note="centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15")
+    put("F2-CLIMB", "tt_climb_mat_300_187x20", 95.064, z, 0, src="r6 training wall fall mats + r9 S facade ledge Z 0.621; TTQA-038 X 94.128..96.0", note="centred X95; r9 shifted +0.631; foot z0>=0.631; not into Z13..15")
 # Changing room X30..57 Z10.5..13.2 only (off spine). Lockers at Z=10.70 so the bay stays Z<=13.0.
 # Door clear X40..42: skip centers in 39.5..42.5 (40.1 and 41.4 overlap that clear).
 for x in (31.0, 32.3, 33.6, 34.9, 36.2, 37.5, 38.8, 42.7, 44.0, 45.3, 46.6, 47.9, 49.2, 50.5, 51.8, 53.1, 54.4, 55.7):
@@ -254,7 +260,7 @@ for i, nm in enumerate("abcdefgh"):
         note="yaw 180; face at raw Z 8; holds into the hall (-Z); 8 mm embed; fall zone covered by 2 m mats Z6..8")
 # 2 m fall-zone mats under the lead wall (X36..56, Z6..8). One row of tt_climb_mat_300.
 for x in [37 + 2*i for i in range(10)]:
-    put("F2-CLIMB", "tt_climb_mat_300", x, 7.0, 0, src="§3.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes", note="X36..56 Z6..8 under W-CL face at Z 8")
+    put("F2-CLIMB", "tt_climb_mat_300_2x192", x, 6.96, 0, src="§3.12 lead-wall 2.0 m mat zone; r8 covers holds/volumes; TTQA-038", note="X36..56 Z6.00..7.92, 7 mm short of the lowest holds (7.927)")
 LEAD_WITHHELD = []
 # ---------------- keepouts from tower_plan.py / build_structure.walls_f2 / columns ----------------
 sys.path.insert(0, REPO + "/assets/src/tennis_tower/structure")

@@ -353,12 +353,22 @@ SETS = {
  "tt_climb_mat_300_188x40": (mat, [dict(label="Mat 300 mm 1.88 x 4.0 cut tile (TC-S4 east remnant)", W=1.88, D=4.0)]),
  "tt_climb_mat_300_14x28": (mat, [dict(label="Mat 300 mm 1.4 x 2.8 collar west of TC-S3", W=1.4, D=2.8)]),
  "tt_climb_mat_300_06x16": (mat, [dict(label="Mat 300 mm 0.6 x 1.6 collar south of TC-S3 trunk", W=0.6, D=1.6)]),
+ # TTQA-038: wall-row cut tiles that stop 5 mm short of the lowest panel / board / hold (measured at y < 0.31 m)
+ "tt_climb_mat_300_180x20": (mat, [dict(label="Mat 300 mm 1.80 x 2.0 kids-wall row (X 82.50..84.30)", W=1.80, D=2.0)]),
+ "tt_climb_mat_300_180x158": (mat, [dict(label="Mat 300 mm 1.80 x 1.58 kids-wall S cut", W=1.80, D=1.58)]),
+ "tt_climb_mat_300_040x16": (mat, [dict(label="Mat 300 mm 0.40 x 1.6 collar south of TC-S3, kids-wall side", W=0.40, D=1.6)]),
+ "tt_climb_mat_300_187x20": (mat, [dict(label="Mat 300 mm 1.872 x 2.0 training-wall row (X 94.128..96.0)", W=1.872, D=2.0)]),
+ "tt_climb_mat_300_2x18": (mat, [dict(label="Mat 300 mm 2.0 x 1.80 boulder N-wall row (Z 12.70..14.50)", W=2.0, D=1.80)]),
+ "tt_climb_mat_300_2x192": (mat, [dict(label="Mat 300 mm 2.0 x 1.92 lead-wall row (Z 6.00..7.92)", W=2.0, D=1.92)]),
  "tt_climb_auto_belay": (autobelay, [dict(label="Auto-belay unit, wall plate, webbing stub, carabiner")]),
  "tt_climb_anchor": (anchor, [dict(label="Top anchor: plate, 2 hangers, chains, lower-off ring")]),
  "tt_gym_squat_rack": (squat, [dict(label="Power rack 1.22 x 1.22 x 2.3, J-hooks, safeties, loaded bar")]),
  "tt_gym_plate_tree": (platetree, [dict(label="Plate tree 3 tiers, 12 bumper plates")]),
 }
-if __name__ == "__main__" and sys.argv[1:2] == ["rev37"]:
+if __name__ == "__main__" and sys.argv[1:2] == ["ttqa038"]:
+    for mod in ("tt_climb_mat_300_180x20", "tt_climb_mat_300_180x158", "tt_climb_mat_300_040x16", "tt_climb_mat_300_187x20", "tt_climb_mat_300_2x18", "tt_climb_mat_300_2x192"):
+        b, prm = SETS[mod]; export_rev37(mod, b, prm[0])
+elif __name__ == "__main__" and sys.argv[1:2] == ["rev37"]:
     for mod in ("tt_rink_board_gate_open", "tt_rink_board_zamboni"):
         b, prm = SETS[mod]; export_rev37(mod, b, prm[0])
 elif __name__ == "__main__":
