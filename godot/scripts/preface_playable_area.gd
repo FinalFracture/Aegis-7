@@ -261,8 +261,17 @@ const SHOT_TOWER_DIR := "C:/Users/upchu/aegis_shots/tower"
 # Extra collision layer bit on every tower body (layer 1 stays, so the player and physics are unchanged).
 # QA probes that measure the drum floor itself exclude these bodies.
 const TT_QA_LAYER_BIT := 1 << 18
-# --qa-ring end-cap lane detour past the tower: axial margin beyond the terrace ends.
-const TT_RING_DETOUR_MARGIN_X := 20.0
+# --qa-ring route past the tower. Bounds are the placed ramp/stair collider AABBs
+# (tower-local), not the terrace rectangle: Rev 3.7 stair feet stick out past
+# TT_TERR_X0/X1 (-62.5 / 170.5) to about -73.8 / 181.3. The north end-cap line
+# (z = 110) crosses the grand-stair Z band, and the steer yaws at most ~5.5 deg
+# per tick (40 px * MOUSE_SENS) with no time_scale scale, while the sprint step
+# does. 60 m of lead lets that turn finish on open drum before the collider.
+const TT_RING_DETOUR_LEAD_X := 60.0
+# Circle holds this far outside the same collider span. 12 m keeps the 0.35 m
+# capsule off the trimesh; the axial bias saturates inside 6.7 m, so the hold
+# has to sit further out than the body.
+const TT_RING_ORBIT_CLEAR_X := 12.0
 
 # [t38u] Rotating distant outer starfield sphere & RFID doors ([t45u] force-field)
 # Old barrel, kept only so the density print can name the previous field.
@@ -456,6 +465,9 @@ var _qa_sprint_lap: bool = false
 var _curve_bend = null
 # +1 when steering toward +tangent increases alpha. The circle probe may flip it.
 var _qa_ring_flip: float = 1.0
+# Tower-local X span of the placed drum-access colliders (ramps and grand stairs).
+var _qa_ring_access_local: Vector2 = Vector2(-73.80, 181.30)
+var _qa_ring_access_ready: bool = false
 # YZ scale on CylinderHab7_DrumAxisPivot. World radius = pivot-frame radius * this. X scale stays 1.
 var _drum_radial_scale: float = 1.0
 # Inner-skin radii in the pivot frame (axis = pivot origin, local +X). Set by _align_drum_hull_to_ring.
@@ -10171,7 +10183,9 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 	var probe_a: float = _drum_alpha(_player_body.global_position)
 	var probe_i: int = 0
 	while probe_i < 24:
-		_qa_ring_steer(_drum_tangent(_drum_alpha(_player_body.global_position)))
+		var probe_p: Vector3 = _player_body.global_position
+		var probe_hold: float = _qa_ring_orbit_x(x_hold)
+		_qa_ring_steer(_drum_tangent(_drum_alpha(probe_p)) + Vector3.RIGHT * clampf((probe_hold - probe_p.x) * 0.06, -0.4, 0.4))
 		await get_tree().physics_frame
 		probe_i += 1
 	var flip: float = 1.0
@@ -10204,7 +10218,10 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 		end_strip = noted.x
 		travelled += wrapf(a - prev_a, -PI, PI) * flip
 		prev_a = a
-		var desired: Vector3 = _drum_tangent(a) * flip + Vector3.RIGHT * clampf((x_hold - p.x) * 0.06, -0.4, 0.4)
+		# Same drum ring (alpha circuit). X slides off the ramp/stair span so the
+		# hold does not cut through the east access the way terrace±20 did.
+		var orbit_x: float = _qa_ring_orbit_x(x_hold)
+		var desired: Vector3 = _drum_tangent(a) * flip + Vector3.RIGHT * clampf((orbit_x - p.x) * 0.06, -0.4, 0.4)
 		_qa_ring_steer(desired)
 		if _player_body.is_on_floor():
 			air = 0
@@ -10222,7 +10239,103 @@ func _qa_ring_circle(x_hold: float) -> Dictionary:
 	return {"ok": false, "seen": seen, "travelled": travelled, "rho": max_rho, "frames": frames, "fell": fell, "start": start_strip, "end": end_strip}
 
 
-## [TT] End-cap lane past the Strip 5 tower. Off the tower's axial span (terraces +/- TT_RING_DETOUR_MARGIN_X)
+## Tower-local X span of the placed drum-to-terrace ramps and grand stairs.
+## Collider faces, not the terrace rectangle. Fallback is the Rev 3.7 Access-colonly
+## AABB at the manifest placements (yaw 0): stair_w foot -73.80, stair_e foot 181.30.
+func _qa_ring_measure_access() -> Vector2:
+	if _qa_ring_access_ready:
+		return _qa_ring_access_local
+	_qa_ring_access_ready = true
+	var span: Vector2 = Vector2(1.0e9, -1.0e9)
+	if _tower != null:
+		span = _qa_ring_scan_access(_tower, span)
+	if span.x > span.y:
+		span = Vector2(-73.80, 181.30)
+		print("QA_RING access | fallback local_x=[%.2f, %.2f]" % [span.x, span.y])
+	_qa_ring_access_local = span
+	return span
+
+
+func _qa_ring_scan_access(root: Node, span: Vector2) -> Vector2:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		var low: String = String(n.name).to_lower()
+		if low.contains("struct_ramp_") or low.contains("struct_stair_"):
+			span = _qa_ring_union_col(n, span)
+		else:
+			for ch: Node in n.get_children():
+				stack.append(ch)
+	return span
+
+
+func _qa_ring_union_col(root: Node, span: Vector2) -> Vector2:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for ch: Node in n.get_children():
+			stack.append(ch)
+		if not (n is CollisionShape3D):
+			continue
+		var cs: CollisionShape3D = n as CollisionShape3D
+		if cs.shape == null:
+			continue
+		var pts: PackedVector3Array = _qa_ring_shape_points(cs.shape)
+		if pts.is_empty():
+			continue
+		var xf: Transform3D = _tower_inv * cs.global_transform
+		for i: int in range(pts.size()):
+			var q: Vector3 = xf * pts[i]
+			span.x = minf(span.x, q.x)
+			span.y = maxf(span.y, q.x)
+	return span
+
+
+func _qa_ring_shape_points(shape: Shape3D) -> PackedVector3Array:
+	if shape is ConcavePolygonShape3D:
+		return (shape as ConcavePolygonShape3D).data
+	if shape is ConvexPolygonShape3D:
+		return (shape as ConvexPolygonShape3D).points
+	if shape is BoxShape3D:
+		var he: Vector3 = (shape as BoxShape3D).size * 0.5
+		var box: PackedVector3Array = PackedVector3Array()
+		var signs: Array[float] = [-1.0, 1.0]
+		for sx: float in signs:
+			for sy: float in signs:
+				for sz: float in signs:
+					box.append(Vector3(he.x * sx, he.y * sy, he.z * sz))
+		return box
+	return PackedVector3Array()
+
+
+func _qa_ring_world_x(local_x: float) -> float:
+	return (_tower_xf * Vector3(local_x, 0.0, 0.0)).x
+
+
+## World X the end-cap treats as "in the tower": access AABB expanded by the turn lead.
+func _qa_ring_detour_world_x() -> Vector2:
+	var loc: Vector2 = _qa_ring_measure_access()
+	return Vector2(_qa_ring_world_x(loc.x - TT_RING_DETOUR_LEAD_X), _qa_ring_world_x(loc.y + TT_RING_DETOUR_LEAD_X))
+
+
+## World X just outside the access colliders. The circle holds the nearer side.
+func _qa_ring_orbit_span_world() -> Vector2:
+	var loc: Vector2 = _qa_ring_measure_access()
+	return Vector2(_qa_ring_world_x(loc.x - TT_RING_ORBIT_CLEAR_X), _qa_ring_world_x(loc.y + TT_RING_ORBIT_CLEAR_X))
+
+
+func _qa_ring_orbit_x(x_hold: float) -> float:
+	if _tower == null:
+		return x_hold
+	var span: Vector2 = _qa_ring_orbit_span_world()
+	if x_hold < span.x or x_hold > span.y:
+		return x_hold
+	if absf(span.y - x_hold) <= absf(x_hold - span.x):
+		return span.y
+	return span.x
+
+
+## [TT] End-cap lane past the Strip 5 tower. Off the access span (collider AABB +/- TT_RING_DETOUR_LEAD_X)
 ## the lane stays at hold_a. Inside that span, when hold_a falls in the tower's angular span (S face to N face,
 ## widened by the gravity blend), the lane steps to the open floor between the start deck's north edge and the
 ## tower's S face (both widened by their blend margins), so the run goes round the building on the walkable floor.
@@ -10234,9 +10347,8 @@ func _qa_ring_lane_alpha(hold_a: float, x: float) -> float:
 	var a_n: float = _drum_alpha(_tower_xf * Vector3(mid_x, 0.0, TT_FOOT_Z1)) + TT_BLEND_OUT / DRUM_FLOOR_R
 	if hold_a < a_s or hold_a > a_n:
 		return hold_a
-	var x0: float = TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X0 - TT_RING_DETOUR_MARGIN_X
-	var x1: float = TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X1 + TT_RING_DETOUR_MARGIN_X
-	if x < x0 or x > x1:
+	var detour: Vector2 = _qa_ring_detour_world_x()
+	if x < detour.x or x > detour.y:
 		return hold_a
 	var a_deck: float = (EXT_GROUND_Z1 + DRUM_BLEND_OUT - DRUM_AXIS_Z) / DRUM_FLOOR_R
 	return (a_deck + a_s) * 0.5
@@ -10380,6 +10492,12 @@ func _run_qa_ring() -> void:
 	_qa_key(KEY_W, true)
 	await _qa_idle(2)
 	var x_hold: float = _player_body.global_position.x
+	if _tower != null:
+		var access_l: Vector2 = _qa_ring_measure_access()
+		var detour_w: Vector2 = _qa_ring_detour_world_x()
+		var orbit_w: Vector2 = _qa_ring_orbit_span_world()
+		print("QA_RING access | local_x=[%.2f, %.2f] lead=%.1f detour_x=[%.1f, %.1f] orbit_x=[%.1f, %.1f] hold_x=%.1f orbit_hold=%.1f" % [
+			access_l.x, access_l.y, TT_RING_DETOUR_LEAD_X, detour_w.x, detour_w.y, orbit_w.x, orbit_w.y, x_hold, _qa_ring_orbit_x(x_hold)])
 	var loop: Dictionary = await _qa_ring_circle(x_hold)
 	var travelled_deg: float = rad_to_deg(float(loop["travelled"]))
 	var loop_ok: bool = bool(loop["ok"]) and int(loop["seen"]) == 1023 and int(loop["start"]) == 4 and int(loop["end"]) == 4 and travelled_deg >= 360.0 and float(loop["rho"]) <= DRUM_FLOOR_R + 2.0
@@ -10401,9 +10519,9 @@ func _run_qa_ring() -> void:
 	if align_a != safe_a:
 		hold_a = safe_a
 	if _tower != null:
+		var detour_lane: Vector2 = _qa_ring_detour_world_x()
 		print("QA_RING lane | safe_deg=%.2f detour_deg=%.2f detour_x=[%.1f, %.1f] align_deg=%.2f" % [rad_to_deg(safe_a),
-			rad_to_deg(_qa_ring_lane_alpha(safe_a, 0.0)), TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X0 - TT_RING_DETOUR_MARGIN_X,
-			TT_STRIP_X0 + TT_AXIAL_OFFSET + TT_TERR_X1 + TT_RING_DETOUR_MARGIN_X, rad_to_deg(align_a)])
+			rad_to_deg(_qa_ring_lane_alpha(safe_a, 0.0)), detour_lane.x, detour_lane.y, rad_to_deg(align_a)])
 	var pos_cap: Dictionary = await _qa_ring_to_x(hold_a, 1.0, 1, 0.0)
 	var pos_ok: bool = bool(pos_cap["ok"]) and float(pos_cap["rho"]) <= DRUM_FLOOR_R + 2.0
 	print("QA_RING %s | cap_pos | x=%.2f z=%.2f frames=%d %s" % ["PASS" if pos_ok else "FAIL", float(pos_cap["x"]), _player_body.global_position.z, int(pos_cap["frames"]), String(pos_cap["why"])])
