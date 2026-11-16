@@ -163,10 +163,10 @@
    "rotated_at": "2026-11-15T14:50:00-06:00"
   },
   "Gage": {
-   "id": "957f052a-7abe-425c-85f5-fa21b72010e3",
+   "id": "f00a0b4e-9ccf-4c20-b874-c2c1f5c9f41d",
    "role": "Godot 4 Developer",
-   "purpose": "Assemble Godot 4.3 scenes (.tscn) and GDScript controllers (.gd), render 1920x1080 candidate showcases and 5-panel voting sheets, stage locked winning .glbs into assets/glb/winners/, render multi-camera room/district/metropolis contact sheets, and cast post-render engine/framing votes in VOTE_LOG.md.",
-   "handoff_file": "/workspace/game-project/context/gage-handoff-v5.md",
+   "purpose": "Fix bugs and build Godot 4.7 scenes (.tscn) and GDScript controllers (.gd), work through QA bugs from MASTER_BUG_LIST.md, place locked .glbs, and keep the repo clean; all code via the Grok Build CLI on Jared's PC.",
+   "handoff_file": "/workspace/game-project/context/gage-handoff-v6.md",
    "reference_files": [
     "/workspace/game-project/PROJECT.md",
     "/workspace/game-project/MASTER_ARCHITECTURE_10_ROOMS.md",
@@ -177,7 +177,6 @@
     "/workspace/game-project/design/buildings_15_exteriors_spec.md",
     "/workspace/game-project/design/phase3_props_and_buildings_16_20_spec.md",
     "/workspace/game-project/godot/scripts/material_loader.gd",
-    "/workspace/game-project/godot/renders/",
     "/workspace/game-project/design/cylinder_interior_overhaul_spec.md",
     "/workspace/game-project/design/sloane_cylinder_interior_lighting_and_textures_spec.md",
     "/workspace/game-project/design/residential_apartment_layout_v2.md",
@@ -191,20 +190,24 @@
     "/workspace/game-project/godot/scenes/preface/",
     "/workspace/game-project/godot/scripts/preface_playable_area.gd",
     "/workspace/game-project/godot/scripts/player_camera.gd",
-    "/workspace/game-project/godot/scripts/pcba_python_puzzle_ui.gd",
     "/workspace/game-project/godot/assets/models/",
     "/workspace/game-project/context/reticle_stars_doors_qa_log.md",
     "/workspace/game-project/context/gage-handoff-v3.md",
     "/workspace/game-project/context/gage-handoff-v4.md",
     "/workspace/game-project/context/gage-handoff-v5.md",
     "/workspace/game-project/context/ROTATION_RULE.md",
-    "/workspace/game-project/context/BUGFIX_FLOW.md"
+    "/workspace/game-project/context/BUGFIX_FLOW.md",
+    "/workspace/game-project/context/gage-handoff-v6.md",
+    "/workspace/game-project/context/UI_INTERACT_PLAN.md",
+    "/workspace/game-project/context/TT_QA_AUDIT.md",
+    "/workspace/game-project/context/TT_QA_AUDIT_r2.md",
+    "/workspace/game-project/godot/scripts/tennis_tower_fixes/"
    ],
-   "status": "active (rotated 2026-11-03 at 500 messages)",
-   "previous_id": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38",
+   "status": "active (rotated 2026-11-15 at 500+ messages)",
+   "previous_id": "957f052a-7abe-425c-85f5-fa21b72010e3",
    "previous_name": "delete-Gage",
-   "replaces": "2ff11c2c-e57c-41a6-ad4c-8ff8afcefd38",
-   "rotated_at": "2026-11-03T16:20:00-06:00"
+   "replaces": "957f052a-7abe-425c-85f5-fa21b72010e3",
+   "rotated_at": "2026-11-15T20:20:00-06:00"
   },
   "Scribe": {
    "id": "61a860b0-0159-406a-af8c-a969dff4722b",
