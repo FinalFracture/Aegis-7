@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`, `--qa-tower-collide`, `--qa-tower-leak`, `--qa-tower-guards-gen`, `--shot-ttfix`
 ## (tower measurement switches: `--no-tower`, `--tower-no-batch`, `--tower-no-lights`; shot dir override `--shot-dir=<path>`).
 
 const SECTOR_GLB_PATHS := [
@@ -231,6 +231,9 @@ const DRUM_PREFACE_Y1 := 25.0
 const TENNIS_TOWER_SCENE := "res://scenes/tennis_tower/tennis_tower.tscn"
 const _TennisTowerBatcher := preload("res://scripts/tennis_tower_batcher.gd")
 const _TennisTowerLights := preload("res://scripts/tennis_tower_lighting.gd")
+const _TTFallback := preload("res://scripts/tennis_tower_fixes/tt_collider_fallback.gd")
+const _TTGuards := preload("res://scripts/tennis_tower_fixes/tt_guard_rails.gd")
+const _TTMovers := preload("res://scripts/tennis_tower_fixes/tt_movers.gd")
 const TT_STRIP := 5
 const TT_AXIAL_OFFSET := -100.0
 const TT_STRIP_X0 := 60.0
@@ -474,6 +477,10 @@ var _qa_drawcalls: bool = false
 var _qa_tower_walk: bool = false
 var _shot_tower: bool = false
 var _qa_tower_draw: bool = false
+var _qa_tower_collide: bool = false
+var _qa_tower_leak: bool = false
+var _qa_tower_guards_gen: bool = false
+var _shot_ttfix: bool = false
 var _tt_disabled: bool = false
 var _tt_no_batch: bool = false
 var _tt_no_lights: bool = false
@@ -486,6 +493,7 @@ var _tower_up: Vector3 = Vector3.UP
 var _tower_stats: Dictionary = {}
 var _tower_batch_stats: Dictionary = {}
 var _tt_doors: Array[Dictionary] = []
+var _tt_movers
 var _tower_body_rids: Array[RID] = []
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
@@ -631,6 +639,18 @@ func _ready() -> void:
 		elif arg == "--qa-tower-draw":
 			_qa_tower_draw = true
 			_qa_hand = true
+		elif arg == "--qa-tower-collide":
+			_qa_tower_collide = true
+			_qa_hand = true
+		elif arg == "--qa-tower-leak":
+			_qa_tower_leak = true
+			_qa_hand = true
+		elif arg == "--qa-tower-guards-gen":
+			_qa_tower_guards_gen = true
+			_qa_hand = true
+		elif arg == "--shot-ttfix":
+			_shot_ttfix = true
+			_qa_hand = true
 		elif arg == "--no-tower":
 			_tt_disabled = true
 		elif arg == "--tower-no-batch":
@@ -639,6 +659,10 @@ func _ready() -> void:
 			_tt_no_lights = true
 		elif arg.begins_with("--shot-dir="):
 			_shot_dir_override = arg.substr(11)
+	# Throwaway drum-start entry probe (godot/_ttfix_probe). Steering needs _qa_hand
+	# (TTQA-054) and must not fall through to the hand-controls QA.
+	if OS.get_environment("TT_ENTRY_PROBE") == "1":
+		_qa_hand = true
 	if OS.get_environment("RENDER_ALL") == "1" or OS.get_environment("CAPTURE_SCREENSHOTS") == "1":
 		_batch_render = true
 	if OS.get_environment("VALIDATE_ONLY") == "1":
@@ -715,6 +739,16 @@ func _ready() -> void:
 			_run_shot_tower.call_deferred()
 		elif _qa_tower_draw:
 			_run_qa_tower_draw.call_deferred()
+		elif _qa_tower_collide:
+			_run_qa_tower_collide.call_deferred()
+		elif _qa_tower_leak:
+			_run_qa_tower_leak.call_deferred()
+		elif _qa_tower_guards_gen:
+			_run_qa_tower_guards_gen.call_deferred()
+		elif _shot_ttfix:
+			_run_shot_ttfix.call_deferred()
+		elif OS.get_environment("TT_ENTRY_PROBE") == "1":
+			print("[TT] entry probe owns the player")
 		else:
 			_run_hand_controls_qa.call_deferred()
 	# --qa-placement stays at the Apt 201 spawn _ready already uses, with interiors loaded.
@@ -4715,6 +4749,7 @@ func _setup_player_controller() -> void:
 	_player_body = CharacterBody3D.new()
 	_player_body.name = "PlayerBody"
 	_player_body.floor_max_angle = deg_to_rad(50.0)
+	print("[TT] floor_max_angle_deg=%.2f" % rad_to_deg(_player_body.floor_max_angle))
 	_player_body.floor_snap_length = 0.35
 	_player_body.floor_stop_on_slope = true
 	add_child(_player_body)
@@ -5020,12 +5055,48 @@ func _move_body_swept(b: CharacterBody3D, delta: float, up_dir: Vector3) -> void
 	b.velocity = true_vel
 
 
+func _tt_is_slide_collider(o: Object) -> bool:
+	var n: Node = o as Node
+	while n != null:
+		if n.has_meta("tt_slide_chute"):
+			return true
+		n = n.get_parent()
+	return false
+
+
+func _tt_slide_normal(b: CharacterBody3D, up_dir: Vector3, dir: Vector3) -> Vector3:
+	if b == null or not b.is_inside_tree():
+		return Vector3.ZERO
+	var world: World3D = b.get_world_3d()
+	if world == null:
+		return Vector3.ZERO
+	var space: PhysicsDirectSpaceState3D = world.direct_space_state
+	if space == null:
+		return Vector3.ZERO
+	var origin: Vector3 = b.global_position + up_dir * 0.45
+	var tests: Array[Vector3] = [origin - up_dir * 1.35]
+	if dir.length_squared() > 0.01:
+		tests.append(origin + dir * 0.8)
+		tests.append(origin + dir * 0.65 - up_dir * 0.85)
+	for to: Vector3 in tests:
+		var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, to, b.collision_mask)
+		rq.exclude = [b.get_rid()]
+		var hit: Dictionary = space.intersect_ray(rq)
+		if hit.is_empty():
+			continue
+		if _tt_is_slide_collider(hit.get("collider")):
+			return hit.get("normal", Vector3.UP) as Vector3
+	return Vector3.ZERO
+
+
 func _physics_process(delta: float) -> void:
 	# Stall flicker has to tick on physics frames: --qa-forcefield-door awaits physics_frame,
 	# and a physics catch-up burst can run those frames before the next idle _process.
 	_ff_tick_active_stalls(delta)
 	_apply_ring_box_gravity(delta)
 	_tt_update_doors(delta)
+	if _tt_movers != null and _player_body != null:
+		_tt_movers.update(delta, _player_body.global_position)
 	_process_core_transits(delta)
 	if _player_body == null:
 		return
@@ -5087,6 +5158,20 @@ func _physics_process(delta: float) -> void:
 	dir -= up_dir * dir.dot(up_dir)
 	if dir.length_squared() > 0.0001:
 		dir = dir.normalized()
+	# TTQA-037: a slide chute is not a floor. Strip the uphill wish only while
+	# a ray is on tt_leisure_slide_tubes. Stairs and flat floors stay as they are.
+	var chute_n: Vector3 = _tt_slide_normal(b, up_dir, dir)
+	if chute_n != Vector3.ZERO:
+		var downhill: Vector3 = (-up_dir).slide(chute_n)
+		if downhill.length_squared() > 0.0001:
+			downhill = downhill.normalized()
+			var climb: float = dir.dot(-downhill)
+			if climb > 0.0:
+				dir = dir + downhill * climb
+				if dir.length_squared() > 0.0001:
+					dir = dir.normalized()
+				else:
+					dir = Vector3.ZERO
 	var speed: float = SPRINT_SPEED if sprint else WALK_SPEED
 
 	# [QA-05] Accelerate toward the wish velocity. A fresh jump press fills the buffer; holding does not repeat.
@@ -5133,7 +5218,7 @@ func _physics_process(delta: float) -> void:
 		var hit: KinematicCollision3D = KinematicCollision3D.new()
 		# [SYS-21] Step on any face too steep to walk (floor_max_angle 50 deg), not only normal.y < 0.5.
 		var walk_cos: float = cos(b.floor_max_angle)
-		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < walk_cos - 0.001:
+		if b.test_move(b.global_transform, motion, hit) and hit.get_normal().dot(up_dir) < walk_cos - 0.001 and not _tt_is_slide_collider(hit.get_collider()):
 			# [SYS-22/23/24] Find the step top with rays: one under the body (current ground) and one
 			# just ahead of the capsule, where the top is flat (the capsule's down-probe used to land on the
 			# edge corner, refuse for a tick and zero the speed). Raise by the measured rise, not STEP_HEIGHT,
@@ -5147,11 +5232,15 @@ func _physics_process(delta: float) -> void:
 
 	var was_on_floor: bool = b.is_on_floor()
 	var up_vel_before: float = v_up
+	var saved_floor_angle: float = b.floor_max_angle
+	if chute_n != Vector3.ZERO:
+		b.floor_max_angle = deg_to_rad(6.0)
 	_move_body_swept(b, delta, up_dir)
+	b.floor_max_angle = saved_floor_angle
 	# Crest backup: if a downhill lip still leaves the body airborne without a jump,
 	# snap back onto the ramp. floor_snap_length is unchanged, so a real drop past
 	# that length still falls. A successful snap must not keep an upward residual.
-	if was_on_floor and not b.is_on_floor() and up_vel_before < JUMP_VELOCITY * 0.5:
+	if was_on_floor and not b.is_on_floor() and up_vel_before < JUMP_VELOCITY * 0.5 and chute_n == Vector3.ZERO:
 		b.apply_floor_snap()
 		if b.is_on_floor():
 			var vu_snap: float = b.velocity.dot(b.up_direction)
@@ -12037,6 +12126,13 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		print("[TT] interior lights skipped (--tower-no-lights)")
 	else:
 		_TennisTowerLights.run(tower)
+	# Safety pass: trimesh fallback, lift-door seals, guard rails. Before the
+	# layer tag (new bodies must get bit 18) and before the batcher hides meshes.
+	# TT_SKIP_FIXES=1 is the draw-call before measurement. Guards-gen measures
+	# the walk grid itself, then applies the fallback.
+	if OS.get_environment("TT_SKIP_FIXES") != "1" and not _qa_tower_guards_gen:
+		_TTFallback.run(tower)
+		_TTGuards.run(tower)
 	_tower_body_rids.clear()
 	var stack_b: Array[Node] = [tower]
 	while not stack_b.is_empty():
@@ -12047,8 +12143,10 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 			(nb as CollisionObject3D).collision_layer |= TT_QA_LAYER_BIT
 			_tower_body_rids.append((nb as CollisionObject3D).get_rid())
 	print("[TT] tower bodies tagged TT_QA_LAYER_BIT (layer 19): %d" % _tower_body_rids.size())
-	if _tt_no_batch:
-		print("[TT] batching off (--tower-no-batch)")
+	# Guards-gen samples mesh visibility for the fallback. The batcher hides
+	# those MeshInstances, so a measurement taken after it only sees leftovers.
+	if _tt_no_batch or _qa_tower_guards_gen:
+		print("[TT] batching off (%s)" % ("guards-gen" if _qa_tower_guards_gen else "--tower-no-batch"))
 		return
 	_tower_batch_stats = _TennisTowerBatcher.run(tower)
 	var b: Dictionary = _tower_batch_stats
@@ -12532,6 +12630,39 @@ func _qa_tower_draw_sample(label: String, eye: Vector3, at: Vector3, up: Vector3
 	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d avg_fps=%d" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n)), int(round(fps / n))])
 
 
+func _tt_fix_node(script_path: String) -> void:
+	var n: Node = Node.new()
+	n.set_script(load(script_path))
+	n.set("ppa", self)
+	add_child(n)
+
+
+func _run_qa_tower_collide() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_collide.gd")
+
+
+func _run_qa_tower_leak() -> void:
+	var guard: int = 0
+	while not has_meta("exterior_spawned") and guard < 4000:
+		await get_tree().physics_frame
+		guard += 1
+	if _tower == null:
+		print("[TT] LEAK DONE missing tower")
+		get_tree().quit(1)
+		return
+	_TTFallback.leak_stats(_tower)
+	print("[TT] LEAK DONE")
+	get_tree().quit(0)
+
+
+func _run_qa_tower_guards_gen() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_guard_gen.gd")
+
+
+func _run_shot_ttfix() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots.gd")
+
+
 func _run_qa_tower_draw() -> void:
 	var guard: int = 0
 	while not has_meta("exterior_spawned") and guard < 600:
@@ -12713,6 +12844,10 @@ func _tt_setup_doors(tower: Node3D) -> int:
 		else:
 			nw += 1
 	print("[TT] sliding doors=%d (S=%d N=%d E=%d W=%d)" % [ns + nn + ne + nw, ns, nn, ne, nw])
+	if _tt_movers == null:
+		_tt_movers = _TTMovers.new()
+	_tt_movers.setup(tower)
+	_tt_moving_leaves += int(_tt_movers.moving_meshes)
 	return _tt_doors.size()
 
 

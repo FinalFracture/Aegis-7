@@ -914,6 +914,176 @@ def run_godot(target, proj, no_godot):
     stub_msg()
 
 
+# ------------------------------------------------- tower colonly (WARN) ----
+def _gltf_local(node):
+    if "matrix" in node:
+        m = node["matrix"]
+        return [
+            [m[0], m[4], m[8], m[12]],
+            [m[1], m[5], m[9], m[13]],
+            [m[2], m[6], m[10], m[14]],
+            [m[3], m[7], m[11], m[15]],
+        ]
+    t = node.get("translation", [0, 0, 0])
+    x, y, z, w = node.get("rotation", [0, 0, 0, 1])
+    sx, sy, sz = node.get("scale", [1, 1, 1])
+    rot = [
+        [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 0],
+        [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 0],
+        [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y), 0],
+        [0, 0, 0, 1],
+    ]
+    scale = [[sx, 0, 0, 0], [0, sy, 0, 0], [0, 0, sz, 0], [0, 0, 0, 1]]
+    trans = [[1, 0, 0, t[0]], [0, 1, 0, t[1]], [0, 0, 1, t[2]], [0, 0, 0, 1]]
+    return _mat_mul(trans, _mat_mul(rot, scale))
+
+
+def _mat_mul(a, b):
+    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
+
+
+def _mat_point(m, p):
+    x, y, z = p
+    return (
+        m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3],
+        m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3],
+        m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3],
+    )
+
+
+def _mesh_local_aabb(mesh, acc):
+    mn = [1e9, 1e9, 1e9]
+    mx = [-1e9, -1e9, -1e9]
+    got = False
+    for prim in mesh.get("primitives", []):
+        pos = prim.get("attributes", {}).get("POSITION")
+        if pos is None or pos >= len(acc):
+            continue
+        a = acc[pos]
+        if "min" not in a or "max" not in a:
+            continue
+        got = True
+        for i in range(3):
+            mn[i] = min(mn[i], a["min"][i])
+            mx[i] = max(mx[i], a["max"][i])
+    if not got:
+        return None
+    return (tuple(mn), tuple(mx))
+
+
+def _xform_aabb(m, ab):
+    mn, mx = ab
+    corners = []
+    for ix in (0, 1):
+        for iy in (0, 1):
+            for iz in (0, 1):
+                corners.append(_mat_point(m, (
+                    mn[0] if ix == 0 else mx[0],
+                    mn[1] if iy == 0 else mx[1],
+                    mn[2] if iz == 0 else mx[2],
+                )))
+    out_mn = [min(c[i] for c in corners) for i in range(3)]
+    out_mx = [max(c[i] for c in corners) for i in range(3)]
+    return (tuple(out_mn), tuple(out_mx))
+
+
+def _aabb_vol(mn, mx):
+    return max(0.0, mx[0] - mn[0]) * max(0.0, mx[1] - mn[1]) * max(0.0, mx[2] - mn[2])
+
+
+def _aabb_overlap(a0, a1, b0, b1):
+    d = 1.0
+    for i in range(3):
+        d *= max(0.0, min(a1[i], b1[i]) - max(a0[i], b0[i]))
+    return d
+
+
+def _colonly_covers(vis, cols):
+    vmn, vmx = vis
+    vol = _aabb_vol(vmn, vmx)
+    center = tuple((vmn[i] + vmx[i]) * 0.5 for i in range(3))
+    for cmn, cmx in cols:
+        emn = tuple(cmn[i] - 0.15 for i in range(3))
+        emx = tuple(cmx[i] + 0.15 for i in range(3))
+        if not all(emn[i] <= center[i] <= emx[i] for i in range(3)):
+            continue
+        if vol <= 1e-6:
+            return True
+        if _aabb_overlap(vmn, vmx, emn, emx) / vol >= 0.25:
+            return True
+    return False
+
+
+def check_tower_colonly(proj):
+    """WARN (never FAIL): tall tower-GLB visuals with no *-colonly coverage. Informational for Rook."""
+    if not proj:
+        return
+    folder = os.path.join(proj, "assets", "models")
+    paths = []
+    if os.path.isdir(folder):
+        for name in os.listdir(folder):
+            if name.startswith("tt_") and name.lower().endswith(".glb"):
+                paths.append(os.path.join(folder, name))
+    paths.sort()
+    if not paths:
+        rec("PASS", "glb.tower_colonly_coverage", "no tt_*.glb")
+        return
+    uncovered = []
+    parsed = 0
+    for g in paths:
+        j = glb_json(g)
+        if not j:
+            continue
+        parsed += 1
+        nodes = j.get("nodes", [])
+        meshes = j.get("meshes", [])
+        acc = j.get("accessors", [])
+        parent = {i: None for i in range(len(nodes))}
+        for i, n in enumerate(nodes):
+            for ch in n.get("children", []):
+                if isinstance(ch, int) and ch in parent:
+                    parent[ch] = i
+        cache = {}
+
+        def world(i, _nodes=nodes, _parent=parent, _cache=cache):
+            if i in _cache:
+                return _cache[i]
+            local = _gltf_local(_nodes[i])
+            p = _parent.get(i)
+            w = local if p is None else _mat_mul(world(p), local)
+            _cache[i] = w
+            return w
+
+        visuals = []
+        cols = []
+        for i, n in enumerate(nodes):
+            mi = n.get("mesh")
+            if not isinstance(mi, int) or mi >= len(meshes):
+                continue
+            mn = meshes[mi].get("name") or n.get("name") or ""
+            nn = n.get("name") or ""
+            ab = _mesh_local_aabb(meshes[mi], acc)
+            if ab is None:
+                continue
+            wab = _xform_aabb(world(i), ab)
+            height = wab[1][1] - wab[0][1]
+            if height < 0.3:
+                continue
+            if re.search(r"(?i)colonly", mn) or re.search(r"(?i)colonly", nn):
+                cols.append(wab)
+            else:
+                visuals.append((os.path.basename(g), mn, height, wab))
+        for file_name, mn, height, wab in visuals:
+            if not _colonly_covers(wab, cols):
+                uncovered.append(f"{file_name}: {mn} (h={height:.2f})")
+    if uncovered:
+        rec("WARN", "glb.tower_colonly_coverage",
+            f"{len(uncovered)} meshes >= 0.3 m in {parsed} tower GLBs lack *-colonly coverage",
+            uncovered)
+    else:
+        rec("PASS", "glb.tower_colonly_coverage", f"{parsed} tower GLBs, tall meshes covered or none")
+
+
 # --------------------------------------------------------------- main -------
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -937,6 +1107,7 @@ def main():
     print(f"scope: {len(files)} files\n")
     for fn in (lambda: check_repo(root, files), lambda: check_project(proj), lambda: check_scenes(files, proj),
                lambda: check_scripts(files, proj), lambda: check_textures(files, proj), lambda: check_glbs(files, proj),
+               lambda: check_tower_colonly(proj),
                lambda: run_godot(target, proj, a.no_godot)):
         try:
             fn()
