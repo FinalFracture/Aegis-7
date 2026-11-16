@@ -50,6 +50,7 @@ RENDER_DIR = "/workspace/renders/tennis_tower/rooms/temp-Courts"
 CFG = {"F12": (5, .40, .85), "F3": (12, .45, .95)}
 SLAB, FASCIA, STR_W, SEAT_PITCH = .14, .28, .10, .525
 HA = .6  # half-aisle each side -> 1.2 m aisle when bays tile
+AISLE_STEPS = 3  # TTQA-036: aisle steps per tier (riser R/3 <= 0.15 m)
 
 def _seats_for(W):
     clear = max(.4, W - 2 * HA)
@@ -77,12 +78,14 @@ def _hollow_rake(p, W, n, R, T, seats_only=False, structure_only=False):
                 seat_risers.append(box(sx0, sx1, max(0.0, y_bot - FASCIA), y_bot - GAP, z1 - .045, z1 - GAP))
             else:
                 seat_risers.append(box(sx0, sx1, R * i + GAP, y_bot - GAP, z1 - .05, z1 - GAP))
-            # solid aisle stairs (supports the rake; WC stays in centre bay). TTQA-020: 2 aisle steps per tier (rise R/2 = 0.20 / 0.225 m,
-            # going T/2 = 0.425 / 0.475 m) so the player (STEP_HEIGHT 0.32) can climb every aisle; front half-step + full-height back half
-            zm = -T * i - T / 2
+            # solid aisle stairs (supports the rake; WC stays in centre bay). TTQA-020: aisle steps per tier so the player can climb
+            # every aisle. TTQA-036 (Rook 2026-11-15): AISLE_STEPS = 3 per tier (was 2: rise 0.20 / 0.225 m) -> rise R/3 = 0.133 / 0.150 m
+            # (<= 0.18 m), going T/3 = 0.283 / 0.317 m; each step is a full-height block from y 0, back steps lap the one in front by E
             for s in (-1, 1):
                 xa, xb = sorted((s * (W / 2 - .015), s * (W / 2 - HA + E)))
-                for (za, zb_, yy) in ((zm, z1, y_top - R / 2), (z0, zm + E, y_top)):
+                for k in range(AISLE_STEPS):
+                    za, zb_ = -T * i - T * (k + 1) / AISLE_STEPS, (z1 if k == 0 else -T * i - T * k / AISLE_STEPS + E)
+                    yy = y_top - R * (AISLE_STEPS - 1 - k) / AISLE_STEPS
                     aisle_solids.append(box(xa, xb, 0.0, yy, za, zb_))
                     col_aisle.append(box(xa, xb, 0.0, yy, za, zb_))
         # short beam stubs from each aisle into the bay (centre WC volume stays clear — no full-span beams)
