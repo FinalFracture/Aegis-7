@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`, `--qa-tower-collide`, `--qa-tower-entry`, `--qa-tower-leak`, `--qa-tower-guards-gen`, `--shot-ttfix`, `--shot-ttfix-b`
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`, `--qa-tower-collide`, `--qa-tower-entry`, `--qa-tower-leak`, `--qa-tower-guards-gen`, `--shot-ttfix`, `--shot-ttfix-b`, `--qa-tower-swim`, `--shot-ttfix-c`
 ## (tower measurement switches: `--no-tower`, `--tower-no-batch`, `--tower-no-lights`; shot dir override `--shot-dir=<path>`).
 
 const SECTOR_GLB_PATHS := [
@@ -235,6 +235,8 @@ const _TTFallback := preload("res://scripts/tennis_tower_fixes/tt_collider_fallb
 const _TTGuards := preload("res://scripts/tennis_tower_fixes/tt_guard_rails.gd")
 const _TTMovers := preload("res://scripts/tennis_tower_fixes/tt_movers.gd")
 const _TTWayfinding := preload("res://scripts/tennis_tower_fixes/tt_wayfinding.gd")
+const _TTPool := preload("res://scripts/tennis_tower_fixes/tt_pool_water.gd")
+const _TTRoomLights := preload("res://scripts/tennis_tower_fixes/tt_room_lighting.gd")
 const TT_STRIP := 5
 const TT_AXIAL_OFFSET := -100.0
 const TT_STRIP_X0 := 60.0
@@ -496,6 +498,8 @@ var _shot_ttfix_b: bool = false
 var _qa_tower_leak: bool = false
 var _qa_tower_guards_gen: bool = false
 var _shot_ttfix: bool = false
+var _qa_tower_swim: bool = false
+var _shot_ttfix_c: bool = false
 var _tt_disabled: bool = false
 var _tt_no_batch: bool = false
 var _tt_no_lights: bool = false
@@ -509,6 +513,7 @@ var _tower_stats: Dictionary = {}
 var _tower_batch_stats: Dictionary = {}
 var _tt_doors: Array[Dictionary] = []
 var _tt_movers
+var _tt_pool
 var _tower_body_rids: Array[RID] = []
 var _ts_layer: CanvasLayer
 var _ts_ui: TroubleshootSimpleUI
@@ -672,6 +677,12 @@ func _ready() -> void:
 		elif arg == "--shot-ttfix":
 			_shot_ttfix = true
 			_qa_hand = true
+		elif arg == "--qa-tower-swim":
+			_qa_tower_swim = true
+			_qa_hand = true
+		elif arg == "--shot-ttfix-c":
+			_shot_ttfix_c = true
+			_qa_hand = true
 		elif arg == "--no-tower":
 			_tt_disabled = true
 		elif arg == "--tower-no-batch":
@@ -772,6 +783,10 @@ func _ready() -> void:
 			_run_qa_tower_guards_gen.call_deferred()
 		elif _shot_ttfix:
 			_run_shot_ttfix.call_deferred()
+		elif _qa_tower_swim:
+			_run_qa_tower_swim.call_deferred()
+		elif _shot_ttfix_c:
+			_run_shot_ttfix_c.call_deferred()
 		elif OS.get_environment("TT_ENTRY_PROBE") == "1":
 			print("[TT] entry probe owns the player")
 		else:
@@ -5137,8 +5152,7 @@ func _physics_process(delta: float) -> void:
 
 	var input_dir: Vector2 = Vector2.ZERO
 	var sprint: bool = false
-	# [QA-05] Held `jump` stays sampled and must not start a jump.
-	@warning_ignore("unused_variable")
+	# [QA-05] Held `jump` stays sampled. On land it must not start a jump; in a pool it is swim-up.
 	var jump: bool = false
 	if controls:
 		# Keyboard look: Q / Left = turn left, Right = turn right, PageUp / PageDown = look up / down.
@@ -5198,6 +5212,25 @@ func _physics_process(delta: float) -> void:
 				else:
 					dir = Vector3.ZERO
 	var speed: float = SPRINT_SPEED if sprint else WALK_SPEED
+	# Pool volumes are a no-op everywhere else. Floor contact above the tank
+	# floor (a stair tread) leaves the water so the real step-up can climb out.
+	var pool: Dictionary = {}
+	var pool_in: bool = false
+	var pool_rising: bool = false
+	if _tt_pool != null:
+		pool = _tt_pool.sample(b.global_position, input_dir.y < -0.15, b)
+		if bool(pool.get("in_water", false)) and b.is_on_floor():
+			if float(pool.get("q_y", 0.0)) + 0.12 > float(pool.get("floor_q", -999.0)) + 0.15:
+				pool["in_water"] = false
+				pool["deep"] = false
+		if bool(pool.get("climb", false)):
+			_tt_pool.begin_climb(b, pool, delta)
+		pool_rising = bool(pool.get("climb", false)) and not bool(pool.get("out", false))
+		pool_in = bool(pool.get("in_water", false)) and not bool(pool.get("out", false))
+		if pool_rising:
+			speed = 0.0
+		elif pool_in:
+			speed *= 0.55
 
 	# [QA-05] Accelerate toward the wish velocity. A fresh jump press fills the buffer; holding does not repeat.
 	var v_up: float = b.velocity.dot(up_dir)
@@ -5205,11 +5238,12 @@ func _physics_process(delta: float) -> void:
 		v_up = (b.velocity + g_vec * delta).dot(up_dir)
 	# [SYS-19] Check first, count down after, so both windows are the full 0.10 s.
 	# Timers rest at -1.0 (inactive); a timer counts while >= -0.0001.
-	if controls and Input.is_action_just_pressed("jump"):
+	# In the water the press is a swim stroke, not a coyote jump on the way out.
+	if controls and Input.is_action_just_pressed("jump") and not pool_in and not pool_rising:
 		_jump_buffer_t = JUMP_BUFFER_S
 	if b.is_on_floor():
 		_coyote_t = COYOTE_S
-	if _jump_buffer_t >= -0.0001 and _coyote_t >= -0.0001:
+	if _jump_buffer_t >= -0.0001 and _coyote_t >= -0.0001 and not pool_in and not pool_rising:
 		v_up = JUMP_VELOCITY
 		_jump_buffer_t = -1.0
 		_coyote_t = -1.0
@@ -5231,8 +5265,16 @@ func _physics_process(delta: float) -> void:
 	# Clamp only that residual. Forcing a downward speed, or projecting the wish onto
 	# the floor normal, feeds back on promenade lip contacts and drops walk speed
 	# from 5.2 m/s to about 2 m/s. Jumps set v_up to JUMP_VELOCITY and stay free.
-	if b.is_on_floor() and v_up > 0.0 and v_up < JUMP_VELOCITY * 0.5:
+	# Deep water must keep the buoyancy velocity. Shallow wading keeps the
+	# stair-crest clamp so a 0.16 m river riser does not launch the body.
+	var pool_deep: bool = pool_in and bool(pool.get("deep", false))
+	if b.is_on_floor() and v_up > 0.0 and v_up < JUMP_VELOCITY * 0.5 and not pool_deep and not pool_rising:
 		v_up = 0.0
+	if pool_rising:
+		h = Vector3.ZERO
+		v_up = 1.7
+	elif pool_in:
+		v_up = _tt_pool.swim_up(pool, v_up, delta, jump, controls and Input.is_action_just_pressed("jump"))
 	b.velocity = h + up_dir * v_up
 
 	# Smooth step-up over small ledges (thresholds, treads, slab lips) — only for wall-like hits,
@@ -5265,7 +5307,7 @@ func _physics_process(delta: float) -> void:
 	# Crest backup: if a downhill lip still leaves the body airborne without a jump,
 	# snap back onto the ramp. floor_snap_length is unchanged, so a real drop past
 	# that length still falls. A successful snap must not keep an upward residual.
-	if was_on_floor and not b.is_on_floor() and up_vel_before < JUMP_VELOCITY * 0.5 and chute_n == Vector3.ZERO:
+	if was_on_floor and not b.is_on_floor() and up_vel_before < JUMP_VELOCITY * 0.5 and chute_n == Vector3.ZERO and not pool_deep and not pool_rising:
 		b.apply_floor_snap()
 		if b.is_on_floor():
 			var vu_snap: float = b.velocity.dot(b.up_direction)
@@ -5285,7 +5327,7 @@ func _physics_process(delta: float) -> void:
 		var rise: float = clampf(b.global_position.dot(up_dir) - step_pre_up, 0.0, STEP_HEIGHT + 0.10)
 		_step_ease_offset = minf(_step_ease_offset + rise, 0.4)
 	# [QA-05] Hard landing dip from the pre-slide up-velocity. No continuous bob.
-	if not was_on_floor and b.is_on_floor():
+	if not was_on_floor and b.is_on_floor() and not pool_in and not pool_rising:
 		var fall_speed: float = -up_vel_before
 		if fall_speed >= LAND_DIP_MIN_FALL:
 			_land_dip = LAND_DIP_M * clampf(fall_speed / 8.0, 0.4, 1.0)
@@ -12257,6 +12299,7 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		print("[TT] interior lights skipped (--tower-no-lights)")
 	else:
 		_TennisTowerLights.run(tower)
+		_TTRoomLights.run(tower)
 	# Safety pass: trimesh fallback, lift-door seals, guard rails. Before the
 	# layer tag (new bodies must get bit 18) and before the batcher hides meshes.
 	# TT_SKIP_FIXES=1 is the draw-call before measurement. Guards-gen measures
@@ -12265,6 +12308,9 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		_TTFallback.run(tower)
 		_TTGuards.run(tower)
 		_TTWayfinding.run(tower)
+		if _tt_pool == null:
+			_tt_pool = _TTPool.new()
+		_tt_pool.setup(tower)
 	_tower_body_rids.clear()
 	var stack_b: Array[Node] = [tower]
 	while not stack_b.is_empty():
@@ -12281,6 +12327,11 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 		print("[TT] batching off (%s)" % ("guards-gen" if _qa_tower_guards_gen else "--tower-no-batch"))
 		return
 	_tower_batch_stats = _TennisTowerBatcher.run(tower)
+	# Compatibility keeps 8 lights per object, measured from the node origin.
+	# Batched floors are parented at the tag origin, so the lights nearest the
+	# building corner were winning for every floor, including the lobby.
+	if not _tt_no_lights:
+		_TTRoomLights.reseat_batches(tower)
 	var b: Dictionary = _tower_batch_stats
 	var still: int = _tt_count_moving_leaves(tower)
 	print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d nobatch=%d ms=%.1f" % [
@@ -12801,6 +12852,14 @@ func _run_qa_tower_guards_gen() -> void:
 
 func _run_shot_ttfix() -> void:
 	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots.gd")
+
+
+func _run_qa_tower_swim() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_swim.gd")
+
+
+func _run_shot_ttfix_c() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots_c.gd")
 
 
 func _run_qa_tower_draw() -> void:
