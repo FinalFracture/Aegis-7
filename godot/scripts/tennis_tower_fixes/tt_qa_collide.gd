@@ -40,12 +40,14 @@ func _run() -> void:
 	print("[TT] floor_max_angle_deg=%.2f" % rad_to_deg(ppa._player_body.floor_max_angle))
 	await _turn_check()
 	await _guards()
+	await _slide_link()
 	await _courts()
 	await _pairs()
 	await _rink_gate()
 	await _slide_climb()
 	if ppa._tower != null:
 		_FB.leak_stats(ppa._tower)
+	_core_band()
 	print("QA_TOWER_COLLIDE DONE failures=%d" % _failures)
 	get_tree().quit(0 if _failures == 0 else 1)
 
@@ -72,7 +74,8 @@ func _guards() -> void:
 	await _nofall("guard_track_stairwell", Vector3(61.0, 12.30, 12.4), Vector3(61.0, 12.2, 8.0), 11.6, 220)
 	await _nofall("guard_gallery_edge", Vector3(-9.0, 6.25, 66.2), Vector3(-9.0, 6.1, 71.5), 5.6, 200)
 	# +6.1 is the tower N2 landing (world x 20.2..22.4). +7.0 is the deck
-	# (west edge x 22.47). z=56.5 is the notch between the two towers.
+	# (west edge x 22.47). The old mid-air start (22.5, 6.15, 56.5) is retired:
+	# that notch between T1 and T2 has no floor. The link walk is _slide_link.
 	await _nofall("guard_f2_brg_bridge", Vector3(21.3, 6.18, 55.25), Vector3(19.5, 6.1, 55.25), 5.5, 200)
 	await _nofall("guard_f2_brg_deck7", Vector3(23.3, 7.08, 53.5), Vector3(21.2, 7.0, 53.5), 6.4, 200)
 	await _nofall("guard_slab_f2_arc", Vector3(130.2, 6.25, 66.6), Vector3(130.2, 6.1, 74.0), 5.5, 240)
@@ -187,16 +190,23 @@ func _one_guard(reason: String, segs: Array) -> void:
 
 func _pairs() -> void:
 	var doors: Array[Node3D] = _named("tt_door_pair_18")
-	if doors.size() != 4:
+	var listed := ""
+	for door0: Node3D in doors:
+		var qd: Vector3 = ppa._tower_inv * door0.global_position
+		listed += " %s=(%.2f,%.2f,%.2f)" % [String(door0.name), qd.x, qd.y, qd.z]
+	print("QA_TOWER_COLLIDE info | pair_doors | n=%d%s" % [doors.size(), listed])
+	if doors.size() != 5:
 		_line("pair_doors", false, "found=%d" % doors.size())
 		return
 	doors.sort_custom(func(a: Node3D, b: Node3D) -> bool: return String(a.name) < String(b.name))
 	for door: Node3D in doors:
 		var y: float = (ppa._tower_inv * door.global_position).y
-		# ±1.15 clears the swung leaves (~0.9 m) and stays short of the stair-core
-		# wall just past the F1/F2 Z64 pair (the body stopped at about +1.29 m).
-		var neg_w: Vector3 = door.global_transform * Vector3(0.0, 0.12, -1.15)
-		var pos_w: Vector3 = door.global_transform * Vector3(0.0, 0.12, 1.15)
+		# ±1.15 clears the swung leaves (~0.9 m). Pull in only when that stand
+		# overlaps a wall (the F2 Z14.85 pocket is tight against ST+S2).
+		var neg_z: float = _pair_stand(door, -1.0, y)
+		var pos_z: float = _pair_stand(door, 1.0, y)
+		var neg_w: Vector3 = door.global_transform * Vector3(0.0, 0.12, neg_z)
+		var pos_w: Vector3 = door.global_transform * Vector3(0.0, 0.12, pos_z)
 		var neg_q: Vector3 = ppa._tower_inv * neg_w
 		var pos_q: Vector3 = ppa._tower_inv * pos_w
 		neg_q.y = y + 0.1
@@ -291,6 +301,195 @@ func _named(prefix: String) -> Array[Node3D]:
 		if n is Node3D and String(n.name).begins_with(prefix):
 			out.append(n as Node3D)
 	return out
+
+
+func _pair_stand(door: Node3D, sign: float, y: float) -> float:
+	var z: float = sign * 1.15
+	if not _pair_stand_hits(door, z, y):
+		return z
+	var z2: float = z
+	while absf(z2) > 1.001:
+		z2 -= sign * 0.1
+		if not _pair_stand_hits(door, z2, y):
+			print("QA_TOWER_COLLIDE info | pair_stand | %s z=%.2f" % [String(door.name), z2])
+			return z2
+	print("QA_TOWER_COLLIDE info | pair_stand | %s kept z=%.2f" % [String(door.name), z])
+	return z
+
+
+func _pair_stand_hits(door: Node3D, z_local: float, y: float) -> bool:
+	var q: Vector3 = ppa._tower_inv * (door.global_transform * Vector3(0.0, 0.12, z_local))
+	var cap := CapsuleShape3D.new()
+	cap.radius = 0.35
+	cap.height = 1.75
+	var sq := PhysicsShapeQueryParameters3D.new()
+	sq.shape = cap
+	sq.collision_mask = 1 | (1 << 18)
+	sq.margin = 0.0
+	sq.exclude = [ppa._player_body.get_rid()]
+	var centre := Vector3(q.x, y + 0.1 + 0.995, q.z)
+	sq.transform = Transform3D(ppa._tower.global_transform.basis, ppa._tower.global_transform * centre)
+	return not ppa._player_body.get_world_3d().direct_space_state.intersect_shape(sq, 1).is_empty()
+
+
+## Link deck (24.15, 7.05, 56.5). Screens must stop a walk and a jump.
+func _slide_link() -> void:
+	var start := Vector3(24.15, 7.05, 56.5)
+	await _link_blocked("slide_link_west", start, Vector3(18.0, 7.0, 56.5))
+	await _link_blocked("slide_link_east", start, Vector3(27.0, 7.0, 56.5))
+	await _qa_link_jump()
+	var gate: Dictionary = await _go("slide_gate_threshold", Vector3(18.5, 6.1, 58.7), Vector3(21.0, 6.1, 58.7), 180)
+	var qg: Vector3 = gate["q"]
+	var gate_ok: bool = bool(gate["arrived"]) and qg.y > 5.85 and int(gate["max_air"]) <= 8
+	_line("slide_gate_threshold", gate_ok, "arrived=%s q=(%.2f,%.2f,%.2f) max_air=%d" % [str(gate["arrived"]), qg.x, qg.y, qg.z, int(gate["max_air"])])
+
+
+func _link_blocked(label: String, a: Vector3, b: Vector3) -> void:
+	var r: Dictionary = await _go(label, a, b, 100)
+	var q: Vector3 = r["q"]
+	var moved: float = Vector2(q.x - a.x, q.z - a.z).length()
+	var on_deck: bool = q.x > 23.50 and q.x < 24.90 and q.z > 55.85 and q.z < 57.20 and q.y > 6.4
+	var ok: bool = (not bool(r["arrived"])) and on_deck and int(r["max_air"]) <= 2 and moved > 0.05
+	_line(label, ok, "arrived=%s q=(%.2f,%.2f,%.2f) max_air=%d moved=%.2f" % [str(r["arrived"]), q.x, q.y, q.z, int(r["max_air"]), moved])
+
+
+func _qa_link_jump() -> void:
+	var start := Vector3(24.15, 7.05, 56.5)
+	var goal := Vector3(23.2, 7.0, 56.5)
+	await _go("slide_link_rail", start, goal, 100)
+	var prev: int = Engine.max_physics_steps_per_frame
+	Engine.max_physics_steps_per_frame = 1
+	ppa._qa_key(KEY_W, true)
+	await ppa._qa_idle(2)
+	var y0: float = (ppa._tower_inv * ppa._player_body.global_position).y
+	ppa._qa_key(KEY_SPACE, true)
+	await ppa._qa_idle(1)
+	ppa._qa_key(KEY_SPACE, false)
+	var peak: float = y0
+	var min_y: float = y0
+	for _i: int in range(90):
+		var qf: Vector3 = ppa._tower_inv * ppa._player_body.global_position
+		peak = maxf(peak, qf.y)
+		min_y = minf(min_y, qf.y)
+		await ppa.get_tree().physics_frame
+	ppa._qa_key(KEY_W, false)
+	await ppa._qa_frames(12)
+	Engine.max_physics_steps_per_frame = prev
+	var q: Vector3 = ppa._tower_inv * ppa._player_body.global_position
+	var on_link: bool = q.x > 23.55 and q.x < 24.85 and q.z > 55.85 and q.z < 57.15 and q.y > 6.4 and min_y > 6.4
+	var jumped: bool = peak > y0 + 0.45
+	_line("slide_link_jump", jumped and on_link, "peak=%.2f y0=%.2f min_y=%.2f q=(%.2f,%.2f,%.2f)" % [peak, y0, min_y, q.x, q.y, q.z])
+
+
+## Read-only. Counts unguarded drops inside tower_plan cores. Does not fail the probe.
+func _core_band() -> void:
+	var cores: Array = [
+		[30.0, 40.2, 15.0, 20.5], [102.8, 113.0, 15.0, 20.5], [30.0, 40.2, 58.5, 64.0], [102.8, 113.0, 58.5, 64.0],
+		[71.0, 76.5, 9.5, 19.7], [71.0, 76.5, 59.3, 69.5], [24.5, 34.7, 39.0, 44.5], [108.3, 118.5, 39.0, 44.5],
+		[57.0, 64.0, 2.6, 13.2], [86.0, 92.0, 2.6, 13.2], [58.0, 64.0, 65.8, 76.4], [86.0, 92.0, 65.8, 76.4],
+		[119.5, 125.5, 50.0, 60.6], [-6.0, 0.0, 10.0, 20.6], [-6.0, 0.0, 58.4, 69.0],
+		[134.0, 140.0, 10.0, 20.6], [134.0, 140.0, 58.4, 69.0],
+	]
+	var space: PhysicsDirectSpaceState3D = ppa._player_body.get_world_3d().direct_space_state
+	var mask: int = 1 | (1 << 18)
+	var tower: Node3D = ppa._tower
+	var floors: Dictionary = {}
+	var inside: Dictionary = {}
+	for rect_v in cores:
+		var rect: Array = rect_v
+		var x: float = float(rect[0]) + 0.25
+		while x <= float(rect[1]) - 0.25 + 0.001:
+			var z: float = float(rect[2]) + 0.25
+			while z <= float(rect[3]) - 0.25 + 0.001:
+				var key := Vector2i(int(round((x - 0.25) / 0.5)), int(round((z - 0.25) / 0.5)))
+				inside[key] = true
+				var ys: Array = _core_floors(space, tower, x, z, mask)
+				if not ys.is_empty():
+					floors[key] = ys
+				z += 0.5
+			x += 0.5
+	var edges: int = 0
+	var band: int = 0
+	var low_guard: int = 0
+	var samples: PackedStringArray = PackedStringArray()
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var box := BoxShape3D.new()
+	var bq := PhysicsShapeQueryParameters3D.new()
+	bq.shape = box
+	bq.collision_mask = mask
+	bq.margin = 0.0
+	bq.exclude = [ppa._player_body.get_rid()]
+	var basis: Basis = tower.global_transform.basis
+	for key_v in floors.keys():
+		var key: Vector2i = key_v
+		var x0: float = float(key.x) * 0.5 + 0.25
+		var z0: float = float(key.y) * 0.5 + 0.25
+		var ys0: Array = floors[key]
+		for y_v in ys0:
+			var y: float = float(y_v)
+			for dv: Vector2i in dirs:
+				var k2 := Vector2i(key.x + dv.x, key.y + dv.y)
+				if not inside.has(k2):
+					continue
+				var close := false
+				if floors.has(k2):
+					for oy_v in floors[k2]:
+						if absf(float(oy_v) - y) <= 0.36:
+							close = true
+							break
+				if close:
+					continue
+				var nx: float = x0 + float(dv.x) * 0.5
+				var nz: float = z0 + float(dv.y) * 0.5
+				var hd: Dictionary = _core_ray(space, tower, Vector3(nx, y + 0.3, nz), Vector3(nx, y - 30.0, nz), mask)
+				var drop: float = 30.0
+				if hd.has("position"):
+					drop = y - (tower.global_transform.affine_inverse() * (hd["position"] as Vector3)).y
+				if drop < 0.5:
+					continue
+				box.size = Vector3(0.4 if dv.x != 0 else 0.3, 0.85, 0.3 if dv.x != 0 else 0.4)
+				var mid := Vector3(x0 + float(dv.x) * 0.25, y + 0.575, z0 + float(dv.y) * 0.25)
+				bq.transform = Transform3D(basis, tower.global_transform * mid)
+				var guard_h: float = 0.0
+				if not space.intersect_shape(bq, 1).is_empty():
+					var hb: Dictionary = _core_ray(space, tower, Vector3(mid.x, y + 1.6, mid.z), Vector3(mid.x, y, mid.z), mask)
+					guard_h = ((tower.global_transform.affine_inverse() * (hb["position"] as Vector3)).y - y) if hb.has("position") else 1.0
+					if guard_h >= 1.0:
+						continue
+				edges += 1
+				var in_band: bool = y >= 3.9 and y <= 4.8
+				if in_band:
+					band += 1
+					if guard_h < 0.50:
+						low_guard += 1
+				if samples.size() < 6 and (in_band or samples.size() < 2):
+					samples.append("(%.2f,%.2f,%.2f) drop=%.2f guard=%.2f" % [x0, z0, y, drop, guard_h])
+	print("QA_TOWER_COLLIDE info | core_band | cells=%d floors=%d edges=%d band_edges=%d low_guard=%d" % [inside.size(), floors.size(), edges, band, low_guard])
+	print("QA_TOWER_COLLIDE info | core_band | samples %s" % (" | ".join(samples) if samples.size() > 0 else "none"))
+
+
+func _core_floors(space: PhysicsDirectSpaceState3D, tower: Node3D, x: float, z: float, mask: int) -> Array:
+	var ys: Array = []
+	var top := 18.0
+	for _g: int in range(8):
+		var hit: Dictionary = _core_ray(space, tower, Vector3(x, top, z), Vector3(x, -2.0, z), mask)
+		if not hit.has("position"):
+			break
+		var hp: Vector3 = tower.global_transform.affine_inverse() * (hit["position"] as Vector3)
+		if hp.y >= top - 0.01:
+			break
+		var nrm: Vector3 = (tower.global_transform.basis.inverse() * (hit["normal"] as Vector3)).normalized()
+		if rad_to_deg(acos(clampf(nrm.dot(Vector3.UP), -1.0, 1.0))) < 50.0:
+			ys.append(hp.y)
+		top = hp.y - 0.05
+	return ys
+
+
+func _core_ray(space: PhysicsDirectSpaceState3D, tower: Node3D, a: Vector3, b: Vector3, mask: int) -> Dictionary:
+	var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(tower.global_transform * a, tower.global_transform * b, mask)
+	rq.hit_back_faces = true
+	rq.exclude = [ppa._player_body.get_rid()]
+	return space.intersect_ray(rq)
 
 
 func _go(label: String, a: Vector3, b: Vector3, frames: int) -> Dictionary:

@@ -6825,7 +6825,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -6834,7 +6834,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -6873,7 +6873,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -6882,7 +6882,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -6921,7 +6921,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -6930,7 +6930,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -6969,7 +6969,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -6978,7 +6978,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -7017,7 +7017,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7026,7 +7026,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_secondary_entrance_e.glb",
@@ -7065,7 +7065,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7074,7 +7074,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_curtain_wall_panel.glb",
@@ -7101,7 +7101,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7110,7 +7110,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -7149,7 +7149,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7158,7 +7158,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -7197,7 +7197,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7206,7 +7206,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -7245,7 +7245,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7254,7 +7254,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",
@@ -7293,7 +7293,7 @@
 "asset": "tt_curtain_wall_panel"
 },
 {
-"glb": "res://assets/models/tt_entrance_bay.glb",
+"glb": "res://assets/models/tt_entrance_bay_3l.glb",
 "p": [
 -13.07,
 0,
@@ -7302,7 +7302,7 @@
 "yaw": -90,
 "tag": "facade",
 "owner": "Rook",
-"asset": "tt_entrance_bay"
+"asset": "tt_entrance_bay_3l"
 },
 {
 "glb": "res://assets/models/tt_facade_bay.glb",

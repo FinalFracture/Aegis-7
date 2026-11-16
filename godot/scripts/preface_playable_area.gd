@@ -501,6 +501,9 @@ var _qa_tower_guards_gen: bool = false
 var _shot_ttfix: bool = false
 var _qa_tower_swim: bool = false
 var _shot_ttfix_c: bool = false
+var _shot_ttfix_d: bool = false
+var _qa_z15_west: float = 63.45
+var _qa_z15_east: float = 65.25
 var _tt_disabled: bool = false
 var _tt_no_batch: bool = false
 var _tt_no_lights: bool = false
@@ -685,6 +688,9 @@ func _ready() -> void:
 		elif arg == "--shot-ttfix-c":
 			_shot_ttfix_c = true
 			_qa_hand = true
+		elif arg == "--shot-ttfix-d":
+			_shot_ttfix_d = true
+			_qa_hand = true
 		elif arg == "--no-tower":
 			_tt_disabled = true
 		elif arg == "--tower-no-batch":
@@ -789,6 +795,8 @@ func _ready() -> void:
 			_run_qa_tower_swim.call_deferred()
 		elif _shot_ttfix_c:
 			_run_shot_ttfix_c.call_deferred()
+		elif _shot_ttfix_d:
+			_run_shot_ttfix_d.call_deferred()
 		elif OS.get_environment("TT_ENTRY_PROBE") == "1":
 			print("[TT] entry probe owns the player")
 		else:
@@ -12619,9 +12627,200 @@ func _qa_tower_at_level(label: String, expect_y: float) -> void:
 	_qa_tower_check(label, ok, "q=(%.2f, %.3f, %.2f) expect_y=%.2f on_floor=%s up_dot=%.5f" % [q.x, q.y, q.z, expect_y, str(_player_body.is_on_floor()), up_dot])
 
 
-## South half of the Z=39.5 bay. Centre mullion is local x ~0; the open half is local x ~-0.50 (plan Z 39.005).
+## Tower Z of the centre leaf on the 3l bay nearest want_z. Falls back to the bay origin.
+func _qa_tower_bay_lane_z(want_z: float) -> float:
+	if _tower == null:
+		print("[TT] bay lane fallback want=%.3f no tower" % want_z)
+		return want_z
+	var best: Node3D = null
+	var best_d: float = INF
+	var stack: Array[Node] = [_tower]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for ch: Node in n.get_children():
+			stack.append(ch)
+		if n is Node3D and String(n.name).begins_with("tt_entrance_bay_3l"):
+			var qz: float = (_tower_inv * (n as Node3D).global_position).z
+			var d: float = absf(qz - want_z)
+			if d < best_d:
+				best_d = d
+				best = n as Node3D
+	if best == null:
+		print("[TT] bay lane fallback want=%.3f no bay" % want_z)
+		return want_z
+	var bay_z: float = (_tower_inv * best.global_position).z
+	var parts: PackedStringArray = PackedStringArray()
+	var centre: float = bay_z
+	var got_mid := false
+	for i: int in range(3):
+		var body: AnimatableBody3D = _qa_tower_leaf_body(best, "Leaf_%d" % i)
+		if body == null:
+			parts.append("L%d=missing" % i)
+			continue
+		var span: Dictionary = _qa_tower_shape_span(body)
+		if int(span["n"]) == 0:
+			parts.append("L%d=empty" % i)
+			continue
+		parts.append("L%d z=%.3f..%.3f" % [i, float(span["z0"]), float(span["z1"])])
+		if i == 1:
+			centre = (float(span["z0"]) + float(span["z1"])) * 0.5
+			got_mid = true
+	if not got_mid or absf(centre - bay_z) > 1.5:
+		print("[TT] bay lane origin fallback measured=%.3f origin=%.3f" % [centre, bay_z])
+		centre = bay_z
+	print("[TT] bay lane want=%.3f bay=%s origin_z=%.3f lane_z=%.3f %s" % [want_z, String(best.name), bay_z, centre, " ".join(parts)])
+	return centre
+
+
+func _qa_tower_leaf_body(root: Node, leaf_name: String) -> AnimatableBody3D:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for ch: Node in n.get_children():
+			stack.append(ch)
+		if n is AnimatableBody3D and String(n.name) == "TT_LeafBody":
+			var p: Node = n.get_parent()
+			if p != null and String(p.name) == leaf_name:
+				return n as AnimatableBody3D
+	return null
+
+
+func _qa_tower_shape_span(body: Node3D) -> Dictionary:
+	var z0: float = INF
+	var z1: float = -INF
+	var n := 0
+	for ch: Node in body.get_children():
+		if not (ch is CollisionShape3D):
+			continue
+		var cs: CollisionShape3D = ch as CollisionShape3D
+		var pts := PackedVector3Array()
+		if cs.shape is ConcavePolygonShape3D:
+			pts = (cs.shape as ConcavePolygonShape3D).get_faces()
+		elif cs.shape is ConvexPolygonShape3D:
+			pts = (cs.shape as ConvexPolygonShape3D).points
+		var xf: Transform3D = _tower_inv * cs.global_transform
+		for p: Vector3 in pts:
+			var q: Vector3 = xf * p
+			z0 = minf(z0, q.z)
+			z1 = maxf(z1, q.z)
+			n += 1
+	return {"z0": z0, "z1": z1, "n": n}
+
+
+func _qa_tower_z15_runs(y: float) -> Array:
+	var runs: Array = []
+	var x := 60.0
+	var open0 := -1.0
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var excl: Array[RID] = []
+	if _player_body != null:
+		excl.append(_player_body.get_rid())
+	while x <= 78.01:
+		var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(_tower_xf * Vector3(x, y, 14.4), _tower_xf * Vector3(x, y, 15.3))
+		rq.exclude = excl
+		rq.hit_back_faces = true
+		var blocked: bool = space.intersect_ray(rq).has("position")
+		if not blocked:
+			if open0 < 0.0:
+				open0 = x
+		elif open0 >= 0.0:
+			runs.append(Vector2(open0, x - 0.2))
+			open0 = -1.0
+		x += 0.2
+	if open0 >= 0.0:
+		runs.append(Vector2(open0, 78.0))
+	return runs
+
+
+func _qa_z15_fmt(runs: Array) -> String:
+	if runs.is_empty():
+		return "none"
+	var bits: PackedStringArray = PackedStringArray()
+	for r_v in runs:
+		var r: Vector2 = r_v
+		bits.append("%.2f..%.2f" % [r.x, r.y])
+	return " ".join(bits)
+
+
+func _qa_tower_print_z15_span() -> void:
+	var f1: Array = _qa_tower_z15_runs(1.2)
+	var f2: Array = _qa_tower_z15_runs(7.3)
+	print("[TT] z15 span y=1.2 %s" % _qa_z15_fmt(f1))
+	print("[TT] z15 span y=7.3 %s" % _qa_z15_fmt(f2))
+	var span := Vector2(-1.0, -1.0)
+	for r_v in f1:
+		var r: Vector2 = r_v
+		if r.x <= 65.25 and r.y >= 63.45:
+			span = r
+			break
+	var west := 63.45
+	var east := 65.25
+	if span.x >= 0.0:
+		var lo: float = span.x + 0.40
+		var hi: float = span.y - 0.40
+		if hi > lo + 0.8:
+			west = clampf(63.45, lo, hi)
+			east = clampf(65.25, lo, hi)
+			if east - west < 1.2:
+				west = lo
+				east = hi
+	_qa_z15_west = west
+	_qa_z15_east = east
+	print("[TT] z15 lanes west=%.2f east=%.2f span=(%.2f, %.2f)" % [west, east, span.x, span.y])
+
+
+## F1 lobby to the court hall through the Z=15 cut, both lanes, then back. Real input.
+func _qa_tower_z15_f1() -> void:
+	_qa_tower_print_z15_span()
+	var w: float = _qa_z15_west
+	var e: float = _qa_z15_east
+	await _qa_tower_faced_rows([
+		["z15_f1_lobby", Vector3(72.0, 0.0, 5.66), 320],
+		["z15_f1_detour", Vector3(70.2, 0.0, 8.6), 420],
+		["z15_f1_pocket", Vector3(69.0, 0.0, 10.3), 420],
+		["z15_f1_east_s", Vector3(e, 0.0, 10.3), 520],
+		["z15_f1_east_cut", Vector3(e, 0.0, 14.2), 520],
+		["z15_f1_east_hall", Vector3(e, 0.0, 16.5), 420],
+		["z15_f1_hall", Vector3(67.5, 0.0, 21.0), 620],
+		["z15_f1_west_hall", Vector3(w, 0.0, 17.0), 620],
+		["z15_f1_west_cut", Vector3(w, 0.0, 14.2), 420],
+		["z15_f1_rejoin", Vector3(e, 0.0, 14.2), 420],
+		["z15_f1_back_s", Vector3(e, 0.0, 10.3), 520],
+		["z15_f1_back_pocket", Vector3(69.0, 0.0, 10.3), 520],
+		["z15_f1_back_detour", Vector3(70.2, 0.0, 8.6), 420],
+		["z15_f1_back_lobby", Vector3(72.0, 0.0, 5.66), 420],
+	])
+
+
+## F2 section start on the hall slab, then one loop through the cut and door_pair_18.
+## (70.2, 8.6) keeps the diagonal south of stair core LS.
+func _qa_tower_z15_f2() -> void:
+	var foot: Dictionary = _qa_tower_ray_hit(67.5, 21.0, 8.5, 4.5)
+	var y: float = float(foot["y"])
+	if y < 4.0 or y > 8.0:
+		y = 6.1
+	print("[TT] z15 F2 foot y=%.3f %s" % [y, String(foot["name"])])
+	_qa_tower_place(_tower_xf * Vector3(67.5, y, 21.0), _tower_up, _tower_xf * Vector3(_qa_z15_east, y, 16.5))
+	await _qa_frames(40)
+	var e: float = _qa_z15_east
+	await _qa_tower_faced_rows([
+		["z15_f2_hall", Vector3(e, y, 16.5), 620],
+		["z15_f2_cut", Vector3(e, y, 13.8), 460],
+		["z15_f2_pocket", Vector3(e, y, 10.3), 520],
+		["z15_f2_corner", Vector3(69.0, y, 10.3), 520],
+		["z15_f2_ls", Vector3(70.2, y, 8.6), 420],
+		["z15_f2_lobby", Vector3(78.0, y, 8.0), 720],
+		["z15_f2_kids", Vector3(79.5, y, 14.0), 720],
+		["z15_f2_spine", Vector3(86.0, y, 14.0), 720],
+		["z15_f2_door", Vector3(91.5, y, 14.0), 720],
+		["z15_f2_hallside", Vector3(91.5, y, 17.5), 520],
+		["z15_f2_court", Vector3(91.5, y, 21.0), 520],
+	])
+
+
+## Centre leaf of the Z=39.5 3l bay. Measured from the placed Leaf_1 body.
 func _qa_tower_w_door_walk() -> void:
-	var bay_z: float = 39.005
+	var bay_z: float = _qa_tower_bay_lane_z(39.0)
 	var terr: Dictionary = _qa_tower_ray_hit(-22.5, bay_z, 1.5, 3.5)
 	var terr_y: float = float(terr["y"])
 	if terr_y < -2.0:
@@ -12728,6 +12927,8 @@ func _run_qa_tower_walk() -> void:
 	var hit: Dictionary = space.intersect_ray(rq)
 	var hy: float = (_tower_inv * (hit["position"] as Vector3)).y if hit.has("position") else -999.0
 	_qa_tower_check("F1_floor_ray", absf(hy) < 0.03, "floor_q_y=%.4f" % hy)
+	# Continuous from the lobby arrival. No teleport on this stretch.
+	await _qa_tower_z15_f1()
 	# F2/F3 gravity on the stair-core landings and Rook's probe decks. The walked stair is after the drum return.
 	await _qa_tower_settle_on("F2_W_gallery_tower_down", Vector3(-5.0, 0.0, 40.0), 6.112)
 	await _qa_tower_settle_on("F3_deck_tower_down", Vector3(70.0, 0.0, 4.0), 12.2)
@@ -12740,6 +12941,7 @@ func _run_qa_tower_walk() -> void:
 	var pe: Vector3 = _player_body.global_position
 	_qa_tower_check("radial_outside", _player_body.up_direction.dot(_drum_up_at(pe)) > 0.9995 and absf(_drum_rho(pe) - DRUM_FLOOR_R) < 0.3,
 		"pos=%s rho=%.3f up_dot_radial=%.5f w=%.3f" % [str(pe), _drum_rho(pe), _player_body.up_direction.dot(_drum_up_at(pe)), _tt_weight(pe)])
+	await _qa_tower_z15_f2()
 	await _qa_tower_w_door_walk()
 	await _qa_tower_stair_walk()
 	_qa_ring_release()
@@ -12802,8 +13004,8 @@ func _run_shot_tower() -> void:
 	await _qa_frames(20)
 	if not await _shot_curve_save(dir + "/tower_lobby.png"):
 		failures += 1
-	# W bay open: player stands within 4 m of the Z=39.5 bay so the south half slides open.
-	var bay_z: float = 39.005
+	# W bay open: player stands on the centre leaf so the 3l leaves swing out.
+	var bay_z: float = _qa_tower_bay_lane_z(39.0)
 	_player_body.global_position = _tower_xf * Vector3(-8.5, 0.3, bay_z)
 	var w_eye: Vector3 = _tower_xf * Vector3(-6.0, 1.7, 41.0)
 	_qa_free_cam(w_eye, _tower_xf * Vector3(-13.2, 1.5, bay_z), _tower_up, 70.0)
@@ -12896,6 +13098,10 @@ func _run_qa_tower_swim() -> void:
 
 func _run_shot_ttfix_c() -> void:
 	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots_c.gd")
+
+
+func _run_shot_ttfix_d() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots_d.gd")
 
 
 func _run_qa_tower_draw() -> void:

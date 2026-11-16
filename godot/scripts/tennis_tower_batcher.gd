@@ -219,7 +219,10 @@ static func run(tower: Node3D) -> Dictionary:
 					st["nobatch"] = int(st["nobatch"]) + 1
 				else:
 					st["child_skip"] = int(st["child_skip"]) + 1
-				_decorate(mi, tag, longest, keep)
+				# Swinging leaves stay drawn for the whole open. A range or a room
+				# portal would hide the leaf the player is walking through.
+				if not mi.has_meta("tt_vis_mover"):
+					_decorate(mi, tag, longest, keep)
 				_stamp(mi, tag, keep, center, roof, slab)
 				st["ranged"] = int(st["ranged"]) + 1
 				continue

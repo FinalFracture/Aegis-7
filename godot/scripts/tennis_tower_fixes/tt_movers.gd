@@ -8,7 +8,11 @@ const COURT_Z := 0.12
 const COURT_X := 0.50
 const COURT_Z_DONE := 0.30
 const PAIR_DEG := 90.0
-const BAY_YAW := [90.0, 90.0, -90.0]
+## Outswing (TTQA-031). Leaf_2's hinge is on +X, so its sign stays opposite the other two.
+const BAY_YAW := [-90.0, -90.0, 90.0]
+## Sprint is 63 m/s. A 3.6 m trigger leaves the leaf across the opening. 24 m
+## finishes the 90 deg swing before the body reaches the frame.
+const BAY_OPEN := 24.0
 
 var moving_meshes: int = 0
 var _court: Array[Dictionary] = []
@@ -45,7 +49,7 @@ func setup(tower: Node3D) -> void:
 	print("[TT] court doors=%d open=+Z %.2f then X -%.2f/+%.2f" % [courts, COURT_Z, COURT_X, COURT_X])
 	print("[TT] pair doors=%d swing_deg=%.0f" % [pairs, PAIR_DEG])
 	print("[TT] rink gates=%d parked_open=1" % gates)
-	print("[TT] bay3 doors=%d" % bays)
+	print("[TT] bay3 doors=%d yaw=%s open_m=%.1f" % [bays, str(BAY_YAW), BAY_OPEN])
 	print("[TT] slide chutes nonwalkable=%d" % slides)
 
 
@@ -197,7 +201,7 @@ func _update_bay(delta: float, player: Vector3) -> void:
 		if not _live(root):
 			continue
 		var centre: Vector3 = root.global_transform * Vector3(0.0, 1.15, -0.4)
-		var want: float = 1.0 if player.distance_to(centre) < 3.6 else 0.0
+		var want: float = 1.0 if player.distance_to(centre) < BAY_OPEN else 0.0
 		var t: float = move_toward(float(d["t"]), want, 3.2 * delta)
 		d["t"] = t
 		var e: float = smoothstep(0.0, 1.0, t)
@@ -279,6 +283,7 @@ func _is_leaf_collider(leaf: Node3D, holder: Node) -> bool:
 func _tag_meshes(n: Node) -> void:
 	if n is MeshInstance3D:
 		n.set_meta("tt_no_batch", true)
+		n.set_meta("tt_vis_mover", true)
 		moving_meshes += 1
 	for ch: Node in n.get_children():
 		_tag_meshes(ch)

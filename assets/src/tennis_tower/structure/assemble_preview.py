@@ -119,7 +119,7 @@ def envelope():
     for j in range(19):
         z = 3.5 + 4*j
         put("tt_curtain_wall_panel", -12 + .285, 12.2, z, -90, "env"); put("tt_curtain_wall_panel", 140 - .285, 12.2, z, 90, "env")
-        if 17.5 < z < 61.5: put("tt_entrance_bay", -12 - 1.07, 0, z, -90, "facade")  # 11 x 4 m, covers Z 17.5..61.5; no half bay
+        if 17.5 < z < 61.5: put("tt_entrance_bay_3l", -12 - 1.07, 0, z, -90, "facade")  # 11 x 4 m, covers Z 17.5..61.5; no half bay. TTQA-031 (Rev 3.7 #12): 3 x 1.0 m outswing leaves
         else: put("tt_facade_bay", -12 - .21, 0, z, -90, "facade")
         if 33.5 < z < 41.5:
             if abs(z - 35.5) < .1: put("tt_secondary_entrance_e", 140 + .98, 0, 37.5, 90, "facade")

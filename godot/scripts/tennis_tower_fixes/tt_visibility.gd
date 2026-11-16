@@ -109,7 +109,7 @@ func _expanded_hit(a: Array, b: Array, pad: float) -> bool:
 
 
 func _gather(n: Node) -> void:
-	if n is GeometryInstance3D and n.has_meta("tt_vis_floor"):
+	if n is GeometryInstance3D and n.has_meta("tt_vis_floor") and not n.has_meta("tt_vis_mover"):
 		var fl := int(n.get_meta("tt_vis_floor"))
 		var keep := bool(n.get_meta("tt_vis_keep"))
 		var tag := String(n.get_meta("tt_vis_tag", ""))

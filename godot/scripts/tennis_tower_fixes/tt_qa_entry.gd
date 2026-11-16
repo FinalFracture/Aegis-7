@@ -47,6 +47,10 @@ func _run() -> void:
 
 
 func _routes() -> Array:
+	# Leaf_1 centre of the placed 3l bay. The old Z lines sat on the mullion.
+	var z_sw: float = ppa._qa_tower_bay_lane_z(19.0)
+	var z_w: float = ppa._qa_tower_bay_lane_z(39.0)
+	var z_nw: float = ppa._qa_tower_bay_lane_z(60.0)
 	var lf := _drum_y(8.3) + 0.003
 	var xe := -41.92 + (L2 - lf) * 12.0
 	var xf := xe + 1.5
@@ -68,9 +72,9 @@ func _routes() -> Array:
 		Vector2(-26.0, 11.40),
 		Vector2(-26.0, 13.4),
 		Vector2(-26.0, 16.0),
-		Vector2(-20.0, 19.005),
-		Vector2(-14.0, 19.005),
-		Vector2(-8.0, 19.005),
+		Vector2(-20.0, z_sw),
+		Vector2(-14.0, z_sw),
+		Vector2(-8.0, z_sw),
 	]
 	var nw: Array = []
 	var er: Array = []
@@ -79,9 +83,9 @@ func _routes() -> Array:
 		if p.y < 17.0:
 			nw.append(Vector2(p.x, 80.0 - p.y))
 			er.append(Vector2(128.0 - p.x, p.y))
-	nw.append(Vector2(-20.0, 60.045))
-	nw.append(Vector2(-14.0, 60.045))
-	nw.append(Vector2(-8.0, 60.045))
+	nw.append(Vector2(-20.0, z_nw))
+	nw.append(Vector2(-14.0, z_nw))
+	nw.append(Vector2(-8.0, z_nw))
 	er.append(Vector2(154.0, 22.0))
 	er.append(Vector2(154.0, 30.0))
 	er.append(Vector2(148.0, 36.415))
@@ -92,7 +96,7 @@ func _routes() -> Array:
 		{"name": "NW_ramp", "stair": false, "start": Vector2(approach, 70.95), "goals": nw},
 		{"name": "W_stair", "stair": true, "start": Vector2(-76.2, 38.0), "goals": [
 			Vector2(-70.5, 38.0), Vector2(-64.2, 38.0), Vector2(-59.5, 38.4),
-			Vector2(-30.0, 39.005), Vector2(-16.0, 39.005), Vector2(-6.0, 39.005)]},
+			Vector2(-30.0, z_w), Vector2(-16.0, z_w), Vector2(-6.0, z_w)]},
 		{"name": "E_ramp", "stair": false, "start": Vector2(128.0 - approach, 9.05), "goals": er},
 		{"name": "E_stair", "stair": true, "start": Vector2(184.0, 38.0), "goals": [
 			Vector2(176.0, 38.0), Vector2(168.5, 38.0), Vector2(155.0, 38.2),
