@@ -157,6 +157,16 @@ CORE = {"A": dict(W=5.5, L=10.2, FW=2.5), "B": dict(W=6.0, L=10.6, FW=2.7)}
 # Mid_Landing block (laps Core_Walls and Flight1_Cast) 3 mm up and 1.5 mm deeper into the side walls than the flights
 # (their wall-side faces were on the same plane), Front_Wall head 1.5 mm under the Core_Walls head.
 YB_F1, YB_FW, YB_ML, YT_FW = .0015, .0015, .003, ST_H - .0035
+def _bands(m, h=.40):
+    """closed collider solid -> stacked closed slabs of <= h m (adds internal horizontal faces)."""
+    lo, hi = m.bounds[0][1], m.bounds[1][1]; nb = max(1, int(np.ceil((hi - lo) / h - 1e-6))); out = []
+    for i in range(nb):
+        y0, y1 = lo + (hi - lo) * i / nb, lo + (hi - lo) * (i + 1) / nb; b = m
+        if i > 0: b = b.slice_plane([0, y0, 0], [0, 1, 0], cap=True)
+        if i < nb - 1: b = b.slice_plane([0, y1, 0], [0, -1, 0], cap=True)
+        out.append(b)
+    o = trimesh.util.concatenate(out); o.metadata["uv"] = np.zeros((len(o.vertices), 2)); return o
+
 def stair_full(q):
     c = CORE[q["type"]]; WT2 = .2; xi = c["W"]/2 - WT2; zi = c["L"]/2 - WT2; FWc = c["FW"]; H = ST_H; n = 18; r = H/(2*n); t = .28
     f1, f2 = (-xi, -xi + FWc), (xi - FWc, xi); zs, zn = -zi, zi; zl = zs + FWc; z1b = zl + (n-1)*t; z2t = zl + (n-1)*t; yl = n*r
@@ -197,10 +207,20 @@ def stair_full(q):
     # colliders (Rev C scheme)
     p.add("Flight1_Ramp-colonly", G, slab_between(*f1, z1b + t, 0.0, zl, yl)); p.add("Flight2_Ramp-colonly", G, slab_between(*f2, zl - t, yl, z2t, H))
     p.add("Mid_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, yl - .25, zs], [xi, yl, zl]])); p.add("Top_Landing-colonly", G, trimesh.creation.box(bounds=[[-xi, H - .3, z2t], [xi, H, zn]]))
-    for gname, fx in (("Well_Guard_F1-convcolonly", f1[1] - .04), ("Well_Guard_F2-convcolonly", f2[0] + .04)):
-        # TTQA-004 r2: 1.07 m over the nosing line; the F2 guard now runs to the floor over its whole length (it tapered to nothing at the top landing)
-        pts = [(x, y, z) for x in (fx - .006, fx + .006) for (y, z) in ((0, zl), (0, z1b + t) if fx < 0 else (0, z2t), (yl + 1.07, zl), (1.07 if fx < 0 else H + 1.07, z1b + t if fx < 0 else z2t))]
-        p.add(gname, G, trimesh.convex.convex_hull(np.array(pts)))
+    # TTQA-004 r3: one solid well-guard collider fills the well between the two guard panes (and closes the 0.28 m well slot at the
+    # mid-landing edge) up to 1.30 m over the higher (flight-2) nosing line, so a sprint-jump cannot clear it (visual guards stay 1.07 m).
+    # It, the core walls (+20 mm skin past the outer faces) and the solid cast flight / mid-landing block are cut into <= 0.40 m bands
+    # (internal horizontal faces): the trimesh colliders are hollow, so a probe ray starting inside a solid would otherwise fall to its base.
+    gw = f2[0] + .046
+    fill = trimesh.convex.convex_hull(np.array([(x, y, z) for x in (-gw, gw) for (y, z) in ((0, zl), (0, z2t), (yl + 1.30, zl), (H + 1.30, z2t))]))
+    p.add("Well_Guard-colonly", G, _bands(fill))
+    p.add("Core_Walls_Bands-colonly", G, *[_bands(trimesh.creation.box(bounds=b)) for b in (
+        [[-xi - WT2 - .02, 0, zs - WT2 - .02], [-xi, H - .002, zn]], [[xi, 0, zs - WT2 - .02], [xi + WT2 + .02, H - .002, zn]], [[-xi, 0, zs - WT2 - .02], [xi, H - .002, zs]])])
+    cast = trimesh.convex.convex_hull(np.array([(x, y, z) for x in (f1[0], f1[1]) for (y, z) in ((0, z1b + t), (0, zl), (yl - .05, zl))]))   # 50 mm under the nosing line
+    soff = trimesh.convex.convex_hull(np.array([(x, y + dy, z) for x in (f2[0], f2[1]) for (y, z) in ((yl, zl), (H, z2t)) for dy in (-.05, -.35)]))   # flight-2 soffit band
+    soff.metadata["uv"] = np.zeros((len(soff.vertices), 2))
+    p.add("Solid_Bands-colonly", G, _bands(cast), soff, _bands(trimesh.creation.box(bounds=[[-xi, 0, zs], [xi, yl - .25, zl]])))
+    p.add("Guard_Scissor", SCR, box(f1[1] + .003, f2[0] - .003, yl + .06, yl + 1.07, zl + .001, zl + .013))   # end pane across the well at the mid landing
     for k, (mk, m) in list(p.P.items()):
         if "colonly" in k:
             if m.bounds[0][1] < 0: m = m.slice_plane([0, 0, 0], [0, 1, 0], cap=True); p.P[k] = (mk, m)
@@ -249,17 +269,13 @@ def lift_final():   # r7: tt_lift_core = V5 Court Wayfinding lift at the spec 4.
     print(json.dumps(dict(glb="tt_lift_core.glb", tris=int(tris), clip_pass=bool(chk["pass"]), worst_overlap=chk["worst_overlap"], bad=[o for o in chk["overlap"] if not o[3]][:4],
                           coplanar=chk["coplanar"][:4], open=chk["open"][:3], validate=bool(ok_v), bbox=[V.min(0).round(4).tolist(), V.max(0).round(4).tolist()]), default=str))
 
-CAP_PARTS = ("Handrail_Wall", "Guard_Cap_Rail", "Guard_Posts", "Guard_Scissor", "Well_Guard_F1-convcolonly", "Well_Guard_F2-convcolonly", "Court_Line_Landing")
+CAP_PARTS = ("Handrail_Wall", "Guard_Cap_Rail", "Guard_Posts", "Guard_Scissor", "Court_Line_Landing")   # TTQA-004 r3: Well_Guard-colonly kept whole (1.30 m over the F3 top landing edge)
 def cap_b():   # r7 (Courts cc9a204): tt_stair_core_b_cap for the ST+S1 / ST+S2 F2 cores, whose F3 top sits under the F3 stand rake.
     # Well guards / handrails / the top-landing court stripe are cut at F3 (local ST_H - 3 mm); below F3 the guards are unchanged,
     # above it the stand's solid rake closes the well. X/Z extents (and so the pivot) are unchanged.
     p = stair_full(dict(type="B"))
     for k in CAP_PARTS:
         mk, m = p.P[k]; uv = np.array(m.metadata["uv"]); keep = m.vertices[:, 1] <= ST_H - .003
-        if k == "Well_Guard_F2-convcolonly":   # r8 Rev 3.7 #6: kept whole and raised to 1.07 m over the flight-1 well at the F3 top landing
-            v = np.array(m.vertices); v[v[:, 1] > ST_H + .5, 1] = ST_H + 1.07; zt = v[:, 2].max()
-            v = np.vstack([v, [(x, ST_H - .3, zt) for x in (v[:, 0].min(), v[:, 0].max())]]); m2 = trimesh.convex.convex_hull(v)   # full height at the landing edge
-            m2.metadata["uv"] = np.zeros((len(v), 2)); p.P[k] = (mk, m2); continue
         m2 = m.slice_plane([0, ST_H - .003, 0], [0, -1, 0], cap=True)
         m2.metadata["uv"] = m2.vertices[:, [0, 2]] / 2.0; p.P[k] = (mk, m2)
     p = recenter(p); gp = os.path.join(ROOT, "godot/assets/models", "tt_stair_core_b_cap.glb")
