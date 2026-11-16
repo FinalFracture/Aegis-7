@@ -34,7 +34,11 @@ static func run(tower: Node3D) -> void:
 	tower.add_child(root)
 	var panels: Dictionary = {"f1": [], "f2": [], "f3": []}
 	var gallery_panels: Array = []
-	for room: Dictionary in rooms():
+	var arcade_panels: Array = []
+	var room_list: Array[Dictionary] = rooms()
+	for fitted: Dictionary in room_list:
+		_fit_room(fitted)
+	for room: Dictionary in room_list:
 		var rects: Array = room["rects"]
 		var y_base := float(room["y_base"])
 		var space := float(room["space"])
@@ -66,11 +70,14 @@ static func run(tower: Node3D) -> void:
 						# mesh of wide panels, above the lobby camera.
 						if String(room["id"]) == "f2_gallery":
 							gallery_panels.append(Vector3(px, ceil_y - 0.22, pz))
+						elif String(room["id"]).ends_with("arcade"):
+							arcade_panels.append(Vector3(px, ceil_y - 0.22, pz))
 						elif not _in_lobby_column(px, pz):
 							(panels[bucket] as Array).append(Vector3(px, ceil_y - 0.22, pz))
 	for key: String in ["f1", "f2", "f3"]:
 		panel_n += _panels(root, key, panels[key] as Array)
 	panel_n += _panels(root, "gallery", gallery_panels, Vector3(5.4, 0.04, 5.4))
+	panel_n += _panels(root, "arcade", arcade_panels, Vector3(2.6, 0.05, 2.6), 1.35)
 	max_overlap = _overlap()
 	print("[TT] room lights omni=%d spot=%d shadowed=%d panels=%d max_overlap=%d dropped_lobby=%d" % [
 		omni_n, spot_n, shadowed_n, panel_n, max_overlap, dropped_n])
@@ -99,6 +106,7 @@ static func _reseat_one(mmi: MultiMeshInstance3D) -> bool:
 	var count := mm.instance_count
 	if count < 2:
 		return false
+	mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	if mmi.position.length_squared() > 0.25:
 		return false
 	var acc := Vector3.ZERO
@@ -117,8 +125,8 @@ static func _reseat_one(mmi: MultiMeshInstance3D) -> bool:
 
 static func rooms() -> Array[Dictionary]:
 	return [
-		_room("f1_courts", [[39.5, 103.5, 24.5, 54.5]], 0.0, 6.05, 14.0, 13.0, 10.0, 2.4, Vector3(52, 1.62, 40), Vector3(78, 1.4, 40)),
-		_room("f1_bowling", [[30, 57, 0, 15]], 0.0, 6.05, 10.0, 8.0, 6.5, 3.0, Vector3(40, 1.62, 8), Vector3(52, 1.3, 8)),
+		_room("f1_courts", [[39.5, 103.5, 24.5, 54.5]], 0.0, 6.05, 14.0, 13.0, 14.0, 2.4, Vector3(52, 1.62, 40), Vector3(78, 1.4, 40)),
+		_room("f1_bowling", [[30, 57, 0, 15]], 0.0, 6.05, 10.0, 8.0, 9.0, 3.0, Vector3(40, 1.62, 8), Vector3(52, 1.3, 8)),
 		_room("f1_axe", [[77, 102, 0, 15]], 0.0, 6.05, 10.0, 8.0, 6.5, 3.0, Vector3(86, 1.62, 7), Vector3(98, 1.3, 7)),
 		_room("f1_pool", [[2, 29, 1, 33]], 2.0, 6.05, 10.0, 12.0, 10.0, 2.6, Vector3(8, 3.62, 12), Vector3(22, 2.6, 16)),
 		_room("f1_leisure", [[2, 28, 46, 78]], 1.0, 6.05, 10.0, 9.0, 10.0, 2.8, Vector3(16, 2.62, 60), Vector3(16, 0.9, 54)),
@@ -128,16 +136,16 @@ static func rooms() -> Array[Dictionary]:
 		_room("f1_wc_nw", [[30, 44, 65, 78]], 0.0, 6.05, 7.0, 6.5, 5.5, 2.8, Vector3(36, 1.62, 71), Vector3(40, 1.4, 71)),
 		_room("f1_wc_ne", [[102, 113, 65, 78]], 0.0, 6.05, 6.0, 6.0, 5.5, 2.8, Vector3(106, 1.62, 71), Vector3(110, 1.4, 71)),
 		_room("f1_wc_corridor", [[96, 102, 4, 12]], 0.0, 6.05, 6.0, 6.0, 5.5, 2.8, Vector3(100, 1.62, 8), Vector3(108, 1.4, 6)),
-		_room("f2_rink", [[39.5, 103.5, 24.5, 54.5]], 6.1, 12.15, 14.0, 13.0, 10.0, 2.4, Vector3(55, 7.72, 39.5), Vector3(80, 7.2, 39.5)),
+		_room("f2_rink", [[39.5, 103.5, 24.5, 54.5]], 6.1, 12.15, 14.0, 13.0, 14.0, 2.4, Vector3(55, 7.72, 39.5), Vector3(80, 7.2, 39.5)),
 		_room("f2_gym", [[44, 102, 65, 78]], 6.1, 12.15, 12.0, 9.0, 6.5, 3.0, Vector3(60, 7.72, 71), Vector3(85, 7.3, 71)),
 		_room("f2_climbing", [[30, 113, 1, 14]], 6.1, 12.15, 12.0, 9.0, 6.5, 3.0, Vector3(50, 7.72, 8), Vector3(75, 7.3, 8)),
 		# High mount, short range: vertical gap to the lobby eye is ~7.8 m, so the
 		# sphere lights the gallery and stops above the foyer. Camera looks down
 		# the walk so the side slabs stay out of frame.
 		_room("f2_gallery", [[-11, -1, 12, 67]], 6.1, 12.15, 6.0, 5.5, 22.0, 3.4, Vector3(-6.0, 7.9, 36.0), Vector3(-6.0, 6.8, 55.0)),
-		_room("f2_arcade", [[113, 140, 2, 77]], 6.1, 12.15, 10.0, 18.0, 24.0, 1.6, Vector3(124, 7.85, 36), Vector3(132, 7.3, 48)),
-		_room("f2_slide", [[1, 19, 51, 61]], 6.1, 12.15, 8.0, 6.0, 5.5, 2.4, Vector3(10, 7.72, 56), Vector3(18, 7.2, 59)),
-		_room("f3_basketball", [[39.5, 103.5, 24.5, 54.5]], 12.2, 18.2, 14.0, 13.0, 10.0, 2.4, Vector3(52, 13.82, 39.5), Vector3(80, 13.4, 39.5)),
+		_room("f2_arcade", [[113, 140, 2, 77]], 6.1, 12.15, 10.0, 18.0, 30.0, 1.6, Vector3(124, 7.85, 36), Vector3(132, 7.3, 48)),
+		_room("f2_slide", [[1, 19, 51, 61]], 6.1, 12.15, 8.0, 6.0, 7.5, 2.4, Vector3(10, 7.72, 56), Vector3(18, 7.2, 59)),
+		_room("f3_basketball", [[39.5, 103.5, 24.5, 54.5]], 12.2, 18.2, 14.0, 13.0, 14.0, 2.4, Vector3(52, 13.82, 39.5), Vector3(80, 13.4, 39.5)),
 		_room("f3_track", [[2, 126, 0.8, 3.4], [2, 126, 75.4, 78.2], [0.8, 3.6, 3.4, 75.4], [124.2, 127.2, 3.4, 75.4]], 12.2, 18.2, 16.0, 8.0, 8.0, 2.8, Vector3(20, 13.82, 1.8), Vector3(50, 13.4, 1.8)),
 		_room("f3_dining", [[1, 23, 6, 74]], 12.2, 18.2, 12.0, 9.0, 6.5, 3.0, Vector3(12, 13.82, 40), Vector3(20, 13.4, 40)),
 		_room("f3_cabanas", [[-11.2, -1.2, 20, 60]], 12.2, 18.2, 8.0, 6.0, 5.5, 2.6, Vector3(-8, 13.82, 40), Vector3(-3, 13.4, 40)),
@@ -186,7 +194,7 @@ static func _omni(root: Node3D, nm: String, pos: Vector3, energy: float, rng: fl
 	root.add_child(l)
 
 
-static func _panels(root: Node3D, key: String, pts: Array, size: Vector3 = Vector3(1.5, 0.04, 1.5)) -> int:
+static func _panels(root: Node3D, key: String, pts: Array, size: Vector3 = Vector3(1.5, 0.04, 1.5), emission: float = 1.15) -> int:
 	if pts.is_empty():
 		return 0
 	var mesh := BoxMesh.new()
@@ -199,24 +207,64 @@ static func _panels(root: Node3D, key: String, pts: Array, size: Vector3 = Vecto
 		var p: Vector3 = pts[i]
 		mm.set_instance_transform(i, Transform3D(Basis.IDENTITY, p))
 	var mmi := MultiMeshInstance3D.new()
+	mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	mmi.name = "TT_RoomPanels_%s" % key
 	mmi.multimesh = mm
-	mmi.material_override = _panel_material()
+	mmi.material_override = _panel_material(emission)
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mmi.set_meta("tt_no_batch", true)
 	root.add_child(mmi)
 	return pts.size()
 
 
-static func _panel_material() -> StandardMaterial3D:
+static func _panel_material(emission: float = 1.15) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.resource_name = "TT_RoomCeiling"
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	m.albedo_color = Color(1.0, 0.95, 0.86, 1.0)
 	m.emission_enabled = true
 	m.emission = Color(1.0, 0.94, 0.82)
-	m.emission_energy_multiplier = 1.15
+	m.emission_energy_multiplier = emission
 	return m
+
+
+## Pull each omni onto its own floor sample and cap the range so it cannot
+## reach the next floor. The old arcade range (18) and court range (13) stacked
+## across the 6.1 m floor pitch and peaked at 22 overlaps. The grid tightens
+## with the range so a cell corner still sits inside its light.
+static func _fit_room(room: Dictionary) -> void:
+	var id := String(room["id"])
+	if id == "f2_gallery":
+		return
+	var yb := float(room["y_base"])
+	var ceil_y := float(room["ceil"])
+	var ly := yb + float(room["yoff"])
+	var planes: Array[float] = [1.6, 7.7, 13.8]
+	var own := planes[0]
+	var own_d := absf(ly - own)
+	for sy: float in planes:
+		var d := absf(ly - sy)
+		if d < own_d:
+			own = sy
+			own_d = d
+	var desired := clampf(own, yb + 0.55, ceil_y - 0.55)
+	var yoff := desired - yb
+	ly = yb + yoff
+	room["yoff"] = yoff
+	# The east facade is one MultiMesh. Godot keeps the eight lights nearest
+	# its origin, and the bay in the arcade shot sits just outside a 10 m
+	# range. A 16 m grid leaves two of those lights on that bay. 13 m is the
+	# longest range that still peaks at 7 overlaps.
+	if id.ends_with("arcade"):
+		room["rng"] = 13.0
+		room["space"] = 16.0
+		return
+	# 10 m is the longest range that stays at 8 overlaps with this spacing.
+	# The floor-to-floor cap (about 5.8 m) left the far end of a hall outside
+	# every light that the 8-light limit keeps on a long mesh.
+	var rng := minf(float(room["rng"]), 10.0)
+	room["rng"] = rng
+	room["space"] = maxf(float(room["space"]), rng * 1.15)
 
 
 static func _overlap() -> int:

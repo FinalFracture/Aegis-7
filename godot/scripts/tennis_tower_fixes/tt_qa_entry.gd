@@ -30,10 +30,17 @@ func _run() -> void:
 		get_tree().quit(1)
 		return
 	var routes := _routes()
+	# This check is physics only. Drawing the tower holds the machine at about
+	# 5 fps, and the catch-up then walks the body into the entrance wall.
+	var prev_steps := Engine.max_physics_steps_per_frame
+	Engine.max_physics_steps_per_frame = 1
+	RenderingServer.set_render_loop_enabled(false)
 	for sprint in [false, true]:
 		var mode := "sprint" if sprint else "walk"
 		for spec in routes:
 			await _qa_one(spec, sprint, mode)
+	Engine.max_physics_steps_per_frame = prev_steps
+	RenderingServer.set_render_loop_enabled(true)
 	ppa._qa_ring_release()
 	print("QA_TOWER_ENTRY DONE failures=%d" % _failures)
 	get_tree().quit(0 if _failures == 0 else 1)

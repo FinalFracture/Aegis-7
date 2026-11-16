@@ -237,6 +237,7 @@ const _TTMovers := preload("res://scripts/tennis_tower_fixes/tt_movers.gd")
 const _TTWayfinding := preload("res://scripts/tennis_tower_fixes/tt_wayfinding.gd")
 const _TTPool := preload("res://scripts/tennis_tower_fixes/tt_pool_water.gd")
 const _TTRoomLights := preload("res://scripts/tennis_tower_fixes/tt_room_lighting.gd")
+const _TTVis := preload("res://scripts/tennis_tower_fixes/tt_visibility.gd")
 const TT_STRIP := 5
 const TT_AXIAL_OFFSET := -100.0
 const TT_STRIP_X0 := 60.0
@@ -511,6 +512,7 @@ var _tower_inv: Transform3D = Transform3D.IDENTITY
 var _tower_up: Vector3 = Vector3.UP
 var _tower_stats: Dictionary = {}
 var _tower_batch_stats: Dictionary = {}
+var _tt_vis: Node = null
 var _tt_doors: Array[Dictionary] = []
 var _tt_movers
 var _tt_pool
@@ -9966,6 +9968,10 @@ func _run_qa_egress() -> void:
 
 # [M-70/T10] Real-input stair round trip (`-- --qa-stairs`): spawn -> L1 via the stair core -> back to L2, Y band per waypoint.
 func _run_qa_stairs() -> void:
+	# This machine presents at about 5 fps, so one rendered frame otherwise runs
+	# several physics steps on one mouse sample and the bot walks off the flight.
+	var prev_steps := Engine.max_physics_steps_per_frame
+	Engine.max_physics_steps_per_frame = 1
 	var failures: int = 0
 	var wps: Array[Dictionary] = [
 		{"label": "(-6.0, 4.5)", "xz": Vector2(-6.0, 4.5), "door": "", "ymin": 3.9, "ymax": 4.4},
@@ -10057,6 +10063,7 @@ func _run_qa_stairs() -> void:
 	if holding_w:
 		_qa_key(KEY_W, false)
 		await _qa_idle(1)
+	Engine.max_physics_steps_per_frame = prev_steps
 	print("[STAIRS-QA] DONE failures=%d" % failures)
 	get_tree().quit(0 if failures == 0 else 1)
 
@@ -12288,6 +12295,9 @@ func _build_tennis_tower(hab_root: Node3D) -> void:
 
 
 func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
+	# Static tower meshes. Physics interpolation is on for the preface, and a
+	# reseated MultiMesh otherwise lerps every instance on the main thread.
+	tower.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_tower_stats = stats
 	print("[TT] built placed=%d glbs=%d missing=%d surfaces=%d tris=%d colliders=%d ms=%d" % [
 		int(stats.get("placed", 0)), int(stats.get("glbs", 0)), (stats.get("missing", []) as Array).size(),
@@ -12323,21 +12333,35 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 	print("[TT] tower bodies tagged TT_QA_LAYER_BIT (layer 19): %d" % _tower_body_rids.size())
 	# Guards-gen samples mesh visibility for the fallback. The batcher hides
 	# those MeshInstances, so a measurement taken after it only sees leftovers.
-	if _tt_no_batch or _qa_tower_guards_gen:
-		print("[TT] batching off (%s)" % ("guards-gen" if _qa_tower_guards_gen else "--tower-no-batch"))
+	if _qa_tower_guards_gen:
+		print("[TT] batching off (guards-gen)")
 		return
-	_tower_batch_stats = _TennisTowerBatcher.run(tower)
-	# Compatibility keeps 8 lights per object, measured from the node origin.
-	# Batched floors are parented at the tag origin, so the lights nearest the
-	# building corner were winning for every floor, including the lobby.
-	if not _tt_no_lights:
-		_TTRoomLights.reseat_batches(tower)
-	var b: Dictionary = _tower_batch_stats
-	var still: int = _tt_count_moving_leaves(tower)
-	print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d nobatch=%d ms=%.1f" % [
-		int(b["mi_before"]), int(b["surfaces_before"]), int(b["mmi"]), int(b["instances_in_mmi"]), int(b["mi_after"]),
-		int(b["surfaces_after"]), int(b["ranged"]), int(b["nobatch"]), float(b["ms"])])
-	print("[TT] moving leaves tagged=%d still_individual=%d" % [_tt_moving_leaves, still])
+	if _tt_no_batch:
+		print("[TT] batching off (--tower-no-batch)")
+	else:
+		_tower_batch_stats = _TennisTowerBatcher.run(tower)
+		# Compatibility keeps 8 lights per object, measured from the node origin.
+		# Batched floors are parented at the tag origin, so the lights nearest the
+		# building corner were winning for every floor, including the lobby.
+		if not _tt_no_lights:
+			_TTRoomLights.reseat_batches(tower)
+		var b: Dictionary = _tower_batch_stats
+		var still: int = _tt_count_moving_leaves(tower)
+		print("[TT] batch mi_before=%d surfaces_before=%d -> mmi=%d (instances=%d) mi_left=%d surfaces_after=%d ranged_single=%d nobatch=%d ms=%.1f" % [
+			int(b["mi_before"]), int(b["surfaces_before"]), int(b["mmi"]), int(b["instances_in_mmi"]), int(b["mi_after"]),
+			int(b["surfaces_after"]), int(b["ranged"]), int(b["nobatch"]), float(b["ms"])])
+		print("[TT] moving leaves tagged=%d still_individual=%d" % [_tt_moving_leaves, still])
+	_tt_attach_visibility(tower)
+
+
+func _tt_attach_visibility(tower: Node3D) -> void:
+	if _tt_vis != null and is_instance_valid(_tt_vis):
+		_tt_vis.queue_free()
+	var vis: Node = _TTVis.new()
+	vis.name = "TTVisibility"
+	vis.setup(self, tower)
+	add_child(vis)
+	_tt_vis = vis
 
 
 func _tt_water_material() -> StandardMaterial3D:
@@ -12663,6 +12687,10 @@ func _qa_tower_stair_walk() -> void:
 
 
 func _run_qa_tower_walk() -> void:
+	# One physics step per rendered frame. At 5 fps the catch-up otherwise
+	# folds several steps into one sample and the 0.35 m jump check fails.
+	var prev_steps := Engine.max_physics_steps_per_frame
+	Engine.max_physics_steps_per_frame = 1
 	_qa_failures = 0
 	var guard: int = 0
 	while not has_meta("exterior_spawned") and guard < 600:
@@ -12671,6 +12699,7 @@ func _run_qa_tower_walk() -> void:
 	if _player_body == null or _tower == null:
 		print("QA_TOWER_WALK FAIL | setup | player=%s tower=%s" % [str(_player_body != null), str(_tower != null)])
 		print("QA_TOWER_WALK DONE failures=1")
+		Engine.max_physics_steps_per_frame = prev_steps
 		get_tree().quit(1)
 		return
 	# S door: tt_secondary_entrance_s at X 72, Z -0.98 (8 m module). Start 14 m south of it on the drum floor.
@@ -12714,6 +12743,7 @@ func _run_qa_tower_walk() -> void:
 	await _qa_tower_w_door_walk()
 	await _qa_tower_stair_walk()
 	_qa_ring_release()
+	Engine.max_physics_steps_per_frame = prev_steps
 	print("QA_TOWER_WALK DONE failures=%d" % _qa_failures)
 	get_tree().quit(0 if _qa_failures == 0 else 1)
 
@@ -12804,13 +12834,19 @@ func _qa_tower_draw_sample(label: String, eye: Vector3, at: Vector3, up: Vector3
 	var ob: float = 0.0
 	var pr: float = 0.0
 	var fps: float = 0.0
+	var phys: float = 0.0
+	var proc: float = 0.0
+	var t0: int = Time.get_ticks_usec()
 	for _i: int in range(n):
 		await get_tree().process_frame
 		dc += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
 		ob += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME))
 		pr += float(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME))
 		fps += float(Engine.get_frames_per_second())
-	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d avg_fps=%d" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n)), int(round(fps / n))])
+		phys += float(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS))
+		proc += float(Performance.get_monitor(Performance.TIME_PROCESS))
+	var wall: float = float(n) / maxf(float(Time.get_ticks_usec() - t0) / 1000000.0, 0.001)
+	print("[TT-DRAW] mode=%s view=%s draw_calls=%d objects=%d primitives=%d avg_fps=%d wall_fps=%.1f phys_ms=%.1f proc_ms=%.1f" % [mode, label, int(round(dc / n)), int(round(ob / n)), int(round(pr / n)), int(round(fps / n)), wall, phys / float(n) * 1000.0, proc / float(n) * 1000.0])
 
 
 func _tt_fix_node(script_path: String) -> void:

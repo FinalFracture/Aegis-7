@@ -20,6 +20,11 @@ func _qa_run() -> void:
 		print("QA_TOWER_SWIM DONE failures=1")
 		get_tree().quit(1)
 		return
+	# Physics-only. Drawing holds this machine at about 5 fps and the catch-up
+	# misses the ladder and stair exits.
+	var prev_steps := Engine.max_physics_steps_per_frame
+	Engine.max_physics_steps_per_frame = 1
+	RenderingServer.set_render_loop_enabled(false)
 	ppa._return_to_player()
 	_qa_probe_lid()
 	# z=12 is a lane centre (ropes at 11.0 and 13.5). The lowest ray can
@@ -66,6 +71,8 @@ func _qa_run() -> void:
 	], 0.72, 18000)
 	await _qa_board()
 	_qa_splash()
+	Engine.max_physics_steps_per_frame = prev_steps
+	RenderingServer.set_render_loop_enabled(true)
 	ppa._qa_ring_release()
 	ppa._qa_key(KEY_SPACE, false)
 	print("QA_TOWER_SWIM DONE failures=%d" % _failures)
