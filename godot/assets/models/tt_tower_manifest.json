@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2690,
+"count": 2692,
 "by_owner": {
-"Rook": 1046,
+"Rook": 1048,
 "Arrival": 42,
 "Aquatics": 72,
 "Leisure": 236,
@@ -513,6 +513,18 @@
 "asset": "tt_struct_guards_ne_plant"
 },
 {
+"glb": "res://assets/models/tt_struct_stand_cheeks_r39.glb",
+"p": [
+77.645,
+0.0,
+17.622
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_stand_cheeks_r39"
+},
+{
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",
 "p": [
 15.0,
@@ -736,6 +748,18 @@
 33.3
 ],
 "yaw": 90,
+"tag": "door",
+"owner": "Rook",
+"asset": "tt_door_pair_18"
+},
+{
+"glb": "res://assets/models/tt_door_pair_18.glb",
+"p": [
+91.5,
+6.1,
+14.85
+],
+"yaw": 0,
 "tag": "door",
 "owner": "Rook",
 "asset": "tt_door_pair_18"
@@ -19749,16 +19773,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_3p8.glb",
 "p": [
-62.75,
+60.895,
 0.0,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_3p8"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -20037,16 +20061,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_3p8.glb",
 "p": [
-62.75,
+60.895,
 6.1,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_3p8"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -20085,16 +20109,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-87.75,
+87.245,
 6.1,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module_6p5.glb",
@@ -20109,16 +20133,16 @@
 "asset": "tt_stand_module_6p5"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-95.25,
+95.745,
 6.1,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f2",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module_6p5.glb",

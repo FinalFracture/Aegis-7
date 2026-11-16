@@ -310,5 +310,13 @@
    73.6613
   ],
   "note": "Rev 3.8 #4 TTQA-011 NE plant opening guards F2/F3 + slab infill Z 69.00..69.19"
+ },
+ "tt_struct_stand_cheeks_r39": {
+  "world_offset": [
+   77.645,
+   0.0,
+   17.622
+  ],
+  "note": "Rev 3.9 TTQA-056/057 stand-end cheeks (L1-S/L2-S1 X 62.78..62.88, L2-S2 X 90.48..90.58 / 92.41..92.51)"
  }
 }
