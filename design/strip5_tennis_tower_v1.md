@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.8**, 2026-11-15 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.9**, 2026-11-16 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -900,3 +900,89 @@ All layout calls below are **Vance proposal** under the Rev 3.5 rules (1.8 m cle
 - **TTQA-026, climbing hook rails (Vance proposal):** don't add a partition at Z 13.2, because the spine must stay clear. Move the 7 hook rails onto the solid wall faces of the locker bays and snap them to the face, with the rail at about 1.4 m above F2.
 - **TTQA-039, gallery relief (Vance proposal):** don't mount it in open space. Move it to the nearest solid gallery wall face. If no wall is within 3 m, stand it on a freestanding 0.3 m-deep plinth wall (convcolonly), parallel to the gallery edge and leaving at least 1.8 m clear walkway.
 - **TTQA-050, bowling:** held for Jared's call (6 lanes or keep 8).
+
+### Rev 3.9, 2026-11-16 (Vance): r3 QA items (`context/TT_QA_AUDIT_r3.md`)
+All layout calls below are **Vance proposal** under the Rev 3.5 rules (1.8 m clear links, 1.5 m landings, 1.07 m guards with < 100 mm openings where the drop is over 0.76 m, 2.1 m headroom). Geometry was read from the r3 data on the box (`/tmp/r3/ttqa_a_place.json` AABBs, `/tmp/r3/ttqa_slice_{1.0,7.1}.bin` collider slices, `ttqa_a_grid.json`), `structure/build_structure.py` / `tower_plan.py`, and the placed GLBs (`tt_slide_tower_t1/t2`, `tt_leisure_slide_link`, `tt_bridges_*`), all at `4bea163`. Owners follow Rev 3.7: Rook builds walls, cheeks and colliders (`*-colonly` / `*-convcolonly`), Courts swaps its own stands, Gage owns runtime and the QA walks. Sports are decoration, so the seats lost here don't matter.
+
+**Root cause shared by 056 and 057:** the only crossing of the Z 15 wall line from the S band (X 57..77) is the 10 m lift gap, X 66.5..76.5. Lift S (`tt_lift_core_1005` F1 / `_1006` F2, X 66.50..70.50, Z 11.38..14.63) and core LS (`a_979` / `a_980`, X 71.00..76.50, Z 9.50..19.71) fill that gap. What's left is a ≈ 0.3 m diagonal between the lift's NW corner (66.50, 14.63) and the end of the Walls_F1/F2 Z 15 wall (Z 14.70..15.00, ends at X 66.50), plus a 0.50 m slot between the lift and LS. In r2 the player got through via the unsealed lift landing and the non-solid cores. Gage pass A (`220d095`: lift `LandingSeal_ttfb`, core colliders) closed that, so both floors split. My Rev 3.7 #4 assumed this "lift-gap" route for the F2 climbing link, and that assumption was wrong.
+
+1. **TTQA-056, F1 S-door lobby ↔ court hall (blocker).**
+   - **Opening L1-S:** Rook changes the Walls_F1 line Z 15 opening `(66.5, 76.5)` to **`(62.90, 76.50)`**, full height to the F2 slab underside (+5.70), with no leaf (an open concourse cut, like the lift gap).
+     - The new clear opening runs **X 62.90..66.50 (3.60 m, i.e. two 1.8 m lanes)**, Z 14.70..15.00, and merges with the existing lift-gap opening.
+     - It is 0.00 m from the lift Shaft_Walls W face (X 66.50; the shaft stops at Z 14.63, so nothing is cut into it).
+     - It is 1.10 m E of core b_987 (X ≤ 64.00) and 8.3 m W of `axe_spectator_1176` (X ≥ 77.20).
+   - **Hall side (Courts + Rook):**
+     - Courts swaps stand **`tt_stand_module_1642`** (X 59.01..66.48, Z 15.45..19.76) for **`tt_stand_module_3p8` at X 59.01..62.78**, keeping the same Z and yaw 0.
+     - Rook adds a stand-end cheek at **X 62.78..62.88**, 1.07 m over each tier, across the module depth (Z ≈ 15.45..19.76). Use the Rev 3.8 #3 `cheek()` with the module's front at ≈ Z 19.76.
+     - Hall-side landing: **X 62.88..71.00 × Z 15.00..19.71 (8.1 × 4.7 m)**, open to the concourse at Z ≥ 19.76.
+   - **Lobby side:**
+     - Landing: **X 64.00..66.50 × Z 11.38..14.70 (2.5 × 3.3 m ≥ 1.5 m ✓)**, between the b_987 E wall and the lift W wall. The strip X 62.90..64.00 × Z 13.21..14.70 behind b_987 (its F1 portal strip) also opens onto the cut.
+     - Approach from the S door: the lobby → strip **Z 9.10..11.38 (2.28 m)** between the TC-S2 trunk (≈ X 64.9..66.1, Z 7.9..9.1) and the lift's S face → corridor X 64.00..66.50 (2.5 m) → the cut.
+     - The r3 slice shows no props in that path, and nothing has to move.
+   - **Rejected:**
+     - The E side: LS is 0.35 m from the X 77 axe wall all the way to Z 19.71.
+     - A route through axe row 1: it would mean removing bay 1172 and walking behind the throw lines, and the lobby can only reach row 1 through 1.0 m gates.
+     - So F1 has one 3.6 m cut. The independent second route out of the lobby is vertical: b_987 (ST+S1) to F2, then the F2 L2-S2 door (item 2).
+   - **QA note (Gage):** please extend `--qa-tower-walk` past the lobby turn-back (q Z 5.66). Waypoints in tower-local building coords, y = 0:
+     - (72.0, 5.66) → (69.0, 10.30) → (65.25, 10.30) → (65.25, 14.20) → (65.25, 16.50) → (67.50, 21.00), then back.
+     - Assert: arrived, max_air ≈ 0.
+     - Add a second lane through (63.45, 14.00) → (63.45, 17.00) so both 1.8 m lanes stay open.
+2. **TTQA-057, F2 climbing pocket ↔ F2 court hall (blocker).**
+   - **What closed it:**
+     - The same lift/LS pinch on F2. Lift `_1006` is at the same X/Z, and Walls_F2 line Z 15 has the same `(66.5, 76.5)` opening.
+     - The only other Walls_F2 Z 15 opening, X 44..46, opens into the 0.45 m dead slot Z 15.00..15.45 behind stand 1662.
+     - Rev 3.7 #4 infilled X 86.3..89.
+     - Gage's stop point (82.50, 5.98, 16.00) is in that same dead slot behind stand 1668. It isn't a wall I added.
+     - None of TTQA-051 (slot infill X 57..58), TTQA-053 (doors on Z 64 / X 113) or TTQA-026 (hook rails on Z 10.42, door gap X 39.4..42.1) touches the Z 15 line. Those are all inside the pocket.
+   - **Opening L2-S1 (mirror of L1-S):**
+     - Walls_F2 line Z 15 opening `(66.5, 76.5)` becomes **`(62.90, 76.50)`**, full height to the F3 underside (+11.70), no leaf: clear **X 62.90..66.50 (3.60 m)**.
+     - Courts swaps **`tt_stand_module_1666`** (X 59.01..66.48, y 6.1) for **`tt_stand_module_3p8` at X 59.01..62.78**.
+     - Rook adds a cheek at **X 62.78..62.88** at y 6.1.
+     - Landings:
+       - hall side X 62.88..71.00 × Z 15.00..19.71;
+       - pocket side X 64.00..66.50 × Z 11.38..14.70 (F2 slab; the ST+S1 hole stops at X 64.00).
+     - Into the pocket: strip Z 9.10..11.38 → the F2 S lobby X 66..84, Z 0.6..9.5 (open in the r3 slice) → kids' wall cut X 84.5 / Z 13.2..14.7 → spine Z 13.21..14.70 → training-wall cut X 94 / Z 13.4..14.7 → bouldering.
+   - **Door L2-S2, second independent link (mirror of the F1 Rev 3.7 #4 axe door):**
+     - Courts swaps F2 stands **1670** (X 84.01..91.48) and **1672** (X 91.51..98.98) for `tt_stand_module_6p5` at **X 84.01..90.48 and X 92.51..98.98** (y 6.1). That gives a gap of X 90.48..92.51.
+     - Rook adds cheeks **X 90.48..90.58 and X 92.41..92.51**, 1.83 m clear.
+     - Rook cuts a **1.8 m pair-door opening in Walls_F2 line Z 15 at X 90.6..92.4**, head F2 + 2.4 = +8.5.
+     - Rook places `tt_door_pair_18` at **(91.5, 6.1, 14.85), yaw 0**, with leaves swinging **into the hall (+Z)**. Gage adds this 5th pair door to the movers.
+     - Pocket-side landing: the spine **X 85.0..93.7 × Z 13.21..14.70**, behind b_cap_990 (X 86..92, Z ≤ 13.21). The r3 slice shows it clear.
+     - **Deviation:** that landing is 1.49 m deep, not 1.5 m (−0.01 m). This is the same as the built F1 door at this spot. I accept it because the leaves swing to the hall side.
+     - Hall-side landing: X 90.58..92.41 × Z 15.00..19.76, then the concourse.
+     - Mats `1893` (X 82.50..84.30, Z 11.10..13.10) and kids' panel `1886` (Z ≤ 12.95) are clear of the spine, so no prop moves.
+   - **QA note (Gage):** add an F2 walk (y 6.1). Waypoints:
+     - (67.50, 21.00) → (65.25, 16.50) → (65.25, 13.80) → (65.25, 10.30) → (69.00, 10.30) → (78.00, 8.00) → (79.50, 14.00) → (86.00, 14.00) → (91.50, 14.00) → (91.50, 17.50) → (91.50, 21.00).
+     - The loop exercises both links. Expect max_air ≈ 0.
+3. **TTQA-023, slide bridges / towers (major).**
+   - **Measured:**
+     - The F2 slide bridge is X 2.10..19.80, Z 58.06..60.34 at +6.1. Its two rails (`tt_bridges_slide_guards` Solid-colonly) are 1.12 m on both sides.
+     - The T2 gate (`tt_bridges_t2_gate`) is posts plus a header, with the opening Z 58.14..59.24 clear.
+     - The T1–T2 link `tt_leisure_slide_link_1142` (X 23.60..24.70, Z 55.91..57.09, deck +7.00) already has 1.12 m colonly rails on both sides (X 23.60..23.68 and 24.62..24.70).
+     - The towers' stair lanes are walled on the E side (`Guards-colonly` X 22.44..22.46 to +8.10 / +5.96) and enclosed elsewhere (`Enclosure-colonly` X 20.09..24.91; T1 Z 51.09..55.91, T2 Z 57.09..61.91).
+   - **Why Z 56.5 still falls:**
+     - The repro spawns the player at **(22.5, 6.15, 56.5)**, inside the 1.18 m slot between the T1 N and T2 S enclosure faces (Z 55.91..57.09). The slot has **no floor above the +1.0 leisure deck**: it's open from deck level up to the roofs, and its ground level is the shared entry passage to both tower stairs (enclosure openings at X ≈ 20.0..21.2, below ≈ +3.5).
+     - The spawn is mid-air, not a walkable spot, so walking W/E just leaves the slot and falls.
+     - The real hazard is that the link rails are 1.12 m and the player jumps 1.18 m. Someone on the link can jump the rail and drop ≈ 6 m into the slot.
+   - **Fix (Rook):**
+     - **3a. Link screens:** raise both link guards to full-height scissor screens: **X 23.60..23.68 (W) and X 24.62..24.70 (E), Z 55.91..57.09, Y 7.00..9.15** (the enclosure head). Colonly matches the visual, < 100 mm openings, overlap ≤ 0.01 m with both enclosure faces. That covers the full link length including Z 56.5. Keep the existing kick and cap rail; add a pane band from 8.12 to 9.15.
+     - **3b. Slot end screens:** close both ends of the slot above the entry heads.
+       - **W: X 20.03..20.09, Z 55.91..57.09, Y 3.50..9.15.**
+       - **E: X 24.91..24.97, same Z / Y.**
+       - Scissor plus colonly, trimmed around the corner columns, ≤ 0.01 m overlap. Tube `_e` (X ≥ 25.05) is 0.08 m clear.
+       - The ground-level entry (Y 1.0..3.5) stays open.
+     - **3c. T2 gate threshold:** there is a 0.20 m gap between the F2 bridge slab end (X 20.00) and the T2 N2 / N2x landings (X 20.20) across the gate. Infill it with a threshold plate **X 19.99..20.21, Z 58.14..59.24, Y 6.00..6.10** (colonly plus visual, ≤ 0.01 m overlap). These are the r3 F2 edges with g = 0 at (19.5, 58.5..59.5, 6.1).
+     - **3d. Enclosure edge slots:** each tower stair landing, ramp and the +7.0 deck stops 0.11 m short of the enclosure inner face. That leaves slots of 110 mm, over the 100 mm limit:
+       - lanes / landings at X 20.20 vs 20.09;
+       - landings at Z 51.20 / 55.80 (T1) and 57.20 / 61.80 (T2) vs 51.09 / 55.91 / 57.09 / 61.91;
+       - deck E edge X 24.80 vs 24.91.
+       - Extend each walking collider and its visual to the enclosure inner face (Rook probes it; overlap ≤ 0.01 m).
+   - **The y 4.34 "102.5 m, guard 0.39" cluster:** this is mostly a 0.5 m-grid artefact. The real walls/enclosure sit 0.11–0.44 m beyond the half-step guard ray, and the collide probe already passes `f2_brg` / `deck7`. 3d removes the real part, the 110 mm slots.
+   - **QA note (Gage):**
+     - Retire the (22.5, 6.15, 56.5) spawn; it has no floor.
+     - Walk the link instead: spawn **(24.15, 7.05, 56.5)** → targets (18.0, 7.0, 56.5) and (27.0, 7.0, 56.5). Expect blocked, max_air 0.
+     - Add a jump-at-rail check on the link and on the bridge at X 15, Z 59.2.
+     - Walk the gate threshold (18.5, 6.1, 58.7) → (21.0, 6.1, 58.7). Expect no step-down.
+4. **Still open from r3, unchanged:**
+   - TTQA-050 bowling: held for Jared (6 lanes or keep 8).
+   - TTQA-028 Services: held for Jared.

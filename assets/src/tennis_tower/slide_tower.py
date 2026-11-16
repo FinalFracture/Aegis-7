@@ -37,6 +37,43 @@ def landing(p, tag, z0, z1, y, th=TH):
     p.add("Stair_Cast", WH, box(XA[0], XB[1], y - th, y - FIN + E, z0, z1)); p.add("Treads_Slate", SSL, box(XA[0] + .002, XB[1] - .002, y - FIN, y, z0 + .002, z1 - .002))
     p.add(f"{tag}_Landing-colonly", G, trimesh.creation.box(bounds=[[XA[0], y - th, z0], [XB[1], y, z1]]))
 
+# Rev 3.9 TTQA-023 3d: every walking collider (landings, XA-lane flights, the +7.0 deck) stopped at +-2.30, 0.089 m short of the
+# enclosure inner face (+-2.389): 110 mm slots over the 100 mm rule. Infill strips run each walking surface out to the inner face
+# (visual 1 mm short of the enclosure / existing casts, collider 5 mm into the enclosure), built as the hull of the element's edge
+# face and its copy on the inner face, so ramps get sloped strips. Skipped: the +Z link sill X LX0..LX1 and (T2) the -X bridge gate
+# GZ at N2, where the 3c threshold plate lands instead.
+EI = C - PG   # enclosure inner face
+def edge_infill(p, t2, x5, LX0, LX1):
+    sz = -1 if t2 else 1
+    keys = [k for k in p.P if k.endswith("_Landing-colonly") or k in ("F1_Ramp-colonly", "F3_Ramp-colonly", "Deck-colonly")]
+    vis, col = [], []
+    def strips(m, ax, sgn, cuts):
+        v = np.asarray(m.vertices); face = v[np.abs(v[:, ax] - sgn * 2.3) < .004]
+        if len(face) < 3: return
+        oth = 2 if ax == 0 else 0; nrm = np.eye(3)[oth]
+        for X0, X1, out in ((sgn * 2.3 + sgn * .002, sgn * EI - sgn * .002, vis), (sgn * 2.3, sgn * (EI + .005), col)):
+            a2 = face.copy(); b2 = face.copy(); a2[:, ax] = X0; b2[:, ax] = X1
+            h = trimesh.convex.convex_hull(np.vstack([a2, b2])); segs = [(h.bounds[0][oth], h.bounds[1][oth])]
+            for c0, c1 in cuts:
+                segs = [sg for (u, w) in segs for sg in ((u, min(w, c0)), (max(u, c1), w)) if sg[1] - sg[0] > .02]
+            for u, w in segs:
+                g = h
+                if u > h.bounds[0][oth] + 1e-6: g = g.slice_plane(nrm * u, nrm, cap=True)
+                if w < h.bounds[1][oth] - 1e-6: g = g.slice_plane(nrm * w, -nrm, cap=True)
+                if g.bounds[0][1] < .014: g = g.slice_plane([0, .014, 0], [0, 1, 0], cap=True)   # F1 ramp slab dips below the floor; stay 2 mm over the leisure-deck terrazzo (+.012)
+                out.append(U(g))
+    for k in keys:
+        m = p.P[k][1]; lo, hi = m.bounds
+        if lo[0] < -2.29: strips(m, 0, -1, [GZ] if (t2 and k.startswith("N2")) else [])
+        if lo[2] < -2.29 and "Ramp" not in k: strips(m, 2, -1, [])
+        if hi[2] > 2.29 and "Ramp" not in k: strips(m, 2, +1, [(LX0, LX1)] if k == "Deck-colonly" else [])
+        if hi[0] > 2.29: strips(m, 0, +1, [tuple(sorted((sz * -1.7, sz * -.7)))])   # slide tube mouth (+X opening)
+    p.add("Edge_Infill", WH, *vis); p.add("Edge_Infill-colonly", G, *col)
+    if t2:   # 3c threshold plate across the -X bridge gate (world X 19.99..20.21, Y 6.00..6.10): bridge slab end -> N2 / N2x
+        yt = float(p.P["N2_Landing-colonly"][1].bounds[1][1])
+        p.add("Gate_Threshold", SGM, box(-2.498, -2.301, yt - .098, yt, GZ[0] + .002, GZ[1] - .002))
+        p.add("Gate_Threshold-colonly", G, U(trimesh.creation.box(bounds=[[-2.51, yt - .1, GZ[0]], [-2.29, yt, GZ[1]]])))
+
 def build(q):
     p = Part(); nos = q.get("nosing", False); t2 = q.get("tower", "t1") == "t2"
     ZN1, ZN2 = (.68, .40) if t2 else (1.2, 1.2); sz = -1 if t2 else 1; ZN2L = ZN2 - .14 if t2 else ZN2
@@ -103,6 +140,7 @@ def build(q):
     tb = ring_band(.4, .125, h=.25, n=16, t=.05); tb.apply_transform(trimesh.transformations.rotation_matrix(-np.pi/2, [0, 0, 1])); tb.apply_translation((2.302, DECK + .4, sz * -1.2))
     tb.metadata["uv"] = np.zeros((len(tb.vertices), 2)); p.add("Slide_Tube", q.get("tube", CY), tb)
     dress(p, q, yn1, ys2, yn2, x5)
+    edge_infill(p, t2, x5, LX0, LX1)
     for k, (mk, m) in list(p.P.items()):
         if "colonly" not in k: continue
         if m.bounds[0][1] < 0: m = m.slice_plane([0, 0, 0], [0, 1, 0], cap=True)  # F1 ramp slab dips below the floor

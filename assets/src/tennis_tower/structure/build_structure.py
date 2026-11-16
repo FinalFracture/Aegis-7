@@ -65,7 +65,7 @@ def f3_slab():
 def walls_f1():
     y0, y1 = F1 - E, F2 - SLAB[F2] + E; W = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
-    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled
+    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(62.90, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled; Rev 3.9 TTQA-056 L1-S: lift gap widened W to X 62.90 (full height, no leaf)
     W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # Rev 3.8 #3 L1-N: 1.8 m pair-door opening, rest infilled
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0), (32.4, 34.2, 2.4)])   # Rev 3.8 #3 L1-E pair door
@@ -85,7 +85,7 @@ def walls_f1():
 def walls_f2():
     y0, y1 = F2 - E, F3 - SLAB[F3] + E; W = []; P = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
-    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(66.5, 76.5, y1), (44, 46, F2 + 2.4)])   # r8 Rev 3.7 #4: dead X 86.3..89 opening infilled
+    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(62.90, 76.5, y1), (44, 46, F2 + 2.4), (90.6, 92.4, F2 + 2.4)])   # r8 Rev 3.7 #4: dead X 86.3..89 opening infilled; Rev 3.9 TTQA-057: L2-S1 cut to X 62.90, L2-S2 1.8 m pair door X 90.6..92.4 (head +8.5)
     W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, F2 + 3.0), (90.6, 92.4, F2 + 2.4)])   # Rev 3.8 #3 L2-N pair door
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, F2 + 3.0), (52, 55, F2 + 3.0), (70, 73, F2 + 3.0), (32.4, 34.2, F2 + 2.4)])   # Rev 3.8 #3 L2-E pair door
