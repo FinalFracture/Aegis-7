@@ -46,7 +46,8 @@ def build(q):
             p.add(f"Leaf_{i}_Stiles", ALY, box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03),
                   *[box(a + .07 - E, b - .07 + E, u, v, -.03, .03) for (u, v) in ((.06, .18), (TD - .2, TD - .08))])
             p.add(f"Leaf_{i}_Door_Scissor", SCR, pane(a + .072, b - .072, .18 - E, TD - .2 + E, 0, t=.016))
-            p.add(f"Leaf_{i}_Push_Bar", ALY, tube((a + .15, 1.05, .07), (b - .15, 1.05, .07), .02, 8), tube((a + .15, 1.05, .03 - E), (a + .15, 1.05, .07), .012, 6), tube((b - .15, 1.05, .03 - E), (b - .15, 1.05, .07), .012, 6))
+            # Rev 3.9 TTQA-031 outswing (egress to +Z): push bar on the interior (-Z) face
+            p.add(f"Leaf_{i}_Push_Bar", ALY, tube((a + .15, 1.05, -.07), (b - .15, 1.05, -.07), .02, 8), tube((a + .15, 1.05, -.07), (a + .15, 1.05, -.03 + E), .012, 6), tube((b - .15, 1.05, -.07), (b - .15, 1.05, -.03 + E), .012, 6))
             p.add(f"Leaf_{i}-colonly", ALY, box(a, b, .06, TD - .08, -.03, .03))
         for k, (a0, b0) in enumerate(((lj1, -1.65), (1.65, rj0))):
             p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .05, TD - .075 + E, 0))
@@ -93,8 +94,9 @@ def build(q):
     # put Bollard0 on the W-entrance walk line (bay_z 39.005 through bay 582: local x -0.495, collider
     # to -0.475). Posts move to +-1.50 (outer half of each leaf, in front of the side jambs): 1.35 m
     # clear from the inner face to the centre jamb, 0.93 m from the walk line to the collider; adjacent
-    # bays' outer posts stay 1.00 m apart (0.85 m clear). 3l (unplaced) keeps +-0.55 at the mullions.
-    boll = (0.0,) if w < 3 else ((-.55, .55) if L3 else (-1.50, 1.50))
+    # bays' outer posts stay 1.00 m apart (0.85 m clear). TTQA-031 (Vance): 3l posts also move to +-1.50 (outswing leaves
+    # sweep z 0.03..1.03 from hinges at x -1.597 / -0.497 / +1.597, 1.52 m from the post centres at z 1.55).
+    boll = (0.0,) if w < 3 else (-1.50, 1.50)
     br, bb = (.1, .11) if w < 3 else (.075, .085)
     for x in boll:
         p.add("Ball_Bollards", G, tube((x, .08 - E, 1.55), (x, .85, 1.55), br, 10)); p.add("Bollard_Balls", BA, node((x, .85 + bb - E, 1.55), bb, 1))
@@ -135,16 +137,16 @@ def _promote_one(width, filename):
     V = np.vstack([m.vertices for n, (mk, m) in p.P.items() if "colonly" not in n])
     lo, hi = V.min(0), V.max(0)
     print(filename, "tris", int(tris), "bbox", lo.round(4).tolist(), hi.round(4).tolist())
-# Rev 3.8.1 3l hinges: inswing (-Z, away from the canopy/push-bar side). Leaf_0 and Leaf_1 hinge on their -X stile edge,
-# Leaf_2 on its +X stile edge, all on the leaf back face (z -0.03), so the leaf sweeps inside its own opening.
-# Open pose = rotate Leaf_<i> about +Y by OPEN_YAW[i] degrees (closed = 0).
-HINGE3 = ((0, -1), (1, -1), (2, +1)); OPEN_YAW3 = (90.0, 90.0, -90.0)
+# Rev 3.9 / TTQA-031 (Vance): 3l leaves OUTSWING (+Z, public-entrance egress toward the canopy). Leaf_0 and Leaf_1 hinge on
+# their -X stile edge, Leaf_2 on its +X stile edge, all on the leaf front face (z +0.03), so the leaf sweeps outside its own
+# opening. Open pose = rotate Leaf_<i> about +Y by OPEN_YAW[i] degrees (closed = 0); mirrored from the old inswing +90/+90/-90.
+HINGE3 = ((0, -1), (1, -1), (2, +1)); OPEN_YAW3 = (-90.0, -90.0, 90.0)
 def group_leaves3(gp, p):
     import pygltflib as pg
     g = pg.GLTF2().load(gp); sc = g.scenes[g.scene or 0]; piv = {}
     for i, side in HINGE3:
         lo, hi = p.P[f"Leaf_{i}_Stiles"][1].bounds
-        P = [float(lo[0] if side < 0 else hi[0]), 0.0, float(lo[2])]; piv[f"Leaf_{i}"] = [round(v, 4) for v in P]
+        P = [float(lo[0] if side < 0 else hi[0]), 0.0, float(hi[2])]; piv[f"Leaf_{i}"] = [round(v, 4) for v in P]
         kids = [j for j, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf_{i}_") or n.name == f"Leaf_{i}-colonly")]
         assert len(kids) == 4, kids
         for j in kids:
@@ -159,7 +161,7 @@ def _promote_one3(filename):
     print(filename, "tris", int(tris), "clip", cc.check({k: v for k, v in p.P.items() if "colonly" not in k}, n_samp=60)["pass"])
 def promote():
     """Export 4.0 m tt_entrance_bay and 2.0 m tt_entrance_bay_half. Half is not placed on the 44 m W run.
-    r8b: tt_entrance_bay_3l (Rev 3.7 #12, 3 x 1.0 m leaves) is exported for Gage's proximity doors and is NOT placed yet."""
+    r8b: tt_entrance_bay_3l (Rev 3.7 #12, 3 x 1.0 m leaves) is exported for Gage's proximity doors. TTQA-031 swap onto the 11 W bays (assemble_preview) waits on Gage: --qa-tower-entry W lines (Z 18.98/39.005/60.08 = local x -0.5) hit the 3l mullions and tt_movers BAY_YAW is still inswing."""
     _promote_one(4.0, "tt_entrance_bay.glb")
     if "--half" in sys.argv: _promote_one(2.0, "tt_entrance_bay_half.glb")
     _promote_one3("tt_entrance_bay_3l.glb")
