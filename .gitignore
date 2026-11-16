@@ -19,6 +19,9 @@ Thumbs.db
 # Local door-field overrides written by tools/door_field_ui.py ([QA-FF-04])
 godot/config/
 
+# Throwaway tennis-tower probes (not part of the game)
+godot/_ttfix_probe/
+
 # repo hygiene
 *.log
 *.bak

@@ -6,7 +6,7 @@ extends Node3D
 ##   CharacterBody3D 1st/3rd-person controller (BUG-03), interactive pickups / bot queries /
 ##   #04 Wrist RFID pulse + diegetic HUD (BUG-06).
 ## - [t3u] grounded low-key lighting, controlled saturation, single eye-level room placards.
-## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`, `--qa-tower-collide`, `--qa-tower-leak`, `--qa-tower-guards-gen`, `--shot-ttfix`
+## Command-line flags (after `--`): `--render-all` (4 showcase cams), `--validate-only`, `--capture-f5-hud`, `--qa-exterior-render`, `--qa-nav-reach`, `--qa-player-exit`, `--qa-egress`, `--qa-stairs`, `--qa-ring`, `--qa-drum-align`, `--qa-sprint-lap`, `--shot-ring`, `--shot-curve`, `--shot-sky`, `--qa-tower-walk`, `--shot-tower`, `--qa-tower-draw`, `--qa-tower-collide`, `--qa-tower-entry`, `--qa-tower-leak`, `--qa-tower-guards-gen`, `--shot-ttfix`, `--shot-ttfix-b`
 ## (tower measurement switches: `--no-tower`, `--tower-no-batch`, `--tower-no-lights`; shot dir override `--shot-dir=<path>`).
 
 const SECTOR_GLB_PATHS := [
@@ -234,6 +234,7 @@ const _TennisTowerLights := preload("res://scripts/tennis_tower_lighting.gd")
 const _TTFallback := preload("res://scripts/tennis_tower_fixes/tt_collider_fallback.gd")
 const _TTGuards := preload("res://scripts/tennis_tower_fixes/tt_guard_rails.gd")
 const _TTMovers := preload("res://scripts/tennis_tower_fixes/tt_movers.gd")
+const _TTWayfinding := preload("res://scripts/tennis_tower_fixes/tt_wayfinding.gd")
 const TT_STRIP := 5
 const TT_AXIAL_OFFSET := -100.0
 const TT_STRIP_X0 := 60.0
@@ -478,6 +479,8 @@ var _qa_tower_walk: bool = false
 var _shot_tower: bool = false
 var _qa_tower_draw: bool = false
 var _qa_tower_collide: bool = false
+var _qa_tower_entry: bool = false
+var _shot_ttfix_b: bool = false
 var _qa_tower_leak: bool = false
 var _qa_tower_guards_gen: bool = false
 var _shot_ttfix: bool = false
@@ -642,6 +645,12 @@ func _ready() -> void:
 		elif arg == "--qa-tower-collide":
 			_qa_tower_collide = true
 			_qa_hand = true
+		elif arg == "--qa-tower-entry":
+			_qa_tower_entry = true
+			_qa_hand = true
+		elif arg == "--shot-ttfix-b":
+			_shot_ttfix_b = true
+			_qa_hand = true
 		elif arg == "--qa-tower-leak":
 			_qa_tower_leak = true
 			_qa_hand = true
@@ -741,6 +750,10 @@ func _ready() -> void:
 			_run_qa_tower_draw.call_deferred()
 		elif _qa_tower_collide:
 			_run_qa_tower_collide.call_deferred()
+		elif _qa_tower_entry:
+			_run_qa_tower_entry.call_deferred()
+		elif _shot_ttfix_b:
+			_run_shot_ttfix_b.call_deferred()
 		elif _qa_tower_leak:
 			_run_qa_tower_leak.call_deferred()
 		elif _qa_tower_guards_gen:
@@ -12133,6 +12146,7 @@ func _on_tennis_tower_built(stats: Dictionary, tower: Node3D) -> void:
 	if OS.get_environment("TT_SKIP_FIXES") != "1" and not _qa_tower_guards_gen:
 		_TTFallback.run(tower)
 		_TTGuards.run(tower)
+		_TTWayfinding.run(tower)
 	_tower_body_rids.clear()
 	var stack_b: Array[Node] = [tower]
 	while not stack_b.is_empty():
@@ -12641,6 +12655,14 @@ func _run_qa_tower_collide() -> void:
 	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_collide.gd")
 
 
+func _run_qa_tower_entry() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_entry.gd")
+
+
+func _run_shot_ttfix_b() -> void:
+	_tt_fix_node("res://scripts/tennis_tower_fixes/tt_qa_shots_b.gd")
+
+
 func _run_qa_tower_leak() -> void:
 	var guard: int = 0
 	while not has_meta("exterior_spawned") and guard < 4000:
@@ -12708,6 +12730,8 @@ const TT_DOOR_INNER_HALF := 1.94
 const TT_DOOR_TOP := 2.45
 const TT_DOOR_SLIDE := 1.713
 const TT_DOOR_OPEN_DIST := 4.0
+# TTQA-013: S and N are the only drum-level doors, so they open further out.
+const TT_DOOR_OPEN_DIST_SN := 6.0
 const TT_DOOR_SPEED := 1.6
 # West bay wall slab z -1.15..-1.05. Outer leaves end at x -1.02 / 1.039; inner leaves are ~0.82 / 0.84 m.
 const TT_BAY_WALL_Z0 := -1.150
@@ -12784,7 +12808,9 @@ func _tt_setup_one_door(r: Node3D, spec: Dictionary, measure_slide: bool) -> boo
 			leaf["slide"] = slide
 		leaves.append(leaf)
 		_tt_moving_leaves += 1
-	_tt_doors.append({"root": r, "inner": inner, "leaves": leaves, "t": 0.0})
+	var side_nm: String = _tt_door_side(String(r.name))
+	var open_dist: float = TT_DOOR_OPEN_DIST_SN if (side_nm == "S" or side_nm == "N") else TT_DOOR_OPEN_DIST
+	_tt_doors.append({"root": r, "inner": inner, "leaves": leaves, "t": 0.0, "open_dist": open_dist})
 	return true
 
 
@@ -12843,7 +12869,7 @@ func _tt_setup_doors(tower: Node3D) -> int:
 			ne += 1
 		else:
 			nw += 1
-	print("[TT] sliding doors=%d (S=%d N=%d E=%d W=%d)" % [ns + nn + ne + nw, ns, nn, ne, nw])
+	print("[TT] sliding doors=%d (S=%d N=%d E=%d W=%d) open_m S/N=%.1f E/W=%.1f" % [ns + nn + ne + nw, ns, nn, ne, nw, TT_DOOR_OPEN_DIST_SN, TT_DOOR_OPEN_DIST])
 	if _tt_movers == null:
 		_tt_movers = _TTMovers.new()
 	_tt_movers.setup(tower)
@@ -12875,7 +12901,8 @@ func _tt_update_doors(delta: float) -> void:
 		if r == null or not is_instance_valid(r):
 			continue
 		var c: Vector3 = r.global_transform * Vector3(0.0, 1.2, -1.0)
-		var want: float = 1.0 if pp.distance_to(c) < TT_DOOR_OPEN_DIST else 0.0
+		var open_dist: float = float(d["open_dist"]) if d.has("open_dist") else TT_DOOR_OPEN_DIST
+		var want: float = 1.0 if pp.distance_to(c) < open_dist else 0.0
 		var t: float = move_toward(float(d["t"]), want, TT_DOOR_SPEED * delta)
 		d["t"] = t
 		var e: float = smoothstep(0.0, 1.0, t)

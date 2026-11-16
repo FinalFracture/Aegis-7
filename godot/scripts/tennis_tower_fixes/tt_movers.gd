@@ -230,16 +230,22 @@ func _rig(leaf: Node3D) -> AnimatableBody3D:
 			stack.append(ch)
 		if node is CollisionShape3D:
 			var holder: Node = node.get_parent()
-			if holder is CollisionObject3D and String(holder.name).to_lower().contains("colonly"):
+			# The glTF importer strips "-colonly", so Leaf_0-colonly arrives as a
+			# StaticBody named Leaf_0 under the Leaf_0 pivot. Frame bodies are
+			# siblings of the pivot and are not walked here.
+			if holder is CollisionObject3D and _is_leaf_collider(leaf, holder):
 				shapes.append(node as CollisionShape3D)
 				if not holders.has(holder as CollisionObject3D):
 					holders.append(holder as CollisionObject3D)
 	for cs: CollisionShape3D in shapes:
-		var kept: Transform3D = cs.global_transform
+		# Compose in leaf space. global_transform is not reliable while a
+		# SceneTree script is still inside _initialize, and the imported
+		# colonly body sits at the slab, not at the hinge.
+		var local_to_leaf: Transform3D = _xf_under(cs, leaf)
 		var parent: Node = cs.get_parent()
 		parent.remove_child(cs)
 		body.add_child(cs)
-		cs.global_transform = kept
+		cs.transform = local_to_leaf
 	for holder: CollisionObject3D in holders:
 		var still: bool = false
 		for ch2: Node in holder.get_children():
@@ -251,6 +257,23 @@ func _rig(leaf: Node3D) -> AnimatableBody3D:
 			holder.collision_mask = 0
 	_sync_body(body)
 	return body
+
+
+func _xf_under(node: Node3D, ancestor: Node) -> Transform3D:
+	var xf := Transform3D.IDENTITY
+	var n: Node = node
+	while n != null and n != ancestor:
+		if n is Node3D:
+			xf = (n as Node3D).transform * xf
+		n = n.get_parent()
+	return xf
+
+
+func _is_leaf_collider(leaf: Node3D, holder: Node) -> bool:
+	var nm := String(holder.name).to_lower()
+	if nm.contains("colonly"):
+		return true
+	return String(holder.name) == String(leaf.name)
 
 
 func _tag_meshes(n: Node) -> void:
