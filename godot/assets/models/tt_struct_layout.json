@@ -318,5 +318,13 @@
    17.622
   ],
   "note": "Rev 3.9 TTQA-056/057 stand-end cheeks (L1-S/L2-S1 X 62.78..62.88, L2-S2 X 90.48..90.58 / 92.41..92.51)"
+ },
+ "tt_struct_slide_slot_screens_r39": {
+  "world_offset": [
+   22.5,
+   3.5,
+   56.5
+  ],
+  "note": "Rev 3.9 TTQA-023 3a link screens (X 23.60..23.68 / 24.62..24.70, Y 7.00..9.15) + 3b slot end screens (X 20.03..20.09 / 24.91..24.97, Y 3.50..9.15)"
  }
 }

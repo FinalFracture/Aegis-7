@@ -1,8 +1,8 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2692,
+"count": 2693,
 "by_owner": {
-"Rook": 1048,
+"Rook": 1049,
 "Arrival": 42,
 "Aquatics": 72,
 "Leisure": 236,
@@ -523,6 +523,18 @@
 "tag": "struct",
 "owner": "Rook",
 "asset": "tt_struct_stand_cheeks_r39"
+},
+{
+"glb": "res://assets/models/tt_struct_slide_slot_screens_r39.glb",
+"p": [
+22.5,
+3.5,
+56.5
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_slide_slot_screens_r39"
 },
 {
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",
