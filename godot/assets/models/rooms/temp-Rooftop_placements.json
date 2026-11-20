@@ -71,12 +71,13 @@
    ],
    "stools": 20,
    "acc_counter": 1,
-   "tables_S_std": 54,
+   "tables_S_std": 46,
    "tables_S_acc": 4,
    "tables_N_std": 54,
    "tables_N_acc": 4,
-   "seats_tables": 464,
-   "min_clear": 0.0208
+   "seats_tables": 432,
+   "min_clear": 0.0208,
+   "withheld_ttqa028": 8
   },
   "lounges": {
    "S": {
@@ -1562,7 +1563,9 @@
      5.0
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1628,7 +1631,9 @@
      7.9
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1694,7 +1699,9 @@
      10.8
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1760,7 +1767,9 @@
      13.7
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1826,7 +1835,9 @@
      16.6
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1892,7 +1903,9 @@
      19.5
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -1958,7 +1971,9 @@
      22.4
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
@@ -2024,7 +2039,9 @@
      25.3
     ],
     "yaw": 0,
-    "tag": "f3"
+    "tag": "f3",
+    "status": "withheld",
+    "withheld_reason": "TTQA-028 / Vance Rev 3.10 #4 F3 approach lane (2026-11-20): a 0.5 m -X shift to X 21.4 leaves 0.66 m behind the chairs to the X 19.0 column (< 0.9 m), so the table is withheld; lane to the X 24.1 bay wall is now X 19.87..24.1"
    },
    {
     "glb": "res://assets/models/tt_food_table4.glb",
