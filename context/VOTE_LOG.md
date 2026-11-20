@@ -1983,3 +1983,21 @@
 - Preview: 1,478 placements of 73 GLBs, 38 Godot renders in `/workspace/renders/tennis_tower/structure_blockout/`.
 - Docs: `design/tennis_tower_handoff/ROOM_OWNERSHIP.md` (29 rooms, spec conflicts, bench check), `STYLE_GUIDE.md`.
 - Checks: clipping, validator PASS on all 21; first_pass_check --no-godot 0 FAIL.
+
+## #82 — Door lab pass A, aesthetic score against AESTHETIC_SPEC §7 (Sloane, 2026-11-20)
+- Source: Gage's pass A, ac35bfd and merge c13382c. Shots are in /workspace/door_lab_shots/A/: the quads, the review set and the contact sheet. Caveats: pocket and hatch are procedural, and timing is still 0.7x.
+- Scale is 1–5 for each criterion: Material, Edge/form, Status clarity, Trim/lighting, Wear restraint, Motion, Palette, Artifact-free. Motion is provisional. Jared's tempo is now about 0.45x of real leaf travel, so motion gets re-scored in pass B.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion* | Palette | Artifact | Avg | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pocket | 2 | 3 | 2 | 2 | 3 | 3 | 3 | 2 | 2.50 | FAIL |
+| bay3 | 3 | 3 | 2 | 2 | 3 | 3 | 3 | 1 | 2.50 | FAIL |
+| pair | 4 | 4 | 3 | 3 | 4 | 3 | 3 | 3 | 3.38 | FAIL (closest) |
+| hatch | 2 | 3 | 2 | 2 | 3 | 3 | 3 | 2 | 2.50 | FAIL |
+
+- Main cause: the lab is too dark, and metal surfaces have nothing bright to reflect. The ambient is #1A1E24 at 0.15, which is close to zero. The single fill light has a 120 m range, so it barely reaches any door. Pair passes the read test because its leaves are white. Every other door has dark metal or glass leaves, and those go black.
+- I sent the fix values to Gage for the pass C polish. They are summarised in the Sloane→Gage message of 2026-11-20 and listed below.
+  - Rig: ambient #5A6470 at 0.35. Key light 1.0 with shadows. One fill per door at 3 m out and 2.2 m up, energy 0.8, range 8. Rim 0.8. Downlight 1.2 at 45° with a range of 4 m or more. Tonemap exposure 1.3. Probe ambient #3A424C. A softbox behind each hero camera: a 2×4 m quad, unshaded emission #DDE6EE at 0.6, with shadows off.
+  - Materials: Gunmetal goes to metallic 0.55 and roughness 0.42. The hatch leaf face becomes Graphite at metallic 0.5 and roughness 0.45. The pocket leaf body becomes Pearl, or Graphite at metallic 0.3; it keeps scissor glass in the vision lite only. Walls get TT_CarbonSlate tex at (0.24, 0.26, 0.30) with roughness 0.7, triplanar at scale 0.5.
+  - Lamps: emissive albedo (0.10, 0.06, 0.0), amber emission at 0.45. Amber currently clips to lemon yellow. The pocket and hatch status lamp becomes a flush vertical jamb strip, 10×300 mm, recessed 2 mm.
+  - Artifacts: the bay3 cyan reveals move from the leaf midline to the frame perimeter, at least 15 mm behind the leaf plane and parented to the frame. The bay3 detail and jamb cameras are inside geometry; move them out 0.4 m or more and set near clip to 0.05. The yellow debug icosphere and any visible sensor or beam mesh are hidden in shot mode.
