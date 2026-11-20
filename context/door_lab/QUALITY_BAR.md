@@ -8,9 +8,10 @@ Numeric PASS/FAIL bar for mechanical doors proven in the isolated scene `res://s
 
 | Domain | Authority | Pointers |
 |---|---|---|
-| Kinematics, phase tables, masses, obstruction, gaps, settle, stagger, collider-off window, audio timestamps, G-invariance | Vance | `REALISM_SPEC.md` §0–4; acceptance **R1–R14** in §5 |
+| Phase order / shape, masses, obstruction, gaps, settle *shape*, stagger, collider-off window, audio cue order, G-invariance | Vance | `REALISM_SPEC.md` §0–4; acceptance **R1–R14** in §5. Absolute durations are **not** the `F-*` timing authority (see next row and §6). |
 | Materials, lamps, lab lighting, wear, aesthetic cameras, 1–5 rubric | Sloane | `AESTHETIC_SPEC.md` §1–5, §7 |
-| Duration / bay type / settle bounce | **Conflict**, `REALISM_SPEC.md` §6 | Until Jared or Gage records a settlement (including Vance's optional 0.7× S-curve scale), **this bar uses Vance's phase tables** for all `F-*` timing. Sloane §7.6 scores the **shipped** profile (no snaps, lamps synced, character), not her 0.9 / 0.8 / 1.8 s figures. `bay3` is the **as-built outswing** (`tt_entrance_bay_3l`, R14), not Sloane's telescoping slider (Vance §2.8 is alt only). Vance's 2 mm bumper overshoot (ζ 0.6) is allowed and is within Sloane's ≤ 3 mm settle; "no bounce" means no second bounce and no sustained oscillation (R4). |
+| Phase *durations* (all `F-*` timing) | Shipped `DoorProfile` `.tres`, **±10%** of the profile values | Scalar targets vs Vance and the 2026-11-20 settlement: **§6**. |
+| Bay type / settle bounce | Settled in part, §6 | `bay3` is the as-built outswing (`tt_entrance_bay_3l`, R14), not Sloane's telescoping slider (Vance §2.8 is alt only). Vance's 2 mm bumper overshoot (ζ 0.6) is allowed and is within Sloane's ≤ 3 mm settle; "no bounce" means no second bounce and no sustained oscillation (R4). |
 
 ---
 
@@ -28,11 +29,11 @@ Grounded in `godot/scripts/preface_playable_area.gd` and `godot/scripts/tennis_t
 | Interact | **[E]** within **2.8** m | `INTERACT_RANGE` |
 | Leaf collider | `AnimatableBody3D` `TT_LeafBody`, `sync_to_physics=true`, layer 1; `_sync_body` writes `PhysicsServer3D.BODY_STATE_TRANSFORM` from `_physics_process` | `tt_movers.gd`; Vance §0.2 |
 
-Vance §0.2: **the lab tests at walk speed**. Realistic timing cannot beat a 63 m/s sprint; do not compress phases. In game scenes the proximity radius is `v_player × t_open_to_clear` (time until the clear gap ≥ capsule diameter + 0.10 m = **0.80** m).
+Vance §0.2: **the lab tests at walk speed**. Sprint **63.0 m/s** is the intentional game value (Gage confirmation, §6) and is a **robustness probe only** in the lab, not a reason to rewrite phases. In game scenes the proximity radius is `v_player × t_open_to_clear`, with `t_open_to_clear` taken from the shipped `.tres` (time until the clear gap ≥ capsule diameter + 0.10 m = **0.80** m).
 
 | Lab id | Asset / rig | Current mover (fails §1.4 until retuned) | Lab / as-built geometry |
 |---|---|---|---|
-| `pocket` | bi-parting sliding pocket. Preferred: Vance §1.1 (2.00 m clear, 1.000 m travel/leaf, 48 kg). Existing `tt_court_partition_door_closed` is a **1.0 m** court opening (VOTE_LOG; +Z 0.12 then ±X 0.50). | proximity 4.2 m, rate 3.4 (**0.294** s), linear Z-then-X, no ease | If the 1.0 m court asset is instanced, keep Vance times and (v, a, j); drop cruise if `2·d_acc >` actual travel. Record the choice in `meta.json`. |
+| `pocket` | bi-parting sliding pocket. Preferred: Vance §1.1 (2.00 m clear, 1.000 m travel/leaf, 48 kg). Existing `tt_court_partition_door_closed` is a **1.0 m** court opening (VOTE_LOG; +Z 0.12 then ±X 0.50). | proximity 4.2 m, rate 3.4 (**0.294** s), linear Z-then-X, no ease | If the 1.0 m court asset is instanced, keep Vance phase order/shape; durations and (v, a, j) come from the shipped `.tres` (§1.4). Drop cruise if `2·d_acc >` actual travel. Record the choice in `meta.json`. |
 | `bay3` | `tt_entrance_bay_3l`, `Leaf_0/1/2`, outswing `BAY_YAW = [-90, -90, 90]` | proximity `BAY_OPEN` **24.0** m, rate 3.2 (**0.312** s), `smoothstep` | As-built GLB, R14. Clear width ≈ **0.877** m per leaf at 90°. |
 | `pair` | `tt_door_pair_18`, 90° | proximity 3.4 m, rate 3.6 (**0.278** s), `smoothstep`; latches off-closed so a walker does not reverse into the opening | As-built GLB, R14. Casing 1.96 m; meeting gap 8 mm. |
 | `hatch` | heavy pressure bulkhead / hatch (Vance §4.1: 0.90 × 1.90 m clear, 1.10 × 2.10 × 0.12 m plug leaf) | **no mechanical leaf mover on main** | `door_hub_bulkhead.glb` is the RFID **hub**, not this leaf. Preface D-204 is a **force field**, out of scope. |
@@ -43,7 +44,7 @@ Clipping thresholds are the 3d-part-clipping-check skill: overlap **0.010** m, h
 
 ## 1. Functional (any FAIL = run FAIL)
 
-Measure every item with the real `PlayerBody` capsule, real input (`Input.parse_input_event` / `action_press`), at 60 Hz first, then at 15 and 20 fps (§1.8). Report measured value and limit in `metrics.json`. Vance **R1–R14** are required and must appear as ids `R1`–`R14` (per door where applicable; R13 is `hatch` plus any other type that claims G-invariance).
+Measure every item with the real `PlayerBody` capsule, real input (`Input.parse_input_event` / `action_press`), at 60 Hz first, then at 15 and 20 fps (§1.8). Report measured value and limit in `metrics.json`. Vance **R1–R14** are required and must appear as ids `R1`–`R14` (per door where applicable; R13 is `hatch` plus any other type that claims G-invariance). **R2 and R3, as scored in this lab, use the shipped `.tres`** (§1.4). **F-SCALAR** is the check back to Vance's tables.
 
 ### 1.1 Closed door blocks
 
@@ -60,15 +61,15 @@ Measure every item with the real `PlayerBody` capsule, real input (`Input.parse_
 
 Proximity: `pocket`, `bay3`, `pair`. Interact: `hatch` uses **[E]** within 2.8 m (Vance §4.2 also has a 0.2 s badge hold). Auto-open is not required for `hatch`.
 
-Latency clock starts at trigger-enter or the E press (t = 0 in Vance's tables). First **mechanical** event (bolt, strike, equalize valve, dog motor) must occur on the published t0, ±10% or ±1 tick, whichever is looser for sub-100 ms phases.
+Latency clock starts at trigger-enter or the E press (t = 0 in the shipped `.tres`). First **mechanical** event (bolt, strike, equalize valve, dog motor) must occur on the profile t0, ±10% or ±1 tick, whichever is looser for sub-100 ms phases.
 
 | Check | Limit |
 |---|---|
-| F-LAT-MECH | First mechanical event within Vance §n.2 t0–t1 (±10%, R2). Lamp goes cyan at that event, ±0.05 s (R12, Sloane §3 fade 0.15 s is allowed). |
-| F-LAT-MOVE | First leaf travel **≥ 1 mm** (or **≥ 0.2°**) by the end of the published lurch phase, +10%. |
-| F-WALK-CLEAR | Approaching at **5.2** m/s from outside the trigger, the clear gap is **≥ 0.80** m before the capsule origin is 0.50 m from the opening plane. Size `r_trigger ≥ 5.2 × t_open_to_clear + 0.85` m using Vance's profile (do not shorten phases). |
-| F-SPRINT-CLEAR | **Not required in the lab** (Vance §0.2). Game scenes must set `r_trigger = v_player × t_open_to_clear`. Current `BAY_OPEN` 24.0 m is sized for the old 0.31 s move and will be wrong after the retune; flag it, do not compress `bay3` to keep 24 m. |
-| F-INTERACT | `hatch`: E inside 2.8 m starts the sequence; E outside 2.8 m is a no-op. Lab may start pre-equalized (ΔP < 0.05 kPa, 7.30 s open path) if the gauge is shown. |
+| F-LAT-MECH | First mechanical event within the shipped `.tres` t0–t1 (±10%). Lamp goes cyan at that event, ±0.05 s (R12, Sloane §3 fade 0.15 s is allowed). |
+| F-LAT-MOVE | First leaf travel **≥ 1 mm** (or **≥ 0.2°**) by the end of the lurch phase in the shipped `.tres`, +10%. Lurch must be present (shape preserved, §1.4). |
+| F-WALK-CLEAR | Approaching at **5.2** m/s from outside the trigger, the clear gap is **≥ 0.80** m before the capsule origin is 0.50 m from the opening plane. Size `r_trigger ≥ 5.2 × t_open_to_clear + 0.85` m, with `t_open_to_clear` read from the shipped `.tres` (first time the clear gap ≥ 0.80 m). The 0.45× leaf-travel scale shortens this versus Vance, so the walk trigger shrinks with it; recompute, do not reuse a Vance-timed radius. |
+| F-SPRINT-CLEAR | **Not required in the lab** (sprint is a robustness probe only; 63 m/s is intentional, §6). Game scenes must set `r_trigger = v_player × t_open_to_clear` from the shipped `.tres`. Re-check current `BAY_OPEN` 24.0 m against that new (shorter) time; do not keep 24 m by habit and do not compress phases to fit it. |
+| F-INTERACT | `hatch`: E inside 2.8 m starts the sequence; E outside 2.8 m is a no-op. Lab may start pre-equalized (ΔP < 0.05 kPa) if the gauge is shown; use the shipped profile's pre-equalized open total, not Vance's 7.30 s. |
 
 ### 1.3 Pinch / crush and reopen-on-obstruction
 
@@ -87,7 +88,19 @@ Latency clock starts at trigger-enter or the E press (t = 0 in Vance's tables). 
 
 ### 1.4 Open / close time windows
 
-Vance phase tables, **±10%** on each phase t0/t1 and on the totals (R2). Profile is a jerk-limited S-curve (Vance §0.1); cubic ease is allowed **only** in published creep / back-check phases. Current `tt_movers` rates (0.278–0.312 s) **fail this section**.
+`F-*` timing validates against the **shipped `DoorProfile` `.tres`**, **±10%** of the profile's phase t0/t1 and totals — not Vance's raw phase tables. The harness and the mover must **read those timings from the `.tres`** (F-TRES-SRC): no hard-coded duplicate durations that can drift from the resource. Record each type's profile path in `meta.json`. Current `tt_movers` rates (0.278–0.312 s, no `.tres`) **fail this section**.
+
+The `.tres` itself is checked against Jared's game-feel scalars vs Vance (F-SCALAR, tolerance **±0.05**). Vance tables remain the reference for phase **order** and **shape** (R1; jerk-limited S-curve, Vance §0.1) and for Vance's realism scoring, not for absolute durations. Cubic ease is allowed **only** in published creep / back-check phases. Lurch and settle must be present, with shape preserved.
+
+| Group | Phases (examples) | Target scale vs Vance | Tolerance |
+|---|---|---|---|
+| Leaf travel | accel, cruise, decel, and travel creep / back-check | **0.45×** | **±0.05** |
+| Latch / seal / dog / equalize | bolt, strike, seal unseat/deflate/inflate, dogs, pressure equalize | **0.60×** | **±0.05** |
+| Lurch and settle | crack-open / unseat lurch; hard-stop / bumper / catch settle | **kept (1.00×)** — present, shape preserved | **±0.05** |
+
+Scale is `t_tres / t_vance` for that phase's duration (t1−t0), or a group-mean of those ratios if the `.tres` stores one scale per group. Auth / hold-timer / pre-warn phases are not in the table; if the `.tres` includes them, record the scale in `metrics.json` but do not fail F-SCALAR on them.
+
+Vance reference totals (order / shape / scalar denominator only — **not** F-TIME limits):
 
 | Type | Open (t=0 = request) | Close | Stagger / settle |
 |---|---|---|---|
@@ -96,7 +109,13 @@ Vance phase tables, **±10%** on each phase t0/t1 and on the totals (R2). Profil
 | `pair` | **2.25 s** (Leaf_R **2.31 s**); ω_peak **110°/s** | Leaf_L **4.46 s**; closer sweep ω_peak **30°/s** | Leaf_L leads open **+0 / +60 ms**; close Leaf_R leads **+0 / +60 ms**. ±20 ms. Open settle **1.0°**, f = 3 Hz, ζ = 0.45. Close bounce **0.3°**, ζ = 0.6 |
 | `hatch` | **8.40 s** (7.30 s pre-equalized); leaf swing starts after dogs + deflate; ω_peak **30°/s** | **10.40 s**; ω_peak **20°/s** | 8 dogs, **30 ms** stagger. Settle **0.3°**, f = 1.5 Hz, ζ = 0.7. Wheel/dogs **before** the leaf, not after |
 
-Peak velocities within **±10%** (R3). Every published phase occurs in order; latch / seal / lurch may not be skipped (R1).
+| Check | Limit |
+|---|---|
+| F-TIME | Each phase t0/t1 and open/close totals, measured vs the shipped `.tres`, **±10%** |
+| F-SCALAR | `.tres` vs Vance duration ratios in the three groups above, each within **±0.05** of 0.45 / 0.60 / 1.00 |
+| F-TRES-SRC | Harness and runtime timings come from the `.tres`. FAIL if the test or mover hard-codes a parallel phase table that is not loaded from that resource |
+
+F-TIME is how R2 is scored here. Peak velocities within **±10% of the `.tres`** (R3, after the 0.45× travel scale). Every published phase occurs in order; latch / seal / lurch may not be skipped (R1). Closing-KE figures in the reference table are Vance realism references, not `F-*` limits under game-feel timing.
 
 ### 1.5 Collider tracks the visual every physics frame
 
@@ -210,11 +229,11 @@ Flag for Gage. Until these exist, do not mark a type PASS.
 2. **`--qa-door-lab`** — functional harness: §1 probes, `Engine.max_physics_steps_per_frame = 1`, JSON + Vance CSV log, exit code 0 only if every functional check PASSes. Current `--qa-*` flags live on `preface_playable_area.gd` and do not cover this scene.
 3. **`--qa-door-lab-shots`** — xvfb / `opengl3` capture of §3.3, plus a contact sheet. Cannot run under `DisplayServer=headless`.
 4. **`--qa-door-lab-out <dir>`** — write the layout in §3.2. Relative paths are from the Godot project (`godot/`); prefer `../qa/door_lab/<run>/`.
-5. **`DoorProfile` (or equivalent) + obstruction planner** — Vance §0.2: jerk-limited `sample(t)`, re-plan from current pose/velocity on obstruction. Reopen-on-obstruction / anti-crush for all four types (§1.3). Pair's current latch is not sufficient.
+5. **`DoorProfile` `.tres` (or equivalent) + obstruction planner** — Vance §0.2: jerk-limited `sample(t)` driven by the shipped resource (F-TRES-SRC), re-plan from current pose/velocity on obstruction. Reopen-on-obstruction / anti-crush for all four types (§1.3). Pair's current latch is not sufficient.
 6. **Hatch / bulkhead mechanical leaf rig and mover** — plug leaf, 8 dogs, wheel, inflatable seal, equalize gauge, sequences in Vance §4. `door_hub_bulkhead.glb` is not that leaf.
 7. **Per-tick telemetry** — at least `t, leaf_pos[], leaf_vel[], phase, lamp_state, collider_enabled` (Vance §0.2) plus `drift_mm, gap_mm, contacts` in `motion.csv`.
-8. **Motion retune** to Vance §n.2/§n.3 (S-curve, lurch, creep, published staggers, settle). Court two-phase linear Z-then-X is a V-EASE-SCURVE / V-POP fail. Do not compress phases to preserve the old 24 m bay trigger.
-9. **Walk-trigger retune** so F-WALK-CLEAR passes at the new `t_open_to_clear`. Game-scene sprint triggers are a follow-up, not a lab compress.
+8. **Motion retune** to a shipped `.tres` that keeps Vance phase order/shape (S-curve, lurch, creep, published staggers, settle) and hits the §1.4 scalars (0.45× travel, 0.60× latch/seal/dog/equalize, lurch and settle kept). Court two-phase linear Z-then-X is a V-EASE-SCURVE / V-POP fail. Do not compress phases ad hoc to preserve the old 24 m bay trigger.
+9. **Walk-trigger retune** so F-WALK-CLEAR passes at the shipped (shorter) `t_open_to_clear`. Game-scene sprint triggers use the same `.tres` time; they are a follow-up, not a lab compress.
 10. **Clipping assert** in the lab at 0/25/50/75/100% and mid-close, skill thresholds, fail the run on a breach (R7).
 11. **Cycle + low-fps + G modes** — 50 cycles; `--fixed-fps 15` and `20` with 1 physics step/frame; R13 gravity spot checks.
 12. **Interact path for `hatch`** — [E] / `INTERACT_RANGE` 2.8 m, 0.2 s hold. Proximity types may stay automatic (radar / push-bar as published).
@@ -297,7 +316,8 @@ Sloane `AESTHETIC_SPEC.md` §5 (A–E, including player-eye at 1.65 m / 75°) is
   "physics_ticks_per_second": 60,
   "max_physics_steps_per_frame": 1,
   "resolution": [1920, 1080],
-  "timing_authority": "vance",
+  "timing_authority": "shipped_tres",
+  "door_profiles": {"pocket": "res://...", "bay3": "res://...", "pair": "res://...", "hatch": "res://..."},
   "pocket_geometry": "vance_2m|court_1m",
   "updated": "YYYY-MM-DD HH:MM CT",
   "scene": "res://scenes/test/door_lab.tscn"
@@ -331,10 +351,21 @@ Exit code of `--qa-door-lab` is **1** if `functional` is FAIL or any required ho
 
 1. **Any functional FAIL (`F-*` or Vance R1–R5, R7, R9, R10, R13, R14) => overall FAIL.** One failed door fails the lab.
 2. **Any measurable visual FAIL (`V-*` or Vance R6, R8, R11, R12) => overall FAIL**, even if functional passed. Open hooks for audio (R11) do not let you mark R11 PASS; they keep the door from a ship PASS until done or waived.
-3. **Sloane** (`AESTHETIC_SPEC.md` §7): average **≥ 4.0**, no criterion **< 3**, and criteria **1, 3, 6 ≥ 4**. Logged in `context/VOTE_LOG.md`. Overall cannot be PASS while Sloane is FAIL. While her scores are not yet logged, `sloane` is `PENDING`. Criterion 6 is judged against the **shipped** (Vance) profile until the §6 duration conflict is settled.
+3. **Sloane** (`AESTHETIC_SPEC.md` §7): average **≥ 4.0**, no criterion **< 3**, and criteria **1, 3, 6 ≥ 4**. Logged in `context/VOTE_LOG.md`. Overall cannot be PASS while Sloane is FAIL. While her scores are not yet logged, `sloane` is `PENDING`. Criterion 6 is judged against the **shipped** game-feel `.tres` (§6).
 4. **Vance** (R1–R14 plus his review of renders): overall cannot be PASS while `vance` is FAIL. While he has not logged a review, `vance` is `PENDING`.
 5. **Combine:** `overall = PASS` iff functional PASS **and** visual PASS **and** Sloane PASS **and** Vance PASS. If Sloane and/or Vance are `PENDING` but F+V pass, the run is **`CONDITIONAL`** — not a ship PASS.
 6. Missing REQUIRED HOOKS => **FAIL** (or do not score that type). List them in `hooks_missing`.
-7. Unsettled `REALISM_SPEC.md` §6 duration / bay-type conflict is not itself a FAIL, provided this bar's Vance-timing rule is followed and the conflict is noted in `meta.json`. A later settlement that picks Sloane's times requires a QUALITY_BAR amendment.
+7. Duration authority is settled in **§6** (Jared 2026-11-20 13:50 CT, game-feel). `F-*` timing follows §1.4 (shipped `.tres` ±10%, F-SCALAR vs Vance). A later change of scalars or timing authority requires a QUALITY_BAR amendment.
 
 A `CONDITIONAL` run is useful progress. It is not permission to place the lab doors as finished in the tower.
+
+---
+
+## 6. Conflicts / decisions
+
+Recorded settlements. These override the "until settled" language from e3a749b.
+
+- **Jared 2026-11-20 13:50 CT via Gage (card answer): game-feel timing.** `F-*` timing checks the shipped `DoorProfile` `.tres` at **±10%**, not Vance's raw phase tables. Target scalars vs Vance: leaf travel **~0.45×**, latch/seal/dog/equalize **~0.60×**, lurch and settle **kept** (present, shape preserved; F-SCALAR tolerance ±0.05). Vance tables remain the reference for phase **order/shape** and for realism scoring, not absolute durations. Sloane §7.6 scores the shipped profile.
+- **Gage, earlier confirmation:** sprint **63 m/s** is the intentional game value. In the lab it is a robustness probe only (closed-door sprint and already-open snag). Do not use it to rewrite mechanism phases.
+- **Gage, earlier confirmation:** `bay3` is the **as-built outswing** (`tt_entrance_bay_3l`, `BAY_YAW = [-90, -90, 90]`, R14), not Sloane's telescoping slider (Vance §2.8 remains alt only).
+- Settle bounce: unchanged — Vance's 2 mm bumper overshoot (ζ 0.6) is allowed and is within Sloane's ≤ 3 mm settle; no second bounce, no sustained oscillation (R4).
