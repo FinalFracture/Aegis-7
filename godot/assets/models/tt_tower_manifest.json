@@ -1,6 +1,6 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2693,
+"count": 2699,
 "by_owner": {
 "Rook": 1049,
 "Arrival": 42,
@@ -8,12 +8,13 @@
 "Leisure": 236,
 "Courts": 352,
 "Active": 536,
-"Rooftop": 406
+"Rooftop": 406,
+"Services": 6
 },
 "skipped": [
 "preview_hull"
 ],
-"services": "temp-Services_placements.json included (r7e): 0 world placements; fountains/family rooms proposed_unplaced",
+"services": "temp-Services_placements.json included (r7e): 6 world placements; fountains/family rooms proposed_unplaced",
 "drop": {
 "alpha_deg": 36.0,
 "rotation_deg": [
@@ -32359,6 +32360,78 @@
 "tag": "f3",
 "owner": "Rooftop",
 "asset": "tt_cab_dress_mound"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+32.3,
+0.0,
+66.55
+],
+"yaw": 90.0,
+"tag": "f1",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+37.45,
+0.0,
+65.01
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+32.3,
+6.1,
+66.55
+],
+"yaw": 90.0,
+"tag": "f2",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+37.45,
+6.1,
+65.01
+],
+"yaw": 0.0,
+"tag": "f2",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+27.58,
+12.2,
+25.42
+],
+"yaw": 180.0,
+"tag": "f3",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+29.09,
+12.2,
+30.6
+],
+"yaw": -90.0,
+"tag": "f3",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
 }
 ]
 }
