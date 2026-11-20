@@ -55,3 +55,6 @@
 | Quinn | `0359c20f-c476-48f7-99c2-c49637950351` | `2239f53a-2bae-4c89-926c-e4969c082273` (delete-Quinn) |
 | Patch | `ecd78f3d-be8f-43e4-b543-0c912d6d00ea` | `0ae8822a-f155-4a07-a4d9-a0f01c05e10b` (delete-Patch) |
 | Scribe | `61a860b0-0159-406a-af8c-a969dff4722b` | `3b011c08-32f8-434e-8285-6cd66198bf29` (pending rename to delete-Scribe) |
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

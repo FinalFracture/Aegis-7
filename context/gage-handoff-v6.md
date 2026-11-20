@@ -120,3 +120,6 @@ Every bot keeps this rule and passes it on to its successor word for word.
 
 ## Bug-fix flow (Jared, 2026-11-03 4:10 PM, context/BUGFIX_FLOW.md)
 Batch fixes about every 2 hours. After each batch, only the QA tester for the affected area re-tests, from one shared clone. Patch runs the full suite once a day. Results go in MASTER_BUG_LIST.md, not in per-fix messages. Only Atlas or Jared mark a message priority, and only for showstoppers. Bug fix mania stays on.
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".
