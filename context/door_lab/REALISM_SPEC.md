@@ -22,7 +22,7 @@ Units: s, m, mm, kg, deg. Every timestamp is measured from the request (t = 0). 
 - **Collider-off window:** a leaf collider may be disabled only while the gap that leaf leaves is **narrower than the player capsule diameter + 0.10 m**. Then the player can't fit through, so nothing can clip. Use it to stop the closing leaf from shoving the capsule into the frame during the last creep or latch phase. Outside that window the collider stays on, and an obstruction triggers the safety reverse (per door below), never a pass-through.
 - **Motor whine** is an `AudioStreamPlayer3D` loop with `pitch_scale = 0.8 + 0.4·|v|/v_peak` and `volume_db` ramped over the accel and decel phases. **Roller rumble** is a loop whose volume follows |v|. One-shots (clack, clunk, hiss) play at their exact timestamp, within one physics tick.
 - **Headless proof:** log `t, leaf_pos[], leaf_vel[], phase, lamp_state, collider_enabled` every physics tick to `user://door_lab_<type>.csv`. The acceptance checks in §5 are computed from that log.
-- **Player sprint (63 m/s in `tt_movers.gd`):** realistic timing can't beat a sprinting player. The lab tests at **walk speed**. In game scenes the proximity trigger radius is `v_player × t_open_to_clear` (time until the clear gap ≥ capsule diameter + 0.1 m). Don't compress the mechanism phases.
+- **Player sprint (63 m/s in `tt_movers.gd`):** realistic timing can't beat a sprinting player. The lab tests at **walk speed**. In game scenes the proximity trigger radius is `v_player × t_open_to_clear` (time until the clear gap ≥ capsule diameter + 0.1 m). Don't compress the mechanism phases. *(Superseded for the shipped profile by §7, game tempo.)*
 - **Lamp sync** (agrees with Sloane): the lamp goes cyan at the **first mechanical event** (latch, equalize valve or dog motor) and green at final settle.
 
 ### 0.3 Spin gravity (Hab-7: R = 200 m, 1.0 G nominal, Drum RPM range 0.08–1.45 G)
@@ -446,8 +446,233 @@ Closing KE is 1.4 J per leaf.
   | Pair | 0.8 s to 90° | 1.83 s of motion | |
   | Bulkhead | 1.8 s leaf swing | 4.66 s for a 420 kg leaf | |
 
-  If the tempo must be faster, Vance proposal: scale **only the S-curve phases** by up to 0.7× and keep the latch, seal, dog and equalize phases real, because those carry the "real machine" read.
+  ~~If the tempo must be faster, Vance proposal: scale **only the S-curve phases** by up to 0.7× and keep the latch, seal, dog and equalize phases real, because those carry the "real machine" read.~~ **Superseded by §7 (Jared, 2026-11-20: snappier, game-like; leaf travel 0.45×, latch/seal/dog 0.6×).**
 - **Bay3:** Sloane specs a telescoping slider, but the built asset is an outswing swing door. This spec covers the as-built door, with the slider in §2.8 as the alternative.
 - **Settle:** Sloane says "no bounce" for the sliders. This spec allows a 2 mm overshoot on a bumper (ζ 0.6, a single visible decay), which is within her ≤ 3 mm settle.
 
 Label: Vance proposal on all design calls above that are not taken from the as-built GLBs or marked *real-world ref*.
+
+---
+
+## §7 Rev 1.1 — Game-tempo profile (Jared, 2026-11-20)
+
+**Decision (Jared, 2026-11-20 1:50 PM CT, relayed by Gage):** doors are **snappier and more game-like**. This replaces the §6 0.7× proposal. The Rev 1.0 tables (§1–§4) stay as the *real-drive reference*; **this section is the shipped profile** that Grok implements and that R1–R14 check.
+
+### 7.0 Scalars and rules
+- **Scalars.** No door_lab `.tres` exists on main or in the box checkout yet (searched `godot/` for `door_lab` and `*.tres` tempo/scale/compress scalars on 2026-11-20; only the two GLBs exist). So this section uses Gage's stated values. **If the `DoorProfile` `.tres` files land with different scalars, they win, and every number here rescales by the same rules.**
+
+  | Scalar | Value | Applies to |
+  |---|---|---|
+  | `k_leaf` | **0.45** | leaf-travel phases: accel, cruise, decel, creep, back-check, latch-check, final seat |
+  | `k_mech` | **0.60** | latch / bolt / strike, seal unseat / deflate / inflate, dogs, pressure equalize, plus control phases (request/auth, pre-warn, klaxon, leak check) and the small gaps between them (Vance proposal for the control phases) |
+  | lurch | **1.0 (real)** | crack-open lurch: same duration, displacement and peak speed as Rev 1.0 |
+  | settle | **1.0 (real)** | hard stop / settle / latch bounce: same A, f, ζ and duration as Rev 1.0 |
+  | stagger | **1.0 (real)** | per-leaf start offsets (bay3 0/+60/+120 ms, pair +60 ms) stay as they are, because they're a visual read and R5 checks them at ±20 ms (Vance proposal) |
+  | dog stagger | × `k_mech` | 30 ms → **18 ms** between dogs |
+- **Kinematics scale consistently with time.** Distances and angles are unchanged. For any compressed phase with factor k: **v' = v/k, a' = a/k², j' = j/k³**. At k = 0.45 that is ×2.222 / ×4.938 / ×10.97, and at k = 0.6 it is ×1.667 / ×2.778 / ×4.630. The §0.1 S-curve formulas regenerate every row.
+- **Closing-safety rule (Vance proposal).** The **≤ 10 J closing-KE limit (EN 16005-style, *real-world ref*)**, the force limits (150 N slider/bulkhead, 67 N swing) and every §n.4 safety reverse **still apply at game tempo**. For each **close** move:
+  1. Use `k_leaf` = 0.45 if closing KE ≤ 10 J.
+  2. Otherwise use **0.6×** on close leaf travel if that brings it to ≤ 10 J.
+  3. Otherwise **cap v_peak (ω_peak) at the 10 J speed**, keeping the game-tempo a and j (the 0.45 values) so the move still starts and stops crisply. The cruise just gets longer.
+- **Safety reactions are not compressed:** the detection thresholds, the reopen speed caps, the hold and retry timers, and the 3-strike fault all keep their §n.4 values. The only change is the **stop** decel, which must still meet the §n.4 stop time and distance from the new close speeds: slider 4.94 m/s² (0.13 s / 41 mm from 0.64 m/s), bay3 ≥ 333°/s², pair ≥ 667°/s², and bulkhead/hatch use the existing 40°/s² (≤ 0.6 s).
+- **Hardware, gaps and masses: unchanged** (§n.1, §n.5, §n.6, §4.7). The faster drive is a story-level upgrade (higher-torque operators) and gets no new visible parts (Vance proposal).
+- **Coriolis** at the new peak speeds: the slider leaf at 2.89 m/s gets 1.28 m/s². That still isn't visible at door scale, so §0.3 stands and nothing gets animated.
+
+### 7.1 Pocket slider (bi-parting), game tempo
+**Open: 1.08 s** (real 2.00). v_peak **2.89 m/s**, a **14.8 m/s²**, j **219 m/s³**. Peak opening KE is 200 J per leaf (see 7.7).
+
+| # | Phase | k | t0–t1 (s) | Motion / kinematics |
+|---|---|---|---|---|
+| 1 | Request / auth | 0.6 | 0.00–0.06 | — |
+| 2 | Lamp amber → cyan | — | 0.06 | 0.15 s fade |
+| 3 | Bolt retract | 0.6 | 0.06–0.13 | — |
+| 4 | Seal unseat | 0.6 | 0.13–0.18 | 0 → 3 mm |
+| 5 | Crack-open lurch | real | 0.18–0.28 | 3 → 15 mm, peak 0.18 m/s |
+| 6 | Accel | 0.45 | 0.28–0.54 | 15 → 394 mm; v → 2.89, a 14.8, j 219 |
+| 7 | Cruise | 0.45 | 0.54–0.62 | 394 → 565 mm at 2.89 m/s |
+| 8 | Decel | 0.45 | 0.62–0.88 | 565 → 944 mm |
+| 9 | Creep to stop | 0.45 | 0.88–0.93 | 944 → 1000 mm, ≤ 1.11 m/s at the start |
+| 10 | Bumper settle | real | 0.93–1.08 | 2 mm, f 6 Hz, ζ 0.6; **lamp green 1.08** |
+
+**Close: 2.40 s** (real 3.75). **Safety cap applies:** at 0.45×, v = 1.33 m/s gives **42.7 J per leaf ✗**, and 0.6× (v 1.00) gives **24 J ✗**. The 10 J speed for a 48 kg leaf is 0.645 m/s, so close cruise is **capped at 0.64 m/s (9.8 J ✓)**, with a 4.94 m/s² and j 54.9 m/s³.
+
+| # | Phase | k | t0–t1 (s) | Motion |
+|---|---|---|---|---|
+| 1 | Hold expires; lamp cyan; chime | — | 0.00 | — |
+| 2 | Pre-warn | 0.6 | 0.00–0.24 | — |
+| 3 | Accel | cap | 0.24–0.46 | 1000 → 930 mm; v → 0.64 |
+| 4 | Cruise | cap | 0.46–1.69 | 930 → 140 mm at 0.64 m/s |
+| 5 | Decel | cap | 1.69–1.91 | 140 → 70 mm |
+| 6 | Latch-check creep | 0.45 | 1.91–2.25 | 70 → 0 mm, ≤ 0.22 m/s (1.2 J) |
+| 7 | Seal contact | — | 2.23–2.25 | soft thud |
+| 8 | Bolt throw | 0.6 | 2.28–2.34 | — |
+| 9 | Lamp → amber / red | — | 2.40 | — |
+
+Audio (replaces §1.7 timestamps; levels unchanged):
+
+| Open t (s) | Cue | Close t (s) | Cue |
+|---|---|---|---|
+| 0.06 | solenoid clack | 0.00 | chime |
+| 0.17 | seal pop | 0.24 → 2.25 | whine (pitch follows v) + rumble |
+| 0.18 → 0.93 | motor whine (peak 0.54–0.62) | 2.24 | seal thud |
+| 0.28 → 0.91 | roller rumble | 2.31 | bolt clack |
+| 0.93 | bumper thud | | |
+
+Collider-off window: unchanged rule, now phase 6 of the close (1.91–2.25).
+
+### 7.2 Bay3 (as-built outswing swing, per leaf; stagger 0 / +60 / +120 ms unchanged)
+**Open: 1.54 s per leaf, last leaf 1.66 s** (real 2.95 / 3.07). ω_peak **177.8°/s**, α **988°/s²**, j **10,974°/s³**. Opening KE is 98 J per leaf (see 7.7).
+
+| # | Phase | k | t0–t1 (s) | Angle |
+|---|---|---|---|---|
+| 1 | Request / auth | 0.6 | 0.00–0.06 | — |
+| 2 | Lamp cyan; strike release | 0.6 | 0.06–0.13 | — |
+| 3 | Weatherseal unseat + lurch | real | 0.13–0.23 | 0 → 2°, peak 30°/s |
+| 4 | Accel | 0.45 | 0.23–0.50 | 2 → 26° |
+| 5 | Cruise | 0.45 | 0.50–0.68 | 26 → 58° at 177.8°/s |
+| 6 | Decel | 0.45 | 0.68–0.95 | 58 → 82° |
+| 7 | Back-check creep | 0.45 | 0.95–1.31 | 82 → 90°, ≤ 26.7°/s |
+| 8 | Hold-open stop settle | real | 1.31–1.54 | 0.8°, f 3 Hz, ζ 0.5; green when the last leaf settles (1.66) |
+
+**Close: 2.85 s per leaf, last leaf 2.97 s** (real 4.75 / 4.87). **Safety rule step 2:** 0.45× (66.7°/s) gives **13.8 J per leaf ✗**, so close leaf travel runs at **0.6×**: ω **50°/s** (I = 20.4 kg·m² → **7.8 J ✓**), α 166.7°/s², j 1,389°/s³.
+
+| # | Phase | k | t0–t1 (s) | Angle |
+|---|---|---|---|---|
+| 1 | Hold expires; lamp cyan | — | 0.00 | — |
+| 2 | Pre-warn | 0.6 | 0.00–0.18 | 90° |
+| 3 | Accel | 0.6 | 0.18–0.60 | 90 → 79.5° |
+| 4 | Cruise | 0.6 | 0.60–1.78 | 79.5 → 20.5° at 50°/s |
+| 5 | Decel | 0.6 | 1.78–2.20 | 20.5 → 10° |
+| 6 | Latch check | 0.6 | 2.20–2.80 | 10 → 0°, ≤ 16.7°/s, last 2° at 25°/s (1.9 J) |
+| 7 | Strike catch | — | 2.80 | — |
+| 8 | Lamp amber | — | 2.85 (last leaf 2.97) | — |
+
+Audio: strike clack 0.07; gear whine 0.21 → 1.31 (3 staggered voices); stop tap 1.31. Close: whine 0.18 → 2.80; latch clack ×3 at 2.80 (+60 ms stagger).
+
+### 7.3 Pair_18 (stagger: Leaf_L leads open, Leaf_R leads close, +60 ms, unchanged)
+**Open: 1.21 s, Leaf_R 1.27 s** (real 2.25 / 2.31). ω_peak **244.4°/s**, α **1,481°/s²**, j **16,461°/s³**. Opening KE is 92 J per leaf (see 7.7).
+
+| # | Phase | k | t0–t1 (s) | Angle |
+|---|---|---|---|---|
+| 1 | Request | 0.6 | 0.00–0.05 | — |
+| 2 | Lamp cyan; rim latch retract | 0.6 | 0.05–0.12 | — |
+| 3 | Smoke-seal unseat + lurch | real | 0.12–0.20 | 0 → 1.5° |
+| 4 | Accel | 0.45 | 0.20–0.46 | 1.5 → 32.7° |
+| 5 | Cruise | 0.45 | 0.46–0.55 | 32.7 → 55.3° at 244.4°/s |
+| 6 | Decel | 0.45 | 0.55–0.81 | 55.3 → 86.5° |
+| 7 | Back-check | 0.45 | 0.81–0.99 | 86.5 → 90°, ≤ 26.7°/s |
+| 8 | Stop / settle | real | 0.99–1.21 | 1.0°, f 3 Hz, ζ 0.45; green after Leaf_R settles (1.27) |
+
+**Close: 2.05 s, Leaf_L 2.11 s** (real 4.40 / 4.46). **0.45× passes:** ω **66.7°/s** (I = 10.1 kg·m² → **6.8 J ✓**), α 296.3°/s², j 3,292°/s³.
+
+| # | Phase | k | t0–t1 (s) | Angle |
+|---|---|---|---|---|
+| 1 | Hold expires; lamp cyan | — | 0.00 | — |
+| 2 | Accel (closer sweep) | 0.45 | 0.00–0.32 | 90 → 79.5° |
+| 3 | Sweep | 0.45 | 0.32–1.20 | 79.5 → 20.5° at 66.7°/s |
+| 4 | Decel | 0.45 | 1.20–1.52 | 20.5 → 10° |
+| 5 | Latch speed + kick | 0.45 | 1.52–1.92 | 10 → 0°, 22.2°/s, last 2° at 44.4°/s (3.0 J) |
+| 6 | Latch clack; bounce 0.3°, ζ 0.6 | real | 1.92–2.05 | lamp amber 2.05 (Leaf_L 2.11) |
+
+Audio: latch clack 0.05; assist hum 0.20 → 0.99; stop tap 0.99. Close: closer hiss 0.00 → 1.52; latch clacks at 1.92 (two, 60 ms apart).
+
+### 7.4 Pressure bulkhead (wall), game tempo
+**Open: 4.64 s, or 3.98 s pre-equalized** (real 8.40 / 7.30). ω_peak **66.7°/s**, α **148.1°/s²**, j **988°/s³**. Opening KE is 118 J (see 7.7).
+
+| # | Phase | k | t0–t1 (s) | Motion |
+|---|---|---|---|---|
+| 1 | Request / auth (badge hold) | 0.6 | 0.00–0.12 | — |
+| 2 | Lamp red → cyan; equalize valve | — | 0.12 | — |
+| 3 | Pressure equalize | 0.6 | 0.12–1.02 | 0.12–0.36 if already ΔP < 0.05 kPa |
+| 4 | Dogs retract (wheel 90°) | 0.6 | 1.02–1.50 | 8 dogs, 18 ms stagger |
+| 5 | Seal deflate | 0.6 | 1.50–1.80 | 8 mm |
+| 6 | Unseat lurch | real | 1.80–2.15 | 0 → 0.7° |
+| 7 | Accel | 0.45 | 2.15–2.75 | 0.7 → 20.7° |
+| 8 | Cruise | 0.45 | 2.75–3.65 | 20.7 → 80° at 66.7°/s |
+| 9 | Decel | 0.45 | 3.65–4.25 | 80 → 100° |
+| 10 | Hold-open catch settle | real | 4.25–4.64 | 0.3°, f 1.5 Hz, ζ 0.7; **lamp green 4.64** |
+
+**Close: 7.80 s** (real 10.40). **Safety rule step 3:** 0.45× (44.4°/s) gives **52 J ✗** and 0.6× (33.3°/s) gives **29 J ✗**. The 10 J speed for I = 174 kg·m² is 19.4°/s, so close cruise is **capped at 19.4°/s (9.97 J ✓)**, with α 98.8°/s² and j 658°/s³. **Correction to Rev 1.0:** §4.3's 20°/s close was **10.6 J**, slightly over the limit, and this cap fixes it. Pressure-emergency mode (§4.4) is unchanged: no reverse, and the curtain slows the leaf to 5°/s.
+
+| # | Phase | k | t0–t1 (s) | Motion |
+|---|---|---|---|---|
+| 1 | Close command; cyan chase + beacon; klaxon 2 × 0.3 s | 0.6 | 0.00–0.60 | — |
+| 2 | Hold-open catch release | — | 0.60 | — |
+| 3 | Accel | cap | 0.60–0.95 | 100 → 96.6° |
+| 4 | Cruise | cap | 0.95–5.65 | 96.6 → 5.4° at 19.4°/s |
+| 5 | Decel | cap | 5.65–6.00 | 5.4 → 2° |
+| 6 | Final seat | 0.45 | 6.00–6.30 | 2 → 0°, ≤ 6.7°/s |
+| 7 | Seal contact | — | 6.28 | — |
+| 8 | Dogs drive | 0.6 | 6.33–6.81 | 8 dogs, 18 ms stagger |
+| 9 | Seal inflate | 0.6 | 6.84–7.20 | — |
+| 10 | Leak check | 0.6 | 7.20–7.80 | — |
+| 11 | Lamp red / amber | — | 7.80 | — |
+
+Audio: equalize hiss 0.12 → 0.99; dog whine 1.02 → 1.47; dog clunks 1.38 → 1.51 (×8, 18 ms); deflate hiss 1.50 → 1.77; **unseat thunk 1.85**; hydraulic hum + groan 2.15 → 4.25; catch clunk 4.29. Close: klaxon 0.00 / 0.30; seat thud 6.28; dog whine 6.33 → 6.81; dog clunks 6.69 → 6.82; inflate hiss 6.84 → 7.20.
+
+**For Jared (if a snappier close is wanted):** taking the bulkhead close at 0.6× would make it 5.6 s with 29 J. The protection would then rest only on the light curtain, the 150 N edge limit and the klaxon. That is a departure from the 10 J rule, so it isn't adopted here.
+
+### 7.5 Floor / ceiling hatch (§4.6), game tempo
+**Correction to Rev 1.0:** the §4.6 S-curve (0.7 → 105°, ω 35, α 35, j 105) is 1.333 + 1.647 + 1.333 = **4.31 s**, not 4.28 s, so the real total open is **7.66 s**, not 7.63 s. Rev 1.0 gave no hatch close, so the real close below is derived from §4.3 with a 105° swing (ω 20, α 20, j 60, travel 6.48 s, **total 10.65 s**, 2.8 J). I = 140 × 1.0²/3 = 46.7 kg·m².
+
+**Open: 4.09 s, or 3.43 s pre-equalized** (real 7.66 / 6.56). ω_peak **77.8°/s**, α **172.8°/s²**, j **1,152°/s³**. In-game, the rotary damper's speed cap scales with it, from 35 to **77.8°/s**. Opening KE is 43 J.
+
+| # | Phase | k | t0–t1 (s) | Motion |
+|---|---|---|---|---|
+| 1–5 | Request, equalize, dogs, deflate | as 7.4 | 0.00–1.80 | as 7.4 rows 1–5 |
+| 6 | Unseat lurch | real | 1.80–2.15 | 0 → 0.7° |
+| 7 | Accel | 0.45 | 2.15–2.75 | 0.7 → 24.0° |
+| 8 | Cruise | 0.45 | 2.75–3.49 | 24.0 → 81.7° at 77.8°/s |
+| 9 | Decel → stay arm drops into detent | 0.45 | 3.49–4.09 | 81.7 → 105°; **detent clunk + lamp green 4.09** |
+
+**Close: 6.39 s** (real 10.65). **Safety rule step 2:** 0.45× (44.4°/s) gives **14.0 J ✗**, so close travel runs at **0.6×**: ω **33.3°/s (7.9 J ✓)**, α 55.6°/s², j 278°/s³. Against the gas struts the actuator still has to deliver ≤ 530 N·m (§4.6); that doesn't change.
+
+| # | Phase | k | t0–t1 (s) | Motion |
+|---|---|---|---|---|
+| 1 | Klaxon / beacon | 0.6 | 0.00–0.60 | — |
+| 2 | Stay-arm / strut-lock release | — | 0.60 | release clunk |
+| 3 | Accel | 0.6 | 0.60–1.40 | 105 → 91.7° |
+| 4 | Cruise | 0.6 | 1.40–3.69 | 91.7 → 15.3° at 33.3°/s |
+| 5 | Decel | 0.6 | 3.69–4.49 | 15.3 → 2° |
+| 6 | Final seat | 0.6 | 4.49–4.89 | 2 → 0°, ≤ 5°/s; seal contact 4.86 |
+| 7 | Dogs drive | 0.6 | 4.92–5.40 | 18 ms stagger |
+| 8 | Seal inflate | 0.6 | 5.43–5.79 | — |
+| 9 | Leak check → lamp | 0.6 | 5.79–6.39 | lamp red / amber 6.39 |
+
+Audio: front cues as 7.4 to the thunk (1.85); hydraulic hum 2.15 → 4.09; detent clunk 4.09. Close: klaxon 0.00 / 0.30; release clunk 0.60; seat thud 4.86; dog whine 4.92 → 5.40; inflate hiss 5.43 → 5.79.
+
+### 7.6 Totals summary (game tempo vs Rev 1.0 real)
+| Door | Open (s) | Close (s) | Close v/ω peak | Close KE | Close rule |
+|---|---|---|---|---|---|
+| Pocket slider | **1.08** (2.00) | **2.40** (3.75) | 0.64 m/s | 9.8 J ✓ | 10 J cap (0.45× = 42.7 J, 0.6× = 24 J) |
+| Bay3 (per leaf / last leaf) | **1.54 / 1.66** (2.95 / 3.07) | **2.85 / 2.97** (4.75 / 4.87) | 50°/s | 7.8 J ✓ | 0.6× (0.45× = 13.8 J) |
+| Pair_18 (lead / trail leaf) | **1.21 / 1.27** (2.25 / 2.31) | **2.05 / 2.11** (4.40 / 4.46) | 66.7°/s | 6.8 J ✓ | 0.45× |
+| Bulkhead (pre-equalized) | **4.64 (3.98)** (8.40 / 7.30) | **7.80** (10.40) | 19.4°/s | 9.97 J ✓ | 10 J cap (0.45× = 52 J, 0.6× = 29 J) |
+| Floor hatch (pre-equalized) | **4.09 (3.43)** (7.66 / 6.56) | **6.39** (10.65) | 33.3°/s | 7.9 J ✓ | 0.6× (0.45× = 14.0 J) |
+
+### 7.7 Safety flags
+1. **Closing KE:** a straight 0.45× close breaks 10 J on the slider (42.7 J), bay3 (13.8 J), bulkhead (52 J) and hatch (14.0 J). The 7.0 rule fixes all of them. **The slider and bulkhead fail even at 0.6×**, so they need the speed cap.
+2. **Opening KE rises about 4.9×:** slider 200 J/leaf, bay3 98 J, pair 92 J, bulkhead 118 J, hatch 43 J. The swing doors open **toward people** (bay3 outswing into the approach path, pair into the hall +Z), so the swing-side presence sensors (§2.4, §3.4) **must stall and hold the opening leaf** whenever the player capsule is in its sweep arc. Gage: in game, an opening swing leaf must never push the capsule (stall instead), and the collider still follows the leaf (R9).
+3. **The §0.2 sprint note changes:** at game tempo, `t_open_to_clear` is shorter (slider clear gap ≥ 0.80 m at about 0.55 s, end of accel), so recompute the proximity radius from the game-tempo CSV.
+4. **QUALITY_BAR (Patch) §F timing rows** still quote the Rev 1.0 totals. Patch needs to repoint them at §7.6, which is Patch's file, not mine.
+
+### 7.8 Acceptance checks R1–R14 restated for game tempo
+| # | Check | Pass criterion (game tempo) | Source |
+|---|---|---|---|
+| R1 | Phase order | every phase in §7.1–§7.5 occurs in order; nothing skipped (latch/seal/dog, **lurch and settle present at real duration**) | CSV `phase` |
+| R2 | Timing | each phase t0/t1 and each **game-tempo total in §7.6** within **±10%**; lurch and settle durations within ±10% of Rev 1.0 | CSV |
+| R3 | Velocity profile | jerk-limited: per-tick Δv ≤ 1.1 × a′ × dt and per-tick Δa ≤ 1.1 × j′ × dt (a′, j′ from §7). At 60 Hz this allows about 9–10% of v_peak per tick on the slider, bay3 and pair, which replaces the Rev 1.0 "5% of v_peak", unreachable at 60 Hz with these accels. Peaks (open v/ω and the capped close v/ω) within ±10% | CSV `leaf_vel` |
+| R4 | Settle | unchanged: overshoot ±25% of the Rev 1.0 values, decays, no sustained oscillation | CSV |
+| R5 | Stagger | unchanged: ±20 ms of 0/+60/+120 (bay3) and +60 ms (pair) | CSV |
+| R6 | Hardware visible | **unchanged** (§n.6 / §4.7) | renders |
+| R7 | No clipping | unchanged; sample every physics tick (the faster leaves move up to 48 mm per tick at 60 Hz) | renders + collision log |
+| R8 | Gaps | **unchanged**: ±2 mm of §n.5, swing angles ±0.5° | GLB + renders |
+| R9 | Collider follows leaf | unchanged; collider-off window is now the game-tempo latch/creep phase (slider 1.91–2.25 close) | CSV |
+| R10 | Obstruction | unchanged reaction (§n.4) from the game-tempo close speeds; stop within the §n.4 time/distance using the 7.0 stop decels; **opening swing leaves stall on the capsule (7.7 #2)** | headless test |
+| R11 | Audio sync | every cue fires within ±1 physics tick of its **§7 timestamp** | cue log |
+| R12 | Lamp sync | cyan at the first mechanical event, green/amber at the §7 settle/lamp time (±0.05 s) | CSV |
+| R13 | G invariance | unchanged: §7 timings identical at 0.08 / 1.0 / 1.45 G (±5%) | headless ×3 |
+| R14 | As-built fidelity | unchanged | scene |
+| R15 *(new)* | Closing KE | ½ m v² (or ½ I ω²) per leaf **≤ 10 J** at every close tick, computed from the CSV | CSV |
+
+Label: §7 tables are derived from Jared's 2026-11-20 tempo decision via Gage's scalars. The 10 J close rule, the uncompressed safety reactions, the control-phase scaling, the real-time stagger and the hatch close are **Vance proposals**.
