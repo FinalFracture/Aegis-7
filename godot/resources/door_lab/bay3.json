@@ -1,0 +1,47 @@
+{
+  "door_id": "bay3",
+  "motion": "swing",
+  "travel_time_scale": 0.7,
+  "mass_kg": 62,
+  "travel": 90.0,
+  "v_peak_open": 80.0,
+  "v_peak_close": 30.0,
+  "hold_open_s": 3.0,
+  "interact": false,
+  "full_clear_m": 0.877,
+  "clear_model": "swing",
+  "meta": {"as_built": "tt_entrance_bay_3l outswing", "yaw": [-90, -90, 90]},
+  "obstruction": {"stop_s": 0.15, "stop_dist": 8.0, "stop_a": 0.0, "dwell_s": 0.15, "v_cap": 40.0, "hold_s": 3.0, "fault_count": 3, "edge_force_n": 67},
+  "leaves": [
+    {"name": "Leaf_0", "sign": -1, "stagger_open": 0.06, "stagger_close": 0.06},
+    {"name": "Leaf_1", "sign": -1, "stagger_open": 0.0, "stagger_close": 0.12},
+    {"name": "Leaf_2", "sign": 1, "stagger_open": 0.12, "stagger_close": 0.0}
+  ],
+  "open_phases": [
+    {"name": "request", "t0": 0.0, "t1": 0.1, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "strike", "t0": 0.1, "t1": 0.22, "kind": "latch", "p0": 0.0, "scale": false},
+    {"name": "lurch", "t0": 0.22, "t1": 0.32, "kind": "cosine", "p0": 0.0, "p1": 2.0, "scale": true},
+    {"name": "travel", "t0": 0.32, "t1": 1.92, "kind": "scurve", "p0": 2.0, "p1": 82.0, "v": 80.0, "a": 200.0, "j": 1000.0, "scale": true},
+    {"name": "backcheck", "t0": 1.92, "t1": 2.72, "kind": "cubic", "p0": 82.0, "p1": 90.0, "scale": true},
+    {"name": "settle", "t0": 2.72, "t1": 2.95, "kind": "settle", "p0": 90.0, "p1": 90.0, "amp": 0.8, "sign": 1, "scale": true}
+  ],
+  "close_phases": [
+    {"name": "prewarn", "t0": 0.0, "t1": 0.3, "kind": "hold", "p0": 90.0, "scale": false},
+    {"name": "travel", "t0": 0.3, "t1": 3.66667, "kind": "scurve", "p0": 90.0, "p1": 10.0, "v": 30.0, "a": 60.0, "j": 300.0, "scale": true},
+    {"name": "latch_check", "t0": 3.66667, "t1": 4.66667, "kind": "cubic", "p0": 10.0, "p1": 0.0, "scale": true},
+    {"name": "strike_catch", "t0": 4.66667, "t1": 4.75, "kind": "latch", "p0": 0.0, "scale": false}
+  ],
+  "cues_open": [
+    {"t": 0.12, "name": "strike_clack_l1"},
+    {"t": 0.18, "name": "strike_clack_l0"},
+    {"t": 0.24, "name": "strike_clack_l2"},
+    {"t": 0.3, "name": "operator_whine_start", "loop": true},
+    {"t": 2.72, "name": "stop_tap"}
+  ],
+  "cues_close": [
+    {"t": 0.3, "name": "operator_whine_close_start", "loop": true},
+    {"t": 4.66667, "name": "latch_clack_l2"},
+    {"t": 4.72667, "name": "latch_clack_l0"},
+    {"t": 4.78667, "name": "latch_clack_l1"}
+  ]
+}

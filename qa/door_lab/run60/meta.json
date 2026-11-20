@@ -1,0 +1,37 @@
+{
+	"bay3": "outswing",
+	"commit": "f2ccf572f5668bc8dca1e9d85774ae01a753b875",
+	"cycle_hold_s_endurance": 0.02,
+	"fixed_fps": 60.0,
+	"godot": "4.7.2",
+	"gpu": "Intel(R) UHD Graphics 605",
+	"max_physics_steps_per_frame": 1.0,
+	"notes": [
+		"shifted glb by z 1.100 so the closed leaf plane is at the door origin",
+		"bay3 Leaf_0 floor sweep from y=0.060 down to 0.008, stile width",
+		"bay3 Leaf_1 floor sweep from y=0.060 down to 0.008, stile width",
+		"bay3 Leaf_2 floor sweep from y=0.060 down to 0.008, stile width",
+		"bay3 Leaf_0 finger guard 45 mm in the 55 mm hinge gap, 5 mm each side, approach face",
+		"bay3 Leaf_2 finger guard 45 mm in the 55 mm hinge gap, 5 mm each side, approach face",
+		"bay3 mullion door-x -0.600..-0.500 (3 mm each side of the 106 mm stile gap); frame mesh had no post there",
+		"bay3 mullion door-x 0.500..0.600 (3 mm each side of the 106 mm stile gap); frame mesh had no post there",
+		"bay3 threshold mat shifted down 0.008 m in the instance only so the sweep can sit at 8 mm",
+		"shifted glb by z -0.000 so the closed leaf plane is at the door origin",
+		"pair Leaf_L leaf bottom y=0.010 already inside 8-12 mm",
+		"pair Leaf_R leaf bottom y=0.010 already inside 8-12 mm"
+	],
+	"physics_ticks_per_second": 60.0,
+	"pocket_geometry": "vance_2m",
+	"r3_gate": "Logged velocity steps must stay within the settled 0.7x profile's own analytic step. The scale lifts peak accel above 0.05*v*60.",
+	"renderer": "gl_compatibility/opengl3",
+	"resolution": [
+		1920,
+		1080
+	],
+	"scene": "res://scenes/test/door_lab.tscn",
+	"settlement": "Gage 2026-11-20: Vance phase tables. Latch/seal/dog/equalize at real speed. Leaf travel duration = 0.7 x Vance via travel_time_scale. bay3 is the as-built outswing. Sloane 0.9/0.8/1.8 s targets are superseded. Hatch plug swings to -Z because it is wider than the clear hole.",
+	"sloane_times": "superseded",
+	"timing_authority": "vance",
+	"travel_time_scale": 0.7,
+	"updated": "2026-11-20 15:22 CT"
+}

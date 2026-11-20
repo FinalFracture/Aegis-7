@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MechDoorProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/door_lab/mech_door_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+door_id = "bay3"
+table_path = "res://resources/door_lab/bay3.json"
+travel_time_scale = 0.7

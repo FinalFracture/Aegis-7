@@ -1,0 +1,43 @@
+{
+  "door_id": "pair",
+  "motion": "swing",
+  "travel_time_scale": 0.7,
+  "mass_kg": 38,
+  "travel": 90.0,
+  "v_peak_open": 110.0,
+  "v_peak_close": 30.0,
+  "hold_open_s": 2.5,
+  "interact": false,
+  "full_clear_m": 1.78,
+  "clear_model": "swing",
+  "meta": {"as_built": "tt_door_pair_18", "swing": "+Z"},
+  "obstruction": {"stop_s": 0.1, "stop_dist": 6.0, "stop_a": 0.0, "dwell_s": 0.1, "v_cap": 60.0, "hold_s": 2.5, "fault_count": 3, "edge_force_n": 67},
+  "leaves": [
+    {"name": "Leaf_L", "sign": -1, "stagger_open": 0.0, "stagger_close": 0.06},
+    {"name": "Leaf_R", "sign": 1, "stagger_open": 0.06, "stagger_close": 0.0}
+  ],
+  "open_phases": [
+    {"name": "request", "t0": 0.0, "t1": 0.08, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "latch_retract", "t0": 0.08, "t1": 0.2, "kind": "latch", "p0": 0.0, "scale": false},
+    {"name": "lurch", "t0": 0.2, "t1": 0.28, "kind": "cosine", "p0": 0.0, "p1": 1.5, "scale": true},
+    {"name": "travel", "t0": 0.28, "t1": 1.6194, "kind": "scurve", "p0": 1.5, "p1": 86.5, "v": 110.0, "a": 300.0, "j": 1500.0, "scale": true},
+    {"name": "backcheck", "t0": 1.6194, "t1": 2.0194, "kind": "cubic", "p0": 86.5, "p1": 90.0, "scale": true},
+    {"name": "settle", "t0": 2.0194, "t1": 2.2394, "kind": "settle", "p0": 90.0, "p1": 90.0, "amp": 1.0, "sign": 1, "scale": true}
+  ],
+  "close_phases": [
+    {"name": "travel", "t0": 0.0, "t1": 3.36667, "kind": "scurve", "p0": 90.0, "p1": 10.0, "v": 30.0, "a": 60.0, "j": 300.0, "scale": true},
+    {"name": "latch_check", "t0": 3.36667, "t1": 4.26667, "kind": "cubic", "p0": 10.0, "p1": 0.0, "scale": true},
+    {"name": "settle", "t0": 4.26667, "t1": 4.39667, "kind": "settle", "p0": 0.0, "p1": 0.0, "amp": 0.3, "sign": -1, "scale": true}
+  ],
+  "cues_open": [
+    {"t": 0.08, "name": "latch_clack_l"},
+    {"t": 0.14, "name": "latch_clack_r"},
+    {"t": 0.28, "name": "assist_hum_start", "loop": true},
+    {"t": 2.0194, "name": "stop_tap"}
+  ],
+  "cues_close": [
+    {"t": 0.0, "name": "closer_hiss_start", "loop": true},
+    {"t": 4.26667, "name": "latch_clack_close_r"},
+    {"t": 4.32667, "name": "latch_clack_close_l"}
+  ]
+}
