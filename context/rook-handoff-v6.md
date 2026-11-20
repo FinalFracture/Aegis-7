@@ -90,3 +90,6 @@
 
 ## 5. Team ids
 - Atlas 038035ec-9495-437e-984d-0493ca58383b (may be unreachable); Gage 957f052a-7abe-425c-85f5-fa21b72010e3; Patch a5010790-2c81-497b-9869-aec9934cdfd6; Vance 242c8419-7b14-4f27-9cdc-e87328eff983; Sloane 0fc258d4-0dea-4cf3-ab06-338f21756ae6; Scribe 61a860b0-0159-406a-af8c-a969dff4722b; Quinn 0359c20f-c476-48f7-99c2-c49637950351; Tidy 1978edff-d218-42b1-98dd-dfe78b7938bc.
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

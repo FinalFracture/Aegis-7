@@ -106,3 +106,4 @@ All in `/workspace/game-project/assets/glb/winners/`.
 ## Standing Rules (added 2026-10-30)
 - **Coding rule:** All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage.
 - **Usage cap:** Weekly hard cap 93% account usage; reported weekly usage ~59% (Atlas, Fri 2026-10-30).
+- **Questions to Jared (added 2026-11-20):** Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

@@ -1,9 +1,88 @@
 {
  "owner": "temp-Services",
- "spec": "design/strip5_tennis_tower_v1.md Rev 3.0 (2a0d7c3) + Vance review-only reservations; Rook scoped decision: 19 combined stations",
+ "spec": "design/strip5_tennis_tower_v1.md Rev 3.10 \u00a73.10 + TTQA-028 release (Jared card answer 2026-11-20 1:50 PM CT; Vance Rev 3.10 #4)",
  "axes": "Y up, X axial, Z across; yaw deg about +Y; p = building coords of GLB pivot (bottom centre)",
- "note": "Only verified world placements go in 'placements'. Fountain station world positions and all six family rooms are GATED (Vance spec OK + Rook shared-wall recess review + F3 >=2.1 m headroom section pending), so none are placed.",
- "placements": [],
+ "note": "TTQA-028 (Rook): one 2-room all-gender accessible/family suite (tt_services_suite, V1 Court Line) + one fountain station per floor. F1/F2 in the R1/R2-NW block behind the stall wet wall (doors face +X onto the X 34.25..43.85 x Z 64.3..68.8 area, entered from the X 44 food-court/gym gap); F3 in the W under-stand bay X 24.3..29.8 Z 21.2..27.4 (doors face -Z onto a 2.2 m strip entered through the existing X 24.1 opening Z 21.9..23.5). F3 fountain in the next bay N (X 24.3..29.8, Z 28.6..33.8, entered via X 24.1 opening Z 31.2..33.0). Remaining 16 fountain stations stay proposed.",
+ "placements": [
+  {
+   "glb": "res://assets/models/tt_services_suite.glb",
+   "asset": "tt_services_suite",
+   "p": [
+    32.3,
+    0.0,
+    66.55
+   ],
+   "yaw": 90,
+   "tag": "f1",
+   "room": "F1-SERV-NW",
+   "status": "placed"
+  },
+  {
+   "glb": "res://assets/models/tt_services_fountain_station.glb",
+   "asset": "tt_services_fountain_station",
+   "p": [
+    37.45,
+    0.0,
+    65.01
+   ],
+   "yaw": 0,
+   "tag": "f1",
+   "room": "F1-SERV-NW",
+   "status": "placed"
+  },
+  {
+   "glb": "res://assets/models/tt_services_suite.glb",
+   "asset": "tt_services_suite",
+   "p": [
+    32.3,
+    6.1,
+    66.55
+   ],
+   "yaw": 90,
+   "tag": "f2",
+   "room": "F2-SERV-NW",
+   "status": "placed"
+  },
+  {
+   "glb": "res://assets/models/tt_services_fountain_station.glb",
+   "asset": "tt_services_fountain_station",
+   "p": [
+    37.45,
+    6.1,
+    65.01
+   ],
+   "yaw": 0,
+   "tag": "f2",
+   "room": "F2-SERV-NW",
+   "status": "placed"
+  },
+  {
+   "glb": "res://assets/models/tt_services_suite.glb",
+   "asset": "tt_services_suite",
+   "p": [
+    27.58,
+    12.2,
+    25.42
+   ],
+   "yaw": 180,
+   "tag": "f3",
+   "room": "F3-SERV-W",
+   "status": "placed"
+  },
+  {
+   "glb": "res://assets/models/tt_services_fountain_station.glb",
+   "asset": "tt_services_fountain_station",
+   "p": [
+    29.09,
+    12.2,
+    30.6
+   ],
+   "yaw": -90,
+   "tag": "f3",
+   "room": "F3-SERV-W",
+   "status": "placed"
+  }
+ ],
  "proposed_unplaced": {
   "fountain_stations": {
    "asset": "tt_services_fountain_station",
@@ -40,11 +119,16 @@
    "withheld": [
     "F3 X24.1 Z30 (near tree column)",
     "F3 X118.9 Z30 (near tree column)"
-   ]
+   ],
+   "placed_ttqa028": {
+    "F1": 1,
+    "F2": 1,
+    "F3": 1
+   }
   },
   "family_rooms": {
    "count": 6,
-   "status": "gated; candidate module not promoted"
+   "status": "PLACED via 3 x tt_services_suite (2 rooms each), TTQA-028"
   }
  }
 }

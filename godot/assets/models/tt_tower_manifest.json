@@ -1,19 +1,20 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2693,
+"count": 2694,
 "by_owner": {
-"Rook": 1049,
+"Rook": 1050,
 "Arrival": 42,
 "Aquatics": 72,
-"Leisure": 236,
-"Courts": 352,
+"Leisure": 234,
+"Courts": 351,
 "Active": 536,
-"Rooftop": 406
+"Rooftop": 403,
+"Services": 6
 },
 "skipped": [
 "preview_hull"
 ],
-"services": "temp-Services_placements.json included (r7e): 0 world placements; fountains/family rooms proposed_unplaced",
+"services": "temp-Services_placements.json included (r7e): 6 world placements; fountains/family rooms proposed_unplaced",
 "drop": {
 "alpha_deg": 36.0,
 "rotation_deg": [
@@ -535,6 +536,18 @@
 "tag": "struct",
 "owner": "Rook",
 "asset": "tt_struct_slide_slot_screens_r39"
+},
+{
+"glb": "res://assets/models/tt_struct_bowl_links_r310.glb",
+"p": [
+46.93,
+-0.005,
+15.41
+],
+"yaw": 0,
+"tag": "struct",
+"owner": "Rook",
+"asset": "tt_struct_bowl_links_r310"
 },
 {
 "glb": "res://assets/models/tt_struct_aquatic_truss.glb",
@@ -14073,30 +14086,6 @@
 "asset": "tt_bowl_settee"
 },
 {
-"glb": "res://assets/models/tt_bowl_lane_pair.glb",
-"p": [
-44.65,
-0.0,
-12.85
-],
-"yaw": 0.0,
-"tag": "f1",
-"owner": "Leisure",
-"asset": "tt_bowl_lane_pair"
-},
-{
-"glb": "res://assets/models/tt_bowl_settee.glb",
-"p": [
-31.098,
-0.0,
-12.895
-],
-"yaw": 0.0,
-"tag": "f1",
-"owner": "Leisure",
-"asset": "tt_bowl_settee"
-},
-{
 "glb": "res://assets/models/tt_bowl_core_acoustic.glb",
 "p": [
 56.951,
@@ -19717,18 +19706,6 @@
 "p": [
 42.1,
 0.0,
-17.6
-],
-"yaw": 0.0,
-"tag": "f1",
-"owner": "Courts",
-"asset": "tt_stand_module_3p8"
-},
-{
-"glb": "res://assets/models/tt_stand_module_3p8.glb",
-"p": [
-42.1,
-0.0,
 61.4
 ],
 "yaw": 180.0,
@@ -19737,16 +19714,16 @@
 "asset": "tt_stand_module_3p8"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-47.75,
+47.245,
 0.0,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -19761,16 +19738,16 @@
 "asset": "tt_stand_module"
 },
 {
-"glb": "res://assets/models/tt_stand_module.glb",
+"glb": "res://assets/models/tt_stand_module_6p5.glb",
 "p": [
-55.25,
+55.745,
 0.0,
 17.6
 ],
 "yaw": 0.0,
 "tag": "f1",
 "owner": "Courts",
-"asset": "tt_stand_module"
+"asset": "tt_stand_module_6p5"
 },
 {
 "glb": "res://assets/models/tt_stand_module.glb",
@@ -29435,18 +29412,6 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
-21.9,
-12.2,
-19.5
-],
-"yaw": 0.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_food_table4"
-},
-{
-"glb": "res://assets/models/tt_food_table4.glb",
-"p": [
 4.5,
 12.2,
 22.4
@@ -29507,18 +29472,6 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
-21.9,
-12.2,
-22.4
-],
-"yaw": 0.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_food_table4"
-},
-{
-"glb": "res://assets/models/tt_food_table4.glb",
-"p": [
 4.5,
 12.2,
 25.3
@@ -29568,18 +29521,6 @@
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
 19.0,
-12.2,
-25.3
-],
-"yaw": 0.0,
-"tag": "f3",
-"owner": "Rooftop",
-"asset": "tt_food_table4"
-},
-{
-"glb": "res://assets/models/tt_food_table4.glb",
-"p": [
-21.9,
 12.2,
 25.3
 ],
@@ -32359,6 +32300,78 @@
 "tag": "f3",
 "owner": "Rooftop",
 "asset": "tt_cab_dress_mound"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+32.3,
+0.0,
+66.55
+],
+"yaw": 90.0,
+"tag": "f1",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+37.45,
+0.0,
+65.01
+],
+"yaw": 0.0,
+"tag": "f1",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+32.3,
+6.1,
+66.55
+],
+"yaw": 90.0,
+"tag": "f2",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+37.45,
+6.1,
+65.01
+],
+"yaw": 0.0,
+"tag": "f2",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
+},
+{
+"glb": "res://assets/models/tt_services_suite.glb",
+"p": [
+27.58,
+12.2,
+25.42
+],
+"yaw": 180.0,
+"tag": "f3",
+"owner": "Services",
+"asset": "tt_services_suite"
+},
+{
+"glb": "res://assets/models/tt_services_fountain_station.glb",
+"p": [
+29.09,
+12.2,
+30.6
+],
+"yaw": -90.0,
+"tag": "f3",
+"owner": "Services",
+"asset": "tt_services_fountain_station"
 }
 ]
 }

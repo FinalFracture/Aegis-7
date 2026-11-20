@@ -65,7 +65,7 @@ def f3_slab():
 def walls_f1():
     y0, y1 = F1 - E, F2 - SLAB[F2] + E; W = []
     aqp30 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X30]; aqp0 = [(z - .3, z + .3) for z in AQ_Z if z not in SKIP_X0]
-    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(62.90, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled; Rev 3.9 TTQA-056 L1-S: lift gap widened W to X 62.90 (full height, no leaf)
+    W += wall(30, 113, y0, y1, axis="x", line=15, side=-1, openings=[(40.35, 42.15, 2.4), (50.6, 52.4, 2.4), (62.90, 76.5, y1), (90.6, 92.4, 2.4)])   # r8 Rev 3.7 #4: 1.8 m pair-door opening, rest infilled; Rev 3.9 TTQA-056 L1-S: lift gap widened W to X 62.90 (full height, no leaf); Rev 3.8 #1 TTQA-050: bowling doors X 40.35..42.15 (new) + X 50.6..52.4 (was 50..53 h3.0), 1.8 m x 2.4 m
     W += wall(30, 113, y0, y1, axis="x", line=64, side=1, openings=[(66.5, 76.5, y1), (50, 53, 3.0), (90.6, 92.4, 2.4)])   # Rev 3.8 #3 L1-N: 1.8 m pair-door opening, rest infilled
     W += wall(0.3, 78.7, y0, y1, axis="z", line=30, side=-1, openings=[(34.5, 44.5, y1)], piers=aqp30)
     W += wall(0.3, 78.7, y0, y1, axis="z", line=113, side=1, openings=[(34.5, 44.5, y1), (24, 27, 3.0), (52, 55, 3.0), (70, 73, 3.0), (5, 8, 3.0), (32.4, 34.2, 2.4)])   # Rev 3.8 #3 L1-E pair door

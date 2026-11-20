@@ -53,3 +53,6 @@
 ## 5. Next Tasks
 - Finalize exterior asset list v1 for modeling.
 - Objective/tutorial anchors TBD (layout doc l.151) - coordinate with Gage at rebuild.
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

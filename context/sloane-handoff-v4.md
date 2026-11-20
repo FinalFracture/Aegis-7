@@ -50,3 +50,6 @@
 ## 5. Next Tasks
 - Rev C 'Still to model' items are hers: #6 window cards, #54 removal decal set (`design/residential_asset_list_rev_c.md` l.112).
 - Exterior texture needs once exterior list is final.
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

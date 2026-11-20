@@ -93,3 +93,6 @@
   - Strip 0 and strip 5 work.
 - Pending Jared: HATCH-01 (whether D-204 is a walk-through exit), the Alcove 2C east side (full wall or 1.1 m rail), Q7/Q8, and the Prism Bridge's role.
 - T-02: a GPU perf and lighting run is needed, possibly on Jared's Windows machine.
+
+## Standing rule: questions to Jared (added 2026-11-20)
+Every question to Jared must be sent as a tappable card/widget with answer options, never as prose. Jared, 2026-11-20 1:49 PM CT, his own words in Gage's chat: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer".

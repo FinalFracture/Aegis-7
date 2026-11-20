@@ -326,5 +326,13 @@
    56.5
   ],
   "note": "Rev 3.9 TTQA-023 3a link screens (X 23.60..23.68 / 24.62..24.70, Y 7.00..9.15) + 3b slot end screens (X 20.03..20.09 / 24.91..24.97, Y 3.50..9.15)"
+ },
+ "tt_struct_bowl_links_r310": {
+  "world_offset": [
+   46.93,
+   -0.005,
+   15.41
+  ],
+  "note": "Rev 3.8 #1 TTQA-050 bowling divider rail Z 11.06..11.16 X 37.0..56.9 + stand-end cheeks X 43.91..44.01 / 50.48..50.58 / 52.41..52.51, Z 15.00..19.76 (Rev 3.10)"
  }
 }

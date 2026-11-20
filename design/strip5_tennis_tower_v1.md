@@ -1,6 +1,6 @@
 # Strip 5 "The Green" — Multi-Sport Tower — Structure & Floor Plans
 
-**Status:** DRAFT **Rev 3.9**, 2026-11-16 (Vance). Physical structure and floor plans only: no props, no builds, no code.
+**Status:** DRAFT **Rev 3.10**, 2026-11-20 (Vance). Physical structure and floor plans only: no props, no builds, no code.
 **Labels:** *(doc)* = value from a cited repo doc; *(physics)* = derived from doc values; *(real-world ref)* = outside practice (IBC 2021, FINA, etc.), not a project constraint; **Vance proposal** = my design call.
 **Plan PNGs** (not committed, renders rule): `/workspace/renders/tennis_tower/F1.png, F2.png, F3.png, section.png, site_plan.png`.
 **Coordinates:** building local X (axial, along strip x) and Z (across, along strip z), origin at the SW corner; **strip x = 60 + X, z = −40 + Z** (Rev 2.4; was 318 + X). Heights in the building are **above F1 (F1 = 0)**; site heights are **HD = above the hull floor at the strip centreline (z 0)**. **F1 = +4.0 HD** (§3.3).
@@ -986,3 +986,90 @@ All layout calls below are **Vance proposal** under the Rev 3.5 rules (1.8 m cle
 4. **Still open from r3, unchanged:**
    - TTQA-050 bowling: held for Jared (6 lanes or keep 8).
    - TTQA-028 Services: held for Jared.
+
+### Rev 3.10, 2026-11-20 (Vance): Jared decisions (2026-11-20 1:50 PM CT, his card answers, relayed by Gage)
+**Decisions (Jared):**
+- TTQA-050: bowling goes **8 → 6 lanes** to give it a walkway entrance.
+- TTQA-029: the 10 × 20 m courts stay (won't fix confirmed).
+- Corner stairs: Rook builds them.
+- TTQA-028: the Services suite goes to Rook in the temp-Services zone.
+
+Everything below that isn't one of those four decisions is **Vance proposal**. The rules are the same as Rev 3.5: 1.8 m clear links, 1.5 m landings, 1.07 m guards with < 100 mm openings where a drop is over 0.76 m, and 2.1 m headroom.
+
+**Geometry check.** I re-checked against current main (`2131ef3`) with box AABBs computed from the placed GLBs (`tt_tower_manifest.json` + `structure/build_structure.py` + `rooms/temp-Courts/placements.py`).
+- **Instance names have drifted since Rev 3.8.** Below I quote current manifest rows (the loader's `<asset>_<n>` names on a full build) along with the old Rev 3.8 / r3 names, so check by position:
+
+  | Rev 3.8 / r3 name | Current name | Position |
+  |---|---|---|
+  | lane pair 1150 | `tt_bowl_lane_pair_1169` | (44.65, 0, 12.85) |
+  | settee 1151 | `tt_bowl_settee_1170` | (31.098, 0, 12.895) |
+  | stand 3p8_1620 | `tt_stand_module_3p8_1639` | (42.1, 0, 17.6) |
+  | stand 1622 | `tt_stand_module_1641` | (47.75, 0, 17.6) |
+  | stand 1624 | `tt_stand_module_1643` | (55.25, 0, 17.6) |
+  | core a_961 (r3: a_971, = C-SW) | `tt_stair_core_a_974` | (35.1, 0, 17.75) |
+  | acoustic wall 1152 | `tt_bowl_core_acoustic_1171` | — |
+- **Rev 3.9 doesn't touch the bowling footprint.**
+  - The F1 stand it changed (3p8 at X 59.01..62.78, row `_1645`) starts 0.03 m E of the swapped `_1643` (ends X 58.98), so the two don't overlap.
+  - Stands 1666/1670/1672, the r39 cheeks (X 62.78..62.88) and the X 62.90..76.50 cut are all E of X 59 or on F2.
+- **TTQA-026 hook rails** (`tt_climb_hook_rail` ×7, y 7.51, Z ≈ 10.37) are **F2 only** and don't touch F1.
+
+1. **TTQA-050, bowling entrance: RELEASED from hold (Jared: 6 lanes). Build per Rev 3.8 #1, restated with the as-built numbers.**
+   - **Why Gage's r3 walks failed:**
+     - **From the N (X 37.5 / 40 / 44):** there is no opening in Walls_F1 line Z 15 between X 30 and X 50.
+       - The wall is solid at Z 14.70..15.00. Gage's "Z 15.35" falls in the 0.45 m dead slot between the wall and the stand backs (Z 15.00..15.50).
+       - At X 37.5 / 40 the probe also meets C-SW core `_974`: walls X 29.99..40.19, Z 15.00..20.50, with its internal well guard at X 32.70..37.46, Z 17.65..17.85.
+       - At X 44 the probe meets stand `_1639`.
+     - **The existing X 50..53 opening (head +3.0):** it leads only into that dead slot behind stand `_1641` / `_1643`, and on the hall side lane pair `_1169`'s solid (Z 11.05..14.65, to +2.55) covers it.
+     - **From the E (X 64.35):** that is the ST+S1 core b `_990` and slab. Not used.
+   - **Lanes (Leisure):** remove lane pair **`tt_bowl_lane_pair_1169`** (Z 11.05..14.65) and settee **`tt_bowl_settee_1170`** (X 30.20..31.90, Z 11.46..14.24; its moss wall goes with it). That leaves **6 lanes** (pairs `_1167` and the two S of it).
+   - **Walkway (the aisle):** **X 30.30..56.90, Z 11.16..14.70**.
+     - **3.54 m clear width** (≥ 1.8 ✓). Headroom is to the F2 slab underside at +5.70.
+     - **W end:** it opens at X 30.30..37.00 onto the bowlers' area and the approaches of pair `_1167` (X 32.40..36.98), behind the foul line (X 37.02).
+     - **W wall:** the X 30 wall's aquatic column pier (X 29.70..30.30, Z 12.20..12.80) projects 0.30 m into the aisle's W end but doesn't narrow its Z width.
+     - **E end:** a dead end at the acoustic wall `_1171` (X 56.90..57.00).
+   - **Divider (Rook):** a 1.07 m colonly divider rail at **Z 11.06..11.16, X 37.00..56.90**.
+     - It stands 0.01 m off pair `_1167`'s solid (Z ≤ 11.05) and meets acoustic wall `_1171` at X 56.90.
+     - < 100 mm openings. It keeps walkers off the lane beds E of the foul line.
+   - **Door A, main (Rook + Courts):**
+     - **Courts:** remove stand **`tt_stand_module_3p8_1639`** (X 40.22..43.98). That gives **gap A at X 40.19..44.01**: W side the C-SW core front wall (X 39.99..40.19, full height), E side the new cheek.
+     - **Courts:** swap stand **`tt_stand_module_1641`** → `tt_stand_module_6p5` at **centre X 47.245** (X 44.01..50.48), y 0, Z 17.6, yaw 0.
+     - **Rook, cheek:** a stand-end cheek **X 43.91..44.01, Z 15.00..19.76**, 1.07 m over each tier. It runs back to the wall face so it also closes the dead slot.
+     - **Rook, door cut:** a **1.8 m pair-door opening in Walls_F1 line Z 15 (Z 14.70..15.00) at X 40.35..42.15**, head +2.4, with infill everywhere else on X 30..50. It sits 0.16 m clear of the core front wall.
+     - **Landings:**
+       - hall side X 40.19..43.91 × Z 15.00..19.76 (3.72 × 4.76 m) ✓, then the S concourse (Z ≥ 19.76);
+       - aisle side X 40.35..42.15 × Z 13.20..14.70 (1.8 × 1.5 m), inside the 3.54 m aisle ✓.
+     - **Bonus:** C-SW core `_974`'s F1 E door (jambs X 40.19..40.21, Z 18.08..20.02) currently faces stand `_1639`'s solid aisle block 0.01 m away. Removing `_1639` frees that door onto landing A.
+   - **Door B, second exit (Rook + Courts):**
+     - **Courts:** swap stand **`tt_stand_module_1643`** → `tt_stand_module_6p5` at **centre X 55.745** (X 52.51..58.98), y 0, Z 17.6, yaw 0. That gives **gap B at X 50.48..52.51**.
+     - **Rook, cheeks:** **X 50.48..50.58** and **X 52.41..52.51**, Z 15.00..19.76, 1.07 m over the tiers. Clear width 1.83 m.
+     - **Rook, door cut:** the existing Walls_F1 Z 15 opening **(50, 53, head 3.0) becomes a 1.8 m pair-door opening at X 50.6..52.4**, head +2.4, with infill X 50.0..50.6 and 52.4..53.0 (full height).
+     - **Landings:** hall side 1.83 × 4.76 m ✓; aisle side X 50.6..52.4 × Z 13.20..14.70 ✓.
+   - **Doors:**
+     - Both are frame-only, like the Rev 3.7 #4 door. Gage may add proximity `tt_door_pair_18` leaves; if so, swing them **+Z (into the hall)** so they stay out of the aisle, and use the door-lab game-tempo profile (`context/door_lab/REALISM_SPEC.md` §7.3).
+     - The door centres (X 41.25, 51.50) are 10.25 m apart, which meets the 1/3-diagonal rule (≥ 10.2 m, *real-world ref*).
+   - **`build_structure.py` change for Rook:** the line-15 openings in `walls_f1()` become `[(62.90, 76.5, y1), (40.35, 42.15, 2.4), (50.6, 52.4, 2.4), (90.6, 92.4, 2.4)]`.
+   - **Clash check:**
+     - Nothing else is in the aisle or the gaps once `_1169`, `_1170` and `_1639` go.
+     - The PT column (X 39.5, Z 24.5) and Rev 3.9 stand `_1645` (X ≥ 59.01) are outside.
+     - The doors are clear of the pin-end masking (X ≥ 54.87) and core b `_990` (X ≥ 58).
+   - **Programme:** 8 → 6 lanes; the bowling load drops from 40 to 30 (5 per lane).
+   - **QA note (Gage):** add an F1 walk (y 0):
+     - **Main route:** (41.25, 21.0) → (41.25, 16.0) → (41.25, 13.0) → (34.0, 13.0) → (34.0, 9.5) (on the `_1167` approach).
+     - **Door B route:** (51.5, 21.0) → (51.5, 13.0) → (41.25, 13.0).
+     - **Core:** from the C-SW core (39.8, 19.0) → (42.0, 19.0).
+     - Expect arrived and max_air ≈ 0. Add a jump-at-rail check on the divider at (45.0, 11.6).
+2. **TTQA-029: won't fix, confirmed by Jared.** The courts stay 10 × 20 m and keep their name (Rev 3.7 #11 stands).
+3. **Corner stairs: Rook builds them (Jared).**
+   - The governing spec is the Rev 2.7 Type A cores **C-SW / C-SE / C-NW / C-NE**: §4.6 row (X 30..40.2 / 102.8..113, Z 15..20.5 / 58.5..64, F1–F3, 2.5 m flights) and §3.11.8 (5.5 × 10.2 m core, 0.1694 m risers, 0.28 m treads).
+   - Current main has `tt_stair_core_a` at all four corners on F1/F2 (rows 974–981) and no F3-tagged corner core.
+   - I found no other corner-stair spec text and no open corner-stair item in my files. So the scope of what's left (including any F3 run and stand-end tie-ins) is **Rook's to own**, built to those rows. Flag anything that conflicts back to me.
+4. **TTQA-028: Services suite released to Rook (Jared).**
+   - Rook places the Services suite in the **temp-Services zone** per §3.10: the IBC fountain ratio plus **2 all-gender accessible/family rooms per floor**.
+   - Rook's working source is `rooms/temp-Services/services_suite.py` + `fountain_station.py`: one 2-room suite per floor plus one fountain station per floor; F1/F2 next to the R1/R2-NW wet stacks, F3 in the W under-stand bay.
+   - My conditions:
+     - Each placement keeps a 1.5 m clear landing at its doors.
+     - It keeps ≥ 1.8 m clear on the concourse it opens onto.
+     - The F3 bay keeps 2.1 m headroom under the rake.
+     - The colliders are `*-colonly` only.
+   - Gage re-audits in r4.
+5. **Door-lab note:** door timing for any doors placed in this tower now follows `context/door_lab/REALISM_SPEC.md` §7 (game tempo, Jared 2026-11-20).

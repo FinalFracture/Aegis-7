@@ -109,28 +109,6 @@
     "tag": "f1"
    },
    {
-    "glb": "res://assets/models/tt_bowl_lane_pair.glb",
-    "asset": "tt_bowl_lane_pair",
-    "p": [
-     44.65,
-     0.0,
-     12.85
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
-    "glb": "res://assets/models/tt_bowl_settee.glb",
-    "asset": "tt_bowl_settee",
-    "p": [
-     31.098,
-     0.0,
-     12.895
-    ],
-    "yaw": 0,
-    "tag": "f1"
-   },
-   {
     "glb": "res://assets/models/tt_bowl_core_acoustic.glb",
     "asset": "tt_bowl_core_acoustic",
     "p": [
