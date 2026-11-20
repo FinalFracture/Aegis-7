@@ -1,6 +1,6 @@
 {
 "note": "Rook r7 Tennis Tower cylinder drop. Building coords (X axial, Z across, Y up, F1 = 0, SW corner). See design/tennis_tower_handoff/CYLINDER_DROP.md",
-"count": 2689,
+"count": 2694,
 "by_owner": {
 "Rook": 1050,
 "Arrival": 42,
@@ -8,7 +8,7 @@
 "Leisure": 234,
 "Courts": 351,
 "Active": 536,
-"Rooftop": 398,
+"Rooftop": 403,
 "Services": 6
 },
 "skipped": [
@@ -29052,6 +29052,18 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
+21.9,
+12.2,
+5.0
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_food_table4"
+},
+{
+"glb": "res://assets/models/tt_food_table4.glb",
+"p": [
 4.5,
 12.2,
 7.9
@@ -29112,6 +29124,18 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
+21.9,
+12.2,
+7.9
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_food_table4"
+},
+{
+"glb": "res://assets/models/tt_food_table4.glb",
+"p": [
 4.5,
 12.2,
 10.8
@@ -29172,6 +29196,18 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
+21.9,
+12.2,
+10.8
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_food_table4"
+},
+{
+"glb": "res://assets/models/tt_food_table4.glb",
+"p": [
 4.5,
 12.2,
 13.7
@@ -29232,6 +29268,18 @@
 {
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
+21.9,
+12.2,
+13.7
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_food_table4"
+},
+{
+"glb": "res://assets/models/tt_food_table4.glb",
+"p": [
 4.5,
 12.2,
 16.6
@@ -29281,6 +29329,18 @@
 "glb": "res://assets/models/tt_food_table4.glb",
 "p": [
 19.0,
+12.2,
+16.6
+],
+"yaw": 0.0,
+"tag": "f3",
+"owner": "Rooftop",
+"asset": "tt_food_table4"
+},
+{
+"glb": "res://assets/models/tt_food_table4.glb",
+"p": [
+21.9,
 12.2,
 16.6
 ],
