@@ -203,7 +203,7 @@ Axis parallel to world +X at (y, z) = (195.236187, -1.25), floor radius 200 m, c
 
 Verified headless (Godot 4.7.2): `--qa-ring` DONE failures=0 (all 10 strips, both caps, back on the preface with world-up), `--qa-egress` DONE failures=0, `--qa-stairs` DONE failures=0.
 
-## Door lab pass A: independent QA (Patch, 2026-11-20 ~4:40 PM CT)
+## Door lab pass A: independent QA (Patch, 2026-11-20 ~4:05 PM CT)
 
 Fresh clone of main at a603953 (contains ac35bfd and merge c13382c). Godot 4.7.2: `--headless --import` first, then `--qa-door-lab` at 60, 20 and 15 fps. Shots used xvfb + `opengl3` (llvmpipe, 1920×1080). Every check in `context/door_lab/QUALITY_BAR.md` (c86527f) was scored from the raw `motion.csv`, `metrics.json`, `meta.json` and `godot/resources/door_lab/*.json|.tres` with Patch's own script, not from the harness pass/fail. Evidence (outside the repo): `/workspace/qa_doorlab_evidence/`.
 
