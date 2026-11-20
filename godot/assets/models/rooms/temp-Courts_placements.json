@@ -8,9 +8,9 @@
    "tt_court_partition": 112,
    "tt_court_net": 120,
    "tt_court_partition_door_closed": 8,
-   "tt_stand_module_3p8": 12,
-   "tt_stand_module": 22,
-   "tt_stand_module_6p5": 14,
+   "tt_stand_module_3p8": 11,
+   "tt_stand_module_6p5": 16,
+   "tt_stand_module": 20,
    "tt_stand_module_f3_3p8": 4,
    "tt_stand_module_f3_3p8_seats": 4,
    "tt_stand_module_f3": 16,
@@ -25,7 +25,7 @@
    "tt_trk_straight_sn": 2,
    "tt_trk_straight_ew": 2
   },
-  "n": 352,
+  "n": 351,
   "basketball_courts": [
    "W X 41.5..69.5 Z 32..47",
    "E X 73.5..101.5 Z 32..47"
@@ -3061,19 +3061,6 @@
     "p": [
      42.1,
      0.0,
-     17.6
-    ],
-    "yaw": 0,
-    "tag": "f1",
-    "room": "F1-CON",
-    "note": "S long; put z 17.6 keeps preview back-face convention"
-   },
-   {
-    "glb": "res://assets/models/tt_stand_module_3p8.glb",
-    "asset": "tt_stand_module_3p8",
-    "p": [
-     42.1,
-     0.0,
      61.4
     ],
     "yaw": 180,
@@ -3082,17 +3069,17 @@
     "note": "N long"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     47.75,
+     47.245,
      0.0,
      17.6
     ],
     "yaw": 0,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "S long; put z 17.6 keeps preview back-face convention"
+    "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.8 #1 TTQA-050 bowling door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module.glb",
@@ -3108,17 +3095,17 @@
     "note": "N long"
    },
    {
-    "glb": "res://assets/models/tt_stand_module.glb",
-    "asset": "tt_stand_module",
+    "glb": "res://assets/models/tt_stand_module_6p5.glb",
+    "asset": "tt_stand_module_6p5",
     "p": [
-     55.25,
+     55.745,
      0.0,
      17.6
     ],
     "yaw": 0,
     "tag": "f1",
     "room": "F1-CON",
-    "note": "S long; put z 17.6 keeps preview back-face convention"
+    "note": "S long; put z 17.6 keeps preview back-face convention; 6.5 m (Rev 3.8 #1 TTQA-050 bowling door gap)"
    },
    {
     "glb": "res://assets/models/tt_stand_module.glb",

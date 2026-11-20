@@ -133,7 +133,10 @@ def acoustic():
 
 def build(PL):
     lp = lane_pair(); st = settee(); ac = acoustic()
-    for k in range(4):
+    # Rook TTQA-050 (Rev 3.8 #1, Jared 2026-11-20): 6 lanes. Lane pair 1150 + settee 1151 (k = 3, Z 11.05..14.65) removed; the freed
+    # N aisle X 30.0..56.9, Z 11.16..14.70 links the Walls_F1 Z 15 doors X 40.35..42.15 / 50.6..52.4 to the approaches (X 30..37).
+    # Divider rail Z 11.06..11.16 X 37.0..56.9: structure/links_rev310.py (tt_struct_bowl_links_r310). Foul X 37.0 -> head pin 55.288 unchanged.
+    for k in range(3):
         place(PL, lp, 0, 0, .25 + 3.6*k); place(PL, st, 0, 0, .25 + 3.6*k)
     place(PL, ac, 0, 0, 0, local=True)
 if __name__ == '__main__':
