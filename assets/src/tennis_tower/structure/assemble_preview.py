@@ -130,6 +130,8 @@ def envelope():
 
 EDGE_OPEN = {(-26.0, 14.75): "tt_terrace_edge_open_c2", (-26.0, 65.25): "tt_terrace_edge_open_c2", (154.0, 14.75): "tt_terrace_edge_open_c2",
              (-61.25, 38.0): "tt_terrace_edge_open_w38", (-61.25, 42.0): "tt_terrace_edge_open_w42", (169.25, 38.0): "tt_terrace_edge_open_e38"}   # r8 Rev 3.7 #1/#2 openings (access_rev37.py)
+EDGE_OPEN.update({(-14.0, 14.75): "tt_terrace_edge_open_cs_a", (142.0, 65.25): "tt_terrace_edge_open_cs_a",          # 2026-11-20 terrace corner stairs
+                  (-14.0, 65.25): "tt_terrace_edge_open_cs_b", (142.0, 14.75): "tt_terrace_edge_open_cs_b"})         # (terrace_corner_stairs.py)
 def put_edge(x, y, z, yaw, tag):
     put(EDGE_OPEN.get((round(float(x), 2), round(float(z), 2)), "tt_terrace_edge"), x, y, z, yaw, tag)
 
