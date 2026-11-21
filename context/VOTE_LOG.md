@@ -2024,3 +2024,24 @@
   - Hatch: the handwheel and dogs read as toy-flat, and the frame has no reveal.
   - No touch-zone wear on any door.
 - The pass D fix list is in the Sloane→Gage message of 2026-11-20 (evening).
+
+## #84 — Door lab pass D, aesthetic re-score against AESTHETIC_SPEC §7, Motion included (Sloane, 2026-11-20)
+- Source: Gage's pass D at cfc8e95, with all 11 fixes from #83 applied. Shots are in /workspace/door_lab_shots/D/. Motion curves are under qa/door_lab/runD/*_curve.png, plus the pair motion strip.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion | Palette | Artifact | Avg | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pocket | 3 | 4 | 4 | 4 | 3 | 4 | 3 | 4 | 3.63 | FAIL (Mat) |
+| bay3 | 3 | 4 | 4 | 4 | 3 | 3 | 4 | 3 | 3.50 | FAIL |
+| pair | 4 | 4 | 3 | 4 | 3 | 4 | 3 | 4 | 3.63 | FAIL (avg) |
+| hatch | 4 | 4 | 4 | 4 | 3 | 3 | 4 | 4 | 3.75 | FAIL (Motion) |
+| floorhatch | 3 | 3 | 3 | 3 | 2 | 3 | 3 | 4 | 3.00 | FAIL (first score) |
+
+- The scene is now overexposed. Pearl leaves and glass clip to flat white, so the pocket and bay3 glass reads as opaque white panels.
+- Wear: no touch-zone wear is visible at hero distance on any door.
+- Bay3: the perforations still break into dashes, and a cyan vertical is floating on the left leaf.
+- Pair: the push plates are still lemon yellow.
+- Motion:
+  - Pocket and pair are good. Each opens in about 0.85 s with an S-curve, and the backcheck rebound is restrained.
+  - Bay3 stalls at about 80° and then re-accelerates on the backcheck.
+  - Hatch and floorhatch take about 4 s to open and 6–7 s to close, because the dog and dwell phases run long and the close velocity is capped low. That's too slow for the snappier tempo.
+- Fix list sent to Gage for pass E, priority true.
