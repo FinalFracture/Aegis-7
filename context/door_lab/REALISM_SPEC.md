@@ -32,10 +32,10 @@ Units: s, m, mm, kg, deg. Every timestamp is measured from the request (t = 0). 
   - The effect is transient. Guide rollers and hinge bearings carry it, and it is **not visible at door scale**. **Do not animate any Coriolis deflection.**
   - Spinward/antispinward sliders feel it as a ±6% weight change on the rollers, and axial sliders feel none. Neither shows.
 - **Gravity gradient:** g ∝ r, so it varies 1.2% over a 2.4 m door height. That is negligible.
-- **Leaf weight:** all masses below are at 1.0 G. Hinges, rollers and struts are sized for **1.45 G** (the Drum RPM max). Every powered door is **actuator- and damper-driven, not gravity-driven**, so its timing is the same at any G.
+- **Leaf weight:** all masses below are at 1.0 G. Hinges, rollers and counterbalance springs (the floor-hatch torsion bar, §4.6) are sized for **1.45 G** (the Drum RPM max). Every powered door is **actuator- and damper-driven, not gravity-driven**, so its timing is the same at any G.
 - **At 0.08 G:**
   - A slider leaf weighs about 4 kgf, so belt jerk could lift it off the track. That is why the **anti-lift rollers are mandatory and visible**.
-  - A gas-strut hatch counterbalanced for 1.0 G would spring open. That is why the hatch uses a **rotary hydraulic damper plus a powered lock** (§4.6).
+  - A spring-counterbalanced hatch (torsion bar, §4.6) sized for 1.0 G would spring open: 585 N·m of bar against a 55 N·m weight moment. That is why the hatch uses a **rotary hydraulic damper plus a powered lock** (§4.6).
 
 ---
 
@@ -380,11 +380,15 @@ Closing KE is 1.4 J per leaf.
 | Leaf | 1.00 × 1.00 × 0.10 m, **140 kg** |
 | Swing | **105°** |
 | Weight moment closed | 140 × 9.81 × 0.5 = **687 N·m** at 1.0 G |
-| Counterbalance | **2 gas struts** giving **585 N·m (85%)**. A human can open it with ≤ 200 N on the handle, and gravity still holds it shut at 1.0 G. |
-| Why also damper + powered lock | the Drum RPM range is 0.08–1.45 G. At 0.08 G the weight moment is 55 N·m and the struts would throw the leaf open, so a **rotary hydraulic damper caps the speed at 35°/s** and the actuator drives it closed against the struts (≤ 530 N·m). At 1.45 G the actuator adds 410 N·m to open. |
+| Counterbalance (**Vance proposal, adopted 2026-11-20, realism owner's call; replaces the Rev 1.0 2 gas struts**) | **No gas struts.** A **585 N·m (85%) torsion bar**: a Ø25 bar inside a **Ø56 hinge tube** that runs the hinge edge (tube x −0.490…+0.450; bar x −0.575…+0.467). It sits outboard of the liner in an open hinge channel behind the leaf (z −0.575…−0.506, channel floor 72 mm down, \|x\| ≤ 0.600). There is an **exposed anchor clevis at each end**: the fixed frame anchor at −X and the leaf anchor on the +X tube end cap. The **tube top is 4 mm below the floor**, the **hinge axis is 32 mm below the floor**, and nothing protrudes above the floor. Torque at 1 G: weight moment **687 N·m**, bar **585 N·m**, net **≈ 102 N·m closing** at the closed position, actuator **≤ 530 N·m**. A human can open it with ≤ 200 N on the handle, and gravity still holds it shut at 1.0 G. Phase timing is unchanged. |
+| Damper | **Rotary hydraulic damper on the hinge axis, outboard** (x 0.535…0.590), capped at **77.8°/s open / 33.3°/s close** at game tempo (35°/s real open). |
+| Stay | Stay arm (5 × 20 mm flat bar, 0.40 m between pins), slider and **105° detent** on the **+X side wall** (band x 0.4515…0.4805, outside the column). It folds into a **12.5 mm liner recess** (x 0.449…0.4625); the slot and plunger pocket are **32 mm** deep (to x 0.482, inside the 40 mm limit). The detent plunger pops up behind the slider at 105° (2.5 mm gap) and has an **OverrideOrange detent pull knob** visible in the recess. |
+| Clear-column rule | Column = \|x\|, \|z\| < 0.450 from the well floor to floor + 2 m. **No frame-fixed, counterbalance, stay or damper part may enter it at any angle (0–105°), and no part at all may enter it at 105°.** The leaf and its leaf-borne lock gear may sweep the column during travel (the leaf crosses it 0–94.5°). The lock gear (wheel, 4 dogs, 4 linkages, handle, OverrideOrange handwheel and lever) must clear the liner, flange and keepers by **≥ 3 mm (target)**, and the **dogs must fully retract before lift-off** (dogs end 1.50 s, lurch starts 1.80 s at game tempo). As built (Rook 2db8f7b / 83c56e3, PASSC_NOTES): fixed hardware ≥ 2.0 mm outside the column (keeper), moving stay ≥ 1.5 mm, leaf gear at 105° 17.5 mm, lock-gear minimum **9.62 mm** (Dog_01/02 at 3.0° against the liner). |
+| Leaf-to-rebate gap | **6.0 mm** on the W, E and S sides (rebate wall ±0.506, leaf edge ±0.500; Rook 54d2e05). The N (hinge) side is the open hinge channel and has no rebate wall. The leaf sits flush with the flange (0.0 mm). |
+| Why also damper + powered lock | the Drum RPM range is 0.08–1.45 G. At 0.08 G the weight moment is 55 N·m and the torsion bar (585 N·m) would throw the leaf open, so a **rotary hydraulic damper caps the speed at 35°/s** (77.8°/s at game tempo) and the actuator drives it closed against the bar (≤ 530 N·m). At 1.45 G the weight moment is 996 N·m, and the actuator adds about 411 N·m to open. |
 | Open timing | phases 1–6 as §4.2, then the S-curve 0.7 → 105° with ω 35°/s, α 35, j 105 (**4.28 s**) |
 | Total open | **7.63 s** (3.35 + 4.28) |
-| Hold-open | gas-strut lock sleeve + mechanical stay arm that drops into a detent (clunk) |
+| Hold-open | mechanical stay arm whose slider drops into the 105° detent (clunk); OverrideOrange knob pulls the plunger to release. No strut lock sleeve. |
 
 ### 4.7 Visible hardware checklist
 - [ ] 2 heavy hinges plus a davit arm.
@@ -399,7 +403,7 @@ Closing KE is 1.4 J per leaf.
 - [ ] Hold-open catch.
 - [ ] Hub lamp ring (Sloane) + amber beacon.
 - [ ] **Manual override:** handwheel (OverrideOrange) driving the dogs at **12 turns** full throw, plus a manual equalize lever.
-- [ ] Hatch only: 2 gas struts, stay arm, damper.
+- [ ] Hatch only (Vance proposal, adopted 2026-11-20): torsion bar in the Ø56 hinge tube with an exposed anchor clevis at each end, rotary damper outboard on the hinge axis, stay arm + slider + 105° detent with an OverrideOrange knob in the +X liner recess. **No gas struts.**
 
 ### 4.8 Audio cues
 | t (s) | Cue | Rel. level |
@@ -436,6 +440,8 @@ Closing KE is 1.4 J per leaf.
 | R12 | Lamp sync | cyan at the first mechanical event and green at settle (±0.05 s) | CSV |
 | R13 | G invariance | bulkhead and hatch timings unchanged at 0.08 / 1.0 / 1.45 G (±5%) | headless run ×3 |
 | R14 | As-built fidelity | bay3 and pair_18 use the GLB leaf nodes and pivots unchanged (outswing bay3, +Z pair) | scene |
+
+Floor hatch (Vance proposal, adopted 2026-11-20): **R6** looks for the torsion-bar hardware in the §4.7 hatch line, **not gas struts**. **R7** includes the §4.6 clear-column rule. **R8** checks the 6.0 mm W/E/S leaf-to-rebate gap.
 
 ## 6. Conflicts with AESTHETIC_SPEC (for Gage / Jared to settle)
 - **Durations:**
@@ -625,12 +631,12 @@ Audio: equalize hiss 0.12 → 0.99; dog whine 1.02 → 1.47; dog clunks 1.38 →
 | 8 | Cruise | 0.45 | 2.75–3.49 | 24.0 → 81.7° at 77.8°/s |
 | 9 | Decel → stay arm drops into detent | 0.45 | 3.49–4.09 | 81.7 → 105°; **detent clunk + lamp green 4.09** |
 
-**Close: 6.39 s** (real 10.65). **Safety rule step 2:** 0.45× (44.4°/s) gives **14.0 J ✗**, so close travel runs at **0.6×**: ω **33.3°/s (7.9 J ✓)**, α 55.6°/s², j 278°/s³. Against the gas struts the actuator still has to deliver ≤ 530 N·m (§4.6); that doesn't change.
+**Close: 6.39 s** (real 10.65). **Safety rule step 2:** 0.45× (44.4°/s) gives **14.0 J ✗**, so close travel runs at **0.6×**: ω **33.3°/s (7.9 J ✓)**, α 55.6°/s², j 278°/s³. Against the torsion bar (585 N·m; net ≈ 102 N·m closing at 1 G) the actuator still has to deliver ≤ 530 N·m (§4.6, Vance proposal adopted 2026-11-20; no gas struts). That doesn't change, and neither does the phase timing.
 
 | # | Phase | k | t0–t1 (s) | Motion |
 |---|---|---|---|---|
 | 1 | Klaxon / beacon | 0.6 | 0.00–0.60 | — |
-| 2 | Stay-arm / strut-lock release | — | 0.60 | release clunk |
+| 2 | Stay-arm detent release | — | 0.60 | release clunk |
 | 3 | Accel | 0.6 | 0.60–1.40 | 105 → 91.7° |
 | 4 | Cruise | 0.6 | 1.40–3.69 | 91.7 → 15.3° at 33.3°/s |
 | 5 | Decel | 0.6 | 3.69–4.49 | 15.3 → 2° |
@@ -683,7 +689,7 @@ Label: §7 tables are derived from Jared's 2026-11-20 tempo decision via Gage's 
 Reviewed: `/workspace/door_lab_shots/A/` renders + motion PNGs, `qa/door_lab/run60/{summary,meta}.json`. Pass A ran at the old 0.7× travel scale, so it is checked for hardware, sequence and shape only. §7 timing/R3/R15 are checked in pass B.
 - **No numbers to check:** the per-tick CSVs and cue logs are not on main, and the motion PNGs have no time or value axes, so R2/R3/R5/R9/R11/R12/R15 can't be verified from the artifacts yet.
 - **R15 at 0.7×:** slider close ≈ 17.6 J ✗ (m ≈ 47.9 kg/leaf, v ≈ 0.86 m/s). Bay3 5.7 J, pair 2.8 J and hatch 5.7 J pass. Pass B must apply the 0.64 m/s slider cap.
-- **Lab coverage:** the "hatch" is the wall plug bulkhead (vertical). There is no horizontal floor-hatch case (§4.6: 105°, 2 gas struts, stay-arm detent, damper), and R13 (0.08/1.0/1.45 G) is not reported. F-OBS-EMERGENCY (§4.4) isn't implemented.
+- **Lab coverage:** the "hatch" is the wall plug bulkhead (vertical). There is no horizontal floor-hatch case (§4.6: 105°, ~~2 gas struts~~ torsion bar per the 2026-11-20 amendment, stay-arm detent, damper), and R13 (0.08/1.0/1.45 G) is not reported. F-OBS-EMERGENCY (§4.4) isn't implemented.
 - **Hardware (R6):** the bulkhead shows a box plus one bar where §4.7 calls for 8 dogs with linkage to a central wheel, plus gauges, an equalize port, push-off rams, a seal bead and a handwheel. The back face of the open leaf is a featureless black slab. The detail/jamb cameras are underexposed, so the hinge, seal and strike can't be judged.
 - **Lamps (R6/R7):** the bay3 and bulkhead cyan lamp lines stay fixed in space while the leaves move. They sit mid-leaf, not on the jambs or mullions.
 - **meta.json** records commit f2ccf57 (Patch count 78), not the pass A commit.
@@ -722,7 +728,7 @@ I recomputed everything from `qa/door_lab/runC{,_20fps,_15fps}/*/motion.csv` and
   - There is no open or back-face render.
 - **FAIL: R6, floor hatch (§4.6).**
   - The closed leaf sits about 100 mm proud of the floor on loose frame strips.
-  - Not shown: the 2 gas struts, stay arm with detent, rotary damper, seal, dogs, handle or frame flange.
+  - Not shown: ~~the 2 gas struts~~ the counterbalance (now the torsion bar and anchor clevises, §4.6 amendment 2026-11-20), stay arm with detent, rotary damper, seal, dogs, handle or frame flange.
 - **Partial: pocket (§1.6).** Visible: radar head, jamb sensors (3 of 4), leaf pulls and floor guide. Not visible: carriages, anti-lift rollers, belt clamp, end bumpers, solenoid bolt and keeper, and the hex-key plate. There is no access slot or panel.
 - **Fixed: exposure and lamps.** Exposure is good in the heroes, but no detail or jamb cameras were rendered in pass C. The lamp strips now sit on the jambs and mullions, and the floating mid-leaf lines are gone. Pair glazing now reads as a tinted lite with a pattern.
 
@@ -758,3 +764,13 @@ I recomputed from `qa/door_lab/runE{,_20fps,_15fps}/*/{motion,cue_log,metrics}` 
   - The pocket pearl leaves clip to white in jamb_closed.
   - The bulkhead readout renders blank white.
 - **Pocket §1.6, partly visible.** Seen: exposed track end with carriage at the head, 4 lenses per jamb, hex-key plate, pulls, floor guide. Not seen: anti-lift roller, belt clamp, end bumpers, solenoid bolt and keeper. Re-check once the cameras are fixed.
+
+---
+
+## §11 Amendment: floor-hatch counterbalance (Vance proposal, adopted 2026-11-20, realism owner's call; recorded 2026-11-21 per Patch M-118)
+§0.3, §4.6, §4.7, §5, §7.5, §8 and §9 now specify the **torsion bar instead of 2 gas struts**, with the damper, stay, clear-column rule and 6.0 mm gap above. §10 had no strut targets. Numbers are cross-checked against `assets/src/door_lab/PASSC_NOTES.md` (Rook 2db8f7b / 83c56e3 / 54d2e05). Where the brief and the notes differ, the notes win:
+- **"Full-length" tube:** the tube runs x −0.490…+0.450 (0.94 m), not the full 1.00 m leaf edge. The bar runs x −0.575…+0.467 into the anchor hubs.
+- **Rebate gap:** 6.0 mm applies to the W, E and S sides only. The N hinge side has no rebate wall.
+- **Column clearances as built:** keeper 2.0 mm and stay arm 1.5 mm, both outside the column. Lock gear 9.62 mm minimum, which meets the ≥ 3 mm target.
+- **Open item (not strut-related):** the floor hatch has **4 dogs** (`hatch_Dog_01..04`), but §7.5 rows 1–5 and 7 say "as 7.4" (8 dogs, 18 ms stagger), and the runE floor-hatch cue log plays 8 clunks. This needs reconciling in pass F: 4 clunks on an 18 ms stagger, or the GLB gets 8 dogs.
+
