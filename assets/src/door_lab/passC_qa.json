@@ -780,7 +780,7 @@
     "slide_HexRelease_socket  world_origin=(-1.0800, 1.1650, -0.1010)  tris=40",
     "slide_Solenoid_mount  world_origin=(0.0000, 0.0000, 0.0000)  tris=16",
     "slide_Solenoid  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
-    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5290, -0.0340)  tris=32",
+    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5227, -0.0340)  tris=32",
     "threshold  world_origin=(0.0000, 0.0000, 0.0000)  tris=136",
     "slide_Track  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
     "slide_Motor_gearbox  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
@@ -850,6 +850,12 @@
      "coplanar": [],
      "open": []
     },
+    "open_overshoot_2mm": {
+     "worst_overlap": 0.014,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
     "closed_panel_shut": {
      "worst_overlap": 0.014,
      "bad_overlaps": [],
@@ -890,19 +896,34 @@
     }
    },
    "hw_gaps_passG": {
-    "endstop_L_to_carriage_full_open": 4.0,
-    "endstop_L_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_L_full_open_signed": 0.0,
+    "carriage_endstop_L_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_L_full_open": 25.0,
+    "carriage_to_endstop_L_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_L_2mm_overshoot": 23.0,
     "beltclamp_L_to_belt_0_1000mm": 2.0,
     "antilift_L_to_rollers_track": 2.0,
-    "endstop_R_to_carriage_full_open": 4.0,
-    "endstop_R_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_R_full_open_signed": 0.0,
+    "carriage_endstop_R_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_R_full_open": 25.0,
+    "carriage_to_endstop_R_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_R_2mm_overshoot": 23.0,
     "beltclamp_R_to_belt_0_1000mm": 2.0,
     "antilift_R_to_rollers_track": 2.0,
-    "bolt_retracted_to_keeper": 14.32,
+    "bolt_retracted_to_keeper": 8.26,
     "bolt_thrown_to_keeper_window": 3.0,
-    "bolt_thrown_to_track": 16.64,
-    "keeper_to_solenoid_closed": 22.0,
-    "solenoid_to_carriages_clamps_closed": 23.46,
+    "bolt_thrown_to_track": 11.84,
+    "bolt_retracted_tip_to_tab_top": 7.7,
+    "bolt_thrown_engagement": 10.3,
+    "bolt_thrown_tip_to_keeper_post": 12.0,
+    "keeper_to_solenoid_closed": 15.7,
+    "solenoid_to_carriages_clamps_closed": 18.74,
     "panel_closed_to_solenoid_clamps": 3.4,
     "ok": true
    },
@@ -926,7 +947,7 @@
     "slide_HexRelease_socket  world_origin=(-1.0800, 1.1650, -0.1010)  tris=40",
     "slide_Solenoid_mount  world_origin=(0.0000, 0.0000, 0.0000)  tris=16",
     "slide_Solenoid  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
-    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5290, -0.0340)  tris=32",
+    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5227, -0.0340)  tris=32",
     "threshold  world_origin=(0.0000, 0.0000, 0.0000)  tris=136",
     "slide_Track  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
     "slide_Motor_gearbox  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
@@ -996,6 +1017,12 @@
      "coplanar": [],
      "open": []
     },
+    "open_overshoot_2mm": {
+     "worst_overlap": 0.014,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
     "closed_panel_shut": {
      "worst_overlap": 0.014,
      "bad_overlaps": [],
@@ -1036,19 +1063,34 @@
     }
    },
    "hw_gaps_passG": {
-    "endstop_L_to_carriage_full_open": 4.0,
-    "endstop_L_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_L_full_open_signed": 0.0,
+    "carriage_endstop_L_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_L_full_open": 25.0,
+    "carriage_to_endstop_L_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_L_2mm_overshoot": 23.0,
     "beltclamp_L_to_belt_0_1000mm": 2.0,
     "antilift_L_to_rollers_track": 2.0,
-    "endstop_R_to_carriage_full_open": 4.0,
-    "endstop_R_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_R_full_open_signed": 0.0,
+    "carriage_endstop_R_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_R_full_open": 25.0,
+    "carriage_to_endstop_R_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_R_2mm_overshoot": 23.0,
     "beltclamp_R_to_belt_0_1000mm": 2.0,
     "antilift_R_to_rollers_track": 2.0,
-    "bolt_retracted_to_keeper": 14.32,
+    "bolt_retracted_to_keeper": 8.26,
     "bolt_thrown_to_keeper_window": 3.0,
-    "bolt_thrown_to_track": 16.64,
-    "keeper_to_solenoid_closed": 22.0,
-    "solenoid_to_carriages_clamps_closed": 23.46,
+    "bolt_thrown_to_track": 11.84,
+    "bolt_retracted_tip_to_tab_top": 7.7,
+    "bolt_thrown_engagement": 10.3,
+    "bolt_thrown_tip_to_keeper_post": 12.0,
+    "keeper_to_solenoid_closed": 15.7,
+    "solenoid_to_carriages_clamps_closed": 18.74,
     "panel_closed_to_solenoid_clamps": 3.4,
     "ok": true
    },
@@ -1072,7 +1114,7 @@
     "slide_HexRelease_socket  world_origin=(-1.0800, 1.1650, -0.1010)  tris=40",
     "slide_Solenoid_mount  world_origin=(0.0000, 0.0000, 0.0000)  tris=16",
     "slide_Solenoid  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
-    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5290, -0.0340)  tris=32",
+    "slide_SolenoidBolt  world_origin=(-0.0550, 2.5227, -0.0340)  tris=32",
     "threshold  world_origin=(0.0000, 0.0000, 0.0000)  tris=136",
     "slide_Track  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
     "slide_Motor_gearbox  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
@@ -1139,6 +1181,12 @@
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
+    },
+    "open_overshoot_2mm": {
+     "worst_overlap": 0.014,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
     }
    },
    "sweeps": {
@@ -1160,19 +1208,34 @@
     }
    },
    "hw_gaps_passG": {
-    "endstop_L_to_carriage_full_open": 4.0,
-    "endstop_L_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_L_full_open_signed": 0.0,
+    "carriage_endstop_L_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_L_full_open": 25.0,
+    "carriage_to_endstop_L_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_L_2mm_overshoot": 23.0,
     "beltclamp_L_to_belt_0_1000mm": 2.0,
     "antilift_L_to_rollers_track": 2.0,
-    "endstop_R_to_carriage_full_open": 4.0,
-    "endstop_R_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_R_full_open_signed": 0.0,
+    "carriage_endstop_R_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_R_full_open": 25.0,
+    "carriage_to_endstop_R_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_R_2mm_overshoot": 23.0,
     "beltclamp_R_to_belt_0_1000mm": 2.0,
     "antilift_R_to_rollers_track": 2.0,
-    "bolt_retracted_to_keeper": 14.32,
+    "bolt_retracted_to_keeper": 8.26,
     "bolt_thrown_to_keeper_window": 3.0,
-    "bolt_thrown_to_track": 16.64,
-    "keeper_to_solenoid_closed": 22.0,
-    "solenoid_to_carriages_clamps_closed": 23.46,
+    "bolt_thrown_to_track": 11.84,
+    "bolt_retracted_tip_to_tab_top": 7.7,
+    "bolt_thrown_engagement": 10.3,
+    "bolt_thrown_tip_to_keeper_post": 12.0,
+    "keeper_to_solenoid_closed": 15.7,
+    "solenoid_to_carriages_clamps_closed": 18.74,
     "ok": true
    },
    "pass": true
@@ -1195,7 +1258,7 @@
     "slide_HexRelease_socket  world_origin=(1.0800, 1.1650, -0.1010)  tris=40",
     "slide_Solenoid_mount  world_origin=(0.0000, 0.0000, 0.0000)  tris=16",
     "slide_Solenoid  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
-    "slide_SolenoidBolt  world_origin=(0.0550, 2.5290, -0.0340)  tris=32",
+    "slide_SolenoidBolt  world_origin=(0.0550, 2.5227, -0.0340)  tris=32",
     "threshold  world_origin=(0.0000, 0.0000, 0.0000)  tris=136",
     "slide_Track  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
     "slide_Motor_gearbox  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
@@ -1265,6 +1328,12 @@
      "coplanar": [],
      "open": []
     },
+    "open_overshoot_2mm": {
+     "worst_overlap": 0.014,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
     "closed_panel_shut": {
      "worst_overlap": 0.014,
      "bad_overlaps": [],
@@ -1305,19 +1374,34 @@
     }
    },
    "hw_gaps_passG": {
-    "endstop_L_to_carriage_full_open": 4.0,
-    "endstop_L_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_L_full_open_signed": 0.0,
+    "carriage_endstop_L_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_L_full_open": 25.0,
+    "carriage_to_endstop_L_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_L_2mm_overshoot": 23.0,
     "beltclamp_L_to_belt_0_1000mm": 2.0,
     "antilift_L_to_rollers_track": 2.0,
-    "endstop_R_to_carriage_full_open": 4.0,
-    "endstop_R_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_R_full_open_signed": 0.0,
+    "carriage_endstop_R_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_R_full_open": 25.0,
+    "carriage_to_endstop_R_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_R_2mm_overshoot": 23.0,
     "beltclamp_R_to_belt_0_1000mm": 2.0,
     "antilift_R_to_rollers_track": 2.0,
-    "bolt_retracted_to_keeper": 14.32,
+    "bolt_retracted_to_keeper": 8.26,
     "bolt_thrown_to_keeper_window": 3.0,
-    "bolt_thrown_to_track": 16.64,
-    "keeper_to_solenoid_closed": 22.0,
-    "solenoid_to_carriages_clamps_closed": 23.46,
+    "bolt_thrown_to_track": 11.84,
+    "bolt_retracted_tip_to_tab_top": 7.7,
+    "bolt_thrown_engagement": 10.3,
+    "bolt_thrown_tip_to_keeper_post": 12.0,
+    "keeper_to_solenoid_closed": 15.7,
+    "solenoid_to_carriages_clamps_closed": 18.74,
     "panel_closed_to_solenoid_clamps": 3.4,
     "ok": true
    },
@@ -1341,7 +1425,7 @@
     "slide_HexRelease_socket  world_origin=(1.0800, 1.1650, -0.1010)  tris=40",
     "slide_Solenoid_mount  world_origin=(0.0000, 0.0000, 0.0000)  tris=16",
     "slide_Solenoid  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
-    "slide_SolenoidBolt  world_origin=(0.0550, 2.5290, -0.0340)  tris=32",
+    "slide_SolenoidBolt  world_origin=(0.0550, 2.5227, -0.0340)  tris=32",
     "threshold  world_origin=(0.0000, 0.0000, 0.0000)  tris=136",
     "slide_Track  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
     "slide_Motor_gearbox  world_origin=(0.0000, 0.0000, 0.0000)  tris=48",
@@ -1411,6 +1495,12 @@
      "coplanar": [],
      "open": []
     },
+    "open_overshoot_2mm": {
+     "worst_overlap": 0.014,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
     "closed_panel_shut": {
      "worst_overlap": 0.014,
      "bad_overlaps": [],
@@ -1451,19 +1541,34 @@
     }
    },
    "hw_gaps_passG": {
-    "endstop_L_to_carriage_full_open": 4.0,
-    "endstop_L_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_L_full_open_signed": 0.0,
+    "carriage_endstop_L_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_L_full_open": 25.0,
+    "carriage_to_endstop_L_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_L_2mm_overshoot": 23.0,
     "beltclamp_L_to_belt_0_1000mm": 2.0,
     "antilift_L_to_rollers_track": 2.0,
-    "endstop_R_to_carriage_full_open": 4.0,
-    "endstop_R_to_carriage_2mm_overshoot": 2.0,
+    "carriage_to_endstop_R_full_open_signed": 0.0,
+    "carriage_endstop_R_contact_yz_mm": [
+     46.0,
+     19.0
+    ],
+    "leaf_tail_to_pocket_bumper_R_full_open": 25.0,
+    "carriage_to_endstop_R_2mm_overshoot_signed": -2.0,
+    "leaf_tail_to_pocket_bumper_R_2mm_overshoot": 23.0,
     "beltclamp_R_to_belt_0_1000mm": 2.0,
     "antilift_R_to_rollers_track": 2.0,
-    "bolt_retracted_to_keeper": 14.32,
+    "bolt_retracted_to_keeper": 8.26,
     "bolt_thrown_to_keeper_window": 3.0,
-    "bolt_thrown_to_track": 16.64,
-    "keeper_to_solenoid_closed": 22.0,
-    "solenoid_to_carriages_clamps_closed": 23.46,
+    "bolt_thrown_to_track": 11.84,
+    "bolt_retracted_tip_to_tab_top": 7.7,
+    "bolt_thrown_engagement": 10.3,
+    "bolt_thrown_tip_to_keeper_post": 12.0,
+    "keeper_to_solenoid_closed": 15.7,
+    "solenoid_to_carriages_clamps_closed": 18.74,
     "panel_closed_to_solenoid_clamps": 3.4,
     "ok": true
    },
