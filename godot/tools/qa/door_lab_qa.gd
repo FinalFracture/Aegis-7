@@ -4,7 +4,9 @@ extends Node
 ## Pixel checks (luma, shadow, flicker) are deferred to the shot pass.
 
 const IDS := ["pocket", "bay3", "pair", "hatch"]
-const FUNC_R := ["R1", "R2", "R3", "R4", "R5", "R7", "R9", "R10", "R13", "R14"]
+const FUNC_R := ["R1", "R2", "R3", "R4", "R5", "R7", "R9", "R10", "R13", "R14", "R15"]
+const K_TRAVEL := 0.45
+const K_MECH := 0.60
 
 var _lab: Node3D
 var _player: CharacterBody3D
@@ -149,8 +151,7 @@ func _one(id: String) -> void:
 	await _approach(door)
 	await _scored_cycle(door)
 	await _obstruction(door)
-	if id == "bay3":
-		await _bay_stall(door)
+	await _stall_open(door)
 	await _clips_and_gaps(door)
 	await _snag(door)
 	_gravity(door)
@@ -281,8 +282,17 @@ func _world_aabb(n: Node) -> AABB:
 
 
 func _primary_world_aabb(n: Node) -> AABB:
+	# The shell is the collided leaf. Panels proud of it are not the stop face.
+	var shell := _aabb_matching(n, "shell")
+	if shell.size.length() > 0.001:
+		return shell
+	return _aabb_matching(n, "stile|panel|leafface")
+
+
+func _aabb_matching(n: Node, tokens: String) -> AABB:
 	var ab := AABB()
 	var any := false
+	var parts := tokens.split("|")
 	var stack: Array[Node] = [n]
 	while not stack.is_empty():
 		var node: Node = stack.pop_back()
@@ -291,14 +301,17 @@ func _primary_world_aabb(n: Node) -> AABB:
 		if not (node is MeshInstance3D) or (node as MeshInstance3D).mesh == null:
 			continue
 		var nm := String(node.name).to_lower()
-		if not ("stile" in nm or "panel" in nm or "leafface" in nm):
+		var hit := false
+		for token in parts:
+			if token in nm:
+				hit = true
+				break
+		if not hit:
 			continue
 		var mi := node as MeshInstance3D
 		var world: AABB = mi.global_transform * mi.mesh.get_aabb()
 		ab = world if not any else ab.merge(world)
 		any = true
-	if not any:
-		return AABB()
 	return ab
 
 
@@ -465,16 +478,17 @@ func _write_motion(door_id: String, rows: Array) -> void:
 	var f := FileAccess.open(dir.path_join("motion.csv"), FileAccess.WRITE)
 	if f == null:
 		return
-	f.store_line("tick,time_s,phase,leaf,px,py,pz,yaw_deg,vel,drift_mm,gap_mm,contacts,lamp,collider_enabled")
+	f.store_line("tick,time_s,phase,leaf,px,py,pz,yaw_deg,vel,leaf_vel,drift_mm,gap_mm,contacts,lamp,collider_enabled")
 	var t0 := 0.0
 	if not rows.is_empty():
 		t0 = float(rows[0]["t"])
 	for i in rows.size():
 		var r: Dictionary = rows[i]
-		var line := "%d,%.5f,%s,%s,%.5f,%.5f,%.5f,%.4f,%.5f,%.3f,%.3f,%d,%s,%d" % [
+		var leaf_vel := float(r["leaf_vel"]) if r.has("leaf_vel") else float(r["vel"])
+		var line := "%d,%.5f,%s,%s,%.5f,%.5f,%.5f,%.4f,%.5f,%.6f,%.3f,%.3f,%d,%s,%d" % [
 			i, float(r["t"]) - t0, str(r["phase"]), str(r["leaf"]),
 			float(r["px"]), float(r["py"]), float(r["pz"]), float(r["yaw"]),
-			float(r["vel"]), float(r["drift_mm"]), float(r["gap_mm"]),
+			float(r["vel"]), leaf_vel, float(r["drift_mm"]), float(r["gap_mm"]),
 			int(r["contacts"]), str(r["lamp"]), int(r["collider"]),
 		]
 		f.store_line(line)
@@ -554,8 +568,13 @@ func _analyze_motion(door: MechDoor, rows: Array, finished: bool) -> void:
 	_rec(id, "R1", order_ok, 1.0 if order_ok else 0.0, 1.0, "bool", "per-leaf phases follow the published order", "F")
 	var r2 := _phase_windows(door, rows)
 	_rec(id, "R2", r2, 1.0 if r2 else 0.0, 1.0, "bool", "local time stays inside each phase span ±10%", "F")
-	var v_ok := ref_v_open <= 1.0e-4 or absf(max_v_open - ref_v_open) <= absf(ref_v_open) * 0.10 + 1.0e-3
-	_rec(id, "R3", v_ok and step_worst <= step_lim * 1.02 + 1.0e-4, max_v_open, ref_v_open, "u/s", "scaled peak vs sample(); step %.4f limit %.4f. 0.7x raises peak accel above 0.05*v*60; gate is the settled profile" % [step_worst, step_lim * 1.02], "F")
+	var kin := _kinematics(door, rows)
+	_rec(id, "R3", bool(kin["ok"]), float(kin["peak"]), float(kin["ref"]), "u/s", str(kin["note"]), "F")
+	_rec(id, "F-KE", bool(kin["ke_ok"]), float(kin["ke"]), 10.0, "J", str(kin["ke_note"]), "F")
+	_rec(id, "R15", bool(kin["ke_ok"]), float(kin["ke"]), 10.0, "J", "closing leaf KE <= 10 J", "F")
+	_rec(id, "F-SCALAR", bool(kin["scalar_ok"]), float(kin["scalar"]), 0.05, "k", str(kin["scalar_note"]), "F")
+	_rec(id, "F-TRES-SRC", bool(kin["src_ok"]), 1.0 if bool(kin["src_ok"]) else 0.0, 1.0, "bool", str(kin["src_note"]), "F")
+	_rec(id, "F-TIME", bool(kin["time_ok"]), float(kin["time_meas"]), float(kin["time_lim"]), "s", str(kin["time_note"]), "F")
 	var settle_mid := _settle_curve_peak(door)
 	var settle_ok := true
 	if settle_amp > 1.0e-6:
@@ -576,8 +595,8 @@ func _analyze_motion(door: MechDoor, rows: Array, finished: bool) -> void:
 	# 4 mm / 0.15 deg cap. The gate is no step above the settled profile.
 	var jump_cap := maxf(jump_lim, sample_jump * 1.02)
 	_rec(id, "V-JUMP", jump_worst <= jump_cap + 1.0e-6, jump_worst, jump_cap, "u", "second difference vs settled sample x1.02; flat %.5f" % jump_lim, "V")
-	var ease_ok := step_worst <= maxf(step_lim * 1.02, ref_v_open * 0.05) + 1.0e-4 and open_rows > 5
-	_rec(id, "V-EASE-SCURVE", ease_ok, step_worst, maxf(step_lim * 1.02, ref_v_open * 0.05), "u/tick", "7-segment scurve time-warped by 0.7; not a linear tween", "V")
+	var ease_ok := bool(kin["ok"]) and open_rows > 5
+	_rec(id, "V-EASE-SCURVE", ease_ok, float(kin["ratio"]), 1.0, "ratio", "per-tick |dv| and |da| within 1.1 a' dt and 1.1 j' dt; not a linear tween", "V")
 	var max_st := 0.0
 	for item in door._leaves:
 		max_st = maxf(max_st, float(item.get("stagger_open", 0.0)))
@@ -595,6 +614,231 @@ func _analyze_motion(door: MechDoor, rows: Array, finished: bool) -> void:
 	_rec(id, "F-OBS-EMERGENCY", false, 0.0, 2.0, "kPa", "optional hook, not implemented, skipped", "skip")
 	if not finished:
 		_rec(id, "R1", false, 0.0, 1.0, "bool", "scored open/close did not return to closed", "F")
+
+
+func _profile_paths() -> Dictionary:
+	var out := {}
+	for id in IDS:
+		if _doors.has(id):
+			out[id] = (_doors[id] as MechDoor).profile.table_path
+	return out
+
+
+func _kinematics(door: MechDoor, rows: Array) -> Dictionary:
+	var swing := door.profile.clear_model != "slide"
+	var unit := deg_to_rad(1.0) if swing else 1.0
+	var by := {}
+	for r in rows:
+		var rd: Dictionary = r
+		var st := str(rd["state"])
+		if st != "opening" and st != "closing":
+			continue
+		var leaf := str(rd["leaf"])
+		if not by.has(leaf):
+			by[leaf] = []
+		by[leaf].append(rd)
+	var worst_ratio := 0.0
+	var r3_ok := true
+	var travel_ticks := 0
+	var open_peak := 0.0
+	var close_peak := 0.0
+	var ref_open := 0.0
+	var ref_close := 0.0
+	var ke_max := 0.0
+	var ts := 0.0
+	while ts <= door.profile.open_duration:
+		ref_open = maxf(ref_open, absf(float(door.profile.sample("open", ts)["vel"])) * unit)
+		ts += _dt
+	ts = 0.0
+	while ts <= door.profile.close_duration:
+		ref_close = maxf(ref_close, absf(float(door.profile.sample("close", ts)["vel"])) * unit)
+		ts += _dt
+	var mass := door.profile.mass_kg
+	var inertia := door.profile.inertia_kgm2
+	for leaf in by.keys():
+		var series: Array = by[leaf]
+		var n := series.size()
+		var vel: Array[float] = []
+		vel.resize(n)
+		var ph_name: Array[String] = []
+		ph_name.resize(n)
+		var group: Array[String] = []
+		group.resize(n)
+		var a_p: Array[float] = []
+		a_p.resize(n)
+		var j_p: Array[float] = []
+		j_p.resize(n)
+		var times: Array[float] = []
+		times.resize(n)
+		for i in n:
+			var rd: Dictionary = series[i]
+			var dir := "open" if str(rd["state"]) == "opening" else "close"
+			var local_t := float(rd["motion_t"]) - _stagger(door, leaf, str(rd["state"]))
+			var ph: Dictionary = door.profile.phase_at(dir, maxf(local_t, 0.0))
+			var lv := float(rd["leaf_vel"]) if rd.has("leaf_vel") else float(rd["vel"]) * unit
+			vel[i] = lv
+			times[i] = float(rd["t"])
+			ph_name[i] = str(ph.get("name", ""))
+			group[i] = str(ph.get("group", ""))
+			a_p[i] = float(ph.get("a_prime", 0.0)) * unit
+			j_p[i] = float(ph.get("j_prime", 0.0)) * unit
+			if dir == "open":
+				open_peak = maxf(open_peak, absf(lv))
+			else:
+				close_peak = maxf(close_peak, absf(lv))
+				var ke := 0.5 * inertia * lv * lv if swing else 0.5 * mass * lv * lv
+				ke_max = maxf(ke_max, ke)
+		var i0 := 0
+		while i0 < n:
+			var i1 := i0
+			while i1 + 1 < n and ph_name[i1 + 1] == ph_name[i0]:
+				i1 += 1
+			var smooth: Array[float] = []
+			smooth.resize(i1 - i0 + 1)
+			for k in range(i0, i1 + 1):
+				var local := k - i0
+				if i1 == i0:
+					smooth[local] = vel[k]
+				elif k == i0:
+					smooth[local] = 0.5 * (vel[k] + vel[k + 1])
+				elif k == i1:
+					smooth[local] = 0.5 * (vel[k] + vel[k - 1])
+				else:
+					smooth[local] = (vel[k - 1] + vel[k] + vel[k + 1]) / 3.0
+			if group[i0] == "travel":
+				# The half-average at each end of the window is not a 3-tick smooth.
+				# Score only samples whose both neighbours are inside the phase.
+				var prev_a := 0.0
+				var have_a := false
+				var span_n := i1 - i0 + 1
+				for k in range(i0 + 1, i1 + 1):
+					var local := k - i0
+					var dt := maxf(times[k] - times[k - 1], 1.0e-6)
+					var dv := smooth[local] - smooth[local - 1]
+					var acc := dv / dt
+					var ap := maxf(a_p[k], 1.0e-8)
+					var jp := maxf(j_p[k], 1.0e-8)
+					var interior := local >= 2 and local <= span_n - 2
+					if interior:
+						var rv := absf(dv) / (1.1 * ap * dt)
+						worst_ratio = maxf(worst_ratio, rv)
+						if absf(dv) > 1.1 * ap * dt + 1.0e-5:
+							r3_ok = false
+						travel_ticks += 1
+					if have_a and local >= 3 and local <= span_n - 2:
+						var da := acc - prev_a
+						var ra := absf(da) / (1.1 * jp * dt)
+						worst_ratio = maxf(worst_ratio, ra)
+						if absf(da) > 1.1 * jp * dt + 1.0e-4:
+							r3_ok = false
+					prev_a = acc
+					have_a = true
+			i0 = i1 + 1
+	var peak_ok := ref_open <= 1.0e-6 or absf(open_peak - ref_open) <= absf(ref_open) * 0.10 + 1.0e-3
+	var close_ok := ref_close <= 1.0e-6 or absf(close_peak - ref_close) <= absf(ref_close) * 0.10 + 1.0e-3
+	if travel_ticks < 4:
+		r3_ok = false
+	var scalar := _scalar_report(door)
+	var timing := _time_report(door, rows)
+	var src_ok := door.profile.source == "tres" and door.profile.table_path != "" and door.profile.open_duration > 0.05 and bool(timing["ok"])
+	return {
+		"ok": r3_ok and peak_ok and close_ok,
+		"peak": open_peak,
+		"ref": ref_open,
+		"ratio": worst_ratio,
+		"note": "open peak %.4f ref %.4f close peak %.4f ref %.4f worst |dv|/|da| ratio %.3f" % [open_peak, ref_open, close_peak, ref_close, worst_ratio],
+		"ke": ke_max,
+		"ke_ok": ke_max <= 10.0 + 1.0e-3,
+		"ke_note": "max close-tick KE m=%.1f I=%.1f" % [mass, inertia],
+		"scalar_ok": bool(scalar["ok"]),
+		"scalar": float(scalar["err"]),
+		"scalar_note": str(scalar["note"]),
+		"src_ok": src_ok,
+		"src_note": door.profile.table_path,
+		"time_ok": bool(timing["ok"]),
+		"time_meas": float(timing["meas"]),
+		"time_lim": float(timing["lim"]),
+		"time_note": str(timing["note"]),
+	}
+
+
+func _scalar_report(door: MechDoor) -> Dictionary:
+	var err := 0.0
+	var ok := true
+	var cap_note := ""
+	if absf(door.profile.travel_time_scale - K_TRAVEL) > 0.05:
+		ok = false
+	if absf(door.profile.mech_phase_scale - K_MECH) > 0.05:
+		ok = false
+	if absf(door.profile.lurch_scale - 1.0) > 0.05 or absf(door.profile.settle_scale - 1.0) > 0.05:
+		ok = false
+	err = maxf(err, absf(door.profile.travel_time_scale - K_TRAVEL))
+	err = maxf(err, absf(door.profile.mech_phase_scale - K_MECH))
+	for dir in ["open", "close"]:
+		for ph in door.profile.compiled_phases(dir):
+			var vance := float(ph.get("vance_dur", 0.0))
+			if vance <= 1.0e-6:
+				continue
+			var group := str(ph.get("group", ""))
+			if bool(ph.get("capped", false)):
+				var v_cap := door.profile.close_v_cap
+				var v_p := float(ph.get("v_prime", 0.0))
+				var a_ref := float(ph.get("vance_a", 0.0)) / (K_TRAVEL * K_TRAVEL)
+				var j_ref := float(ph.get("vance_j", 0.0)) / (K_TRAVEL * K_TRAVEL * K_TRAVEL)
+				var ev := absf(v_p - v_cap) / maxf(absf(v_cap), 1.0e-6)
+				var ea := absf(float(ph.get("a_prime", 0.0)) - a_ref) / maxf(absf(a_ref), 1.0e-6)
+				var ej := absf(float(ph.get("j_prime", 0.0)) - j_ref) / maxf(absf(j_ref), 1.0e-6)
+				err = maxf(err, ev)
+				if ev > 0.10 or ea > 0.10 or ej > 0.10:
+					ok = false
+				cap_note = "cap v %.3f a' %.3f" % [v_p, float(ph.get("a_prime", 0.0))]
+				continue
+			var want := K_MECH
+			if group == "travel":
+				want = K_TRAVEL if dir == "open" else door.profile.close_travel_scale
+			elif group == "lurch" or group == "settle":
+				want = 1.0
+			var k := float(ph.get("dur", 0.0)) / vance
+			err = maxf(err, absf(k - want))
+			if absf(k - want) > 0.05:
+				ok = false
+	return {"ok": ok, "err": err, "note": "max |k-spec| %.4f %s" % [err, cap_note]}
+
+
+func _time_report(door: MechDoor, rows: Array) -> Dictionary:
+	var meas_open := -1.0
+	var meas_close := -1.0
+	var saw_open := false
+	for r in rows:
+		var rd: Dictionary = r
+		if str(rd["state"]) == "open" and meas_open < 0.0:
+			meas_open = float(rd["motion_t"])
+			saw_open = true
+		if saw_open and str(rd["state"]) == "closed" and meas_close < 0.0:
+			meas_close = float(rd["motion_t"])
+	var max_so := 0.0
+	var max_sc := 0.0
+	for item in door._leaves:
+		max_so = maxf(max_so, float(item.get("stagger_open", 0.0)))
+		max_sc = maxf(max_sc, float(item.get("stagger_close", 0.0)))
+	var target_o := door.profile.open_duration + max_so
+	var target_c := door.profile.close_duration + max_sc
+	var tol_o := 0.10 * door.profile.open_duration + _dt
+	var tol_c := 0.10 * door.profile.close_duration + _dt
+	var ok := meas_open >= 0.0 and absf(meas_open - target_o) <= tol_o
+	ok = ok and meas_close >= 0.0 and absf(meas_close - target_c) <= tol_c
+	var exp_o := door.profile.expect_open
+	var exp_c := door.profile.expect_close
+	if exp_o > 0.0:
+		ok = ok and absf(door.profile.open_duration - exp_o) <= 0.10 * exp_o
+	if exp_c > 0.0:
+		ok = ok and absf(door.profile.close_duration - exp_c) <= 0.10 * exp_c
+	return {
+		"ok": ok,
+		"meas": meas_open,
+		"lim": target_o,
+		"note": "open %.3f target %.3f (profile %.3f expect %.3f) close %.3f target %.3f (profile %.3f expect %.3f)" % [meas_open, target_o, door.profile.open_duration, exp_o, meas_close, target_c, door.profile.close_duration, exp_c],
+	}
 
 
 func _stagger(door: MechDoor, leaf: String, state: String) -> float:
@@ -869,21 +1113,52 @@ func _wait_state(door: MechDoor, want: String, timeout: float) -> bool:
 	return door.state == want
 
 
-func _bay_stall(door: MechDoor) -> void:
+func _stall_open(door: MechDoor) -> void:
+	if door.door_id != "bay3" and door.door_id != "pair":
+		_rec(door.door_id, "F-STALL-OPEN", true, 0.0, 0.010, "m", "n/a for this type", "F")
+		return
 	door.reset_closed()
 	_place_probe(door, false)
 	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var origin := _probe.global_position
 	door.command_open()
+	var saw := false
+	var ticks := 0
+	var v_stop := 999.0
+	var disp := 0.0
+	var resumed := false
 	var t := 0.0
-	var stalled := false
-	while t < 1.0:
+	while t < 2.0:
 		await get_tree().physics_frame
 		t += _dt
+		var moved := Vector2(_probe.global_position.x - origin.x, _probe.global_position.z - origin.z).length()
+		disp = maxf(disp, moved)
 		if door.state == "stalled":
-			stalled = true
+			if not saw:
+				saw = true
+			ticks += 1
+			var vmax := 0.0
+			for v in door.v_now:
+				vmax = maxf(vmax, absf(float(v)))
+			if ticks <= 6:
+				v_stop = vmax
+			if ticks >= 8:
+				break
+		elif saw:
+			resumed = true
 			break
-	var ok := stalled and door.lamp == "moving" and door.lamp != "fault"
-	_rec(door.door_id, "F-OBS-STOP", ok, t if stalled else -1.0, 0.5, "s", "opening path stalls and the lamp stays moving", "F")
+	var swing := door.profile.clear_model != "slide"
+	var peak := 0.0
+	var ts := 0.0
+	while ts <= door.profile.open_duration:
+		peak = maxf(peak, absf(float(door.profile.sample("open", ts)["vel"])))
+		ts += _dt
+	var vlim := 2.0 if swing else 0.05
+	var v_ok := v_stop <= vlim + 1.0e-4 and v_stop <= peak * 0.02 + 1.0e-3
+	var drift := door.drift_mm()
+	var ok := saw and disp <= 0.010 and v_ok and not resumed and door.lamp != "fault" and drift <= 2.0
+	_rec(door.door_id, "F-STALL-OPEN", ok, disp, 0.010, "m", "stop_v %.3f lim %.3f within 6 ticks (%d) drift %.2f mm" % [v_stop, vlim, ticks, drift], "F")
 	_hide_probe()
 	door.reset_closed()
 
@@ -1014,6 +1289,15 @@ func _shape_centre(cs: CollisionShape3D) -> Vector3:
 
 
 func _leaf_mesh_centre(body: Node3D) -> Vector3:
+	var has_shell := false
+	var scan: Array[Node] = [body]
+	while not scan.is_empty():
+		var s: Node = scan.pop_back()
+		for sc in s.get_children():
+			scan.append(sc)
+		if s is MeshInstance3D and "shell" in String(s.name).to_lower():
+			has_shell = true
+			break
 	var ab := AABB()
 	var any := false
 	var stack: Array[Node] = [body]
@@ -1024,7 +1308,12 @@ func _leaf_mesh_centre(body: Node3D) -> Vector3:
 		if not (n is MeshInstance3D) or (n as MeshInstance3D).mesh == null:
 			continue
 		var nm := String(n.name).to_lower()
-		var primary := "stile" in nm or "panel" in nm or "leafface" in nm
+		# Panels proud of a shell pull the centre off the collider. Use the shell alone.
+		var primary := false
+		if has_shell:
+			primary = "shell" in nm
+		else:
+			primary = "stile" in nm or "panel" in nm or "leafface" in nm or "_face" in nm
 		if not primary:
 			continue
 		var mi := n as MeshInstance3D
@@ -1119,22 +1408,15 @@ func _measure_gaps(door: MechDoor) -> Dictionary:
 	}
 	if id == "pocket":
 		door.force_q(0.0)
-		var seals := _named(door, "BulbSeal")
-		var meet := _x_gap(seals) * 1000.0
-		var faces := _named(door, "LeafFace")
-		var floor_mm := 99.0
-		var head_mm := 99.0
-		if faces.size() >= 1:
-			floor_mm = (faces[0] as AABB).position.y * 1000.0
-			var top := (faces[0] as AABB).position.y + (faces[0] as AABB).size.y
-			var soffit := _named(door, "Soffit")
-			if not soffit.is_empty():
-				head_mm = ((soffit[0] as AABB).position.y - top) * 1000.0
-		var jamb := _pocket_jamb_mm(door, faces)
-		door.force_q(0.003)
-		var bolt := _x_gap(_named(door, "BulbSeal")) * 1000.0
+		var meet := _pocket_meet_mm(door)
+		var floor_mm := _pocket_floor_mm(door)
+		var head_mm := _pocket_head_mm(door)
+		var jamb := _pocket_mouth_mm(door)
+		# Bulbs overlap 3 mm when shut. 4.5 mm of travel on each leaf opens a 6 mm daylight gap.
+		door.force_q(0.0045)
+		var bolt := _pocket_meet_mm(door)
 		door.force_q(1.0)
-		var lap := _pocket_lap_mm(door)
+		var lap := _pocket_bumper_mm(door)
 		door.force_q(0.0)
 		var errs := [absf(meet - 0.0), absf(bolt - 6.0), absf(jamb - 6.0), absf(floor_mm - 8.0), absf(head_mm - 10.0), absf(lap - 25.0)]
 		var worst := 0.0
@@ -1144,9 +1426,9 @@ func _measure_gaps(door: MechDoor) -> Dictionary:
 		out["pocket_mm"] = worst
 		out["pocket_note"] = "meet %.2f bolt %.2f jamb %.2f floor %.2f soffit %.2f lap %.2f" % [meet, bolt, jamb, floor_mm, head_mm, lap]
 		out["worst"] = worst
-		var std_p := _edge_std_mm(door, "BulbSeal")
+		var std_p := _edge_std_mm(door, "stile")
 		out["std_mm"] = std_p["std"]
-		out["std_note"] = "bulb seal edge, %d height samples, max dev %.2f mm" % [int(std_p["n"]), float(std_p["dev"])]
+		out["std_note"] = "stile edge, %d height samples, max dev %.2f mm" % [int(std_p["n"]), float(std_p["dev"])]
 		out["std_ok"] = float(std_p["std"]) <= 1.0 and float(std_p["dev"]) <= 2.0 and int(std_p["n"]) >= 8
 	elif id == "bay3":
 		door.force_q(0.0)
@@ -1188,10 +1470,10 @@ func _measure_gaps(door: MechDoor) -> Dictionary:
 		out["hatch_mm"] = absf(gap_h - 6.0)
 		out["hatch_note"] = "deflated leaf-to-opening %.2f mm (inflated compression is the animated seal, static pose is the 6 mm gap)" % gap_h
 		out["worst"] = absf(gap_h - 6.0)
-		var std_h := _edge_std_mm(door, "LeafFace")
+		var std_h := _edge_std_mm(door, "leaf_panel")
 		out["std_ok"] = float(std_h["std"]) <= 1.0 and float(std_h["dev"]) <= 2.0 and int(std_h["n"]) >= 8
 		out["std_mm"] = std_h["std"]
-		out["std_note"] = "plug edge, %d samples, max dev %.2f mm" % [int(std_h["n"]), float(std_h["dev"])]
+		out["std_note"] = "panel edge, %d samples, max dev %.2f mm" % [int(std_h["n"]), float(std_h["dev"])]
 	return out
 
 
@@ -1456,14 +1738,150 @@ func _edge_x_at(door: Node3D, needle: String, edge: float, y: float) -> float:
 
 
 func _hatch_gap_mm(door: Node3D) -> float:
-	var faces := _named(door, "LeafFace")
-	if faces.is_empty():
+	# Latch edge of the plug (x 0.55 at the straight side) against the rebate wall (x 0.556).
+	# The straight side's vertices sit at y 0.30 and 1.90, not at mid-height.
+	var leaf_x := -99.0
+	var saw_l := false
+	for item in _mesh_points(door, "leaf_shell"):
+		var p: Vector3 = item
+		if p.y < 0.20 or p.y > 2.05 or p.z < 0.04 or p.z > 0.14:
+			continue
+		saw_l = true
+		leaf_x = maxf(leaf_x, p.x)
+	var collar_x := 99.0
+	var saw_c := false
+	for item2 in _mesh_points(door, "frame_collar"):
+		var q: Vector3 = item2
+		if q.x < 0.50 or q.x > 0.70 or q.y < 0.28 or q.y > 1.92 or q.z < 0.04 or q.z > 0.10:
+			continue
+		saw_c = true
+		collar_x = minf(collar_x, q.x)
+	if not saw_l or not saw_c:
 		return 99.0
-	var face: AABB = faces[0]
-	# Opening is x -0.45..0.45, y 0..1.90. Plug overlaps the frame in X by design; the seal gap is along Z.
-	var wall_z := 0.04
-	var plug_z := face.position.z + face.size.z
-	return (wall_z - plug_z) * 1000.0
+	return (collar_x - leaf_x) * 1000.0
+
+
+func _pocket_meet_mm(door: Node3D) -> float:
+	var left := _mesh_extreme(door, "leaf_l_seal", 0, true, -100.0, 100.0)
+	var right := _mesh_extreme(door, "leaf_r_seal", 0, false, -100.0, 100.0)
+	if left > 40.0 or right < -40.0:
+		return 99.0
+	var gap := (right - left) * 1000.0
+	return 0.0 if gap < 0.0 else gap
+
+
+func _pocket_floor_mm(door: Node3D) -> float:
+	var leaf_y := _mesh_extreme(door, "_core", 1, false, -100.0, 100.0)
+	# The plate top is a corner at |x| = 0.998. A tighter window only sees the bevel.
+	var thr_y := _mesh_extreme(door, "threshold", 1, true, -1.02, 1.02)
+	if leaf_y > 40.0 or thr_y < -40.0:
+		return 99.0
+	return (leaf_y - thr_y) * 1000.0
+
+
+func _pocket_head_mm(door: Node3D) -> float:
+	var top := _mesh_extreme(door, "_core", 1, true, -100.0, 100.0)
+	if top > 40.0:
+		return 99.0
+	var soffit := 99.0
+	for item in _mesh_points(door, "frame"):
+		var p: Vector3 = item
+		if p.y > top + 0.002 and absf(p.x) < 0.90 and absf(p.z) < 0.08:
+			soffit = minf(soffit, p.y)
+	if soffit > 40.0:
+		return 99.0
+	return (soffit - top) * 1000.0
+
+
+func _pocket_mouth_mm(door: Node3D) -> float:
+	var leaf_z := 0.0
+	var saw := false
+	for item in _mesh_points(door, "_stile"):
+		var p: Vector3 = item
+		leaf_z = maxf(leaf_z, absf(p.z))
+		saw = true
+	if not saw:
+		return 99.0
+	var mouth := 99.0
+	for item2 in _mesh_points(door, "frame"):
+		var q: Vector3 = item2
+		var ax := absf(q.x)
+		# The lip is a box. Its only vertices sit at the sill and the head, x 1.00..1.045, z 0.031.
+		if ax > 0.98 and ax < 1.08 and absf(q.z) < 0.05:
+			mouth = minf(mouth, absf(q.z))
+	if mouth > 40.0:
+		return 99.0
+	return (mouth - leaf_z) * 1000.0
+
+
+func _pocket_bumper_mm(door: Node3D) -> float:
+	var tail := _mesh_extreme(door, "leaf_l_stile", 0, false, -100.0, 100.0)
+	if tail > 40.0:
+		return 99.0
+	var inner := -99.0
+	for item in _mesh_points(door, "frame"):
+		var p: Vector3 = item
+		if p.x < tail - 0.001 and p.x > tail - 0.080 and absf(p.z) < 0.03 and p.y > 0.4 and p.y < 2.0:
+			inner = maxf(inner, p.x)
+	if inner < -40.0:
+		return 99.0
+	return (tail - inner) * 1000.0
+
+
+func _band_extreme(door: Node3D, needle: String, want_max: bool) -> float:
+	var best := -99.0 if want_max else 99.0
+	var saw := false
+	for item in _mesh_points(door, needle):
+		var p: Vector3 = item
+		if p.y < 0.85 or p.y > 1.35 or absf(p.z) > 0.20:
+			continue
+		if not want_max and p.x < 0.40:
+			continue
+		if want_max and p.x < 0.20:
+			continue
+		saw = true
+		best = maxf(best, p.x) if want_max else minf(best, p.x)
+	return best if saw else (99.0 if not want_max else -99.0)
+
+
+func _mesh_extreme(door: Node3D, needle: String, axis: int, want_max: bool, x0: float, x1: float) -> float:
+	var best := -99.0 if want_max else 99.0
+	var saw := false
+	for item in _mesh_points(door, needle):
+		var p: Vector3 = item
+		if p.x < x0 or p.x > x1:
+			continue
+		var v := p.x if axis == 0 else (p.y if axis == 1 else p.z)
+		saw = true
+		best = maxf(best, v) if want_max else minf(best, v)
+	return best if saw else (99.0 if not want_max else -99.0)
+
+
+func _mesh_points(door: Node3D, needle: String) -> Array:
+	var pts: Array = []
+	var want := needle.to_lower()
+	var stack: Array[Node] = [door]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var nm := String(n.name).to_lower()
+		if want not in nm or nm.begins_with("reveal"):
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		var faces := mi.mesh.get_faces()
+		# The gap is a vertex on the lip. Skipping samples moves it by more than the 2 mm tolerance.
+		var step := 1
+		var i := 0
+		var to_door := door.global_transform.affine_inverse() * mi.global_transform
+		while i < faces.size():
+			pts.append(to_door * faces[i])
+			i += step
+	return pts
 
 
 func _snag(door: MechDoor) -> void:
@@ -1824,16 +2242,18 @@ func _write_meta() -> void:
 		"max_physics_steps_per_frame": Engine.max_physics_steps_per_frame,
 		"resolution": [1920, 1080],
 		"timing_authority": "vance",
-		"travel_time_scale": 0.7,
+		"travel_time_scale": 0.45,
+		"mech_phase_scale": 0.60,
 		"pocket_geometry": "vance_2m",
 		"bay3": "outswing",
 		"sloane_times": "superseded",
 		"cycle_hold_s_endurance": 0.02,
 		"updated": stamp,
 		"scene": "res://scenes/test/door_lab.tscn",
-		"settlement": "Gage 2026-11-20: Vance phase tables. Latch/seal/dog/equalize at real speed. Leaf travel duration = 0.7 x Vance via travel_time_scale. bay3 is the as-built outswing. Sloane 0.9/0.8/1.8 s targets are superseded. Hatch plug swings to -Z because it is wider than the clear hole.",
+		"settlement": "Jared 2026-11-20 13:50 CT game tempo. Leaf travel 0.45x. Latch, seal, dog, equalize and control 0.60x. Lurch and settle 1.00x. Pair close 0.45x. Bay3 close 0.60x. Pocket close capped at 0.64 m/s. Wall bulkhead hatch close capped at 19.4 deg/s and 7.80 s. Four doors. Rook slide and hatch GLBs.",
 		"notes": _notes,
-		"r3_gate": "Logged velocity steps must stay within the settled 0.7x profile's own analytic step. The scale lifts peak accel above 0.05*v*60.",
+		"r3_gate": "Per tick |dv| <= 1.1 a' dt and |da| <= 1.1 j' dt after a 3-tick average that does not cross a phase boundary. Lurch and settle are excluded. Peaks within 10 percent.",
+		"profiles": _profile_paths(),
 	}
 	_store_json(_out.path_join("meta.json"), meta)
 

@@ -1,7 +1,15 @@
 {
   "door_id": "pair",
   "motion": "swing",
-  "travel_time_scale": 0.7,
+  "travel_time_scale": 0.45,
+  "mech_phase_scale": 0.60,
+  "lurch_scale": 1.0,
+  "settle_scale": 1.0,
+  "close_travel_scale": 0.45,
+  "close_v_cap": 0.0,
+  "inertia_kgm2": 10.1,
+  "expect_open": 1.21,
+  "expect_close": 2.05,
   "mass_kg": 38,
   "travel": 90.0,
   "v_peak_open": 110.0,
@@ -11,7 +19,7 @@
   "full_clear_m": 1.78,
   "clear_model": "swing",
   "meta": {"as_built": "tt_door_pair_18", "swing": "+Z"},
-  "obstruction": {"stop_s": 0.1, "stop_dist": 6.0, "stop_a": 0.0, "dwell_s": 0.1, "v_cap": 60.0, "hold_s": 2.5, "fault_count": 3, "edge_force_n": 67},
+  "obstruction": {"stop_s": 0.1, "stop_dist": 6.0, "stop_a": 667.0, "dwell_s": 0.1, "v_cap": 60.0, "hold_s": 2.5, "fault_count": 3, "edge_force_n": 67},
   "leaves": [
     {"name": "Leaf_L", "sign": -1, "stagger_open": 0.0, "stagger_close": 0.06},
     {"name": "Leaf_R", "sign": 1, "stagger_open": 0.06, "stagger_close": 0.0}

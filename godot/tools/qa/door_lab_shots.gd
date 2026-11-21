@@ -116,6 +116,7 @@ func _shoot_all() -> void:
 		await _open_strip(door, id)
 		door.set_physics_process(false)
 		door.reset_closed()
+	await _heroes()
 
 
 func _open_strip(door: MechDoor, id: String) -> void:
@@ -134,6 +135,30 @@ func _open_strip(door: MechDoor, id: String) -> void:
 		var img: Image = await _shot_image()
 		_save(img, "%s/shots/hero_openstrip_%d.png" % [id, i])
 	door.set_physics_process(false)
+
+
+func _heroes() -> void:
+	for id in IDS:
+		var door: MechDoor = _doors[id]
+		for other in IDS:
+			(_doors[other] as MechDoor).reset_closed()
+		_pose(door, "050")
+		_place(door, "hero")
+		_save(await _one_frame(), "hero_final_%s.png" % id)
+		door.reset_closed()
+	(_doors["pocket"] as MechDoor).reset_closed()
+	_pose(_doors["bay3"], "050")
+	_pose(_doors["pair"], "open")
+	_pose(_doors["hatch"], "025")
+	var a: MechDoor = _doors["pocket"]
+	var b: MechDoor = _doors["hatch"]
+	var mid_x := (a.global_position.x + b.global_position.x) * 0.5
+	_cam.fov = 76.0
+	_cam.global_position = Vector3(mid_x, 8.5, -46.0)
+	_cam.look_at(Vector3(mid_x, 1.6, 0.0), Vector3.UP)
+	_save(await _one_frame(), "overview.png")
+	for id2 in IDS:
+		(_doors[id2] as MechDoor).reset_closed()
 
 
 func _pose(door: MechDoor, state: String) -> void:
@@ -180,14 +205,13 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 	var dz := origin.z
 	var look_y: float = 1.05 if door.door_id == "hatch" else 1.15
 	var look := Vector3(cx, look_y, dz)
-	var half := 1.05
+	var inset := 0.55
 	if door.door_id == "bay3":
-		half = 1.65
+		inset = 0.90
 	elif door.door_id == "pair":
-		half = 0.95
+		inset = 0.42
 	elif door.door_id == "hatch":
-		half = 0.50
-	var jamb := Vector3(cx - half, 1.1, dz)
+		inset = 0.28
 	var ang45 := deg_to_rad(45.0)
 	var ang30 := deg_to_rad(30.0)
 	var at := Vector3(cx, 1.62, dz - 4.0)
@@ -200,14 +224,20 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 		"oblique45":
 			at = Vector3(cx + sin(ang45) * 3.2, 1.62, dz - cos(ang45) * 3.2)
 			fov = 50.0
-		"jamb", "detail":
-			at = jamb + Vector3(-sin(ang45) * 0.9, 0.0, -cos(ang45) * 0.9)
-			look = jamb
-			fov = 35.0
+		"jamb":
+			# In front of the approach face. The old bay3 offset sat inside the wall.
+			at = Vector3(cx - inset - 0.28, 1.22, dz - 1.15)
+			look = Vector3(cx - inset, 1.15, dz - 0.04)
+			fov = 32.0
+		"detail":
+			at = Vector3(cx - inset * 0.35, 1.32, dz - 0.90)
+			look = Vector3(cx - inset * 0.15, 1.20, dz - 0.02)
+			fov = 28.0
 		"top":
-			at = Vector3(cx, look_y + 4.0, dz)
+			at = Vector3(cx, look_y + 4.0, dz - 0.40)
+			look = Vector3(cx, look_y, dz - 0.15)
 			fov = 40.0
-			up = Vector3(0.0, 0.0, 1.0)
+			up = Vector3(0.0, 0.0, -1.0)
 		"player":
 			at = Vector3(cx, 1.62, dz - 1.8)
 			fov = 70.0
@@ -367,19 +397,21 @@ func _rewrite_metrics() -> void:
 		var shadow_hot := int(slot["shadow_hot"])
 		var flicker := float(slot["flicker"])
 		var flicker_hot := int(slot["flicker_hot"])
-		var luma_ok: bool = luma >= 0.10
+		var luma_ok: bool = luma >= 0.25
 		var shadow_ok: bool = shadow <= (2.0 / 255.0) + 1.0e-5 and shadow_hot == 0
 		var flicker_ok: bool = flicker <= (2.0 / 255.0) + 1.0e-5 and flicker_hot == 0
-		print("[door_lab] %s V-LUMA %s measured=%.4f limit=0.10" % [id, "PASS" if luma_ok else "FAIL", luma])
+		print("[door_lab] %s V-LUMA %s measured=%.4f limit=0.25" % [id, "PASS" if luma_ok else "FAIL", luma])
 		print("[door_lab] %s V-SHADOW %s measured=%.5f hot=%d limit=0.00784" % [id, "PASS" if shadow_ok else "FAIL", shadow, shadow_hot])
 		print("[door_lab] %s V-ZFIGHT-FLICKER %s measured=%.5f hot=%d limit=0.00784" % [id, "PASS" if flicker_ok else "FAIL", flicker, flicker_hot])
 		var path := _out.path_join(id).path_join("metrics.json")
 		var metrics: Array = _load_array(path)
-		_upsert(metrics, "V-LUMA", luma_ok, luma, 0.10, "1", "best cell, Sloane A and front, closed and open")
+		_upsert(metrics, "V-LUMA", luma_ok, luma, 0.25, "1", "best cell, Sloane A and front, closed and open")
 		_upsert(metrics, "V-SHADOW", shadow_ok, shadow, 2.0 / 255.0, "1", "leaf-face mean |d| hot %d" % shadow_hot)
 		_upsert(metrics, "V-ZFIGHT-FLICKER", flicker_ok, flicker, 2.0 / 255.0, "1", "seam band mean |d| hot %d" % flicker_hot)
 		_store(path, metrics)
 		if not luma_ok or not shadow_ok or not flicker_ok:
+			_vis_fail += 1
+		if not _rest_visual_ok(metrics):
 			_vis_fail += 1
 		vis_ids[id] = luma_ok and shadow_ok and flicker_ok and _rest_visual_ok(metrics)
 	_rewrite_summary(vis_ids)
@@ -477,7 +509,7 @@ func _call_sheet() -> void:
 
 
 func _mirror_pngs() -> void:
-	var dest := "C:/Users/upchu/aegis_shots/doorlab_A"
+	var dest := "C:/Users/upchu/aegis_shots/doorlab_B"
 	_mirror_dir(_out, dest)
 
 

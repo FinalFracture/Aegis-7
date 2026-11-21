@@ -88,6 +88,7 @@ func bind(p: MechDoorProfile, leaves: Array, hinge: bool) -> void:
 	_ensure_sensor()
 	_ensure_cues()
 	_apply_all(0.0, "open")
+	_drive_hardware("close", true)
 	_set_lamp("locked" if locked else "closed", true)
 	_set_state("closed")
 
@@ -156,6 +157,7 @@ func force_q(q: float) -> void:
 		v_now[i] = 0.0
 		_pose_leaf(i, q)
 	_sync_bodies()
+	_drive_hardware("open" if q > 0.02 else "close", true)
 
 
 func command_open() -> void:
@@ -186,12 +188,6 @@ func pump(delta: float) -> void:
 	match state:
 		"opening":
 			_tick_profile("open", delta)
-			if _obstruction_hit() and door_id == "bay3" and _approach_blocked():
-				_stall = true
-				state = "stalled"
-				_set_state("stalled")
-				# A stall is a hold, not the 3-strike fault lamp.
-				_set_lamp("moving", false)
 		"closing":
 			_tick_profile("close", delta)
 			if _obstruction_hit():
@@ -323,6 +319,11 @@ func _begin_close() -> void:
 
 
 func _tick_profile(dir: String, delta: float) -> void:
+	var prev_t := motion_t
+	var prev_q: Array[float] = []
+	prev_q.resize(q_now.size())
+	for i in q_now.size():
+		prev_q[i] = q_now[i]
 	motion_t += delta
 	var stagger_key := "stagger_open" if dir == "open" else "stagger_close"
 	var max_end := 0.0
@@ -345,11 +346,27 @@ func _tick_profile(dir: String, delta: float) -> void:
 		if end_t > max_end:
 			max_end = end_t
 	_sync_bodies()
+	# Opening bay3 / pair: if the capsule is already in the sweep, drop this tick's
+	# motion so the leaf never shoves the body. A stall is a hold, not a fault.
+	if dir == "open" and (door_id == "bay3" or door_id == "pair") and _obstruction_hit():
+		motion_t = prev_t
+		for i in _leaves.size():
+			q_now[i] = prev_q[i]
+			v_now[i] = 0.0
+			_pose_leaf(i, prev_q[i])
+			if i < _leaf_phase.size():
+				_leaf_phase[i] = "stalled"
+		_sync_bodies()
+		_stall = true
+		state = "stalled"
+		_set_state("stalled")
+		_set_lamp("moving", false)
+		return
 	_fire_cues(dir)
 	if phase_now != phase:
 		phase = phase_now
 		_emit_phase(phase)
-	_drive_hardware(dir)
+	_drive_hardware(dir, false)
 	if dir == "open" and motion_t + 1.0e-5 >= profile.mech_event_open and lamp != "moving" and lamp != "open" and lamp != "fault":
 		_set_lamp("moving", false)
 	if motion_t >= max_end - 1.0e-4:
@@ -659,7 +676,8 @@ func _paint_lamp() -> void:
 		_lamp_mat.emission_energy_multiplier = _shown_energy
 		# Status hue stays in the emission. Albedo is capped at 0.90.
 		var c := _shown_color
-		_lamp_mat.albedo_color = Color(minf(c.r, 0.90), minf(c.g, 0.90), minf(c.b, 0.90), c.a)
+		# Emission carries the status hue. Albedo stays dark so the lamp is not a white bar.
+		_lamp_mat.albedo_color = Color(0.15, 0.15, 0.15, 1.0)
 	if _lamp_light != null:
 		_lamp_light.light_color = _shown_color
 		_lamp_light.light_energy = 0.15
@@ -697,41 +715,129 @@ func _cache_hardware() -> void:
 			_hw.append(n)
 
 
-func _drive_hardware(dir: String) -> void:
+func _drive_hardware(dir: String, forced: bool = false) -> void:
 	var q := q_now[0] if q_now.size() else 0.0
 	var span := maxf(profile.travel, 0.001)
-	var u := clampf(q / span, 0.0, 1.0)
+	var travel_u := clampf(q / span, 0.0, 1.0)
 	for n in _hw:
-		var kind := str(n.get_meta("door_hw"))
-		if kind == "roller" and n is Node3D:
-			var r := float(n.get_meta("roller_r", 0.03))
-			var spins := (q / maxf(r, 0.005))
-			(n as Node3D).rotation.x = spins
-		elif kind == "dog" and n is Node3D:
-			var local_t := _phase_u(["dogs"])
-			var st := float(n.get_meta("stagger", 0.0))
-			var du := clampf((local_t - st) / 0.55, 0.0, 1.0)
-			if dir == "close":
-				du = 1.0 - du
-			var rest: Vector3 = n.get_meta("rest")
-			var retract: Vector3 = n.get_meta("retract")
-			(n as Node3D).position = rest + retract * du
-		elif kind == "wheel" and n is Node3D:
-			var du2 := _phase_u(["dogs"])
-			if dir == "close":
-				du2 = 1.0 - du2
-			(n as Node3D).rotation.z = deg_to_rad(-90.0 * du2)
-		elif kind == "needle" and n is Node3D:
-			var eu := _phase_u(["equalize"])
-			(n as Node3D).rotation.z = deg_to_rad(-70.0 * (1.0 - eu))
-		elif kind == "seal" and n is Node3D:
-			var deflated := _phase_u(["seal_deflate", "seal_unseat"])
-			if dir == "close":
-				deflated = 1.0 - _phase_u(["seal_inflate", "creep"])
-			var sc := lerpf(1.0, 0.72, clampf(deflated, 0.0, 1.0))
-			(n as Node3D).scale = Vector3(sc, 1.0, sc)
-		elif kind == "rod" and n is Node3D:
-			_stretch_rod(n as Node3D)
+		if not (n is Node3D):
+			continue
+		var node := n as Node3D
+		var kind := str(node.get_meta("door_hw"))
+		if kind == "roller" or kind == "roller_z":
+			_spin_roller(node, q, kind == "roller_z")
+		elif kind == "dog" or kind == "dog_x":
+			_pose_dog(node, dir, forced, travel_u, kind == "dog_x")
+		elif kind == "wheel" or kind == "wheel_z":
+			_pose_wheel(node, dir, forced, travel_u, kind == "wheel_z")
+		elif kind == "needle" or kind == "needle_z":
+			_pose_needle(node, kind == "needle_z")
+		elif kind == "seal" or kind == "seal_z":
+			_pose_seal(node, dir, forced, travel_u, kind == "seal_z")
+		elif kind == "rod":
+			_stretch_rod(node)
+		elif kind == "piston":
+			_aim_piston(node)
+
+
+func _rest_basis(node: Node3D) -> Basis:
+	if not node.has_meta("rest_basis"):
+		node.set_meta("rest_basis", node.basis)
+	return node.get_meta("rest_basis")
+
+
+func _rest_pos(node: Node3D) -> Vector3:
+	if not node.has_meta("rest"):
+		node.set_meta("rest", node.position)
+	return node.get_meta("rest")
+
+
+func _spin_roller(node: Node3D, q: float, about_z: bool) -> void:
+	var r := float(node.get_meta("roller_r", 0.03))
+	var sgn := float(node.get_meta("roller_sign", 1.0))
+	var spins := sgn * q / maxf(r, 0.005)
+	if about_z:
+		node.basis = _rest_basis(node) * Basis(Vector3(0, 0, 1), spins)
+	else:
+		node.rotation.x = spins
+
+
+func _dog_throw_u(dir: String, forced: bool, travel_u: float) -> float:
+	# 0 = retracted (open), 1 = thrown (closed).
+	if forced:
+		return 0.0 if travel_u > 0.02 else 1.0
+	var local_t := _phase_u(["dogs"])
+	if dir == "close":
+		return local_t
+	return 1.0 - local_t
+
+
+func _pose_dog(node: Node3D, dir: String, forced: bool, travel_u: float, along_x: bool) -> void:
+	var thrown := _dog_throw_u(dir, forced, travel_u)
+	if not along_x:
+		var st := float(node.get_meta("stagger", 0.0))
+		var du := clampf((_phase_u(["dogs"]) - st) / 0.55, 0.0, 1.0)
+		if dir == "close":
+			du = 1.0 - du
+		if forced:
+			du = 1.0 if travel_u > 0.02 else 0.0
+		var rest: Vector3 = node.get_meta("rest")
+		var retract: Vector3 = node.get_meta("retract")
+		node.position = rest + retract * du
+		return
+	var rest_p := _rest_pos(node)
+	var rest_b := _rest_basis(node)
+	var throw_m := float(node.get_meta("throw_m", 0.025))
+	node.basis = rest_b
+	node.position = rest_p + rest_b * Vector3(throw_m * thrown, 0.0, 0.0)
+
+
+func _pose_wheel(node: Node3D, dir: String, forced: bool, travel_u: float, about_z: bool) -> void:
+	var thrown := _dog_throw_u(dir, forced, travel_u)
+	if about_z:
+		node.basis = _rest_basis(node) * Basis(Vector3(0, 0, 1), deg_to_rad(90.0 * thrown))
+		return
+	var du2 := _phase_u(["dogs"])
+	if dir == "close":
+		du2 = 1.0 - du2
+	if forced:
+		du2 = 1.0 if travel_u > 0.02 else 0.0
+	node.rotation.z = deg_to_rad(-90.0 * du2)
+
+
+func _pose_needle(node: Node3D, about_z: bool) -> void:
+	var eu := _phase_u(["equalize"])
+	if about_z:
+		node.basis = _rest_basis(node) * Basis(Vector3(0, 0, 1), deg_to_rad(-70.0 * (1.0 - eu)))
+		return
+	node.rotation.z = deg_to_rad(-70.0 * (1.0 - eu))
+
+
+func _pose_seal(node: Node3D, dir: String, forced: bool, travel_u: float, scale_z: bool) -> void:
+	var deflated := _phase_u(["seal_deflate", "seal_unseat"])
+	if dir == "close" and not forced:
+		deflated = 1.0 - _phase_u(["seal_inflate", "creep"])
+	if forced:
+		deflated = 1.0 if travel_u > 0.02 else 0.0
+	deflated = clampf(deflated, 0.0, 1.0)
+	if scale_z:
+		var z := lerpf(1.476, 1.0, deflated)
+		node.scale = Vector3(1.0, 1.0, z)
+		return
+	var sc := lerpf(1.0, 0.72, deflated)
+	node.scale = Vector3(sc, 1.0, sc)
+
+
+func _aim_piston(node: Node3D) -> void:
+	var partner: Node3D = node.get_meta("piston_partner") if node.has_meta("piston_partner") else null
+	if partner == null:
+		return
+	var origin := node.global_position
+	var aim := partner.global_position
+	if origin.distance_to(aim) < 1.0e-3:
+		return
+	node.look_at(aim, Vector3.UP)
+	node.global_position = origin
 
 
 func _phase_u(names: Array) -> float:
@@ -800,6 +906,7 @@ func _log_tick(_delta: float) -> void:
 			"q": q_now[i],
 			"yaw": body.rotation_degrees.y,
 			"vel": v_now[i],
+			"leaf_vel": deg_to_rad(v_now[i]) if _hinge else v_now[i],
 			"drift_mm": drift * 1000.0,
 			"gap_mm": gap,
 			"contacts": contacts,
@@ -843,6 +950,8 @@ func _ensure_sensor() -> void:
 	_sensor.collide_with_areas = false
 	_sensor.collide_with_bodies = true
 	_sensor.enabled = false
+	if "debug_shape_custom_color" in _sensor:
+		_sensor.debug_shape_custom_color = Color(0, 0, 0, 0)
 	add_child(_sensor)
 	for leaf in _leaves:
 		_sensor.add_exception(leaf["body"])
@@ -851,8 +960,8 @@ func _ensure_sensor() -> void:
 func _place_sensor() -> void:
 	if _sensor == null:
 		return
-	var watch := state == "closing" or state == "braking" or state == "dwell" or state == "reopening"
-	if state == "opening" and door_id == "bay3":
+	var watch := state == "closing" or state == "braking" or state == "dwell" or state == "reopening" or state == "stalled"
+	if state == "opening" and (door_id == "bay3" or door_id == "pair"):
 		watch = true
 	_sensor.enabled = watch
 	if not watch:

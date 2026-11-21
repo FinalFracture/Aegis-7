@@ -1,21 +1,21 @@
 class_name MechDoorProfile
 extends Resource
-## One profile per door type. Numbers live in the JSON table (table_path) so a
-## later pass can retune timing without code changes.
+## One profile per door type. Numbers live in the JSON table (table_path).
 ##
-## Gage 2026-11-20 settlement: Vance phase tables are authoritative. Latch, seal,
-## dog and equalize phases keep their published durations. Leaf-travel phases
-## (those tagged "scale": true) are multiplied by travel_time_scale (0.7).
-## The S-curve is Vance's jerk-limited 7-segment, time-warped by that scalar
-## (velocity scales by 1/scale). Not a linear tween and not a whole-move smoothstep.
+## Jared 2026-11-20 13:50 CT game tempo. Leaf travel uses travel_time_scale
+## (0.45). Latch, seal, dog, equalize, and the control gaps use mech_phase_scale
+## (0.60). Lurch and settle stay at 1.00. A close leaf whose 0.45x speed would
+## exceed 10 J is either close_travel_scale 0.60 or a speed cap (close_v_cap)
+## with the 0.45-scaled accel and jerk, so the cruise just gets longer.
 
 @export var door_id: String = ""
 @export var table_path: String = ""
-@export var travel_time_scale: float = 0.7
+@export var travel_time_scale: float = 0.45
 
 var motion: String = "slide"
 var travel: float = 1.0
 var mass_kg: float = 1.0
+var inertia_kgm2: float = 0.0
 var v_peak_open: float = 1.0
 var v_peak_close: float = 1.0
 var hold_open_s: float = 3.0
@@ -26,6 +26,14 @@ var clear_model: String = "slide"
 var obstruction: Dictionary = {}
 var leaves: Array = []
 var meta: Dictionary = {}
+var mech_phase_scale: float = 0.60
+var lurch_scale: float = 1.0
+var settle_scale: float = 1.0
+var close_travel_scale: float = 0.45
+var close_v_cap: float = 0.0
+var expect_open: float = 0.0
+var expect_close: float = 0.0
+var source: String = ""
 
 var _raw_open: Array = []
 var _raw_close: Array = []
@@ -60,6 +68,7 @@ func load_table() -> void:
 	motion = str(data.get("motion", "slide"))
 	travel = float(data.get("travel", 1.0))
 	mass_kg = float(data.get("mass_kg", 1.0))
+	inertia_kgm2 = float(data.get("inertia_kgm2", 0.0))
 	v_peak_open = float(data.get("v_peak_open", 1.0))
 	v_peak_close = float(data.get("v_peak_close", 1.0))
 	hold_open_s = float(data.get("hold_open_s", 3.0))
@@ -70,19 +79,43 @@ func load_table() -> void:
 	obstruction = data.get("obstruction", {})
 	leaves = data.get("leaves", [])
 	meta = data.get("meta", {})
-	if travel_time_scale <= 0.0:
-		travel_time_scale = float(data.get("travel_time_scale", 0.7))
+	# The JSON table is the timing authority the .tres points at.
+	travel_time_scale = float(data.get("travel_time_scale", travel_time_scale))
+	mech_phase_scale = float(data.get("mech_phase_scale", 0.60))
+	lurch_scale = float(data.get("lurch_scale", 1.0))
+	settle_scale = float(data.get("settle_scale", 1.0))
+	close_travel_scale = float(data.get("close_travel_scale", travel_time_scale))
+	close_v_cap = float(data.get("close_v_cap", 0.0))
+	expect_open = float(data.get("expect_open", 0.0))
+	expect_close = float(data.get("expect_close", 0.0))
 	_raw_open = data.get("open_phases", [])
 	_raw_close = data.get("close_phases", [])
-	_open = _compile(_raw_open)
-	_close = _compile(_raw_close)
+	_open = _compile(_raw_open, "open")
+	_close = _compile(_raw_close, "close")
 	open_duration = float(_open[_open.size() - 1]["rt1"]) if _open.size() else 0.0
 	close_duration = float(_close[_close.size() - 1]["rt1"]) if _close.size() else 0.0
 	_cues_open = _map_cues(data.get("cues_open", []), _raw_open, _open)
 	_cues_close = _map_cues(data.get("cues_close", []), _raw_close, _close)
 	mech_event_open = _first_mech(_open)
 	green_open = open_duration
+	source = "tres"
 	_ready_ok = true
+
+
+func compiled_phases(direction: String) -> Array:
+	return _open if direction == "open" else _close
+
+
+func phase_at(direction: String, t: float) -> Dictionary:
+	var src: Array = _open if direction == "open" else _close
+	if src.is_empty():
+		return {}
+	if t <= 0.0:
+		return src[0]
+	for ph in src:
+		if t <= float(ph["rt1"]) + 1.0e-8:
+			return ph
+	return src[src.size() - 1]
 
 
 func phase_order(direction: String) -> PackedStringArray:
@@ -148,7 +181,6 @@ func sample(direction: String, t: float) -> Dictionary:
 
 
 func _phase_end_q(ph: Dictionary) -> float:
-	# Hold and latch phases publish only p0. Travel phases publish p1.
 	if ph.has("p1"):
 		return float(ph["p1"])
 	return float(ph.get("p0", 0.0))
@@ -178,31 +210,110 @@ func trigger_radius(walk_speed: float) -> float:
 	if interact:
 		return 0.0
 	var t_clear := t_open_to_clear(0.80)
-	# 1.05 m of pad covers one walk tick (5.2/60) plus the sample step, so the
-	# leaf is already past 0.80 m when the origin is still 0.50 m out.
-	return walk_speed * t_clear + 1.05
+	# One walk tick of pad on top of the 0.85 m approach margin.
+	return walk_speed * t_clear + 0.85
 
 
-func _compile(raw: Array) -> Array:
+func _group_of(ph: Dictionary) -> String:
+	if str(ph.get("group", "")) != "":
+		return str(ph["group"])
+	var name := str(ph.get("name", ""))
+	var kind := str(ph.get("kind", ""))
+	if kind == "settle" or name == "settle" or name.begins_with("settle"):
+		return "settle"
+	if "lurch" in name:
+		return "lurch"
+	if kind == "scurve" or kind == "cubic":
+		return "travel"
+	if name in ["travel", "creep", "backcheck", "latch_check", "final_seat"]:
+		return "travel"
+	return "mech"
+
+
+func _k_for(group: String, direction: String) -> float:
+	if group == "settle":
+		return settle_scale
+	if group == "lurch":
+		return lurch_scale
+	if group == "travel":
+		if direction == "close":
+			return close_travel_scale
+		return travel_time_scale
+	return mech_phase_scale
+
+
+func _compile(raw: Array, direction: String) -> Array:
 	var out: Array = []
 	var cursor := 0.0
+	var k_ref := maxf(travel_time_scale, 1.0e-4)
 	for item in raw:
 		var ph: Dictionary = item
 		var dur := float(ph["t1"]) - float(ph["t0"])
-		var sc := travel_time_scale if bool(ph.get("scale", false)) else 1.0
+		var group := _group_of(ph)
+		var capped := direction == "close" and group == "travel" and str(ph.get("kind", "")) == "scurve" and close_v_cap > 0.0
+		var k := 1.0 if capped else _k_for(group, direction)
 		var c := ph.duplicate(true)
-		c["time_scale"] = sc
+		c["group"] = group
+		c["k"] = k
+		c["time_scale"] = k
+		c["vance_dur"] = dur
+		c["capped"] = capped
+		c["vance_v"] = float(ph.get("v", 0.0))
+		c["vance_a"] = float(ph.get("a", 0.0))
+		c["vance_j"] = float(ph.get("j", 0.0))
+		c["a_prime"] = 0.0
+		c["j_prime"] = 0.0
+		c["v_prime"] = 0.0
 		c["rt0"] = cursor
-		c["rt1"] = cursor + dur * sc
-		c["dur"] = dur * sc
+		var p0 := float(ph.get("p0", 0.0))
+		var p1 := float(ph.get("p1", p0))
+		var span := dur * k
 		if str(ph.get("kind", "")) == "scurve":
-			var dist := absf(float(ph["p1"]) - float(ph["p0"]))
-			c["segs"] = _build_segs(dist, float(ph["v"]), float(ph["a"]), float(ph["j"]))
+			var dist := absf(p1 - p0)
+			var v := float(ph["v"])
+			var a := float(ph["a"])
+			var j := float(ph["j"])
+			if capped:
+				var a_p := a / (k_ref * k_ref)
+				var j_p := j / (k_ref * k_ref * k_ref)
+				c["segs"] = _build_segs(dist, close_v_cap, a_p, j_p)
+				c["a_prime"] = a_p
+				c["j_prime"] = j_p
+				c["v_prime"] = close_v_cap
+				c["time_scale"] = 1.0
+				c["k"] = 1.0
+				span = _seg_dur(c["segs"])
+			else:
+				c["segs"] = _build_segs(dist, v, a, j)
+				var kk := maxf(k, 1.0e-4)
+				c["a_prime"] = a / (kk * kk)
+				c["j_prime"] = j / (kk * kk * kk)
+				c["v_prime"] = v / kk
 			c["dist"] = dist
-			c["sign"] = 1.0 if float(ph["p1"]) >= float(ph["p0"]) else -1.0
+			c["sign"] = 1.0 if p1 >= p0 else -1.0
+		elif str(ph.get("kind", "")) == "cubic" or str(ph.get("kind", "")) == "cosine":
+			var D := maxf(span, 1.0e-6)
+			var L := absf(p1 - p0)
+			if str(ph.get("kind", "")) == "cubic":
+				c["a_prime"] = 6.0 * L / (D * D)
+				c["j_prime"] = 12.0 * L / (D * D * D)
+				c["v_prime"] = 1.5 * L / D
+			else:
+				c["a_prime"] = 0.5 * PI * PI * L / (D * D)
+				c["j_prime"] = 0.5 * PI * PI * PI * L / (D * D * D)
+				c["v_prime"] = 0.5 * PI * L / D
+		c["rt1"] = cursor + span
+		c["dur"] = span
 		out.append(c)
 		cursor = float(c["rt1"])
 	return out
+
+
+func _seg_dur(segs: Array) -> float:
+	var total := 0.0
+	for s in segs:
+		total += float(s["dur"])
+	return total
 
 
 func _build_segs(distance: float, v: float, a: float, j: float) -> Array:
@@ -223,8 +334,6 @@ func _build_segs(distance: float, v: float, a: float, j: float) -> Array:
 	if 2.0 * d_acc < distance:
 		t_c = (distance - 2.0 * d_acc) / v
 	else:
-		# Triangular: drop cruise and solve a reduced peak speed. Kept as a
-		# safety net; the published tables all have a cruise.
 		t_c = 0.0
 	segs.append({"dur": tj, "jerk": j, "name": "accel"})
 	segs.append({"dur": t_ca, "jerk": 0.0, "name": "accel"})
@@ -265,7 +374,7 @@ func _eval_phase(ph: Dictionary, t: float) -> Dictionary:
 		}
 	if kind == "scurve":
 		var sc := float(ph["time_scale"])
-		var tu := (t - float(ph["rt0"])) / sc
+		var tu := (t - float(ph["rt0"])) / maxf(sc, 1.0e-6)
 		var local := _eval_segs(ph["segs"], tu)
 		var sgn := float(ph["sign"])
 		return {
@@ -324,12 +433,13 @@ func _map_cues(cues_in: Array, raw: Array, compiled: Array) -> Array:
 			var rp: Dictionary = raw[i]
 			if tu >= float(rp["t0"]) - 1.0e-4 and tu <= float(rp["t1"]) + 1.0e-4:
 				var cp: Dictionary = compiled[i]
-				var sc := float(cp["time_scale"])
-				mapped = float(cp["rt0"]) + (tu - float(rp["t0"])) * sc
+				var sc := float(cp["k"]) if not bool(cp.get("capped", false)) else (float(cp["dur"]) / maxf(float(cp["vance_dur"]), 1.0e-6))
+				if bool(cp.get("capped", false)):
+					mapped = float(cp["rt0"]) + (tu - float(rp["t0"])) / maxf(float(rp["t1"]) - float(rp["t0"]), 1.0e-6) * float(cp["dur"])
+				else:
+					mapped = float(cp["rt0"]) + (tu - float(rp["t0"])) * sc
 				hit = true
 				break
-		# A latch clack published a few tens of milliseconds after the last phase
-		# still belongs to that phase. 50 ms keeps it on the compiled timeline.
 		if not hit and raw.size() > 0 and compiled.size() > 0:
 			var last_raw: Dictionary = raw[raw.size() - 1]
 			var past := tu - float(last_raw["t1"])

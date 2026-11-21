@@ -6,4 +6,4 @@
 script = ExtResource("1_profile")
 door_id = "pocket"
 table_path = "res://resources/door_lab/pocket.json"
-travel_time_scale = 0.7
+travel_time_scale = 0.45
