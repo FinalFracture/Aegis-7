@@ -2066,3 +2066,28 @@
   - The amber/graphite hazard checker frame from D is gone.
   - The lid reads as flat white line-art, not Graphite m0.5/r0.45.
 - Sent to Gage as the pass F baseline (priority false). Pass F still carries the full #84 list.
+
+## #86 — Door lab pass F, full re-score against AESTHETIC_SPEC §7, Motion included (Sloane, 2026-11-21)
+- Source: Gage's pass F at 41ce6cf (merge 1381acf). Shots are in /workspace/door_lab_shots/F/. Motion curves are in qa/door_lab/runF/*_curve.png. The bulkhead hatch close is scored against Jared's 7.8 s target.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion | Palette | Artifact | Avg | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pocket | 3 | 4 | 4 | 4 | 3 | 4 | 4 | 3 | 3.63 | FAIL (Mat) |
+| bay3 | 3 | 4 | 3 | 4 | 3 | 4 | 4 | 2 | 3.38 | FAIL (Artifact) |
+| pair | 3 | 4 | 3 | 4 | 2 | 4 | 4 | 4 | 3.50 | FAIL (Mat, Wear) |
+| hatch | 4 | 4 | 4 | 4 | 3 | 3 | 4 | 4 | 3.75 | FAIL (Motion) |
+| floorhatch | 3 | 4 | 3 | 4 | 2 | 3 | 4 | 3 | 3.25 | FAIL (Mat, Wear) |
+
+- Fixed and verified:
+  - The amber push bars, plates and handwheel landed.
+  - The graphite lid and the hazard checker frame are back.
+  - The hatch status bar is restored.
+  - The bay3 backcheck now decelerates monotonically from about 75°, with no stall.
+  - The floorhatch moiré is mostly gone.
+- Open items for pass G:
+  1. Pocket: the lower glass panels still clip to flat white, and there's a glare disc at the upper left. Either the glass alpha or albedo isn't applied, or the back-room wall behind it is overlit.
+  2. Bay3: the perforations render as blurry, blown white X patterns, and the foreground floor has a brightness comb. Use ALPHA_TO_COVERAGE with MSAA, or solid infill plus a perforation normal, and cut the exposure on that leaf.
+  3. Pair: the pearl leaves clip to pure white. Target albedo at or below 0.80 with roughness 0.35. The wear close-up shows no wear at all, and the jamb lamp reads lemon. Use amber (0.85, 0.45, 0.02).
+  4. Hatch Motion: about 2 s of request and dogs before the leaf moves, and about 4.2 s total open. The dogs still look about 1 s each, against the ≤0.5 s target. The close of about 5.8 s is inside the 7.8 s target. The readout screen reads blank grey at hero distance, and the wheel spokes lean lemon.
+  5. Floorhatch: the dog phase is about 2 s before the lid lifts. Gage still needs to report the 10 J-capped close number. Brushed radial streaks remain on the lid. Wear isn't visible. The corner lamps are tiny.
+- Sent to Gage for pass G, priority true.
