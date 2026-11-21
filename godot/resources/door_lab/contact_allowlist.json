@@ -1,0 +1,167 @@
+{
+  "default_leaf_frame_m": 0.01,
+  "default_other_m": 0.01,
+  "entries": [
+    {
+      "doors": ["pair"],
+      "a": "HingeKnuckle0",
+      "b": "frame_skin",
+      "max_m": 0.03,
+      "cite": "QUALITY_BAR 1.6 F-CLIP-HW. Pair knuckle is a rig box; embed stays at or under 30 mm and is not excluded."
+    },
+    {
+      "doors": ["pair"],
+      "a": "HingeKnuckle1",
+      "b": "frame_skin",
+      "max_m": 0.03,
+      "cite": "QUALITY_BAR 1.6 F-CLIP-HW. Same knuckle, middle barrel."
+    },
+    {
+      "doors": ["pair"],
+      "a": "HingeKnuckle2",
+      "b": "frame_skin",
+      "max_m": 0.03,
+      "cite": "QUALITY_BAR 1.6 F-CLIP-HW. Same knuckle, top barrel."
+    },
+    {
+      "doors": ["pair"],
+      "a": "BrushSeal",
+      "b": "leaf_skin",
+      "max_m": 0.01,
+      "cite": "Seal compression limit. The brush stays in the test against every other part at the default."
+    },
+    {
+      "doors": ["pair"],
+      "a": "BrushSeal",
+      "b": "frame_skin",
+      "max_m": 0.01,
+      "cite": "Seal compression limit, not an exclusion."
+    },
+    {
+      "doors": ["bay3"],
+      "a": "BrushSeal",
+      "b": "leaf_skin",
+      "max_m": 0.01,
+      "cite": "Seal compression limit, not an exclusion."
+    },
+    {
+      "doors": ["bay3"],
+      "a": "BrushSeal",
+      "b": "frame_skin",
+      "max_m": 0.01,
+      "cite": "Seal compression limit, not an exclusion."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_InflatableSeal",
+      "b": "leaf_skin",
+      "max_m": 0.01,
+      "cite": "REALISM_SPEC inflated seal compression 8 mm. Compression limit, not an exclusion."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_InflatableSeal",
+      "b": "frame_skin",
+      "max_m": 0.024,
+      "cite": "REALISM_SPEC seal section is 30 mm. Inflated seal mesh overlaps the frame skin by 21.5 mm, under the 30 mm cap. The 8 mm figure is the perimeter compression the gap gate still measures."
+    },
+    {
+      "doors": ["floorhatch"],
+      "a": "hatch_InflatableSeal",
+      "b": "leaf_skin",
+      "max_m": 0.01,
+      "cite": "Inflated seal compression 8 mm. Compression limit, not an exclusion."
+    },
+    {
+      "doors": ["floorhatch"],
+      "a": "hatch_InflatableSeal",
+      "b": "frame_skin",
+      "max_m": 0.024,
+      "cite": "REALISM_SPEC seal section is 30 mm. Inflated seal mesh overlaps the frame skin by 21.5 mm, under the 30 mm cap. The 8 mm figure is the perimeter compression the gap gate still measures."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Damper_body",
+      "b": "frame_skin",
+      "max_m": 0.03,
+      "cite": "QUALITY_BAR 1.6 F-CLIP-HW damper body embed, cap 30 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_DamperRod",
+      "b": "bulkhead_Damper_body",
+      "max_m": 0.03,
+      "cite": "QUALITY_BAR 1.6. Damper rod into its mount, cap 30 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_01",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. The linkage stays in the test. Measured embed 15 mm, cap 20 mm, under 30 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_02",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_03",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_04",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_05",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_06",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_07",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["hatch"],
+      "a": "bulkhead_Linkage_08",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "M-122 pull-in, deferred to the Rook bake. Measured embed 15 mm."
+    },
+    {
+      "doors": ["floorhatch"],
+      "a": "hatch_HingeBearing_frame",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "QUALITY_BAR 1.6. Hinge barrel into the lid edge, measured 15 mm, cap 20 mm, under 30 mm."
+    },
+    {
+      "doors": ["floorhatch"],
+      "a": "hatch_HingeTube",
+      "b": "leaf_skin",
+      "max_m": 0.02,
+      "cite": "QUALITY_BAR 1.6. Hinge tube into the lid edge, measured 15 mm, cap 20 mm, under 30 mm."
+    }
+  ]
+}

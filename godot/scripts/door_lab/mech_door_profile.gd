@@ -34,6 +34,7 @@ var close_v_cap: float = 0.0
 var expect_open: float = 0.0
 var expect_close: float = 0.0
 var source: String = ""
+var section7: Dictionary = {}
 
 var _raw_open: Array = []
 var _raw_close: Array = []
@@ -88,6 +89,8 @@ func load_table() -> void:
 	close_v_cap = float(data.get("close_v_cap", 0.0))
 	expect_open = float(data.get("expect_open", 0.0))
 	expect_close = float(data.get("expect_close", 0.0))
+	var s7: Variant = data.get("section7", {})
+	section7 = s7 if typeof(s7) == TYPE_DICTIONARY else {}
 	_raw_open = data.get("open_phases", [])
 	_raw_close = data.get("close_phases", [])
 	_open = _compile(_raw_open, "open")
@@ -488,10 +491,11 @@ func _map_cues(cues_in: Array, raw: Array, compiled: Array) -> Array:
 	return out
 
 
-## R11 gates the logged fire against §7, not the mapped real-time clock.
-## Listed names are forced onto those absolute times after the map.
+## R11 gates the logged fire against section 7, not the mapped real-time clock.
+## Names listed in the door JSON section7.cue table are forced onto those absolutes.
 func _snap_spec_cues(cues: Array, direction: String) -> Array:
-	var table: Dictionary = _section7_cues().get(direction, {})
+	var cues_root: Dictionary = section7.get("cues", {})
+	var table: Variant = cues_root.get(direction, {})
 	if typeof(table) != TYPE_DICTIONARY or (table as Dictionary).is_empty():
 		return cues
 	for c in cues:
@@ -500,61 +504,6 @@ func _snap_spec_cues(cues: Array, direction: String) -> Array:
 			c["t"] = float((table as Dictionary)[nm])
 	cues.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	return cues
-
-
-func _section7_cues() -> Dictionary:
-	var all := {
-		"pocket": {
-			"open": {
-				"solenoid_unlock_clack": 0.06, "seal_unstick_pop": 0.17, "motor_whine_start": 0.18,
-				"roller_rumble_start": 0.28, "bumper_thud": 0.93, "motor_whine_stop": 0.93,
-			},
-			"close": {
-				"chime": 0.00, "motor_whine_close_start": 0.24, "seal_thud": 2.24, "bolt_clack": 2.31,
-			},
-		},
-		"bay3": {
-			"open": {
-				"strike_clack_l1": 0.07, "strike_clack_l0": 0.13, "strike_clack_l2": 0.19,
-				"operator_whine_start": 0.21, "stop_tap": 1.31,
-			},
-			"close": {
-				"operator_whine_close_start": 0.18, "latch_clack_l2": 2.80, "latch_clack_l0": 2.86, "latch_clack_l1": 2.92,
-			},
-		},
-		"pair": {
-			"open": {
-				"latch_clack_l": 0.05, "latch_clack_r": 0.11, "assist_hum_start": 0.20, "stop_tap": 0.99,
-			},
-			"close": {
-				"closer_hiss_start": 0.00, "latch_clack_close_r": 1.92, "latch_clack_close_l": 1.98,
-			},
-		},
-		"hatch": {
-			"open": {
-				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
-				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
-				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "holdopen_clunk": 4.29,
-			},
-			"close": {
-				"klaxon_1": 0.00, "klaxon_2": 0.30, "seat_thud": 6.28,
-				"dog_whine_close_start": 6.33, "dog_clunk_close_1": 6.69, "dog_clunk_close_8": 6.82,
-				"inflate_hiss": 6.84,
-			},
-		},
-		"floorhatch": {
-			"open": {
-				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
-				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
-				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "stayarm_detent_clunk": 4.09,
-			},
-			"close": {
-				"klaxon_1": 0.00, "klaxon_2": 0.30, "release_clunk": 0.60, "seat_thud": 4.86,
-				"dog_whine_close_start": 4.92, "dog_clunk_close_8": 5.40, "inflate_hiss": 5.43,
-			},
-		},
-	}
-	return all.get(door_id, {})
 
 
 func _first_mech(compiled: Array) -> float:

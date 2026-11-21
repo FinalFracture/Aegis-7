@@ -1,0 +1,44 @@
+{
+	"doors": {
+		"bay3": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"floorhatch": {
+			"functional": "FAIL",
+			"visual": "PENDING"
+		},
+		"hatch": {
+			"functional": "FAIL",
+			"visual": "PENDING"
+		},
+		"pair": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"pocket": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		}
+	},
+	"fails": [
+		"hatch:F-CLIP-HW",
+		"hatch:F-CLIP-ALLOW",
+		"hatch:R7",
+		"floorhatch:F-CLIP-LEAF",
+		"floorhatch:F-CLIP-HW",
+		"floorhatch:F-CLIP-ALLOW",
+		"floorhatch:R7"
+	],
+	"fails_count": 7,
+	"functional": "FAIL",
+	"hooks_missing": [],
+	"notes": [
+		"F-SPRINT-CLEAR is not required in the lab"
+	],
+	"optional_hooks": [],
+	"sloane": "PENDING",
+	"vance": "PENDING",
+	"verdict": "FAIL",
+	"visual": "PENDING"
+}

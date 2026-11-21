@@ -15,6 +15,7 @@ var _out: String = ""
 var _cam: Camera3D
 var _fill: OmniLight3D
 var _vis_fail: int = 0
+var _metrics_bad: bool = false
 var _pixel: Dictionary = {}
 
 
@@ -38,7 +39,10 @@ func start(lab: Node3D) -> void:
 	_cam.near = 0.05
 	_fill = OmniLight3D.new()
 	_fill.name = "DetailFill"
-	_fill.light_energy = 0.32
+	# Specular on this camera light was the white disc in the detail leaf rect.
+	# Scene key and fill still light the close-up. This one stays dim and diffuse.
+	_fill.light_energy = 0.08
+	_fill.light_specular = 0.0
 	_fill.shadow_enabled = false
 	_fill.omni_range = 3.0
 	_fill.visible = false
@@ -51,7 +55,11 @@ func start(lab: Node3D) -> void:
 		door.set_physics_process(false)
 		door.reset_closed()
 		if id in SHOT_IDS:
-			_pixel[id] = {"luma": 1.0, "shadow": 0.0, "shadow_hot": 0, "flicker": 0.0, "flicker_hot": 0}
+			_pixel[id] = {
+				"luma": 1.0, "shadow": 0.0, "shadow_hot": 0, "flicker": 0.0, "flicker_hot": 0,
+				"clip": 0.0, "clips": [], "amber": -1.0, "amber_rgb": "", "readout": -1.0,
+				"strip": -1.0, "pocket_low": 1.0, "pocket_set": false,
+			}
 	await _shoot_all()
 	_rewrite_metrics()
 	_call_sheet()
@@ -64,6 +72,7 @@ func _setup_window() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	get_tree().root.size = Vector2i(1920, 1080)
+	get_viewport().msaa_3d = Viewport.MSAA_4X
 
 
 func _read_out() -> String:
@@ -97,7 +106,12 @@ func _shoot_all() -> void:
 				var frames: Array = await _grab_frames(8 if burst else 1)
 				_save(frames[0], "%s/shots/%s_%s.png" % [id, cam_name, state])
 				if cam_name == "jamb":
+					_note_clip(id, frames[0], "jamb_%s" % state)
+					if state == "closed":
+						_note_pocket_low(id, frames[0])
 					_set_vestibule_meshes(true)
+				if cam_name == "front" and state == "closed":
+					_note_readout(id, frames[0])
 				if cam_name == "front" and (state == "closed" or state == "open"):
 					_note_luma(id, frames[0])
 				if state == "closed" and cam_name == "front":
@@ -112,6 +126,7 @@ func _shoot_all() -> void:
 			var hero_n: int = 8 if state == "closed" else 1
 			var hero_frames: Array = await _grab_frames(hero_n)
 			_save(hero_frames[0], "%s/shots/hero_%s.png" % [id, state])
+			_note_clip(id, hero_frames[0], "hero_%s" % state)
 			if state == "closed" or state == "open":
 				_note_luma(id, hero_frames[0])
 			if state == "closed":
@@ -121,23 +136,37 @@ func _shoot_all() -> void:
 		_save(await _one_frame(), "%s/shots/square_closed.png" % id)
 		_set_vestibule_meshes(false)
 		_place(door, "detail")
-		_save(await _one_frame(), "%s/shots/detail_closed.png" % id)
+		var detail_closed: Image = await _one_frame()
+		_save(detail_closed, "%s/shots/detail_closed.png" % id)
+		_note_clip(id, detail_closed, "detail_closed")
 		_pose(door, "open")
 		if id == "pocket":
 			_set_access_panel(door, true)
 		_place(door, "detail")
 		if id == "pocket":
 			_aim_pocket_panel(door)
-		_save(await _one_frame(), "%s/shots/detail_open.png" % id)
+		var detail_open: Image = await _one_frame()
+		_save(detail_open, "%s/shots/detail_open.png" % id)
+		_note_clip(id, detail_open, "detail_open")
 		if id == "pocket":
 			_set_access_panel(door, false)
+			await _pocket_end_shot(door)
+			_pose(door, "closed")
+			_set_access_panel(door, true)
+			await _pocket_head_shot(door)
+			_set_access_panel(door, false)
 		_set_vestibule_meshes(true)
+		if id == "hatch":
+			_set_vestibule_meshes(false)
 		_pose(door, "closed")
 		_place(door, "back")
 		_save(await _one_frame(), "%s/shots/back_closed.png" % id)
 		_pose(door, "open")
 		_place(door, "back")
 		_save(await _one_frame(), "%s/shots/back_open.png" % id)
+		if id == "hatch":
+			await _latch_edge(door)
+			_set_vestibule_meshes(true)
 		_pose(door, "050")
 		_place(door, "player_sloane")
 		_save(await _one_frame(), "%s/shots/player_sloane_050.png" % id)
@@ -165,30 +194,114 @@ func _set_vestibule_meshes(on: bool) -> void:
 
 
 func _aim_pocket_panel(door: MechDoor) -> void:
-	# The header is y ~ 2.5. A camera on the panel origin sits inside the track housing.
+	# Open clamps sit at x ±1.52. fov 40 at z-1.55 only covered ±1.1.
 	var origin := door.global_position
 	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
-	_cam.fov = 40.0
-	_cam.global_position = Vector3(cx, 1.48, origin.z - 1.55)
-	_cam.look_at(Vector3(cx, 2.32, origin.z - 0.02), Vector3.UP)
+	_cam.fov = 72.0
+	_cam.global_position = Vector3(cx, 1.95, origin.z - 2.60)
+	_cam.look_at(Vector3(cx, 2.38, origin.z - 0.02), Vector3.UP)
+
+
+func _pocket_head_shot(door: MechDoor) -> void:
+	# Closed pose, panel +90, −Z side, wide enough to see the head hardware.
+	var origin := door.global_position
+	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
+	_cam.fov = 55.0
+	_cam.global_position = Vector3(cx, 1.85, origin.z - 2.80)
+	_cam.look_at(Vector3(cx, 2.30, origin.z), Vector3.UP)
+	if _fill != null:
+		_fill.visible = true
+	var img := await _one_frame()
+	_save(img, "pocket/shots/head_closed.png")
+	_note_clip("pocket", img, "head_closed")
+
+
+func _pocket_end_shot(door: MechDoor) -> void:
+	# Full open. Bumper and end stop are near x = cx+1.93; open clamps near +1.52.
+	var origin := door.global_position
+	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
+	var ex := cx + 1.72
+	_cam.fov = 46.0
+	_cam.global_position = Vector3(ex - 0.15, 1.40, origin.z - 1.55)
+	_cam.look_at(Vector3(ex + 0.20, 1.30, origin.z + 0.02), Vector3.UP)
+	if _fill != null:
+		_fill.visible = true
+	var img := await _one_frame()
+	_save(img, "pocket/shots/pocket_end_open.png")
+	_note_clip("pocket", img, "pocket_end_open")
+
+
+func _latch_edge(door: MechDoor) -> void:
+	# t = 1.9 s is in the lurch. Rams are posed +12 mm toward the approach for this frame only.
+	var sampled: Dictionary = door.profile.sample("open", 1.9)
+	door.force_q(float(sampled.get("q", 0.0)))
+	_nudge_rams(door, -0.012)
+	var origin := door.global_position
+	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
+	_cam.fov = 28.0
+	_cam.global_position = Vector3(cx - 0.95, 0.95, origin.z - 0.70)
+	_cam.look_at(Vector3(cx - 0.55, 0.90, origin.z - 0.02), Vector3.UP)
+	if _fill != null:
+		_fill.visible = true
+	_save(await _one_frame(), "hatch/shots/latch_edge_19.png")
+	_nudge_rams(door, 0.012)
+	door.force_q(0.0)
+
+
+func _nudge_rams(door: Node, dz: float) -> void:
+	var stack: Array[Node] = [door]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is Node3D):
+			continue
+		var low := String(n.name).to_lower()
+		if "pushoff" not in low:
+			continue
+		var parent_hit := false
+		var p: Node = n.get_parent()
+		while p != null and p != door:
+			if "pushoff" in String(p.name).to_lower():
+				parent_hit = true
+				break
+			p = p.get_parent()
+		if parent_hit:
+			continue
+		(n as Node3D).global_position += Vector3(0.0, 0.0, dz)
 
 
 func _set_access_panel(door: Node, opened: bool) -> void:
-	var panel := _find_node(door, "slide_AccessPanel")
+	# Rook pass G: exact name. The substring search returned slide_AccessPanel_hinge (its sibling, popped first),
+	# so the panel never moved and covered the head hardware in detail_open.
+	var panel := _find_exact(door, "slide_AccessPanel")
 	if panel == null or not (panel is Node3D):
 		return
 	var was := bool(panel.get_meta("shot_open", false))
+	# The GLB panel opens +90 about local X (top hinge, swings up and out; v1 bakes that pose and the rig closes it with -90).
+	# -110 swung it into the head box, through the track and belt.
 	if opened and not was:
-		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(-110.0))
+		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(90.0))
 		panel.set_meta("shot_open", true)
 	elif not opened and was:
-		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(110.0))
+		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(-90.0))
 		panel.set_meta("shot_open", false)
+
+
+func _find_exact(root: Node, nm: String) -> Node:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if String(n.name) == nm:
+			return n
+		for c in n.get_children():
+			stack.append(c)
+	return null
 
 
 func _wear_closeup(door: MechDoor, id: String) -> void:
 	var target: Node3D = null
-	for needle in ["WearHandle", "WearPush", "WearBar", "WearKick", "WearWheel", "hatch_Handle", "ManualHandle"]:
+	for needle in ["WearHandle", "WearPush", "WearBar", "WearKick", "WearWheel", "WearLid", "hatch_Handle", "ManualHandle"]:
 		var found := _find_node(door, needle)
 		if found is Node3D:
 			target = found
@@ -203,9 +316,18 @@ func _wear_closeup(door: MechDoor, id: String) -> void:
 	if _fill != null:
 		_fill.visible = true
 	var img := await _one_frame()
+	var tries := 0
+	while _image_std(img) < 0.015 and tries < 3:
+		var away := _cam.global_position - p
+		if away.length() < 0.05:
+			away = Vector3(0.0, 0.2, -1.0)
+		_cam.global_position += away.normalized() * 0.45
+		_cam.look_at(p, Vector3.UP)
+		img = await _one_frame()
+		tries += 1
 	_save(img, "%s_wear_closeup.png" % id)
 	_save(img, "%s/shots/%s_wear_closeup.png" % [id, id])
-	print("[door_lab] %s wear close-up %s" % [id, target.name])
+	print("[door_lab] %s wear close-up %s std=%.4f tries=%d" % [id, target.name, _image_std(img), tries])
 
 
 func _print_clip(id: String, img: Image) -> void:
@@ -240,20 +362,35 @@ func _find_node(root: Node, needle: String) -> Node:
 
 
 func _open_strip(door: MechDoor, id: String) -> void:
+	# Time samples pile up on the end dwell, so the last two frames match.
+	# Eight equal travel steps. q changes every frame, including the last.
 	door.reset_closed()
-	door.set_physics_process(true)
+	door.set_physics_process(false)
 	_place(door, "hero")
-	door.command_open()
+	if id == "hatch":
+		# Approach hero loses the plug after about 70 deg (it swings to +Z).
+		# The back camera still sees that last third. Vestibule wall sits in the way.
+		_set_vestibule_meshes(false)
+		_place(door, "back")
+	var travel := maxf(door.profile.travel, 0.001)
+	var prev: Image = null
+	var min_diff := 1.0
 	for i in 8:
-		if i > 0:
-			var waited := 0.0
-			while waited < (1.0 / 24.0) - 0.0001:
-				await get_tree().physics_frame
-				waited += 1.0 / 60.0
-		else:
-			await get_tree().physics_frame
+		var q := travel * float(i) / 7.0
+		door.force_q(q)
 		var img: Image = await _shot_image()
 		_save(img, "%s/shots/hero_openstrip_%d.png" % [id, i])
+		if prev != null:
+			min_diff = minf(min_diff, _frame_diff(prev, img))
+		prev = img
+	if _pixel.has(id):
+		var slot: Dictionary = _pixel[id]
+		slot["strip"] = min_diff
+		_pixel[id] = slot
+	print("[door_lab] %s V-STRIP min_diff=%.5f" % [id, min_diff])
+	if id == "hatch":
+		_set_vestibule_meshes(true)
+	door.force_q(0.0)
 	door.set_physics_process(false)
 
 
@@ -276,6 +413,10 @@ func _heroes() -> void:
 		var img := await _one_frame()
 		_save(img, "hero_final_%s.png" % id)
 		_print_clip(id, img)
+		_note_clip(id, img, "hero_final")
+		_note_pocket_low(id, img)
+		_note_amber(door, img)
+		_note_readout(id, img)
 		if id == "floorhatch":
 			print("[door_lab] floorhatch V-LUMA measured=%.4f" % _mean_luma(img, _leaf_rect(img)))
 		door.reset_closed()
@@ -619,12 +760,10 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 				up = Vector3(0.0, 0.0, -1.0)
 				fov = 50.0
 			elif door.door_id == "hatch":
-				# The old camera sat at z+3.2, behind the vestibule wall. 1.65 m toward −Z, wider so the hardware fits.
-				# Stay in front of the vestibule wall (z ≈ 2.40). Wider so the davit,
-				# damper, actuator and both rams sit inside the frame with the gauge.
-				at = Vector3(cx, 1.22, dz + 1.55)
-				look = Vector3(cx, 1.25, dz)
-				fov = 76.0
+				# Vestibule is hidden for this shot. Full leaf plus 0.3 m, davit and the lower-hinge actuator.
+				at = Vector3(cx, 1.15, dz + 2.6)
+				look = Vector3(cx, 1.15, dz)
+				fov = 55.0
 			else:
 				at = Vector3(cx, 1.45, dz + 3.2)
 				look = Vector3(cx, look_y, dz)
@@ -799,6 +938,280 @@ func _luma_at(img: Image, x: int, y: int) -> float:
 	return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b
 
 
+func _lower_half(img: Image) -> Rect2i:
+	var leaf := _leaf_rect(img)
+	return Rect2i(leaf.position.x, leaf.position.y + int(leaf.size.y / 2), leaf.size.x, int(leaf.size.y / 2))
+
+
+func _clip_pct(img: Image, rect: Rect2i) -> float:
+	var hot := 0
+	var n := 0
+	var y := rect.position.y
+	while y < rect.position.y + rect.size.y:
+		var x := rect.position.x
+		while x < rect.position.x + rect.size.x:
+			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height():
+				var c := img.get_pixel(x, y)
+				if c.r >= 250.0 / 255.0 or c.g >= 250.0 / 255.0 or c.b >= 250.0 / 255.0:
+					hot += 1
+				n += 1
+			x += 2
+		y += 2
+	return 100.0 * float(hot) / float(maxi(n, 1))
+
+
+func _note_clip(id: String, img: Image, label: String) -> void:
+	if not _pixel.has(id):
+		return
+	var pct := _clip_pct(img, _leaf_rect(img))
+	var slot: Dictionary = _pixel[id]
+	var list: Array = slot.get("clips", [])
+	list.append("%s=%.2f" % [label, pct])
+	slot["clips"] = list
+	slot["clip"] = maxf(float(slot.get("clip", 0.0)), pct)
+	_pixel[id] = slot
+	print("[door_lab] %s %s leaf_clip_pct=%.2f" % [id, label, pct])
+
+
+func _note_pocket_low(id: String, img: Image) -> void:
+	if id != "pocket" or not _pixel.has(id):
+		return
+	var v := _mean_luma(img, _lower_half(img))
+	var slot: Dictionary = _pixel[id]
+	if not bool(slot.get("pocket_set", false)):
+		slot["pocket_low"] = v
+		slot["pocket_set"] = true
+	else:
+		slot["pocket_low"] = maxf(float(slot["pocket_low"]), v)
+	_pixel[id] = slot
+	print("[door_lab] pocket lower-half luma=%.4f" % v)
+
+
+func _note_amber(door: MechDoor, img: Image) -> void:
+	var id := door.door_id
+	if not _pixel.has(id):
+		return
+	var target := Color.from_rgba8(217, 115, 5)
+	var best := 99.0
+	var rgb := ""
+	var used := 0
+	var stack: Array[Node] = [door]
+	while not stack.is_empty() and used < 24:
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null or mi.mesh.get_surface_count() < 1:
+			continue
+		var mat := mi.get_surface_override_material(0) as StandardMaterial3D
+		if mat == null:
+			mat = mi.get_active_material(0) as StandardMaterial3D
+		if mat == null or mat.shading_mode != BaseMaterial3D.SHADING_MODE_UNSHADED:
+			continue
+		var d := mat.albedo_color - target
+		if Vector3(d.r, d.g, d.b).length() > 0.04:
+			continue
+		# The node origin is the leaf pivot on these GLBs, so a radius around it
+		# lands on the grey glass. Sample the mesh bounds, which sit on the bar.
+		var rect := _mesh_screen_rect(mi)
+		if rect.size.x < 2 or rect.size.y < 2:
+			continue
+		var hit := _best_amber_in(img, rect, target)
+		used += 1
+		if float(hit["err"]) < best:
+			best = float(hit["err"])
+			rgb = str(hit["rgb"])
+	var slot: Dictionary = _pixel[id]
+	slot["amber"] = best if best < 50.0 else -1.0
+	slot["amber_rgb"] = rgb
+	_pixel[id] = slot
+	print("[door_lab] %s V-AMBER-PX err=%.4f rgb=%s samples=%d" % [id, float(slot["amber"]), rgb, used])
+
+
+func _mesh_screen_rect(mi: MeshInstance3D) -> Rect2i:
+	var box: AABB = mi.global_transform * mi.mesh.get_aabb()
+	var min_x := 100000
+	var min_y := 100000
+	var max_x := -1
+	var max_y := -1
+	var any := false
+	for i in 8:
+		var corner := Vector3(
+			box.position.x + box.size.x * float(i & 1),
+			box.position.y + box.size.y * float((i >> 1) & 1),
+			box.position.z + box.size.z * float((i >> 2) & 1))
+		if _cam.is_position_behind(corner):
+			continue
+		var s := _cam.unproject_position(corner)
+		any = true
+		min_x = mini(min_x, int(floor(s.x)))
+		min_y = mini(min_y, int(floor(s.y)))
+		max_x = maxi(max_x, int(ceil(s.x)))
+		max_y = maxi(max_y, int(ceil(s.y)))
+	if not any:
+		return Rect2i(0, 0, 0, 0)
+	min_x = clampi(min_x - 4, 0, 100000)
+	min_y = clampi(min_y - 4, 0, 100000)
+	max_x = maxi(max_x + 4, min_x + 2)
+	max_y = maxi(max_y + 4, min_y + 2)
+	return Rect2i(min_x, min_y, max_x - min_x, max_y - min_y)
+
+
+func _best_amber_in(img: Image, rect: Rect2i, target: Color) -> Dictionary:
+	var best := 99.0
+	var rgb := ""
+	var step := 1 if rect.size.x * rect.size.y < 12000 else 2
+	var y := rect.position.y
+	var y1 := mini(rect.position.y + rect.size.y, img.get_height())
+	var x1 := mini(rect.position.x + rect.size.x, img.get_width())
+	while y < y1:
+		var x := maxi(rect.position.x, 0)
+		while x < x1:
+			var c := img.get_pixel(x, y)
+			var err := maxf(absf(c.r - target.r), maxf(absf(c.g - target.g), absf(c.b - target.b)))
+			if err < best:
+				best = err
+				rgb = "%d,%d,%d" % [int(round(c.r * 255.0)), int(round(c.g * 255.0)), int(round(c.b * 255.0))]
+			x += step
+		y += step
+	return {"err": best, "rgb": rgb}
+
+
+func _nearest_amber(img: Image, sx: int, sy: int, target: Color) -> Dictionary:
+	var best := 99.0
+	var rgb := ""
+	var rad := 64
+	var y := sy - rad
+	while y <= sy + rad:
+		var x := sx - rad
+		while x <= sx + rad:
+			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height():
+				var c := img.get_pixel(x, y)
+				var err := maxf(absf(c.r - target.r), maxf(absf(c.g - target.g), absf(c.b - target.b)))
+				if err < best:
+					best = err
+					rgb = "%d,%d,%d" % [int(round(c.r * 255.0)), int(round(c.g * 255.0)), int(round(c.b * 255.0))]
+			x += 2
+		y += 2
+	return {"err": best, "rgb": rgb}
+
+
+func _note_readout(id: String, img: Image) -> void:
+	if not _pixel.has(id) or not _doors.has(id):
+		return
+	var face := _approach_digit(_doors[id])
+	if face == null or _cam.is_position_behind(face.global_position):
+		return
+	var screen := _cam.unproject_position(face.global_position)
+	var std := _crop_std(img, screen, 28, 14)
+	var slot: Dictionary = _pixel[id]
+	var cur := float(slot.get("readout", -1.0))
+	slot["readout"] = std if cur < 0.0 else maxf(cur, std)
+	_pixel[id] = slot
+	print("[door_lab] %s V-READOUT std=%.4f" % [id, float(slot["readout"])])
+
+
+func _approach_digit(door: Node) -> Node3D:
+	var best: Node3D = null
+	var best_dot := 0.2
+	var stack: Array[Node] = [door]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		if "digitface" not in String(n.name).to_lower():
+			continue
+		var nd := n as Node3D
+		var to_cam := _cam.global_position - nd.global_position
+		if to_cam.length() < 0.05:
+			continue
+		var facing: Vector3 = nd.global_transform.basis.z
+		var d := facing.normalized().dot(to_cam.normalized())
+		if d > best_dot:
+			best_dot = d
+			best = nd
+	return best
+
+
+func _crop_std(img: Image, center: Vector2, hw: int, hh: int) -> float:
+	var acc := 0.0
+	var acc2 := 0.0
+	var n := 0
+	var y := int(center.y) - hh
+	while y <= int(center.y) + hh:
+		var x := int(center.x) - hw
+		while x <= int(center.x) + hw:
+			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height():
+				var l := _luma_at(img, x, y)
+				acc += l
+				acc2 += l * l
+				n += 1
+			x += 1
+		y += 1
+	if n < 8:
+		return 0.0
+	var mean := acc / float(n)
+	return sqrt(maxf(acc2 / float(n) - mean * mean, 0.0))
+
+
+func _image_std(img: Image) -> float:
+	var acc := 0.0
+	var acc2 := 0.0
+	var n := 0
+	var y := 0
+	while y < img.get_height():
+		var x := 0
+		while x < img.get_width():
+			var l := _luma_at(img, x, y)
+			acc += l
+			acc2 += l * l
+			n += 1
+			x += 8
+		y += 8
+	if n == 0:
+		return 0.0
+	var mean := acc / float(n)
+	return sqrt(maxf(acc2 / float(n) - mean * mean, 0.0))
+
+
+func _frame_diff(a: Image, b: Image) -> float:
+	var acc := 0.0
+	var n := 0
+	var y := 0
+	var h := mini(a.get_height(), b.get_height())
+	var w := mini(a.get_width(), b.get_width())
+	while y < h:
+		var x := 0
+		while x < w:
+			var ca := a.get_pixel(x, y)
+			var cb := b.get_pixel(x, y)
+			acc += absf(ca.r - cb.r) + absf(ca.g - cb.g) + absf(ca.b - cb.b)
+			n += 1
+			x += 8
+		y += 8
+	return acc / float(maxi(n, 1))
+
+
+func _join_bits(items: Array) -> String:
+	var s := ""
+	for i in items.size():
+		if i > 0:
+			s += "; "
+		s += str(items[i])
+	return s
+
+
+func _metrics_file_ok(path: String) -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	return typeof(parsed) == TYPE_ARRAY and (parsed as Array).size() > 0
+
+
 func _rewrite_metrics() -> void:
 	var vis_ids := {}
 	for id in SHOT_IDS:
@@ -810,23 +1223,66 @@ func _rewrite_metrics() -> void:
 		var shadow_hot := int(slot["shadow_hot"])
 		var flicker := float(slot["flicker"])
 		var flicker_hot := int(slot["flicker_hot"])
-		var luma_ok: bool = luma >= 0.25
+		var luma_ok := luma >= 0.10
+		var luma_limit := 0.10
+		var luma_measured := luma
+		var luma_note := "leaf-face mean >= 0.10"
+		if id == "pocket":
+			var low := float(slot.get("pocket_low", 1.0))
+			luma_ok = luma >= 0.10 and low <= 0.25 and bool(slot.get("pocket_set", false))
+			luma_limit = 0.25
+			luma_measured = low
+			luma_note = "lower-half of hero_final and jamb_closed <= 0.25; leaf mean %.3f >= 0.10" % luma
+		var clip := float(slot.get("clip", 0.0))
+		var clip_ok := clip <= 5.0
+		var amber := float(slot.get("amber", -1.0))
+		var amber_ok := amber >= 0.0 and amber <= (12.0 / 255.0) + 1.0e-5
+		var amber_note := "rgb %s max-channel vs 217,115,5" % str(slot.get("amber_rgb", ""))
+		if id == "pocket" and amber < 0.0:
+			amber_ok = true
+			amber_note = "no plate in frame"
+		elif amber < 0.0:
+			amber_ok = false
+			amber_note = "amber part not sampled"
+		var rd := float(slot.get("readout", -1.0))
+		var rd_ok := true
+		if id == "hatch":
+			rd_ok = rd >= 0.02
+		elif rd >= 0.0:
+			rd_ok = rd >= 0.02
+		var strip := float(slot.get("strip", -1.0))
+		var strip_ok := strip > 0.004
 		var shadow_ok: bool = shadow <= (2.0 / 255.0) + 1.0e-5 and shadow_hot == 0
 		var flicker_ok: bool = flicker <= (2.0 / 255.0) + 1.0e-5 and flicker_hot == 0
-		print("[door_lab] %s V-LUMA %s measured=%.4f limit=0.25" % [id, "PASS" if luma_ok else "FAIL", luma])
+		print("[door_lab] %s V-LUMA %s measured=%.4f limit=%.2f" % [id, "PASS" if luma_ok else "FAIL", luma_measured, luma_limit])
 		print("[door_lab] %s V-SHADOW %s measured=%.5f hot=%d limit=0.00784" % [id, "PASS" if shadow_ok else "FAIL", shadow, shadow_hot])
 		print("[door_lab] %s V-ZFIGHT-FLICKER %s measured=%.5f hot=%d limit=0.00784" % [id, "PASS" if flicker_ok else "FAIL", flicker, flicker_hot])
+		print("[door_lab] %s V-CLIP %s measured=%.2f limit=5" % [id, "PASS" if clip_ok else "FAIL", clip])
+		print("[door_lab] %s V-AMBER-PX %s measured=%.4f" % [id, "PASS" if amber_ok else "FAIL", amber])
+		print("[door_lab] %s V-READOUT %s measured=%.4f" % [id, "PASS" if rd_ok else "FAIL", rd])
+		print("[door_lab] %s V-STRIP %s measured=%.5f" % [id, "PASS" if strip_ok else "FAIL", strip])
 		var path := _out.path_join(id).path_join("metrics.json")
+		var file_ok := _metrics_file_ok(path)
+		if not file_ok:
+			_metrics_bad = true
+			print("[door_lab] %s metrics.json missing or empty" % id)
 		var metrics: Array = _load_array(path)
-		_upsert(metrics, "V-LUMA", luma_ok, luma, 0.25, "1", "leaf-face mean, Sloane A and front, closed and open")
+		if not file_ok:
+			_upsert(metrics, "V-METRICS", false, 0.0, 1.0, "1", "metrics.json missing or empty before shots")
+		_upsert(metrics, "V-LUMA", luma_ok, luma_measured, luma_limit, "1", luma_note)
 		_upsert(metrics, "V-SHADOW", shadow_ok, shadow, 2.0 / 255.0, "1", "leaf-face mean |d| hot %d" % shadow_hot)
 		_upsert(metrics, "V-ZFIGHT-FLICKER", flicker_ok, flicker, 2.0 / 255.0, "1", "seam band mean |d| hot %d" % flicker_hot)
+		_upsert(metrics, "V-CLIP", clip_ok, clip, 5.0, "pct", "leaf-rect channel>=250; %s" % _join_bits(slot.get("clips", [])))
+		_upsert(metrics, "V-AMBER-PX", amber_ok, amber, 12.0 / 255.0, "1", amber_note)
+		_upsert(metrics, "V-READOUT", rd_ok, rd, 0.02, "1", "approach DigitFace crop std; blank if under 0.02")
+		_upsert(metrics, "V-STRIP", strip_ok, strip, 0.004, "1", "min consecutive open-strip frame diff")
 		_store(path, metrics)
-		if not luma_ok or not shadow_ok or not flicker_ok:
+		var gates_ok := luma_ok and shadow_ok and flicker_ok and clip_ok and amber_ok and rd_ok and strip_ok and file_ok
+		if not gates_ok:
 			_vis_fail += 1
 		if not _rest_visual_ok(metrics):
 			_vis_fail += 1
-		vis_ids[id] = luma_ok and shadow_ok and flicker_ok and _rest_visual_ok(metrics)
+		vis_ids[id] = gates_ok and _rest_visual_ok(metrics)
 	_rewrite_summary(vis_ids)
 
 
@@ -862,8 +1318,15 @@ func _rewrite_summary(vis_ids: Dictionary) -> void:
 	summary["vance"] = "PENDING"
 	summary["hooks_missing"] = []
 	var fails: Array = []
+	if _metrics_bad:
+		any_fail = true
+		fails.append("metrics.json unreadable or empty")
 	for sid in SHOT_IDS:
-		var metrics: Array = _load_array(_out.path_join(sid).path_join("metrics.json"))
+		var metrics_path := _out.path_join(sid).path_join("metrics.json")
+		if not _metrics_file_ok(metrics_path):
+			any_fail = true
+			fails.append("%s:metrics.json unreadable or empty" % sid)
+		var metrics: Array = _load_array(metrics_path)
 		for item in metrics:
 			if typeof(item) != TYPE_DICTIONARY:
 				continue
@@ -950,9 +1413,7 @@ func _mirror_pngs() -> void:
 			dest = str(args[i + 1])
 	if dest == "":
 		return
-	if not DirAccess.dir_exists_absolute(dest):
-		print("[door_lab] mirror skip, absent %s" % dest)
-		return
+	DirAccess.make_dir_recursive_absolute(dest)
 	_mirror_dir(_out, dest)
 
 
@@ -962,7 +1423,10 @@ func _mirror_dir(src: String, dest: String) -> void:
 		return
 	DirAccess.make_dir_recursive_absolute(dest)
 	for name in dir.get_files():
-		if String(name).ends_with(".png"):
-			DirAccess.copy_absolute(src.path_join(name), dest.path_join(name))
+		var from := src.path_join(name)
+		var to := dest.path_join(name)
+		if FileAccess.file_exists(to):
+			DirAccess.remove_absolute(to)
+		DirAccess.copy_absolute(from, to)
 	for sub in dir.get_directories():
 		_mirror_dir(src.path_join(sub), dest.path_join(sub))

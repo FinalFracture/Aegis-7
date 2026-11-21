@@ -2,14 +2,14 @@
   "door_id": "hatch",
   "motion": "swing",
   "travel_time_scale": 0.45,
-  "mech_phase_scale": 0.60,
+  "mech_phase_scale": 0.6,
   "lurch_scale": 1.0,
   "settle_scale": 1.0,
   "close_travel_scale": 0.45,
   "close_v_cap": 19.4,
   "inertia_kgm2": 174.0,
   "expect_open": 4.64,
-  "expect_close": 7.80,
+  "expect_close": 7.8,
   "mass_kg": 420,
   "travel": 100.0,
   "v_peak_open": 30.0,
@@ -19,60 +19,404 @@
   "pre_equalized": false,
   "full_clear_m": 0.9,
   "clear_model": "swing",
-  "meta": {"plug": "1.10 x 2.10 x 0.12", "clear": "0.90 x 1.90", "dogs": 8, "pre_equalized": false, "close": "wall bulkhead 19.4 deg/s cap, 7.80 s", "inertia_note": "Wall bulkhead I=174 kg m2 at the 19.4 deg/s cap is 9.97 J. Section 8's 5.7 J is the floor hatch I=46.7 at the retired 0.7x cruise (28.6 deg/s), not this leaf."},
-  "obstruction": {"stop_s": 0.6, "stop_dist": 12.0, "stop_a": 40.0, "dwell_s": 0.15, "v_cap": 20.0, "hold_s": 5.0, "reopen_to": 30.0, "fault_count": 3, "edge_force_n": 150},
+  "meta": {
+    "plug": "1.10 x 2.10 x 0.12",
+    "clear": "0.90 x 1.90",
+    "dogs": 8,
+    "pre_equalized": false,
+    "close": "wall bulkhead 19.4 deg/s cap, 7.80 s",
+    "inertia_note": "Wall bulkhead I=174 kg m2 at the 19.4 deg/s cap is 9.97 J. Section 8's 5.7 J is the floor hatch I=46.7 at the retired 0.7x cruise (28.6 deg/s), not this leaf."
+  },
+  "obstruction": {
+    "stop_s": 0.6,
+    "stop_dist": 12.0,
+    "stop_a": 40.0,
+    "dwell_s": 0.15,
+    "v_cap": 20.0,
+    "hold_s": 5.0,
+    "reopen_to": 30.0,
+    "fault_count": 3,
+    "edge_force_n": 150
+  },
   "leaves": [
-    {"name": "leaf", "sign": 1, "stagger_open": 0.0, "stagger_close": 0.0}
+    {
+      "name": "leaf",
+      "sign": 1,
+      "stagger_open": 0.0,
+      "stagger_close": 0.0
+    }
   ],
   "open_phases": [
-    {"name": "request", "t0": 0.0, "t1": 0.2, "kind": "hold", "p0": 0.0, "scale": false},
-    {"name": "equalize", "t0": 0.2, "t1": 1.7, "kind": "latch", "p0": 0.0, "scale": false},
-    {"name": "dogs", "t0": 1.7, "t1": 2.5, "kind": "latch", "p0": 0.0, "scale": false},
-    {"name": "seal_deflate", "t0": 2.5, "t1": 3.0, "kind": "hold", "p0": 0.0, "scale": false},
-    {"name": "lurch", "t0": 3.0, "t1": 3.35, "kind": "cosine", "p0": 0.0, "p1": 0.7, "scale": true},
-    {"name": "travel", "t0": 3.35, "t1": 7.99333, "kind": "scurve", "p0": 0.7, "p1": 100.0, "v": 30.0, "a": 30.0, "j": 90.0, "scale": true},
-    {"name": "settle", "t0": 7.99333, "t1": 8.38333, "kind": "settle", "p0": 100.0, "p1": 100.0, "amp": 0.3, "sign": 1, "scale": true}
+    {
+      "name": "request",
+      "t0": 0.0,
+      "t1": 0.2,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "equalize",
+      "t0": 0.2,
+      "t1": 1.7,
+      "kind": "latch",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "dogs",
+      "t0": 1.7,
+      "t1": 2.5,
+      "kind": "latch",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "seal_deflate",
+      "t0": 2.5,
+      "t1": 3.0,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "lurch",
+      "t0": 3.0,
+      "t1": 3.35,
+      "kind": "cosine",
+      "p0": 0.0,
+      "p1": 0.7,
+      "scale": true
+    },
+    {
+      "name": "travel",
+      "t0": 3.35,
+      "t1": 7.99333,
+      "kind": "scurve",
+      "p0": 0.7,
+      "p1": 100.0,
+      "v": 30.0,
+      "a": 30.0,
+      "j": 90.0,
+      "scale": true
+    },
+    {
+      "name": "settle",
+      "t0": 7.99333,
+      "t1": 8.38333,
+      "kind": "settle",
+      "p0": 100.0,
+      "p1": 100.0,
+      "amp": 0.3,
+      "sign": 1,
+      "scale": true
+    }
   ],
   "close_phases": [
-    {"name": "prewarn", "t0": 0.0, "t1": 1.0, "kind": "hold", "p0": 100.0, "scale": false},
-    {"name": "travel", "t0": 1.0, "t1": 7.2333, "kind": "scurve", "p0": 100.0, "p1": 2.0, "v": 20.0, "a": 20.0, "j": 60.0, "scale": true},
-    {"name": "final_seat", "t0": 7.2333, "t1": 7.9033, "kind": "cubic", "p0": 2.0, "p1": 0.0, "scale": true},
-    {"name": "seat_gap", "t0": 7.9033, "t1": 7.9533, "kind": "hold", "p0": 0.0, "scale": false},
-    {"name": "dogs", "t0": 7.9533, "t1": 8.7533, "kind": "latch", "p0": 0.0, "scale": false},
-    {"name": "dog_gap", "t0": 8.7533, "t1": 8.8033, "kind": "hold", "p0": 0.0, "scale": false},
-    {"name": "seal_inflate", "t0": 8.8033, "t1": 9.4033, "kind": "hold", "p0": 0.0, "scale": false},
-    {"name": "leak_check", "t0": 9.4033, "t1": 10.4033, "kind": "hold", "p0": 0.0, "scale": false}
+    {
+      "name": "prewarn",
+      "t0": 0.0,
+      "t1": 1.0,
+      "kind": "hold",
+      "p0": 100.0,
+      "scale": false
+    },
+    {
+      "name": "travel",
+      "t0": 1.0,
+      "t1": 7.2333,
+      "kind": "scurve",
+      "p0": 100.0,
+      "p1": 2.0,
+      "v": 20.0,
+      "a": 20.0,
+      "j": 60.0,
+      "scale": true
+    },
+    {
+      "name": "final_seat",
+      "t0": 7.2333,
+      "t1": 7.9033,
+      "kind": "cubic",
+      "p0": 2.0,
+      "p1": 0.0,
+      "scale": true
+    },
+    {
+      "name": "seat_gap",
+      "t0": 7.9033,
+      "t1": 7.9533,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "dogs",
+      "t0": 7.9533,
+      "t1": 8.7533,
+      "kind": "latch",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "dog_gap",
+      "t0": 8.7533,
+      "t1": 8.8033,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "seal_inflate",
+      "t0": 8.8033,
+      "t1": 9.4033,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    },
+    {
+      "name": "leak_check",
+      "t0": 9.4033,
+      "t1": 10.4033,
+      "kind": "hold",
+      "p0": 0.0,
+      "scale": false
+    }
   ],
   "cues_open": [
-    {"t": 0.2, "name": "equalize_hiss_start", "loop": true},
-    {"t": 0.99, "name": "equalize_hiss_stop", "stop": true, "game_tempo": true},
-    {"t": 1.7, "name": "dog_whine_start", "loop": true},
-    {"t": 2.3, "name": "dog_clunk_1"},
-    {"t": 2.33, "name": "dog_clunk_2"},
-    {"t": 2.36, "name": "dog_clunk_3"},
-    {"t": 2.39, "name": "dog_clunk_4"},
-    {"t": 2.42, "name": "dog_clunk_5"},
-    {"t": 2.45, "name": "dog_clunk_6"},
-    {"t": 2.48, "name": "dog_clunk_7"},
-    {"t": 2.51, "name": "dog_clunk_8"},
-    {"t": 2.5, "name": "seal_deflate_hiss"},
-    {"t": 3.05, "name": "unseat_thunk"},
-    {"t": 3.35, "name": "actuator_hum_start", "loop": true},
-    {"t": 8.03, "name": "holdopen_clunk"}
+    {
+      "t": 0.2,
+      "name": "equalize_hiss_start",
+      "loop": true
+    },
+    {
+      "t": 0.99,
+      "name": "equalize_hiss_stop",
+      "stop": true,
+      "game_tempo": true
+    },
+    {
+      "t": 1.7,
+      "name": "dog_whine_start",
+      "loop": true
+    },
+    {
+      "t": 2.3,
+      "name": "dog_clunk_1"
+    },
+    {
+      "t": 2.33,
+      "name": "dog_clunk_2"
+    },
+    {
+      "t": 2.36,
+      "name": "dog_clunk_3"
+    },
+    {
+      "t": 2.39,
+      "name": "dog_clunk_4"
+    },
+    {
+      "t": 2.42,
+      "name": "dog_clunk_5"
+    },
+    {
+      "t": 2.45,
+      "name": "dog_clunk_6"
+    },
+    {
+      "t": 2.48,
+      "name": "dog_clunk_7"
+    },
+    {
+      "t": 2.51,
+      "name": "dog_clunk_8"
+    },
+    {
+      "t": 2.5,
+      "name": "seal_deflate_hiss"
+    },
+    {
+      "t": 3.05,
+      "name": "unseat_thunk"
+    },
+    {
+      "t": 3.35,
+      "name": "actuator_hum_start",
+      "loop": true
+    },
+    {
+      "t": 8.03,
+      "name": "holdopen_clunk"
+    }
   ],
   "cues_close": [
-    {"t": 0.0, "name": "klaxon_1"},
-    {"t": 0.5, "name": "klaxon_2"},
-    {"t": 6.28, "name": "seat_thud", "game_tempo": true},
-    {"t": 6.33, "name": "dog_whine_close_start", "loop": true, "game_tempo": true},
-    {"t": 6.69, "name": "dog_clunk_close_1", "game_tempo": true},
-    {"t": 6.708, "name": "dog_clunk_close_2", "game_tempo": true},
-    {"t": 6.726, "name": "dog_clunk_close_3", "game_tempo": true},
-    {"t": 6.744, "name": "dog_clunk_close_4", "game_tempo": true},
-    {"t": 6.762, "name": "dog_clunk_close_5", "game_tempo": true},
-    {"t": 6.780, "name": "dog_clunk_close_6", "game_tempo": true},
-    {"t": 6.798, "name": "dog_clunk_close_7", "game_tempo": true},
-    {"t": 6.816, "name": "dog_clunk_close_8", "game_tempo": true},
-    {"t": 6.84, "name": "inflate_hiss", "game_tempo": true}
-  ]
+    {
+      "t": 0.0,
+      "name": "klaxon_1"
+    },
+    {
+      "t": 0.5,
+      "name": "klaxon_2"
+    },
+    {
+      "t": 6.28,
+      "name": "seat_thud",
+      "game_tempo": true
+    },
+    {
+      "t": 6.33,
+      "name": "dog_whine_close_start",
+      "loop": true,
+      "game_tempo": true
+    },
+    {
+      "t": 6.69,
+      "name": "dog_clunk_close_1",
+      "game_tempo": true
+    },
+    {
+      "t": 6.708,
+      "name": "dog_clunk_close_2",
+      "game_tempo": true
+    },
+    {
+      "t": 6.726,
+      "name": "dog_clunk_close_3",
+      "game_tempo": true
+    },
+    {
+      "t": 6.744,
+      "name": "dog_clunk_close_4",
+      "game_tempo": true
+    },
+    {
+      "t": 6.762,
+      "name": "dog_clunk_close_5",
+      "game_tempo": true
+    },
+    {
+      "t": 6.78,
+      "name": "dog_clunk_close_6",
+      "game_tempo": true
+    },
+    {
+      "t": 6.798,
+      "name": "dog_clunk_close_7",
+      "game_tempo": true
+    },
+    {
+      "t": 6.816,
+      "name": "dog_clunk_close_8",
+      "game_tempo": true
+    },
+    {
+      "t": 6.84,
+      "name": "inflate_hiss",
+      "game_tempo": true
+    }
+  ],
+  "section7": {
+    "cite": "REALISM_SPEC section 7. Eight dogs. Close total stays 7.80 s.",
+    "totals": {
+      "open": 4.64,
+      "close": 7.8
+    },
+    "windows": {
+      "open": {
+        "request": [
+          0.0,
+          0.12
+        ],
+        "equalize": [
+          0.12,
+          1.02
+        ],
+        "dogs": [
+          1.02,
+          1.5
+        ],
+        "seal_deflate": [
+          1.5,
+          1.8
+        ],
+        "lurch": [
+          1.8,
+          2.15
+        ],
+        "accel": [
+          2.15,
+          2.75
+        ],
+        "cruise": [
+          2.75,
+          3.65
+        ],
+        "decel": [
+          3.65,
+          4.25
+        ],
+        "settle": [
+          4.25,
+          4.64
+        ]
+      },
+      "close": {
+        "prewarn": [
+          0.0,
+          0.6
+        ],
+        "accel": [
+          0.6,
+          0.95
+        ],
+        "cruise": [
+          0.95,
+          5.65
+        ],
+        "decel": [
+          5.65,
+          6.0
+        ],
+        "final_seat": [
+          6.0,
+          6.3
+        ],
+        "dogs": [
+          6.33,
+          6.81
+        ],
+        "seal_inflate": [
+          6.84,
+          7.2
+        ],
+        "leak_check": [
+          7.2,
+          7.8
+        ]
+      }
+    },
+    "cues": {
+      "open": {
+        "equalize_hiss_start": 0.12,
+        "equalize_hiss_stop": 0.99,
+        "dog_whine_start": 1.02,
+        "dog_clunk_1": 1.38,
+        "dog_clunk_8": 1.51,
+        "seal_deflate_hiss": 1.5,
+        "unseat_thunk": 1.85,
+        "actuator_hum_start": 2.15,
+        "holdopen_clunk": 4.29
+      },
+      "close": {
+        "klaxon_1": 0.0,
+        "klaxon_2": 0.3,
+        "seat_thud": 6.28,
+        "dog_whine_close_start": 6.33,
+        "dog_clunk_close_1": 6.69,
+        "dog_clunk_close_8": 6.82,
+        "inflate_hiss": 6.84
+      }
+    }
+  }
 }

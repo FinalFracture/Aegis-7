@@ -644,7 +644,11 @@ func _tick_brake(delta: float) -> void:
 		if absf(nv) > 1.0e-3:
 			all_stopped = false
 	_sync_bodies()
-	if all_stopped or _brake_t >= stop_s:
+	# Stop on the tick that reaches stop_s. 6/60 is 0.09999…, so a raw >= test
+	# waits one more tick (pair was 0.117 s). Also stop when the next tick would
+	# pass stop_s, so a 15 Hz step cannot land past the limit.
+	var brake_due := _brake_t + 1.0e-4 >= stop_s or _brake_t + delta > stop_s + 1.0e-4
+	if all_stopped or brake_due:
 		for i in _leaves.size():
 			v_now[i] = 0.0
 			_brake_v[i] = 0.0
