@@ -41,7 +41,7 @@
     {"t": 0.08, "name": "latch_clack_l"},
     {"t": 0.14, "name": "latch_clack_r"},
     {"t": 0.28, "name": "assist_hum_start", "loop": true},
-    {"t": 2.170175, "name": "stop_tap"}
+    {"t": 0.99, "name": "stop_tap", "game_tempo": true}
   ],
   "cues_close": [
     {"t": 0.0, "name": "closer_hiss_start", "loop": true},

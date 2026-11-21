@@ -75,7 +75,15 @@
     {"t": 0.5, "name": "klaxon_2"},
     {"t": 8.1, "name": "seat_thud"},
     {"t": 8.2, "name": "dog_whine_close_start", "loop": true},
-    {"t": 8.55, "name": "dog_clunk_close_1"},
+    {"t": 0.60, "name": "release_clunk", "game_tempo": true},
+    {"t": 5.274, "name": "dog_clunk_close_1", "game_tempo": true},
+    {"t": 5.292, "name": "dog_clunk_close_2", "game_tempo": true},
+    {"t": 5.310, "name": "dog_clunk_close_3", "game_tempo": true},
+    {"t": 5.328, "name": "dog_clunk_close_4", "game_tempo": true},
+    {"t": 5.346, "name": "dog_clunk_close_5", "game_tempo": true},
+    {"t": 5.364, "name": "dog_clunk_close_6", "game_tempo": true},
+    {"t": 5.382, "name": "dog_clunk_close_7", "game_tempo": true},
+    {"t": 5.400, "name": "dog_clunk_close_8", "game_tempo": true},
     {"t": 9.05, "name": "inflate_hiss"}
   ]
 }

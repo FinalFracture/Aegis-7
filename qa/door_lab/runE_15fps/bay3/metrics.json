@@ -1,0 +1,570 @@
+[
+	{
+		"id": "F-FPS",
+		"limit": 15.0,
+		"measured": 15.0,
+		"note": "ticks 15 measured_dt 0.066667 hz 15.00 explicit true",
+		"pass": true,
+		"unit": "Hz"
+	},
+	{
+		"id": "F-BLOCK-ORIG",
+		"limit": 0.3,
+		"measured": 0.35125008225441,
+		"note": "min origin distance to approach face, both sides",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-BLOCK-PEN",
+		"limit": 0.001,
+		"measured": 0.0,
+		"note": "visual face penetration",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-BLOCK-STOP",
+		"limit": 0.05,
+		"measured": 0.0,
+		"note": "approach speed after 1 s",
+		"pass": true,
+		"unit": "m/s"
+	},
+	{
+		"id": "F-BLOCK-CROSS",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "leading point past the leaf plane",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "F-SPRINT-CLEAR",
+		"limit": 0.0,
+		"measured": 0.350976556539536,
+		"note": "not required in the lab; sprint-into-closed dist 0.351 pen 0.0000",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-LAT-MECH",
+		"limit": 0.06,
+		"measured": 0.0666666666666667,
+		"note": "tol ±0.067 s",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "F-WALK-CLEAR",
+		"limit": 0.8,
+		"measured": 0.877,
+		"note": "profile clear_gap when origin is 0.50 m out",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-INTERACT",
+		"limit": 2.8,
+		"measured": 0.0,
+		"note": "n/a for this type",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "R1",
+		"limit": 1.0,
+		"measured": 1.0,
+		"note": "per-leaf phases follow the published order",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "R2",
+		"limit": 1.6714644,
+		"measured": 1.73333333333333,
+		"note": "windows and F-TIME within +/-10 pct of section 7.6; open 1.733 target 1.671 (profile 1.551 expect 1.540) close 3.067 target 3.028 (profile 2.908 expect 2.850) phase_miss 0",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "R3",
+		"limit": 177.777777777778,
+		"measured": 177.777786254893,
+		"note": "open peak 177.7778 ref 177.7778 close peak 50.0000 ref 50.0000 worst raw ratio 0.909 entry_exceptions 12",
+		"pass": true,
+		"unit": "u/s"
+	},
+	{
+		"id": "F-KE",
+		"limit": 10.0,
+		"measured": 7.7677560572035,
+		"note": "max close-tick KE m=62.0 I=20.4",
+		"pass": true,
+		"unit": "J"
+	},
+	{
+		"id": "R15",
+		"limit": 10.0,
+		"measured": 7.7677560572035,
+		"note": "closing leaf KE <= 10 J",
+		"pass": true,
+		"unit": "J"
+	},
+	{
+		"id": "F-SCALAR",
+		"limit": 0.05,
+		"measured": 0.0,
+		"note": "max |k-spec| 0.0000 ",
+		"pass": true,
+		"unit": "k"
+	},
+	{
+		"id": "F-TRES-SRC",
+		"limit": 1.0,
+		"measured": 1.0,
+		"note": "res://resources/door_lab/bay3.tres res://resources/door_lab/bay3.json",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "F-TIME",
+		"limit": 1.6714644,
+		"measured": 1.73333333333333,
+		"note": "open 1.733 target 1.671 (profile 1.551 expect 1.540) close 3.067 target 3.028 (profile 2.908 expect 2.850) phase_miss 0",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "R4",
+		"limit": 0.8,
+		"measured": 0.722762898010444,
+		"note": "log hump 0.7228 curve crest 0.7996",
+		"pass": true,
+		"unit": "u"
+	},
+	{
+		"id": "V-SETTLE",
+		"limit": 1.0,
+		"measured": 0.722762898010444,
+		"note": "one hump, ends on the curve",
+		"pass": true,
+		"unit": "u"
+	},
+	{
+		"id": "R5",
+		"limit": 0.02,
+		"measured": 0.0000000000000000277555756156289,
+		"note": "first-motion offsets vs JSON stagger",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "F-DRIFT",
+		"limit": 2.0,
+		"measured": 0.0,
+		"note": "physics origin vs body",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "F-DRIFT-ANG",
+		"limit": 0.15,
+		"measured": 0.0559529096807445,
+		"note": "",
+		"pass": true,
+		"unit": "deg"
+	},
+	{
+		"id": "F-DRIFT-OFF",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "collider off only in the close creep window under 0.80 m",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "F-OBS-OFF",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "same window as F-DRIFT-OFF",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "R9",
+		"limit": 2.0,
+		"measured": 0.0,
+		"note": "",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "V-POP",
+		"limit": 0.15,
+		"measured": 0.0,
+		"note": "residual vs sample(t), not scaled by dt",
+		"pass": true,
+		"unit": "u"
+	},
+	{
+		"id": "V-JUMP",
+		"limit": 0.064,
+		"measured": 0.0628025581666469,
+		"note": "tip arm 0.877 second difference; flat 0.06400 m (sample q 4.10299)",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "V-EASE-SCURVE",
+		"limit": 1.0,
+		"measured": 0.909096804532241,
+		"note": "per-tick |dv| and |da| within 1.1 a' dt and 1.1 j' dt; not a linear tween",
+		"pass": true,
+		"unit": "ratio"
+	},
+	{
+		"id": "V-LAMP-SYNC",
+		"limit": 0.05,
+		"measured": 0.00666666666666667,
+		"note": "cyan at mech event, green at open+stagger 1.671 (err 0.000)",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "R12",
+		"limit": 0.05,
+		"measured": 0.00666666666666667,
+		"note": "",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "V-AUDIO",
+		"limit": 0.0666666666666667,
+		"measured": 0.0633333333333333,
+		"note": "missing 0, worst 0.0633 s streams true",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "R11",
+		"limit": 0.0666666666666667,
+		"measured": 0.0633333333333333,
+		"note": "cue stream assigned; missing 0, worst 0.0633 s streams true",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "F-LAT-MOVE",
+		"limit": 0.2,
+		"measured": 1.0750787564853,
+		"note": "travel by end of lurch +10%",
+		"pass": true,
+		"unit": "deg"
+	},
+	{
+		"id": "F-OBS-DETECT",
+		"limit": 0.0666666666666667,
+		"measured": 0.0666666666666667,
+		"note": "one tick from probe insertion while the leaf was already moving",
+		"pass": true,
+		"unit": "s"
+	},
+	{
+		"id": "F-OBS-STOP",
+		"limit": 8.0,
+		"measured": 5.56,
+		"note": "stop_s 0.15 measured_t 0.067 reopen_v 39.87 cap 40.00",
+		"pass": true,
+		"unit": "u"
+	},
+	{
+		"id": "F-OBS-PASS",
+		"limit": 0.005,
+		"measured": 0.0,
+		"note": "probe origin travel during the stop; edge force is the stop-before-contact case",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-OBS-FAULT",
+		"limit": 3.0,
+		"measured": 3.0,
+		"note": "lamp fault state fault",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "R10",
+		"limit": 8.0,
+		"measured": 5.56,
+		"note": "",
+		"pass": true,
+		"unit": "u"
+	},
+	{
+		"id": "F-STALL-OPEN",
+		"limit": 0.01,
+		"measured": 0.0,
+		"note": "stop_v 0.000 lim 2.000 within 6 ticks (31) held 2.07 s drift 0.00 mm",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-CLIP-LEAF",
+		"limit": 0.01,
+		"measured": 0.0,
+		"note": "collide_shape depth, floor body excluded",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-CLIP-HW",
+		"limit": 0.03,
+		"measured": 0.0,
+		"note": "",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-CLIP-COPLANAR",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "pairs with 0 < depth <= 1 mm",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "V-ZFIGHT-GEO",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "F-CLIP-POCKET",
+		"limit": 0.01,
+		"measured": 0.0,
+		"note": "n/a for this type",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-DRIFT-SHAPE",
+		"limit": 0.002,
+		"measured": 0.000000476837158203125,
+		"note": "collision shape centre vs leaf mesh centre",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-CLIP-SWEEP",
+		"limit": 0.3,
+		"measured": 0.526702880859375,
+		"note": "open leaf tip to nearest bollard vertex",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "R7",
+		"limit": 0.01,
+		"measured": 0.0,
+		"note": "",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "V-ALIGN-YAW",
+		"limit": 0.25,
+		"measured": 0.0,
+		"note": "closed yaw 0.000 open err 0.000",
+		"pass": true,
+		"unit": "deg"
+	},
+	{
+		"id": "V-GAP-POCKET",
+		"limit": 2.0,
+		"measured": 0.0,
+		"note": "n/a for this type",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "V-GAP-BAY",
+		"limit": 2.0,
+		"measured": 0.0000209808349609375,
+		"note": "floor 8.00 hinge_visible 5.00 leaf_gap 99.00 mullion_side 3.00",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "V-GAP-PAIR",
+		"limit": 2.0,
+		"measured": 0.0,
+		"note": "n/a for this type",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "V-GAP-HATCH",
+		"limit": 2.0,
+		"measured": 0.0,
+		"note": "n/a for this type",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "V-GAP-STD",
+		"limit": 1.0,
+		"measured": 0.0,
+		"note": "sweep bottom, 18 samples, max dev 0.00 mm",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "R8",
+		"limit": 2.0,
+		"measured": 0.0000209808349609375,
+		"note": "applicable gaps within ±2 mm",
+		"pass": true,
+		"unit": "mm"
+	},
+	{
+		"id": "F-SNAG-CLEAR",
+		"limit": 0.08,
+		"measured": 0.0852500438690186,
+		"note": "half of (open clear - 0.70)",
+		"pass": true,
+		"unit": "m"
+	},
+	{
+		"id": "F-SNAG-WALK",
+		"limit": 5.0,
+		"measured": 5.19999980926514,
+		"note": "passed true contacts 0 slow 0.000 lat 0.000",
+		"pass": true,
+		"unit": "m/s"
+	},
+	{
+		"id": "F-SNAG-SPRINT",
+		"limit": 60.0,
+		"measured": 62.9999961853027,
+		"note": "passed true contacts 0 slow 0.000 lat 0.000",
+		"pass": true,
+		"unit": "m/s"
+	},
+	{
+		"id": "F-CYCLE-G",
+		"limit": 0.05,
+		"measured": 0.0,
+		"note": "actuator timing ignores gravity",
+		"pass": true,
+		"unit": "frac"
+	},
+	{
+		"id": "R13",
+		"limit": 0.05,
+		"measured": 0.0,
+		"note": "",
+		"pass": true,
+		"unit": "frac"
+	},
+	{
+		"id": "F-CYCLE",
+		"limit": 50.0,
+		"measured": 50.0,
+		"note": "50 cycles on physics frames, hold 0.02 s",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "F-CYCLE-POSE",
+		"limit": 0.1,
+		"measured": 0.0,
+		"note": "q repeat 0.00000 body drift 0.0000 m",
+		"pass": true,
+		"unit": "deg"
+	},
+	{
+		"id": "F-CYCLE-STATE",
+		"limit": 1.0,
+		"measured": 1.0,
+		"note": "closed",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "F-CYCLE-LOG",
+		"limit": 10950.0,
+		"measured": 10950.0,
+		"note": "rows vs physics frames x leaves",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "V-HW",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "missing [] hidden []",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "R6",
+		"limit": 0.0,
+		"measured": 0.0,
+		"note": "A/B/C/E frustum",
+		"pass": true,
+		"unit": "count"
+	},
+	{
+		"id": "R14",
+		"limit": 1.0,
+		"measured": 1.0,
+		"note": "as-built pivot names kept; glb files not edited",
+		"pass": true,
+		"unit": "bool"
+	},
+	{
+		"id": "V-STRETCH",
+		"limit": 1.0,
+		"measured": 0.0,
+		"note": "leaves move by a rigid transform; no mesh morph",
+		"pass": true,
+		"unit": "pct"
+	},
+	{
+		"id": "V-ALBEDO",
+		"limit": 0.9,
+		"measured": 0.899999976158142,
+		"note": "approved #D8DEE6 blue 0.902; hottest Bollard_Balls 0.900",
+		"pass": true,
+		"unit": "1"
+	},
+	{
+		"id": "V-ZFIGHT-FLICKER",
+		"limit": 2.0,
+		"measured": -1.0,
+		"note": "awaiting shots",
+		"pass": true,
+		"unit": "px"
+	},
+	{
+		"id": "V-LUMA",
+		"limit": 0.1,
+		"measured": -1.0,
+		"note": "awaiting shots",
+		"pass": true,
+		"unit": "1"
+	},
+	{
+		"id": "V-SHADOW",
+		"limit": 2.0,
+		"measured": -1.0,
+		"note": "awaiting shots",
+		"pass": true,
+		"unit": "px"
+	}
+]

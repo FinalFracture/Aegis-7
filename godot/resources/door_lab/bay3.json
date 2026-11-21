@@ -40,16 +40,16 @@
     {"name": "strike_catch", "t0": 4.66667, "t1": 4.75, "kind": "latch", "p0": 0.0, "scale": false}
   ],
   "cues_open": [
-    {"t": 0.12, "name": "strike_clack_l1"},
-    {"t": 0.18, "name": "strike_clack_l0"},
-    {"t": 0.24, "name": "strike_clack_l2"},
+    {"t": 0.07, "name": "strike_clack_l1", "game_tempo": true},
+    {"t": 0.13, "name": "strike_clack_l0", "game_tempo": true},
+    {"t": 0.19, "name": "strike_clack_l2", "game_tempo": true},
     {"t": 0.3, "name": "operator_whine_start", "loop": true},
-    {"t": 2.741032, "name": "stop_tap"}
+    {"t": 1.31, "name": "stop_tap", "game_tempo": true}
   ],
   "cues_close": [
     {"t": 0.3, "name": "operator_whine_close_start", "loop": true},
-    {"t": 4.66667, "name": "latch_clack_l2"},
-    {"t": 4.72667, "name": "latch_clack_l0"},
-    {"t": 4.78667, "name": "latch_clack_l1"}
+    {"t": 2.80, "name": "latch_clack_l2", "game_tempo": true},
+    {"t": 2.86, "name": "latch_clack_l0", "game_tempo": true},
+    {"t": 2.92, "name": "latch_clack_l1", "game_tempo": true}
   ]
 }

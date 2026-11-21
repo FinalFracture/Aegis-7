@@ -62,6 +62,10 @@ var _approach_axis := Vector3(0, 0, -1)
 var hinge_axis := Vector3(0, 1, 0)
 var emergency := false
 var klaxon_fired := false
+var klaxon_count := 0
+var gravity_g := 1.0
+var delta_p := 0.0
+var _klaxon_age := 100.0
 var _reopen_dur: float = 0.35
 var _log_prev_v: Array = []
 var _sensor: ShapeCast3D
@@ -141,6 +145,10 @@ func reset_closed() -> void:
 	_cue_i = 0
 	_played.clear()
 	klaxon_fired = false
+	klaxon_count = 0
+	_klaxon_age = 100.0
+	emergency = false
+	delta_p = 0.0
 	_interact_held = 0.0
 	_hold_left = 0.0
 	_open_age = 0.0
@@ -203,7 +211,8 @@ func pump(delta: float) -> void:
 		"opening":
 			_tick_profile("open", delta)
 		"closing":
-			if emergency and _obstruction_hit():
+			# Pressure rise above 2 kPa, not a script flag, starts the creep.
+			if delta_p > 2.0 and _obstruction_hit():
 				_emergency_creep(delta)
 			else:
 				_tick_profile("close", delta)
@@ -240,8 +249,9 @@ func pump(delta: float) -> void:
 			pass
 	_place_sensor()
 	_update_collider_window()
-	_log_tick(delta)
+	# The row must show this tick's lamp, not the energy from the previous fade.
 	_fade_lamp(delta)
+	_log_tick(delta)
 
 
 func _process(delta: float) -> void:
@@ -281,9 +291,42 @@ func _poll_triggers(delta: float) -> void:
 func _zone_occupied() -> bool:
 	if _area == null:
 		return false
+	var area_hit := false
 	for b in _area.get_overlapping_bodies():
 		if b is Node and (b as Node).is_in_group(ACTOR):
-			return true
+			area_hit = true
+			break
+	var cs := _area.get_node_or_null("ProximityShape") as CollisionShape3D
+	if cs == null or not (cs.shape is BoxShape3D):
+		return area_hit
+	# The box is this frame. Area overlaps lag one physics frame, so a teleport
+	# out of the volume still lists the actor and would start the open clock
+	# one tick early. A listed overlap counts only while the capsule still
+	# reaches the box. An origin already inside the box counts immediately.
+	if _point_in_proximity(cs, 0.0):
+		return true
+	if area_hit and _point_in_proximity(cs, CAPSULE_DIAMETER * 0.5):
+		return true
+	return false
+
+
+func _point_in_proximity(cs: CollisionShape3D, margin: float) -> bool:
+	var half: Vector3 = (cs.shape as BoxShape3D).size * 0.5
+	half.x += margin
+	half.y += margin
+	half.z += margin
+	var tree := get_tree()
+	if tree == null:
+		return false
+	var xf: Transform3D = cs.global_transform.affine_inverse()
+	for n in tree.get_nodes_in_group(ACTOR):
+		if not (n is Node3D):
+			continue
+		var body := n as Node3D
+		for extra in [Vector3.ZERO, Vector3(0.0, 1.0, 0.0)]:
+			var local: Vector3 = xf * (body.global_position + extra)
+			if absf(local.x) <= half.x and absf(local.y) <= half.y and absf(local.z) <= half.z:
+				return true
 	return false
 
 
@@ -341,7 +384,7 @@ func _tick_profile(dir: String, delta: float) -> void:
 	prev_q.resize(q_now.size())
 	for i in q_now.size():
 		prev_q[i] = q_now[i]
-	motion_t += delta
+	motion_t += _motion_advance(dir, prev_t, delta)
 	var stagger_key := "stagger_open" if dir == "open" else "stagger_close"
 	var max_end := 0.0
 	var phase_now := "settled"
@@ -409,6 +452,34 @@ func _tick_profile(dir: String, delta: float) -> void:
 			_emit_phase("idle")
 
 
+func _motion_advance(dir: String, t: float, delta: float) -> float:
+	# Floor hatch only. At 1 G and 0.08 G the actuator tracks the profile, so
+	# the clock stays kinematic and a raw R3 tick never sees a 0.2 clamp step.
+	# Above 1.05 G a positive ratio below 1 is saturation and stretches the tick.
+	# A ratio at or below 0 is a sign flip, not saturation.
+	if door_id != "floorhatch" or gravity_g <= 1.05:
+		return delta
+	var s: Dictionary = profile.sample(dir, maxf(t, 0.0))
+	var a_des := deg_to_rad(float(s.get("acc", 0.0)))
+	var theta := deg_to_rad(float(s.get("q", 0.0)))
+	var passive := 585.0 - 687.0 * gravity_g * cos(theta)
+	var inertia := 46.7
+	var ratio := 1.0
+	if absf(a_des) > 0.05:
+		var actuator := clampf(inertia * a_des - passive, -530.0, 530.0)
+		var a_act := (actuator + passive) / inertia
+		ratio = a_act / a_des
+		if ratio <= 0.0 or ratio >= 1.0:
+			ratio = 1.0
+		else:
+			ratio = clampf(ratio, 0.2, 1.0)
+	var v_cap := 77.8 if dir == "open" else 33.3
+	var v_des := absf(float(s.get("vel", 0.0)))
+	if v_des > v_cap + 0.05:
+		ratio = minf(ratio, v_cap / v_des)
+	return delta * ratio
+
+
 func _fire_cues(dir: String) -> void:
 	var list: Array = profile.cues(dir)
 	while _cue_i < list.size():
@@ -428,7 +499,7 @@ func _blip(nm: String) -> void:
 	if player == null:
 		return
 	if player.stream == null:
-		player.stream = _click_stream()
+		player.stream = _stream_for(nm)
 	player.play()
 
 
@@ -488,27 +559,41 @@ func _approach_blocked() -> bool:
 
 
 func _emergency_creep(delta: float) -> void:
-	# Pressure emergency: no reverse. The curtain only slows the close to 5 deg/s.
+	# Pressure emergency: seat at 5 deg/s, never reverse. Dogs and the seal
+	# keep going after the leaf is down, on the close-profile clock.
+	emergency = true
+	var seated := true
 	for i in _leaves.size():
 		var q := maxf(0.0, q_now[i] - 5.0 * delta)
+		if q > 0.02:
+			seated = false
 		q_now[i] = q
 		v_now[i] = -5.0 if q > 0.0 else 0.0
 		_pose_leaf(i, q)
 		if i < _leaf_phase.size():
 			_leaf_phase[i] = "emergency"
+	if seated:
+		var dogs := profile.phase_span("close", "dogs")
+		if dogs.x >= 0.0 and motion_t < dogs.x:
+			motion_t = dogs.x
+		else:
+			motion_t += delta
+		for i in _leaves.size():
+			q_now[i] = 0.0
+			v_now[i] = 0.0
+			_pose_leaf(i, 0.0)
 	_sync_bodies()
+	_drive_hardware("close", false)
 	phase = "emergency"
 	state = "closing"
 	_set_state("closing")
-	if not klaxon_fired:
+	_klaxon_age += delta
+	if _klaxon_age >= 1.0:
+		_klaxon_age = 0.0
 		klaxon_fired = true
+		klaxon_count += 1
 		cue.emit("klaxon_emergency")
 		_blip("klaxon_emergency")
-		var player := get_node_or_null("Cue_klaxon_emergency") as AudioStreamPlayer3D
-		if player != null and player.stream is AudioStreamWAV:
-			(player.stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
-			if not player.playing:
-				player.play()
 
 
 func _begin_brake() -> void:
@@ -800,6 +885,8 @@ func _drive_hardware(dir: String, forced: bool = false) -> void:
 			_stretch_rod(node)
 		elif kind == "piston":
 			_aim_piston(node)
+		elif kind == "stay":
+			_pose_stay(node)
 
 
 func _rest_basis(node: Node3D) -> Basis:
@@ -857,7 +944,8 @@ func _pose_dog(node: Node3D, dir: String, forced: bool, travel_u: float, along_x
 func _pose_wheel(node: Node3D, dir: String, forced: bool, travel_u: float, about_z: bool) -> void:
 	var thrown := _dog_throw_u(dir, forced, travel_u)
 	if about_z:
-		node.basis = _rest_basis(node) * Basis(Vector3(0, 0, 1), deg_to_rad(90.0 * thrown))
+		var ax: Vector3 = node.get_meta("wheel_axis", Vector3(0, 0, 1))
+		node.basis = _rest_basis(node) * Basis(ax, deg_to_rad(float(node.get_meta("wheel_deg", 90.0)) * thrown))
 		return
 	var du2 := _phase_u(["dogs"])
 	if dir == "close":
@@ -883,8 +971,12 @@ func _pose_seal(node: Node3D, dir: String, forced: bool, travel_u: float, scale_
 		deflated = 1.0 if travel_u > 0.02 else 0.0
 	deflated = clampf(deflated, 0.0, 1.0)
 	if scale_z:
-		var z := lerpf(1.476, 1.0, deflated)
-		node.scale = Vector3(1.0, 1.0, z)
+		var inflated := float(node.get_meta("inflate_scale", 1.476))
+		var z := lerpf(inflated, 1.0, deflated)
+		if str(node.get_meta("seal_axis", "z")) == "y":
+			node.scale = Vector3(1.0, z, 1.0)
+		else:
+			node.scale = Vector3(1.0, 1.0, z)
 		return
 	var sc := lerpf(1.0, 0.72, deflated)
 	node.scale = Vector3(sc, 1.0, sc)
@@ -898,8 +990,19 @@ func _aim_piston(node: Node3D) -> void:
 	var aim := partner.global_position
 	if origin.distance_to(aim) < 1.0e-3:
 		return
-	node.look_at(aim, Vector3.UP)
+	node.look_at(aim, Vector3.UP, bool(node.get_meta("piston_front_z", false)))
 	node.global_position = origin
+
+
+func _pose_stay(node: Node3D) -> void:
+	var tab: PackedFloat32Array = node.get_meta("stay_table", PackedFloat32Array())
+	if tab.size() < 2:
+		return
+	var span := maxf(profile.travel, 0.001)
+	var u := clampf((q_now[0] if q_now.size() else 0.0) / span, 0.0, 1.0) * float(tab.size() - 1)
+	var i := mini(int(floor(u)), tab.size() - 2)
+	var ang := lerpf(tab[i], tab[i + 1], u - float(i))
+	node.basis = _rest_basis(node) * Basis(Vector3(1, 0, 0), deg_to_rad(ang))
 
 
 func _phase_u(names: Array) -> float:
@@ -980,6 +1083,7 @@ func _log_tick(_delta: float) -> void:
 			"lamp_energy": _shown_energy,
 			"collider": 1 if body.collision_layer != 0 else 0,
 			"state": state,
+			"g": gravity_g,
 		})
 	_log_prev_v = v_now.duplicate()
 
@@ -1039,25 +1143,57 @@ func _place_sensor() -> void:
 	_sensor.position = _sensor_pos
 
 
-func _click_stream() -> AudioStreamWAV:
+func _stream_for(nm: String) -> AudioStreamWAV:
+	var n := nm.to_lower()
+	if "klaxon" in n:
+		return _tone(420.0, 1400, 0.22, 70.0)
+	if "hiss" in n:
+		return _noise(1400, 0.35)
+	if "whine" in n or "hum" in n:
+		return _tone(160.0, 1800, 0.55, 240.0)
+	if "thud" in n or "thunk" in n or "bumper" in n:
+		return _tone(70.0, 700, 0.9, 40.0)
+	if "clack" in n or "clunk" in n or "tap" in n or "pop" in n:
+		return _tone(1500.0, 240, 1.0, 50.0)
+	return _tone(880.0, 480, 1.0, 90.0)
+
+
+func _tone(freq: float, count: int, amp: float, decay: float) -> AudioStreamWAV:
 	var stream := AudioStreamWAV.new()
 	stream.format = AudioStreamWAV.FORMAT_8_BITS
 	stream.mix_rate = 8000
 	stream.stereo = false
-	var count := 480
 	var data := PackedByteArray()
 	data.resize(count)
 	for i in count:
-		var env := exp(-float(i) / 90.0)
-		var s := sin(TAU * 880.0 * float(i) / 8000.0) * env
-		data[i] = int(clampf(128.0 + s * 90.0, 0.0, 255.0))
+		var env := exp(-float(i) / maxf(decay, 1.0))
+		var s := sin(TAU * freq * float(i) / 8000.0) * env * amp
+		data[i] = int(clampf(128.0 + s * 110.0, 0.0, 255.0))
+	stream.data = data
+	return stream
+
+
+func _noise(count: int, amp: float) -> AudioStreamWAV:
+	var stream := AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_8_BITS
+	stream.mix_rate = 8000
+	stream.stereo = false
+	var data := PackedByteArray()
+	data.resize(count)
+	var hold := 0.0
+	for i in count:
+		if i % 3 == 0:
+			hold = sin(float(i) * 12.9898) * 43758.5453
+			hold = hold - floor(hold)
+			hold = (hold * 2.0 - 1.0) * amp
+		var env := exp(-float(i) / 500.0)
+		data[i] = int(clampf(128.0 + hold * env * 100.0, 0.0, 255.0))
 	stream.data = data
 	return stream
 
 
 func _ensure_cues() -> void:
 	var seen := {}
-	var click := _click_stream()
 	for direction in ["open", "close"]:
 		for c in profile.cues(direction):
 			var nm := str(c["name"])
@@ -1067,13 +1203,13 @@ func _ensure_cues() -> void:
 			var p := AudioStreamPlayer3D.new()
 			p.name = "Cue_" + nm
 			p.unit_size = 2.0
-			p.stream = click
+			p.stream = _stream_for(nm)
 			add_child(p)
 	if not seen.has("klaxon_emergency"):
 		var alarm := AudioStreamPlayer3D.new()
 		alarm.name = "Cue_klaxon_emergency"
 		alarm.unit_size = 4.0
-		alarm.stream = click.duplicate()
+		alarm.stream = _stream_for("klaxon_emergency")
 		add_child(alarm)
 
 

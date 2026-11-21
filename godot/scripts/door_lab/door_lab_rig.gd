@@ -64,7 +64,7 @@ func _build(parent: Node3D) -> Dictionary:
 	}
 	var depth := maxf(80.0, max_r + 40.0)
 	_environment(xs["floorhatch"] - xs["pocket"], depth)
-	_floor(xs["pocket"] - 20.0, xs["floorhatch"] + 8.0, depth)
+	_floor(xs["pocket"] - 20.0, xs["floorhatch"] + 8.0, depth, xs["floorhatch"])
 	_room_shell(xs["pocket"] - 6.0, xs["floorhatch"] + 3.0)
 	var doors := {}
 	doors["pocket"] = _pocket(profs["pocket"], xs["pocket"])
@@ -196,17 +196,27 @@ func _environment(span: float, depth: float) -> void:
 	_root.add_child(probe)
 
 
-func _floor(x0: float, x1: float, depth: float) -> void:
+func _floor(x0: float, x1: float, depth: float, hole_x: float = INF) -> void:
 	var w := x1 - x0
 	var cx := (x0 + x1) * 0.5
-	var vis := MeshInstance3D.new()
-	vis.name = "FloorVisual"
-	var bm := BoxMesh.new()
-	bm.size = Vector3(w, 0.02, depth * 2.0)
-	vis.mesh = bm
-	vis.position = Vector3(cx, -0.01, 0.0)
-	vis.set_surface_override_material(0, _floor_mat)
-	_root.add_child(vis)
+	# The floor-hatch GLB brings its own 1.24 m flange. Four slabs leave that square open
+	# so the flange and the lid are not fighting the lab floor. The walk collider stays one box.
+	var hole := 0.62
+	var hz0 := 0.50 - hole
+	var hz1 := 0.50 + hole
+	var slabs: Array = [[x0, x1, -depth, hz0], [x0, x1, hz1, depth], [x0, hole_x - hole, hz0, hz1], [hole_x + hole, x1, hz0, hz1]]
+	if hole_x == INF:
+		slabs = [[x0, x1, -depth, depth]]
+	for i in slabs.size():
+		var sl: Array = slabs[i]
+		var vis := MeshInstance3D.new()
+		vis.name = "FloorVisual" if i == 0 else "FloorVisual%d" % i
+		var bm := BoxMesh.new()
+		bm.size = Vector3(float(sl[1]) - float(sl[0]), 0.02, float(sl[3]) - float(sl[2]))
+		vis.mesh = bm
+		vis.position = Vector3((float(sl[0]) + float(sl[1])) * 0.5, -0.01, (float(sl[2]) + float(sl[3])) * 0.5)
+		vis.set_surface_override_material(0, _floor_mat)
+		_root.add_child(vis)
 	var body := StaticBody3D.new()
 	body.name = "FloorBody"
 	body.collision_layer = 1
@@ -243,7 +253,15 @@ func _wings_for(doors: Dictionary) -> void:
 			if gap > 0.05:
 				_static_box("Wing_%s" % id, Vector3(gap, 4.0, 0.16), Vector3((prev + x0) * 0.5, 2.0, -0.02), _wall_mat)
 		prev = x1
-	_static_box("Wing_End", Vector3(8.0, 4.0, 0.16), Vector3(prev + 4.0, 2.0, -0.02), _wall_mat)
+	# The floor-hatch lid swings through the door plane. An 8 m Wing_End that
+	# starts at the bulkhead hatch covers that arc. Stop short of the hatch.
+	var limit := prev + 8.0
+	if doors.has("floorhatch"):
+		var fh: Node3D = doors["floorhatch"]
+		limit = fh.global_position.x - 1.5
+	var span := limit - prev
+	if span > 0.05:
+		_static_box("Wing_End", Vector3(span, 4.0, 0.16), Vector3(prev + span * 0.5, 2.0, -0.02), _wall_mat)
 
 
 func _lights(xs: Dictionary, _depth: float) -> void:
@@ -755,6 +773,7 @@ func _claim_slide_leaf(leaf: Node3D) -> AnimatableBody3D:
 			(node as MeshInstance3D).visible = false
 	if not _has_shape(body):
 		_shapes_from_col_meshes(body)
+	_convexify(body)
 	parent.remove_child(leaf)
 	leaf.queue_free()
 	return body
@@ -842,6 +861,9 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 		_tag_rollers(body)
 		for seal in _each_named(body, "_seal"):
 			_alias(seal as Node3D, "BulbSeal", Vector3.ZERO)
+			# One leaf's seal sits 1.2 mm forward so the meeting stile does not z-fight.
+			if nm == "leaf_R":
+				(seal as Node3D).position.z += 0.0012
 		_alias(body, "FloorGuide", Vector3(0.0, -2.36, -0.02))
 		var meet := 0.42 if int(side[1]) < 0 else -0.42
 		_hw(body, "ManualHandle", Vector3(0.018, 0.22, 0.016), Vector3(meet, -1.15, -0.036), _alloy)
@@ -856,6 +878,10 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 			"rest": rest,
 			"axis": Vector3(1, 0, 0),
 		})
+	# v1 ships with the access panel swung open. Close it for the hero.
+	var panel := _find(inst, "slide_AccessPanel", false)
+	if panel != null:
+		panel.rotate_object_local(Vector3(1, 0, 0), deg_to_rad(-90.0))
 	_retint(inst)
 	_hide_exact(inst, "status_light")
 	_hide_named_contains(inst, "reveal_strips")
@@ -882,7 +908,14 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 func _pocket_tokens(door: Node3D, inst: Node3D) -> void:
 	var frame := _find(inst, "frame", true)
 	var host: Node3D = frame if frame != null else door
+	# HeadBox is not in the GLB. Radar is the only extra overlay. The rest are modeled.
 	_alias(host, "HeadBox", Vector3(0.0, 2.55, -0.06))
+	_hw(door, "Radar", Vector3(0.10, 0.032, 0.036), Vector3(0.0, 2.18, -0.14), _gun)
+
+
+func _pocket_tokens_passb(door: Node3D, inst: Node3D) -> void:
+	var frame := _find(inst, "frame", true)
+	var host: Node3D = frame if frame != null else door
 	_hw(door, "AccessPanel", Vector3(0.22, 0.06, 0.006), Vector3(0.0, 2.50, -0.090), _alloy)
 	_alias(door, "Motor", Vector3(0.0, 2.58, -0.04))
 	_alias(door, "TensionerL", Vector3(-1.99, 2.50, -0.02))
@@ -891,7 +924,6 @@ func _pocket_tokens(door: Node3D, inst: Node3D) -> void:
 	_alias(door, "BumperR", Vector3(2.05, 1.20, 0.0))
 	_hw(door, "Solenoid", Vector3(0.06, 0.028, 0.022), Vector3(-0.05, 2.38, -0.092), _alloy)
 	_hw(door, "Keeper", Vector3(0.028, 0.022, 0.016), Vector3(0.04, 2.38, -0.092), _alloy)
-	_hw(door, "Radar", Vector3(0.10, 0.032, 0.036), Vector3(0.0, 2.18, -0.14), _gun)
 	_hw(door, "HexRelease", Vector3(0.045, 0.055, 0.006), Vector3(-1.08, 1.15, -0.090), _alloy)
 	for side in [-1, 1]:
 		var sx := float(side)
@@ -920,6 +952,11 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	_paint_hatch_leaf(inst)
 	_paint_surround(inst)
 	_hatch_tokens(door, inst, body)
+	if body != null:
+		var face_z := -0.162
+		_wear_patch(body, "WearWheel", Vector3(-0.65, 1.27, face_z - 0.014), Vector3(0.15, 0.036, 0.010), _orange)
+		_hatch_bevels(body, face_z)
+		_wear_patch(body, "WearKick", Vector3(-0.65, 0.22, face_z - 0.003), Vector3(0.22, 0.14, 0.004), _graphite)
 	_seat_reveals(door, [{"body": body}])
 	_hatch_frame_reveal(door)
 	_skirt(door)
@@ -957,31 +994,47 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 
 
 func _tag_hatch(inst: Node3D) -> void:
-	for n in _each_named(inst, "latch_bolt"):
+	# GLB dogs and linkages throw 25 mm on local +X. LockWheel is 90 deg. The orange handwheel is 12 turns.
+	for n in _each_named(inst, "bulkhead_dog_") + _each_named(inst, "bulkhead_linkage_"):
 		var bolt := n as Node3D
 		bolt.set_meta("door_hw", "dog_x")
 		bolt.set_meta("throw_m", 0.025)
-	var wheel := _find(inst, "dog_handwheel", false)
+	var wheel := _find(inst, "bulkhead_LockWheel", false)
 	if wheel != null:
 		wheel.set_meta("door_hw", "wheel_z")
-		_alias(wheel, "LockWheel", Vector3.ZERO)
-	var seal := _find(inst, "seal", false)
+	var hand := _find(inst, "bulkhead_OverrideOrange_Handwheel", false)
+	if hand != null:
+		hand.set_meta("door_hw", "wheel_z")
+		hand.set_meta("wheel_deg", 4320.0)
+	var seal := _find(inst, "bulkhead_InflatableSeal", false)
 	if seal != null:
 		seal.set_meta("door_hw", "seal_z")
-		_alias(seal, "InflatableSeal", Vector3.ZERO)
+		seal.set_meta("inflate_scale", 1.385)
 	for n2 in _each_named(inst, "gauge_needle"):
 		(n2 as Node3D).set_meta("door_hw", "needle_z")
-	var rod := _find(inst, "piston_rod", false)
-	var cyl := _find(inst, "piston_body", false)
+	var rod := _find(inst, "bulkhead_DamperRod", false)
+	var cyl := _find(inst, "bulkhead_Damper_body", false)
 	if rod != null and cyl != null:
 		rod.set_meta("door_hw", "piston")
 		cyl.set_meta("door_hw", "piston")
 		rod.set_meta("piston_partner", cyl)
 		cyl.set_meta("piston_partner", rod)
-		_alias(rod, "DamperRod", Vector3.ZERO)
 
 
 func _hatch_tokens(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
+	# The GLB already has the hinge, davit, dogs, wheel, seal, and readout. Only the missing tokens are overlays.
+	_hw(door, "HoldOpenCatch", Vector3(0.045, 0.028, 0.030), Vector3(0.78, 0.42, -0.10), _alloy)
+	if leaf_body != null:
+		var band := _mesh(leaf_body, "HazardBand", Vector3(0.62, 0.040, 0.008), Vector3(-0.65, 0.34, -0.162), _orange, 0.0)
+		var band_mat := band.get_surface_override_material(0)
+		if band_mat is StandardMaterial3D:
+			var dup := (band_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+			dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			dup.albedo_color.a = 0.9
+			band.set_surface_override_material(0, dup)
+
+
+func _hatch_tokens_passb(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 	var hinge := _find(inst, "hinge_frame", false)
 	if hinge != null:
 		_alias(hinge, "HingeHeavy", Vector3(0.62, 0.55, -0.02))
@@ -1111,6 +1164,8 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 	door.set_meta("block_x", 0.0)
 	door.set_meta("glb", path)
 	_skirt(door)
+	if prof.door_id == "pair":
+		_trim_pair_frame(inst, leaves)
 	return door
 
 
@@ -1181,7 +1236,209 @@ func _rig_pivot(pivot: Node3D) -> AnimatableBody3D:
 		if not still:
 			(h as CollisionObject3D).collision_layer = 0
 			(h as CollisionObject3D).collision_mask = 0
+	_convexify(body)
 	return body
+
+
+func _decomp_settings() -> MeshConvexDecompositionSettings:
+	# Tightest values Godot 4.7 accepts. max_convex_hulls caps at 32.
+	var settings := MeshConvexDecompositionSettings.new()
+	settings.max_convex_hulls = 32
+	settings.max_concavity = 0.001
+	settings.resolution = 100000
+	settings.max_num_vertices_per_convex_hull = 64
+	settings.convex_hull_approximation = false
+	settings.plane_downsampling = 1
+	settings.convex_hull_downsampling = 1
+	settings.project_hull_vertices = true
+	settings.min_volume_per_convex_hull = 0.0001
+	return settings
+
+
+func _hulls_from_mesh(mesh: Mesh, settings: MeshConvexDecompositionSettings) -> Array[ConvexPolygonShape3D]:
+	# Mesh.convex_decompose is not bound in 4.7.2. The editor helper is.
+	var out: Array[ConvexPolygonShape3D] = []
+	var probe := MeshInstance3D.new()
+	probe.mesh = mesh
+	probe.create_multiple_convex_collisions(settings)
+	var stack: Array[Node] = [probe]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is CollisionShape3D:
+			var shape := (n as CollisionShape3D).shape as ConvexPolygonShape3D
+			if shape != null:
+				out.append(shape)
+	probe.free()
+	return out
+
+
+func _convexify(body: Node) -> void:
+	# Convex-vs-convex is the clip test. One hull of a concave leaf fills the
+	# dish and clips the frame once the leaf swings. Decompose the debug mesh
+	# into tight hulls instead of keeping the concave shape.
+	var settings := _decomp_settings()
+	var targets: Array[CollisionShape3D] = []
+	for c in body.get_children():
+		if not (c is CollisionShape3D):
+			continue
+		if (c as CollisionShape3D).shape is ConcavePolygonShape3D:
+			targets.append(c)
+	for cs in targets:
+		# get_debug_mesh() is a line gizmo. VHACD then returns one hull of the
+		# vertices, which is the fat hull. Feed it the triangle faces instead.
+		var faces: PackedVector3Array = (cs.shape as ConcavePolygonShape3D).data
+		if faces.size() < 3:
+			continue
+		var arrays: Array = []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = faces
+		var soup := ArrayMesh.new()
+		soup.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var shapes := _hulls_from_mesh(soup, settings)
+		# A single VHACD hull is the voxel box. The exact vertex hull is tighter.
+		if shapes.size() <= 1:
+			cs.shape = soup.create_convex_shape()
+			print("[door_lab] convex %s -> exact" % cs.name)
+			continue
+		var parent := cs.get_parent()
+		var xf := cs.transform
+		var nm := String(cs.name)
+		cs.shape = shapes[0]
+		for i in range(1, shapes.size()):
+			var extra := CollisionShape3D.new()
+			extra.name = "%s_hull_%d" % [nm, i]
+			extra.shape = shapes[i]
+			extra.transform = xf
+			parent.add_child(extra)
+		print("[door_lab] convex %s -> %d hulls" % [nm, shapes.size()])
+
+
+func _hinge_swing(body: Node3D) -> Vector2:
+	# x = how far the collider reaches from the hinge on its thin axis.
+	# y = that axis (0, 1, or 2). At 90° the +side enters the jamb.
+	var pts: Array[Vector3] = []
+	for ch in body.get_children():
+		if not (ch is CollisionShape3D):
+			continue
+		var cs := ch as CollisionShape3D
+		var poly := cs.shape as ConvexPolygonShape3D
+		if poly == null:
+			continue
+		for p in poly.points:
+			pts.append(cs.transform * p)
+	if pts.is_empty():
+		return Vector2(0.0, 2.0)
+	var lo := pts[0]
+	var hi := pts[0]
+	for p in pts:
+		lo = lo.min(p)
+		hi = hi.max(p)
+	var ext := hi - lo
+	var axis := 0
+	var thin := ext.x
+	if ext.y < thin:
+		axis = 1
+		thin = ext.y
+	if ext.z < thin:
+		axis = 2
+		thin = ext.z
+	var past := 0.0
+	var jamb := 0.0
+	for p in pts:
+		var c := p.x
+		if axis == 1:
+			c = p.y
+		elif axis == 2:
+			c = p.z
+		past = maxf(past, absf(c))
+		jamb = maxf(jamb, c)
+	return Vector2(maxf(past, jamb), float(axis))
+
+
+func _visual_jamb_past(body: Node3D, axis: int) -> float:
+	var past := 0.0
+	var stack: Array[Node] = [body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null or mi.mesh.get_surface_count() < 1:
+			continue
+		var arr: Array = mi.mesh.surface_get_arrays(0)
+		var vs: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		var xf := _xf_under(mi, body)
+		for v in vs:
+			var local: Vector3 = xf * v
+			var c := local.x
+			if axis == 1:
+				c = local.y
+			elif axis == 2:
+				c = local.z
+			past = maxf(past, c)
+	return past
+
+
+func _trim_pair_frame(inst: Node3D, leaves: Array) -> void:
+	# The 50 mm slab is centred on the hinge, so at 90° it enters the jamb by
+	# that half-extent. Pull only the jamb-cheek collision outboard of the
+	# swing and leave the leaf collider full thickness, so both closed faces
+	# still stop the capsule. The visual frame is unchanged.
+	var frame := _find(inst, "Frame", false)
+	if frame == null or leaves.is_empty():
+		return
+	var left_hinge := INF
+	var right_hinge := -INF
+	var past := 0.0
+	var axis := 2
+	for item in leaves:
+		var body: Node3D = item["body"]
+		var hx := body.global_position.x
+		left_hinge = minf(left_hinge, hx)
+		right_hinge = maxf(right_hinge, hx)
+		var swing := _hinge_swing(body)
+		axis = int(swing.y)
+		past = maxf(past, swing.x)
+		past = maxf(past, _visual_jamb_past(body, axis))
+	if past <= 0.0:
+		return
+	var gap := 0.002
+	var left_limit := left_hinge - past - gap
+	var right_limit := right_hinge + past + gap
+	var band := past + 0.04
+	var stack: Array[Node] = [frame]
+	var moved := 0
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is CollisionShape3D):
+			continue
+		var cs := n as CollisionShape3D
+		var concave := cs.shape as ConcavePolygonShape3D
+		if concave == null:
+			continue
+		var raw := concave.data
+		var out := PackedVector3Array()
+		out.resize(raw.size())
+		var inv := cs.global_transform.affine_inverse()
+		for i in raw.size():
+			var world: Vector3 = cs.global_transform * raw[i]
+			if world.x < left_hinge + band and world.x > left_limit:
+				world.x = left_limit
+				moved += 1
+			elif world.x > right_hinge - band and world.x < right_limit:
+				world.x = right_limit
+				moved += 1
+			out[i] = inv * world
+		var copy := concave.duplicate() as ConcavePolygonShape3D
+		copy.data = out
+		cs.shape = copy
+	print("[door_lab] pair frame cheek past %.4f left %.3f right %.3f moved %d" % [past, left_limit, right_limit, moved])
 
 
 func _xf_under(node: Node3D, ancestor: Node) -> Transform3D:
@@ -2174,45 +2431,48 @@ func _hazard_band(door: Node3D, tag: String, center: Vector3, size: Vector3, alo
 func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	var door := _door("floorhatch", x)
 	door.hinge_axis = Vector3(1.0, 0.0, 0.0)
-	var pivot := Node3D.new()
-	pivot.name = "LeafPivot"
-	door.add_child(pivot)
-	var body := _new_body(pivot)
-	body.name = "LeafBody"
-	_body_shape(body, Vector3(1.0, 0.10, 1.0))
-	var shape := body.get_node_or_null("LeafShape") as CollisionShape3D
-	if shape != null:
-		shape.position = Vector3(0.0, -0.05, 0.50)
-	var face := _graphite.duplicate() as StandardMaterial3D
-	face.metallic = 0.5
-	face.roughness = 0.45
-	face.albedo_texture = null
-	face.albedo_color = GRAPHITE
-	# Top of the 100 mm lid is y = 0.001, flush with the floor within 2 mm.
-	var plate := _mesh(body, "leaf_shell", Vector3(1.0, 0.10, 1.0), Vector3(0.0, -0.049, 0.50), face, 0.003)
-	plate.name = "leaf_shell"
-	# Hardware stays on the underside so nothing floats above the closed lid.
-	for i in 4:
-		_hw(body, "Rib%d" % i, Vector3(0.78, 0.012, 0.016), Vector3(0.0, -0.085, 0.22 + float(i) * 0.18), _gun)
-	for side in [-1.0, 1.0]:
-		_hw(body, "GasStrut", Vector3(0.028, 0.028, 0.55), Vector3(side * 0.32, -0.07, 0.42), _alloy)
-	_hw(body, "StayArm", Vector3(0.02, 0.02, 0.40), Vector3(0.0, -0.06, 0.28), _alloy)
-	_hw(body, "DamperRod", Vector3(0.03, 0.03, 0.22), Vector3(0.0, -0.075, 0.72), _gun)
-	_hw(body, "LockWheel", Vector3(0.10, 0.016, 0.10), Vector3(0.0, -0.07, 0.55), _orange)
-	_hw(body, "Dog", Vector3(0.06, 0.016, 0.04), Vector3(0.28, -0.08, 0.18), _gun)
-	# Gasket line in the 8 mm gap. A full slab would cover the lid.
-	_mesh(body, "GasketN", Vector3(1.02, 0.004, 0.008), Vector3(0.0, 0.003, -0.004), _seal, 0.0)
-	_mesh(body, "InflatableSeal", Vector3(1.02, 0.004, 0.008), Vector3(0.0, 0.003, 1.004), _seal, 0.0)
-	_mesh(body, "GasketW", Vector3(0.008, 0.004, 1.00), Vector3(-0.504, 0.003, 0.50), _seal, 0.0)
-	_mesh(body, "GasketE", Vector3(0.008, 0.004, 1.00), Vector3(0.504, 0.003, 0.50), _seal, 0.0)
-	# Dark tray whose top is a few millimetres above the lid, with the bar inside it.
-	var recess := _gun.duplicate() as StandardMaterial3D
-	recess.albedo_texture = null
-	recess.albedo_color = Color(0.04, 0.045, 0.05)
-	_mesh(body, "LiftRecess", Vector3(0.18, 0.008, 0.056), Vector3(0.0, 0.001, 0.72), recess, 0.0)
-	_mesh(body, "LiftHandle", Vector3(0.12, 0.004, 0.012), Vector3(0.0, 0.002, 0.72), _alloy, 0.0)
-	_wear_patch(body, "WearHandle", Vector3(0.0, 0.004, 0.72), Vector3(0.16, 0.003, 0.16), _graphite)
-	_floor_frame(door)
+	# Finished floor is GLB y = 0.462. Shift down so the flange is flush, and centre the opening at z = 0.50.
+	var path := "res://assets/models/door_lab/door_lab_floor_hatch.glb"
+	var inst := _load_glb(door, path)
+	if inst == null:
+		return door
+	inst.position = Vector3(0.0, -0.462, 0.50)
+	var pivot := _find(inst, "hatch_leaf", false)
+	if pivot == null:
+		push_error("door lab pivot missing hatch_leaf")
+		_dump(inst)
+		return door
+	var body := _rig_pivot(pivot)
+	for n in _each_named(inst, "hatch_dog_") + _each_named(inst, "hatch_linkage_"):
+		(n as Node3D).set_meta("door_hw", "dog_x")
+		(n as Node3D).set_meta("throw_m", 0.025)
+	var lw := _find(inst, "hatch_LockWheel", false)
+	if lw != null:
+		lw.set_meta("door_hw", "wheel_z")
+		lw.set_meta("wheel_axis", Vector3(0, 1, 0))
+	var hw := _find(inst, "hatch_OverrideOrange_Handwheel", false)
+	if hw != null:
+		hw.set_meta("door_hw", "wheel_z")
+		hw.set_meta("wheel_axis", Vector3(0, 1, 0))
+		hw.set_meta("wheel_deg", 4320.0)
+	var seal := _find(inst, "hatch_InflatableSeal", false)
+	if seal != null:
+		seal.set_meta("door_hw", "seal_z")
+		seal.set_meta("seal_axis", "y")
+		seal.set_meta("inflate_scale", 1.208)
+	for tag in ["L", "R"]:
+		var sb := _find(inst, "hatch_strut_%s_body" % tag, false)
+		var sr := _find(inst, "hatch_strut_%s_rod" % tag, false)
+		if sb != null and sr != null:
+			for pair in [[sb, sr], [sr, sb]]:
+				(pair[0] as Node3D).set_meta("door_hw", "piston")
+				(pair[0] as Node3D).set_meta("piston_partner", pair[1])
+				(pair[0] as Node3D).set_meta("piston_front_z", true)
+	var stay := _find(inst, "hatch_stay_arm", false)
+	if stay != null:
+		stay.set_meta("door_hw", "stay")
+		stay.set_meta("stay_table", PackedFloat32Array([0.0, -20.5, -39.25, -55.94, -70.42, -82.73, -93.11, -101.91]))
+	_retint(inst)
 	# 300 × 10 mm strip lying in the camera-side frame member.
 	_lamp(door, Vector3(0.0, 0.014, 1.055), true)
 	_downlight(door, Vector3(0.0, 2.4, -0.6), Vector3(x, 0.1, 0.4))
@@ -2240,5 +2500,5 @@ func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	door.set_meta("block_x", 0.0)
 	door.set_meta("walk_x", 0.0)
 	door.set_meta("walk_clear", 1.0)
-	door.set_meta("glb", "")
+	door.set_meta("glb", path)
 	return door

@@ -50,8 +50,8 @@
     {"t": 0.28, "name": "seal_unstick_pop"},
     {"t": 0.3, "name": "motor_whine_start", "loop": true},
     {"t": 0.4, "name": "roller_rumble_start", "loop": true},
-    {"t": 1.879686, "name": "bumper_thud"},
-    {"t": 1.879686, "name": "motor_whine_stop", "stop": true}
+    {"t": 0.93, "name": "bumper_thud", "game_tempo": true},
+    {"t": 0.93, "name": "motor_whine_stop", "stop": true, "game_tempo": true}
   ],
   "cues_close": [
     {"t": 0.0, "name": "chime"},

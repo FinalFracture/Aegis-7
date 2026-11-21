@@ -45,7 +45,7 @@
   ],
   "cues_open": [
     {"t": 0.2, "name": "equalize_hiss_start", "loop": true},
-    {"t": 1.7, "name": "equalize_hiss_stop", "stop": true},
+    {"t": 0.99, "name": "equalize_hiss_stop", "stop": true, "game_tempo": true},
     {"t": 1.7, "name": "dog_whine_start", "loop": true},
     {"t": 2.3, "name": "dog_clunk_1"},
     {"t": 2.33, "name": "dog_clunk_2"},
@@ -65,7 +65,14 @@
     {"t": 0.5, "name": "klaxon_2"},
     {"t": 7.85, "name": "seat_thud"},
     {"t": 7.9533, "name": "dog_whine_close_start", "loop": true},
-    {"t": 8.55, "name": "dog_clunk_close_1"},
+    {"t": 6.69, "name": "dog_clunk_close_1", "game_tempo": true},
+    {"t": 6.708, "name": "dog_clunk_close_2", "game_tempo": true},
+    {"t": 6.726, "name": "dog_clunk_close_3", "game_tempo": true},
+    {"t": 6.744, "name": "dog_clunk_close_4", "game_tempo": true},
+    {"t": 6.762, "name": "dog_clunk_close_5", "game_tempo": true},
+    {"t": 6.780, "name": "dog_clunk_close_6", "game_tempo": true},
+    {"t": 6.798, "name": "dog_clunk_close_7", "game_tempo": true},
+    {"t": 6.816, "name": "dog_clunk_close_8", "game_tempo": true},
     {"t": 8.80, "name": "inflate_hiss"}
   ]
 }

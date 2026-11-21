@@ -3,6 +3,7 @@ extends Node
 ## Rewrites V-LUMA, V-SHADOW, and V-ZFIGHT-FLICKER from the pixels it saves.
 
 const IDS := ["pocket", "bay3", "pair", "hatch"]
+const SHOT_IDS := ["pocket", "bay3", "pair", "hatch", "floorhatch"]
 const HEROES := ["pocket", "bay3", "pair", "hatch", "floorhatch"]
 const QA_CAMS := ["front", "oblique45", "jamb", "top", "player"]
 const STATES := ["closed", "025", "050", "open", "closing"]
@@ -49,7 +50,7 @@ func start(lab: Node3D) -> void:
 		var door: MechDoor = _doors[id]
 		door.set_physics_process(false)
 		door.reset_closed()
-		if id in IDS:
+		if id in SHOT_IDS:
 			_pixel[id] = {"luma": 1.0, "shadow": 0.0, "shadow_hot": 0, "flicker": 0.0, "flicker_hot": 0}
 	await _shoot_all()
 	_rewrite_metrics()
@@ -80,7 +81,9 @@ func _read_out() -> String:
 
 
 func _shoot_all() -> void:
-	for id in IDS:
+	for id in SHOT_IDS:
+		if not _doors.has(id):
+			continue
 		var door: MechDoor = _doors[id]
 		print("[door_lab] shots %s" % id)
 		door.reset_closed()
@@ -117,6 +120,12 @@ func _shoot_all() -> void:
 		_pose(door, "open")
 		_place(door, "detail")
 		_save(await _one_frame(), "%s/shots/detail_open.png" % id)
+		_pose(door, "closed")
+		_place(door, "back")
+		_save(await _one_frame(), "%s/shots/back_closed.png" % id)
+		_pose(door, "open")
+		_place(door, "back")
+		_save(await _one_frame(), "%s/shots/back_open.png" % id)
 		_pose(door, "050")
 		_place(door, "player_sloane")
 		_save(await _one_frame(), "%s/shots/player_sloane_050.png" % id)
@@ -444,7 +453,7 @@ func _place(door: MechDoor, cam_name: String) -> void:
 	var up: Vector3 = spec["up"]
 	_cam.look_at(spec["look"], up)
 	if _fill != null:
-		_fill.visible = cam_name == "detail" or cam_name == "jamb"
+		_fill.visible = cam_name == "detail" or cam_name == "jamb" or (cam_name == "back" and door.door_id == "floorhatch")
 
 
 func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
@@ -476,18 +485,41 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 			fov = 50.0
 		"jamb":
 			# Outside the frame. Bay3's canopy swallows a camera at z = -1.15.
-			at = Vector3(cx - inset - 0.55, 1.22, dz - 1.75)
-			look = Vector3(cx - inset, 1.15, dz - 0.04)
-			fov = 32.0
+			if door.door_id == "floorhatch":
+				at = Vector3(cx + 1.15, 0.85, dz + 0.15)
+				look = Vector3(cx + 0.45, 0.02, dz + 0.50)
+				fov = 32.0
+			else:
+				at = Vector3(cx - inset - 0.55, 1.22, dz - 1.75)
+				look = Vector3(cx - inset, 1.15, dz - 0.04)
+				fov = 32.0
 		"detail":
-			at = Vector3(cx - inset * 0.55, 1.28, dz - 1.70)
-			look = Vector3(cx - inset * 0.15, 1.20, dz - 0.02)
-			fov = 28.0
+			if door.door_id == "floorhatch":
+				at = Vector3(cx + 0.35, 1.15, dz + 1.35)
+				look = Vector3(cx, 0.05, dz + 0.50)
+				fov = 35.0
+			else:
+				at = Vector3(cx - inset * 0.55, 1.28, dz - 1.70)
+				look = Vector3(cx - inset * 0.15, 1.20, dz - 0.02)
+				fov = 28.0
 		"top":
-			at = Vector3(cx, look_y + 4.0, dz - 0.40)
+			# Ceiling slab is y = 4.07..4.23. Stay under it or the shot is the roof.
+			at = Vector3(cx, 3.55, dz - 0.40)
 			look = Vector3(cx, look_y, dz - 0.15)
 			fov = 40.0
 			up = Vector3(0.0, 0.0, -1.0)
+		"back":
+			if door.door_id == "floorhatch":
+				# Under the opening, looking up at the +Z edge. Closed, the lid
+				# underside (hub, ribs, struts). Open, the standing leaf's back skin.
+				at = Vector3(cx, -0.38, dz + 0.35)
+				look = Vector3(cx, 0.65, dz + 1.15)
+				up = Vector3(0.0, 0.0, -1.0)
+				fov = 50.0
+			else:
+				at = Vector3(cx, 1.45, dz + 3.2)
+				look = Vector3(cx, look_y, dz)
+				fov = 40.0
 		"player":
 			at = Vector3(cx, 1.62, dz - 1.8)
 			fov = 70.0
@@ -660,7 +692,9 @@ func _luma_at(img: Image, x: int, y: int) -> float:
 
 func _rewrite_metrics() -> void:
 	var vis_ids := {}
-	for id in IDS:
+	for id in SHOT_IDS:
+		if not _pixel.has(id):
+			continue
 		var slot: Dictionary = _pixel[id]
 		var luma := float(slot["luma"])
 		var shadow := float(slot["shadow"])
@@ -692,7 +726,10 @@ func _rest_visual_ok(metrics: Array) -> bool:
 		if typeof(item) != TYPE_DICTIONARY:
 			continue
 		var cid := str(item["id"])
-		var visual: bool = cid.begins_with("V-") or cid == "R6" or cid == "R8" or cid == "R11" or cid == "R12"
+		# V-GAP and R8 stay failed in the JSON for Vance. They are not a shot fail.
+		if cid.begins_with("V-GAP-") or cid == "R8":
+			continue
+		var visual: bool = cid.begins_with("V-") or cid == "R6" or cid == "R11" or cid == "R12"
 		if visual and not bool(item["pass"]):
 			return false
 	return true
