@@ -113,7 +113,9 @@ def build(q):
               *[box(u, v, .05, ot + E, -.08, .02) for u, v in ((X0, -1.6), (-.6, -.5), (.5, .6), (1.6, X1))])
     else:
         p.add("Wall-colonly", G, box(X0, X1, .5, H, -.08, .02))
-    p.add("DoorClear-colonly", SL, box(X0, X1, 0, .02, -.3, 1.4))
+    # Rook 2026-11-21 (Gage, pass H): the walk strip's top is flush with the Threshold_Mat top (3l 0.004, 2-leaf 0.012); it was 0.020,
+    # a step the player hopped (the tower floor colliders either side, Struct inside / Deck outside, are at y 0).
+    p.add("DoorClear-colonly", SL, box(X0, X1, 0, MAT_T, -.3, 1.4))
     for a, b in ([] if L3 else cols):
         p.add("Jamb-colonly", G, box(a - .02, a + .02, 0, H, -.08, .14), box(b - .02, b + .02, 0, H, -.08, .14))
     p.add("Canopy-colonly", SL, box(cx0, cx1, y0, y1, .061, zt))
