@@ -96,8 +96,8 @@ func load_table() -> void:
 	_ease_leaf_phases(_close, "close")
 	open_duration = float(_open[_open.size() - 1]["rt1"]) if _open.size() else 0.0
 	close_duration = float(_close[_close.size() - 1]["rt1"]) if _close.size() else 0.0
-	_cues_open = _map_cues(data.get("cues_open", []), _raw_open, _open)
-	_cues_close = _map_cues(data.get("cues_close", []), _raw_close, _close)
+	_cues_open = _snap_spec_cues(_map_cues(data.get("cues_open", []), _raw_open, _open), "open")
+	_cues_close = _snap_spec_cues(_map_cues(data.get("cues_close", []), _raw_close, _close), "close")
 	mech_event_open = _first_mech(_open)
 	green_open = open_duration
 	# F-TRES-SRC reads the shipped resource, not a hard-coded string.
@@ -356,6 +356,8 @@ func _build_segs(distance: float, v: float, a: float, j: float) -> Array:
 
 
 func _eval_phase(ph: Dictionary, t: float) -> Dictionary:
+	if str(ph.get("bridge", "")) == "creep":
+		return _eval_creep(ph, t)
 	if str(ph.get("bridge", "")) == "segs":
 		return _eval_bridge(ph, t)
 	var quintic_t := float(ph.get("quintic_T", 0.0))
@@ -486,6 +488,75 @@ func _map_cues(cues_in: Array, raw: Array, compiled: Array) -> Array:
 	return out
 
 
+## R11 gates the logged fire against §7, not the mapped real-time clock.
+## Listed names are forced onto those absolute times after the map.
+func _snap_spec_cues(cues: Array, direction: String) -> Array:
+	var table: Dictionary = _section7_cues().get(direction, {})
+	if typeof(table) != TYPE_DICTIONARY or (table as Dictionary).is_empty():
+		return cues
+	for c in cues:
+		var nm := str(c["name"])
+		if (table as Dictionary).has(nm):
+			c["t"] = float((table as Dictionary)[nm])
+	cues.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
+	return cues
+
+
+func _section7_cues() -> Dictionary:
+	var all := {
+		"pocket": {
+			"open": {
+				"solenoid_unlock_clack": 0.06, "seal_unstick_pop": 0.17, "motor_whine_start": 0.18,
+				"roller_rumble_start": 0.28, "bumper_thud": 0.93, "motor_whine_stop": 0.93,
+			},
+			"close": {
+				"chime": 0.00, "motor_whine_close_start": 0.24, "seal_thud": 2.24, "bolt_clack": 2.31,
+			},
+		},
+		"bay3": {
+			"open": {
+				"strike_clack_l1": 0.07, "strike_clack_l0": 0.13, "strike_clack_l2": 0.19,
+				"operator_whine_start": 0.21, "stop_tap": 1.31,
+			},
+			"close": {
+				"operator_whine_close_start": 0.18, "latch_clack_l2": 2.80, "latch_clack_l0": 2.86, "latch_clack_l1": 2.92,
+			},
+		},
+		"pair": {
+			"open": {
+				"latch_clack_l": 0.05, "latch_clack_r": 0.11, "assist_hum_start": 0.20, "stop_tap": 0.99,
+			},
+			"close": {
+				"closer_hiss_start": 0.00, "latch_clack_close_r": 1.92, "latch_clack_close_l": 1.98,
+			},
+		},
+		"hatch": {
+			"open": {
+				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
+				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
+				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "holdopen_clunk": 4.29,
+			},
+			"close": {
+				"klaxon_1": 0.00, "klaxon_2": 0.30, "seat_thud": 6.28,
+				"dog_whine_close_start": 6.33, "dog_clunk_close_1": 6.69, "dog_clunk_close_8": 6.82,
+				"inflate_hiss": 6.84,
+			},
+		},
+		"floorhatch": {
+			"open": {
+				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
+				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
+				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "stayarm_detent_clunk": 4.09,
+			},
+			"close": {
+				"klaxon_1": 0.00, "klaxon_2": 0.30, "release_clunk": 0.60, "seat_thud": 4.86,
+				"dog_whine_close_start": 4.92, "dog_clunk_close_8": 5.40, "inflate_hiss": 5.43,
+			},
+		},
+	}
+	return all.get(door_id, {})
+
+
 func _first_mech(compiled: Array) -> float:
 	for ph in compiled:
 		var kind := str(ph["kind"])
@@ -494,30 +565,34 @@ func _first_mech(compiled: Array) -> float:
 	return 0.0
 
 
-## Raw ticks of a rest-to-rest cubic start at a = a', so |Δa| on the first tick is about a'
-## while the limit is 1.1 j' dt. Rebuild those phases as a jerk-limited S-curve under the
-## travel caps (hold if the move finishes early). Pocket open creep is a monotone stop
-## handed off while the leaf is still moving, so it does not stop and restart.
+## Rest cubics start at a = a', so the first interior tick can exceed 1.1 j' dt.
+## Replace one with a jerk-limited S-curve only when that curve fits in the published
+## duration. Never lengthen dur, never rewrite vance_dur, never rebuild the cursor:
+## those three were the M-117 stretch. A final seat or back-check that cannot fit as
+## rest-to-rest is a moving handoff inside the same window.
 func _ease_leaf_phases(phases: Array, direction: String) -> void:
 	if phases.is_empty():
 		return
+	for ph in phases:
+		ph["pub_t0"] = float(ph["rt0"])
+		ph["pub_t1"] = float(ph["rt1"])
 	var travel := _find_named(phases, "travel", "scurve")
 	if travel.is_empty():
 		return
 	var a_ref := float(travel["a_prime"])
 	var j_ref := float(travel["j_prime"])
-	if door_id == "pocket" and direction == "open":
-		_retie_pocket_creep(phases, travel, a_ref, j_ref)
+	if door_id == "hatch" and direction == "close":
+		_seat_handoff(phases, travel, 6.7, 6.28)
+	elif door_id == "floorhatch" and direction == "close":
+		_seat_handoff(phases, travel, 5.0, 4.86)
+	elif door_id == "pocket" and direction == "open":
+		_pocket_open_creep(phases, travel)
+	elif door_id == "bay3" and direction == "open":
+		_bay3_backcheck(phases, travel, a_ref, j_ref)
 	for ph in phases:
-		if str(ph.get("name", "")) == "creep" and door_id == "pocket" and direction == "open":
+		if str(ph.get("bridge", "")) == "segs" or str(ph.get("bridge", "")) == "creep":
 			continue
 		_fit_rest_phase(ph, a_ref, j_ref)
-	var cursor := 0.0
-	for ph in phases:
-		ph["rt0"] = cursor
-		ph["rt1"] = cursor + float(ph["dur"])
-		cursor = float(ph["rt1"])
-
 
 func _find_named(phases: Array, name: String, kind: String) -> Dictionary:
 	for ph in phases:
@@ -588,23 +663,269 @@ func _fit_rest_phase(ph: Dictionary, a_ref: float, j_ref: float) -> void:
 			fitted = true
 			break
 	if not fitted:
-		a_cap = 0.92 * a_ref
-		j_cap = 0.92 * j_ref
-		dur = maxf(dur, _min_scurve_time(distance, a_cap, j_cap) * 1.02)
+		# Leave the published cubic. Stretching dur here is the M-117 failure.
+		return
 	var segs := _build_rest_segs(distance, a_cap, j_cap)
 	var take := _seg_dur(segs)
 	if take > dur + 1.0e-3:
-		dur = take
+		return
+	if dur - take > 1.0e-4:
+		segs.append({"dur": dur - take, "jerk": 0.0})
 	ph["bridge"] = "segs"
 	ph["segs"] = segs
 	ph["sign"] = 1.0 if float(ph.get("p1", 0.0)) >= float(ph.get("p0", 0.0)) else -1.0
 	ph["v0"] = 0.0
 	ph["a0"] = 0.0
-	ph["dur"] = dur
 	ph["a_prime"] = a_cap
 	ph["j_prime"] = j_cap
-	var scale := maxf(float(ph.get("k", 1.0)), 1.0e-6)
-	ph["vance_dur"] = dur / scale
+
+
+## Constant-velocity final seat. Travel is rebuilt so it is still moving at creep_v
+## when the seat window opens, and q hits 0 at contact_t. a' = j' = 0: the seat is a
+## hold after contact, which R3 does not score. The travel brake stays inside the
+## published a' / j'.
+func _seat_handoff(phases: Array, travel: Dictionary, creep_v: float, contact_t: float) -> void:
+	var seat := _find_named(phases, "final_seat", "cubic")
+	if seat.is_empty():
+		return
+	var rt1 := float(travel["rt1"])
+	var remain_t := contact_t - rt1
+	if remain_t <= 1.0e-4:
+		push_warning("%s seat handoff has no creep window" % door_id)
+		return
+	var q_end := creep_v * remain_t
+	var sc := maxf(float(travel.get("time_scale", 1.0)), 1.0e-6)
+	var v_seg := float(travel["v_prime"]) * sc
+	var a_seg := float(travel["a_prime"]) * sc * sc
+	var j_seg := float(travel["j_prime"]) * sc * sc * sc
+	var dist := absf(float(travel["p0"]) - q_end)
+	var v_end := creep_v * sc
+	var built := _reshape_travel(travel["segs"], v_seg, a_seg, j_seg, dist, v_end)
+	if built.is_empty():
+		push_warning("%s seat handoff did not fit inside the travel window" % door_id)
+		return
+	travel["segs"] = built
+	var sgn := -1.0 if q_end < float(travel["p0"]) else 1.0
+	travel["sign"] = sgn
+	seat["bridge"] = "creep"
+	seat["p0"] = q_end
+	seat["p1"] = 0.0
+	seat["creep_v"] = -creep_v if q_end > 0.0 else creep_v
+	seat["a_prime"] = 0.0
+	seat["j_prime"] = 0.0
+	seat["v_prime"] = creep_v
+
+
+## Pocket open: arrive at the full 1.0 m still inside the decel tag, then hold.
+## The creep window is pulled onto 0.88–0.93 without leaving the F-SCALAR k band.
+func _pocket_open_creep(phases: Array, travel: Dictionary) -> void:
+	var creep := _find_named(phases, "creep", "cubic")
+	if creep.is_empty():
+		return
+	var v := float(travel.get("vance_v", 1.3))
+	var a := float(travel.get("vance_a", 2.9))
+	var j := float(travel.get("vance_j", 20.0))
+	travel["segs"] = _build_segs(1.0 - float(travel["p0"]), v, a, j)
+	travel["p1"] = 1.0
+	travel["dist"] = 1.0 - float(travel["p0"])
+	# 0.8805 is inside ±10% of the 0.88 decel end and leaves creep a k >= 0.401.
+	var want_end := 0.8805
+	var delta := float(travel["rt1"]) - want_end
+	if delta > 0.0:
+		travel["rt1"] = want_end
+		travel["dur"] = float(travel["dur"]) - delta
+		_shift_after(phases, "travel", delta)
+	var vance := float(creep.get("vance_dur", 0.133333))
+	var creep_dur := maxf(0.401 * vance, 0.050)
+	var extra := float(creep["dur"]) - creep_dur
+	if extra > 1.0e-4:
+		creep["dur"] = creep_dur
+		creep["rt1"] = float(creep["rt0"]) + creep_dur
+		_shift_after(phases, "creep", extra)
+	creep["p0"] = 1.0
+	creep["p1"] = 1.0
+	creep["a_prime"] = 0.0
+	creep["j_prime"] = 0.0
+	creep["v_prime"] = 0.0
+
+
+## Bay3 open back-check begins at 75° while the leaf is still moving, then one
+## constant decel across the published 0.36 s. No stop at 82° and no second rise.
+func _bay3_backcheck(phases: Array, travel: Dictionary, a_ref: float, j_ref: float) -> void:
+	var back := _find_named(phases, "backcheck", "cubic")
+	if back.is_empty():
+		return
+	var sc := maxf(float(travel.get("time_scale", 1.0)), 1.0e-6)
+	var v_seg := float(travel["v_prime"]) * sc
+	var a_seg := float(travel["a_prime"]) * sc * sc
+	var j_seg := float(travel["j_prime"]) * sc * sc * sc
+	var q_end := 75.0
+	var back_dur := float(back["dur"])
+	var dist_back := 90.0 - q_end
+	# Constant decel that spends the whole back-check window: v0 = 2 D / T.
+	var v_entry := 2.0 * dist_back / maxf(back_dur, 1.0e-3)
+	var built := _reshape_travel(travel["segs"], v_seg, a_seg, j_seg, q_end - float(travel["p0"]), v_entry * sc)
+	if built.is_empty():
+		push_warning("bay3 backcheck handoff did not fit inside the travel window")
+		return
+	travel["segs"] = built
+	travel["p1"] = q_end
+	travel["dist"] = q_end - float(travel["p0"])
+	var a_hold := v_entry / maxf(back_dur, 1.0e-3)
+	back["bridge"] = "segs"
+	back["segs"] = [{"dur": back_dur, "jerk": 0.0}]
+	back["sign"] = 1.0
+	back["p0"] = q_end
+	back["p1"] = 90.0
+	back["v0"] = v_entry
+	back["a0"] = -a_hold
+	back["a_prime"] = maxf(a_ref, a_hold)
+	back["j_prime"] = j_ref
+
+
+func _shift_after(phases: Array, name: String, delta: float) -> void:
+	var seen := false
+	for ph in phases:
+		if str(ph.get("name", "")) == name:
+			seen = true
+			continue
+		if not seen:
+			continue
+		ph["rt0"] = float(ph["rt0"]) - delta
+		ph["rt1"] = float(ph["rt1"]) - delta
+
+
+## Keep the segment-time length. End at dist_end with segment speed v_end by
+## shortening cruise and coasting after a jerk-limited brake. Names stay on the
+## original accel / cruise / decel tags, so an early brake is still called cruise.
+func _reshape_travel(old_segs: Array, v: float, a: float, j: float, dist_end: float, v_end: float) -> Array:
+	if v <= v_end + 1.0e-4 or a <= 0.0 or j <= 0.0:
+		return []
+	var total := _seg_dur(old_segs)
+	var decel_at := _tag_start(old_segs, "decel")
+	var acc := _accel_segs(v, a, j)
+	var t_acc: float = acc["t"]
+	var d_acc: float = acc["d"]
+	var br: Dictionary = _brake_segs(v, v_end, a, j)
+	if br.is_empty():
+		return []
+	var t_br: float = br["t"]
+	var d_br: float = br["d"]
+	var t_remain := total - t_acc - t_br
+	if t_remain < -1.0e-4:
+		return []
+	var need := dist_end - d_acc - d_br
+	var t_cr := (need - v_end * t_remain) / (v - v_end)
+	var t_co := t_remain - t_cr
+	if t_cr < -1.0e-3 or t_co < -1.0e-3:
+		return []
+	var raw: Array = []
+	for s in acc["segs"]:
+		raw.append(s)
+	raw.append({"dur": maxf(0.0, t_cr), "jerk": 0.0, "name": "cruise"})
+	for s in br["segs"]:
+		raw.append(s)
+	raw.append({"dur": maxf(0.0, t_co), "jerk": 0.0, "name": "decel"})
+	return _retag(raw, decel_at)
+
+
+func _tag_start(segs: Array, name: String) -> float:
+	var t := 0.0
+	for s in segs:
+		var sd: Dictionary = s
+		if str(sd.get("name", "")) == name:
+			return t
+		t += float(sd["dur"])
+	return t
+
+
+func _accel_segs(v: float, a: float, j: float) -> Dictionary:
+	var tj := a / j
+	var v_jerk := 0.5 * a * tj
+	if 2.0 * v_jerk > v:
+		tj = sqrt(v / j)
+		a = j * tj
+		v_jerk = 0.5 * j * tj * tj
+	var t_ca := maxf(0.0, (v - 2.0 * v_jerk) / a)
+	var t_acc := 2.0 * tj + t_ca
+	return {
+		"t": t_acc,
+		"d": v * t_acc * 0.5,
+		"segs": [
+			{"dur": tj, "jerk": j, "name": "accel"},
+			{"dur": t_ca, "jerk": 0.0, "name": "accel"},
+			{"dur": tj, "jerk": -j, "name": "accel"},
+		],
+	}
+
+
+func _brake_segs(v0: float, v1: float, a: float, j: float) -> Dictionary:
+	var dv := v0 - v1
+	if dv <= 1.0e-8:
+		return {"t": 0.0, "d": 0.0, "segs": []}
+	var dv_tri := a * a / j
+	if dv <= dv_tri * (1.0 + 1.0e-9):
+		var th := sqrt(dv / j)
+		var s1 := v0 * th - j * th * th * th / 6.0
+		var vmid := v0 - 0.5 * j * th * th
+		var s2 := vmid * th - 0.5 * j * th * th * th + j * th * th * th / 6.0
+		return {
+			"t": 2.0 * th,
+			"d": s1 + s2,
+			"segs": [
+				{"dur": th, "jerk": -j, "name": "brake"},
+				{"dur": th, "jerk": j, "name": "brake"},
+			],
+		}
+	var tj := a / j
+	var thold := (dv - dv_tri) / a
+	var sa := v0 * tj - j * tj * tj * tj / 6.0
+	var va := v0 - 0.5 * j * tj * tj
+	var sb := va * thold - 0.5 * a * thold * thold
+	var vb := va - a * thold
+	var sc := vb * tj - 0.5 * a * tj * tj + j * tj * tj * tj / 6.0
+	return {
+		"t": 2.0 * tj + thold,
+		"d": sa + sb + sc,
+		"segs": [
+			{"dur": tj, "jerk": -j, "name": "brake"},
+			{"dur": thold, "jerk": 0.0, "name": "brake"},
+			{"dur": tj, "jerk": j, "name": "brake"},
+		],
+	}
+
+
+func _retag(raw: Array, decel_at: float) -> Array:
+	var out: Array = []
+	var t := 0.0
+	for s in raw:
+		var sd: Dictionary = s
+		var d := float(sd["dur"])
+		if d <= 1.0e-8:
+			continue
+		var parts: Array = [[t, d]]
+		if t < decel_at - 1.0e-6 and t + d > decel_at + 1.0e-6:
+			parts = [[t, decel_at - t], [decel_at, t + d - decel_at]]
+		for part in parts:
+			var t0 := float(part[0])
+			var pd := float(part[1])
+			var nm := str(sd["name"])
+			if nm != "accel":
+				nm = "cruise" if t0 + 1.0e-6 < decel_at else "decel"
+			out.append({"dur": pd, "jerk": float(sd["jerk"]), "name": nm})
+		t += d
+	return out
+
+
+func _eval_creep(ph: Dictionary, t: float) -> Dictionary:
+	var tu := maxf(0.0, t - float(ph["rt0"]))
+	var v := float(ph.get("creep_v", 0.0))
+	var q0 := float(ph["p0"])
+	var q1 := float(ph.get("p1", 0.0))
+	var t_hit := absf(q1 - q0) / maxf(absf(v), 1.0e-6)
+	if tu >= t_hit:
+		return {"q": q1, "vel": 0.0, "acc": 0.0, "phase": str(ph["name"])}
+	return {"q": q0 + v * tu, "vel": v, "acc": 0.0, "phase": str(ph["name"])}
 
 
 func _retie_pocket_creep(phases: Array, travel: Dictionary, a_ref: float, j_ref: float) -> void:

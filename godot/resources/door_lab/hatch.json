@@ -63,8 +63,8 @@
   "cues_close": [
     {"t": 0.0, "name": "klaxon_1"},
     {"t": 0.5, "name": "klaxon_2"},
-    {"t": 7.85, "name": "seat_thud"},
-    {"t": 7.9533, "name": "dog_whine_close_start", "loop": true},
+    {"t": 6.28, "name": "seat_thud", "game_tempo": true},
+    {"t": 6.33, "name": "dog_whine_close_start", "loop": true, "game_tempo": true},
     {"t": 6.69, "name": "dog_clunk_close_1", "game_tempo": true},
     {"t": 6.708, "name": "dog_clunk_close_2", "game_tempo": true},
     {"t": 6.726, "name": "dog_clunk_close_3", "game_tempo": true},
@@ -73,6 +73,6 @@
     {"t": 6.780, "name": "dog_clunk_close_6", "game_tempo": true},
     {"t": 6.798, "name": "dog_clunk_close_7", "game_tempo": true},
     {"t": 6.816, "name": "dog_clunk_close_8", "game_tempo": true},
-    {"t": 8.80, "name": "inflate_hiss"}
+    {"t": 6.84, "name": "inflate_hiss", "game_tempo": true}
   ]
 }

@@ -44,6 +44,9 @@ var _shown_color := Color(1, 0.584, 0)
 var _shown_energy := 0.6
 var _target_color := Color(1, 0.584, 0)
 var _target_energy := 0.6
+var _fade_from_color := Color(1, 0.584, 0)
+var _fade_from_energy := 0.6
+var _fade_age := 0.15
 var _open_age: float = 0.0
 var _hold_left: float = 0.0
 var _brake_t: float = 0.0
@@ -462,18 +465,21 @@ func _motion_advance(dir: String, t: float, delta: float) -> float:
 	var s: Dictionary = profile.sample(dir, maxf(t, 0.0))
 	var a_des := deg_to_rad(float(s.get("acc", 0.0)))
 	var theta := deg_to_rad(float(s.get("q", 0.0)))
-	var passive := 585.0 - 687.0 * gravity_g * cos(theta)
-	var inertia := 46.7
+	# Rook pass E incr: same numbers, read from the door metas the rig sets (torsion bar 585, weight 687 at 1 G, actuator 530).
+	var tm: Dictionary = get_meta("torque_model", {})
+	var passive := float(tm.get("torsion_bar_Nm", 585.0)) - float(tm.get("weight_moment_Nm", 687.0)) * gravity_g * cos(theta)
+	var inertia := float(tm.get("inertia_kgm2", 46.7))
+	var act_max := float(tm.get("actuator_max_Nm", 530.0))
 	var ratio := 1.0
 	if absf(a_des) > 0.05:
-		var actuator := clampf(inertia * a_des - passive, -530.0, 530.0)
+		var actuator := clampf(inertia * a_des - passive, -act_max, act_max)
 		var a_act := (actuator + passive) / inertia
 		ratio = a_act / a_des
 		if ratio <= 0.0 or ratio >= 1.0:
 			ratio = 1.0
 		else:
 			ratio = clampf(ratio, 0.2, 1.0)
-	var v_cap := 77.8 if dir == "open" else 33.3
+	var v_cap := float(get_meta("damper_open_dps", 77.8)) if dir == "open" else float(get_meta("damper_close_dps", 33.3))
 	var v_des := absf(float(s.get("vel", 0.0)))
 	if v_des > v_cap + 0.05:
 		ratio = minf(ratio, v_cap / v_des)
@@ -792,7 +798,14 @@ func _set_lamp(mode: String, instant: bool) -> void:
 	if instant:
 		_shown_color = _target_color
 		_shown_energy = _target_energy
+		_fade_from_color = _target_color
+		_fade_from_energy = _target_energy
+		_fade_age = 0.15
 		_paint_lamp()
+	else:
+		_fade_from_color = _shown_color
+		_fade_from_energy = _shown_energy
+		_fade_age = 0.0
 
 
 func _fade_lamp(delta: float) -> void:
@@ -800,9 +813,12 @@ func _fade_lamp(delta: float) -> void:
 		var blink := sin(TAU * 2.0 * Time.get_ticks_msec() / 1000.0) > 0.0
 		_target_color = Color("#FF2A2A") if blink else Color("#FF9500")
 		_target_energy = 1.0
-	var k := clampf(delta / 0.15, 0.0, 1.0)
-	_shown_color = _shown_color.lerp(_target_color, k)
-	_shown_energy = lerpf(_shown_energy, _target_energy, k)
+	# Fixed 0.15 s smoothstep. Elapsed time, not an exponential per-tick lerp.
+	_fade_age = minf(_fade_age + delta, 0.15)
+	var u := clampf(_fade_age / 0.15, 0.0, 1.0)
+	var s := u * u * (3.0 - 2.0 * u)
+	_shown_color = _fade_from_color.lerp(_target_color, s)
+	_shown_energy = lerpf(_fade_from_energy, _target_energy, s)
 	_paint_lamp()
 
 
@@ -913,8 +929,9 @@ func _spin_roller(node: Node3D, q: float, about_z: bool) -> void:
 
 func _dog_throw_u(dir: String, forced: bool, travel_u: float) -> float:
 	# 0 = retracted (open), 1 = thrown (closed).
+	# Rook pass E incr: any lift retracts the dogs in a forced pose (was > 0.02, which showed thrown dogs on a lid lifted <= 2.1 deg).
 	if forced:
-		return 0.0 if travel_u > 0.02 else 1.0
+		return 0.0 if travel_u > 0.0 else 1.0
 	var local_t := _phase_u(["dogs"])
 	if dir == "close":
 		return local_t
@@ -929,7 +946,7 @@ func _pose_dog(node: Node3D, dir: String, forced: bool, travel_u: float, along_x
 		if dir == "close":
 			du = 1.0 - du
 		if forced:
-			du = 1.0 if travel_u > 0.02 else 0.0
+			du = 1.0 if travel_u > 0.0 else 0.0
 		var rest: Vector3 = node.get_meta("rest")
 		var retract: Vector3 = node.get_meta("retract")
 		node.position = rest + retract * du
@@ -951,7 +968,7 @@ func _pose_wheel(node: Node3D, dir: String, forced: bool, travel_u: float, about
 	if dir == "close":
 		du2 = 1.0 - du2
 	if forced:
-		du2 = 1.0 if travel_u > 0.02 else 0.0
+		du2 = 1.0 if travel_u > 0.0 else 0.0
 	node.rotation.z = deg_to_rad(-90.0 * du2)
 
 
@@ -995,14 +1012,22 @@ func _aim_piston(node: Node3D) -> void:
 
 
 func _pose_stay(node: Node3D) -> void:
-	var tab: PackedFloat32Array = node.get_meta("stay_table", PackedFloat32Array())
-	if tab.size() < 2:
-		return
+	# Tables vs leaf opening fraction, evenly spaced 0..travel. stay_table = degrees about local X (floor-hatch stay arm);
+	# stay_slide_table = metres along local Z (Rook rev 2 side-wall stay slider and detent plunger).
 	var span := maxf(profile.travel, 0.001)
-	var u := clampf((q_now[0] if q_now.size() else 0.0) / span, 0.0, 1.0) * float(tab.size() - 1)
+	var f := clampf((q_now[0] if q_now.size() else 0.0) / span, 0.0, 1.0)
+	var tab: PackedFloat32Array = node.get_meta("stay_table", PackedFloat32Array())
+	if tab.size() >= 2:
+		node.basis = _rest_basis(node) * Basis(Vector3(1, 0, 0), deg_to_rad(_table_at(tab, f)))
+	var slide: PackedFloat32Array = node.get_meta("stay_slide_table", PackedFloat32Array())
+	if slide.size() >= 2:
+		node.position = _rest_pos(node) + _rest_basis(node) * Vector3(0.0, 0.0, _table_at(slide, f))
+
+
+func _table_at(tab: PackedFloat32Array, f: float) -> float:
+	var u := f * float(tab.size() - 1)
 	var i := mini(int(floor(u)), tab.size() - 2)
-	var ang := lerpf(tab[i], tab[i + 1], u - float(i))
-	node.basis = _rest_basis(node) * Basis(Vector3(1, 0, 0), deg_to_rad(ang))
+	return lerpf(tab[i], tab[i + 1], u - float(i))
 
 
 func _phase_u(names: Array) -> float:

@@ -1,0 +1,8 @@
+t,name,dir
+0.06667,latch_clack_l,open
+0.13333,latch_clack_r,open
+0.20000,assist_hum_start,open
+1.00000,stop_tap,open
+0.06667,closer_hiss_start,close
+1.93333,latch_clack_close_r,close
+2.00000,latch_clack_close_l,close

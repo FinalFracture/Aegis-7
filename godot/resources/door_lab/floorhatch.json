@@ -27,7 +27,7 @@
   "meta": {
     "leaf": "1.00 x 1.00 x 0.10",
     "swing": "local X, sign -1 lifts the +Z leaf",
-    "struts": "2 x 585 N m",
+    "counterbalance": "585 N m torsion bar in the full-length hinge tube (no gas struts); rotary damper caps 77.8 deg/s open, 33.3 deg/s close; 1 G: weight 687 N m, net ~102 N m closing, actuator <= 530 N m",
     "inertia_note": "I=46.7 = 140 * 1^2 / 3 about the hinge edge. Close 0.60x is 33.3 deg/s and 7.9 J. Section 8's 5.7 J was this inertia at the retired 0.7x cruise.",
     "r13": "0.08 / 1.0 / 1.45"
   },
@@ -73,8 +73,8 @@
   "cues_close": [
     {"t": 0.0, "name": "klaxon_1"},
     {"t": 0.5, "name": "klaxon_2"},
-    {"t": 8.1, "name": "seat_thud"},
-    {"t": 8.2, "name": "dog_whine_close_start", "loop": true},
+    {"t": 4.86, "name": "seat_thud", "game_tempo": true},
+    {"t": 4.92, "name": "dog_whine_close_start", "loop": true, "game_tempo": true},
     {"t": 0.60, "name": "release_clunk", "game_tempo": true},
     {"t": 5.274, "name": "dog_clunk_close_1", "game_tempo": true},
     {"t": 5.292, "name": "dog_clunk_close_2", "game_tempo": true},
@@ -84,6 +84,6 @@
     {"t": 5.364, "name": "dog_clunk_close_6", "game_tempo": true},
     {"t": 5.382, "name": "dog_clunk_close_7", "game_tempo": true},
     {"t": 5.400, "name": "dog_clunk_close_8", "game_tempo": true},
-    {"t": 9.05, "name": "inflate_hiss"}
+    {"t": 5.43, "name": "inflate_hiss", "game_tempo": true}
   ]
 }

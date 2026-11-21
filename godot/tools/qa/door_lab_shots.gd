@@ -38,7 +38,7 @@ func start(lab: Node3D) -> void:
 	_cam.near = 0.05
 	_fill = OmniLight3D.new()
 	_fill.name = "DetailFill"
-	_fill.light_energy = 1.1
+	_fill.light_energy = 0.32
 	_fill.shadow_enabled = false
 	_fill.omni_range = 3.0
 	_fill.visible = false
@@ -90,10 +90,14 @@ func _shoot_all() -> void:
 		for state in STATES:
 			_pose(door, state)
 			for cam_name in QA_CAMS:
+				if cam_name == "jamb":
+					_set_vestibule_meshes(false)
 				_place(door, cam_name)
 				var burst: bool = state == "closed" and (cam_name == "front" or cam_name == "jamb")
 				var frames: Array = await _grab_frames(8 if burst else 1)
 				_save(frames[0], "%s/shots/%s_%s.png" % [id, cam_name, state])
+				if cam_name == "jamb":
+					_set_vestibule_meshes(true)
 				if cam_name == "front" and (state == "closed" or state == "open"):
 					_note_luma(id, frames[0])
 				if state == "closed" and cam_name == "front":
@@ -115,11 +119,19 @@ func _shoot_all() -> void:
 		_pose(door, "closed")
 		_place(door, "square")
 		_save(await _one_frame(), "%s/shots/square_closed.png" % id)
+		_set_vestibule_meshes(false)
 		_place(door, "detail")
 		_save(await _one_frame(), "%s/shots/detail_closed.png" % id)
 		_pose(door, "open")
+		if id == "pocket":
+			_set_access_panel(door, true)
 		_place(door, "detail")
+		if id == "pocket":
+			_aim_pocket_panel(door)
 		_save(await _one_frame(), "%s/shots/detail_open.png" % id)
+		if id == "pocket":
+			_set_access_panel(door, false)
+		_set_vestibule_meshes(true)
 		_pose(door, "closed")
 		_place(door, "back")
 		_save(await _one_frame(), "%s/shots/back_closed.png" % id)
@@ -130,13 +142,101 @@ func _shoot_all() -> void:
 		_place(door, "player_sloane")
 		_save(await _one_frame(), "%s/shots/player_sloane_050.png" % id)
 		_pose(door, "open")
+		_set_vestibule_meshes(false)
 		_place(door, "threshold")
 		_save(await _one_frame(), "%s/shots/threshold_open.png" % id)
+		_set_vestibule_meshes(true)
+		await _wear_closeup(door, id)
 		await _open_strip(door, id)
 		door.set_physics_process(false)
 		door.reset_closed()
 	await _motion_pack()
 	await _heroes()
+
+
+func _set_vestibule_meshes(on: bool) -> void:
+	var stack: Array[Node] = [_lab]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is MeshInstance3D and String(n.name).begins_with("Vestibule_"):
+			(n as MeshInstance3D).visible = on
+
+
+func _aim_pocket_panel(door: MechDoor) -> void:
+	# The header is y ~ 2.5. A camera on the panel origin sits inside the track housing.
+	var origin := door.global_position
+	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
+	_cam.fov = 40.0
+	_cam.global_position = Vector3(cx, 1.48, origin.z - 1.55)
+	_cam.look_at(Vector3(cx, 2.32, origin.z - 0.02), Vector3.UP)
+
+
+func _set_access_panel(door: Node, opened: bool) -> void:
+	var panel := _find_node(door, "slide_AccessPanel")
+	if panel == null or not (panel is Node3D):
+		return
+	var was := bool(panel.get_meta("shot_open", false))
+	if opened and not was:
+		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(-110.0))
+		panel.set_meta("shot_open", true)
+	elif not opened and was:
+		(panel as Node3D).rotate_object_local(Vector3(1, 0, 0), deg_to_rad(110.0))
+		panel.set_meta("shot_open", false)
+
+
+func _wear_closeup(door: MechDoor, id: String) -> void:
+	var target: Node3D = null
+	for needle in ["WearHandle", "WearPush", "WearBar", "WearKick", "WearWheel", "hatch_Handle", "ManualHandle"]:
+		var found := _find_node(door, needle)
+		if found is Node3D:
+			target = found
+			break
+	if target == null:
+		print("[door_lab] %s wear close-up missing a wear mesh" % id)
+		return
+	var p := target.global_position
+	_cam.fov = 28.0
+	_cam.global_position = p + Vector3(0.12, 0.04, -0.32)
+	_cam.look_at(p, Vector3.UP)
+	if _fill != null:
+		_fill.visible = true
+	var img := await _one_frame()
+	_save(img, "%s_wear_closeup.png" % id)
+	_save(img, "%s/shots/%s_wear_closeup.png" % [id, id])
+	print("[door_lab] %s wear close-up %s" % [id, target.name])
+
+
+func _print_clip(id: String, img: Image) -> void:
+	var hot := 0
+	var n := 0
+	var mx := 0.0
+	var y := 0
+	while y < img.get_height():
+		var x := 0
+		while x < img.get_width():
+			var c := img.get_pixel(x, y)
+			mx = maxf(mx, maxf(c.r, maxf(c.g, c.b)))
+			if c.r >= 250.0 / 255.0 or c.g >= 250.0 / 255.0 or c.b >= 250.0 / 255.0:
+				hot += 1
+			n += 1
+			x += 2
+		y += 2
+	var pct := 100.0 * float(hot) / float(maxi(n, 1))
+	print("[door_lab] hero %s clip_pct=%.3f max_channel=%.3f" % [id, pct, mx])
+
+
+func _find_node(root: Node, needle: String) -> Node:
+	var stack: Array[Node] = [root]
+	var want := needle.to_lower()
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if want in String(n.name).to_lower():
+			return n
+		for c in n.get_children():
+			stack.append(c)
+	return null
 
 
 func _open_strip(door: MechDoor, id: String) -> void:
@@ -175,6 +275,7 @@ func _heroes() -> void:
 		_place(door, "hero")
 		var img := await _one_frame()
 		_save(img, "hero_final_%s.png" % id)
+		_print_clip(id, img)
 		if id == "floorhatch":
 			print("[door_lab] floorhatch V-LUMA measured=%.4f" % _mean_luma(img, _leaf_rect(img)))
 		door.reset_closed()
@@ -490,9 +591,10 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 				look = Vector3(cx + 0.45, 0.02, dz + 0.50)
 				fov = 32.0
 			else:
-				at = Vector3(cx - inset - 0.55, 1.22, dz - 1.75)
-				look = Vector3(cx - inset, 1.15, dz - 0.04)
-				fov = 32.0
+				# Farther back so the white leaf does not fill the frame and clip.
+				at = Vector3(cx - inset - 0.85, 1.35, dz - 2.55)
+				look = Vector3(cx - inset * 0.4, 1.25, dz - 0.02)
+				fov = 38.0
 		"detail":
 			if door.door_id == "floorhatch":
 				at = Vector3(cx + 0.35, 1.15, dz + 1.35)
@@ -516,6 +618,13 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 				look = Vector3(cx, 0.65, dz + 1.15)
 				up = Vector3(0.0, 0.0, -1.0)
 				fov = 50.0
+			elif door.door_id == "hatch":
+				# The old camera sat at z+3.2, behind the vestibule wall. 1.65 m toward −Z, wider so the hardware fits.
+				# Stay in front of the vestibule wall (z ≈ 2.40). Wider so the davit,
+				# damper, actuator and both rams sit inside the frame with the gauge.
+				at = Vector3(cx, 1.22, dz + 1.55)
+				look = Vector3(cx, 1.25, dz)
+				fov = 76.0
 			else:
 				at = Vector3(cx, 1.45, dz + 3.2)
 				look = Vector3(cx, look_y, dz)
@@ -726,10 +835,7 @@ func _rest_visual_ok(metrics: Array) -> bool:
 		if typeof(item) != TYPE_DICTIONARY:
 			continue
 		var cid := str(item["id"])
-		# V-GAP and R8 stay failed in the JSON for Vance. They are not a shot fail.
-		if cid.begins_with("V-GAP-") or cid == "R8":
-			continue
-		var visual: bool = cid.begins_with("V-") or cid == "R6" or cid == "R11" or cid == "R12"
+		var visual: bool = cid.begins_with("V-") or cid == "R6" or cid == "R8" or cid == "R11" or cid == "R12"
 		if visual and not bool(item["pass"]):
 			return false
 	return true
@@ -741,7 +847,7 @@ func _rewrite_summary(vis_ids: Dictionary) -> void:
 	var summary: Dictionary = parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 	var doors: Dictionary = summary.get("doors", {})
 	var any_fail := false
-	for id in IDS:
+	for id in SHOT_IDS:
 		var door_row: Dictionary = doors.get(id, {})
 		var vok: bool = bool(vis_ids.get(id, false))
 		door_row["visual"] = "PASS" if vok else "FAIL"
@@ -755,7 +861,18 @@ func _rewrite_summary(vis_ids: Dictionary) -> void:
 	summary["sloane"] = "PENDING"
 	summary["vance"] = "PENDING"
 	summary["hooks_missing"] = []
-	if any_fail or str(summary["functional"]) != "PASS":
+	var fails: Array = []
+	for sid in SHOT_IDS:
+		var metrics: Array = _load_array(_out.path_join(sid).path_join("metrics.json"))
+		for item in metrics:
+			if typeof(item) != TYPE_DICTIONARY:
+				continue
+			if not bool(item.get("pass", true)):
+				fails.append("%s:%s" % [sid, str(item["id"])])
+	summary["fails"] = fails
+	summary["fails_count"] = fails.size()
+	_vis_fail = fails.size()
+	if any_fail or str(summary["functional"]) != "PASS" or not fails.is_empty():
 		summary["visual"] = "FAIL"
 		summary["verdict"] = "FAIL"
 	else:

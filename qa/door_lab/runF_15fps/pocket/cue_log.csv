@@ -1,0 +1,11 @@
+t,name,dir
+0.06667,solenoid_unlock_clack,open
+0.20000,seal_unstick_pop,open
+0.20000,motor_whine_start,open
+0.33333,roller_rumble_start,open
+0.93333,bumper_thud,open
+0.93333,motor_whine_stop,open
+0.06667,chime,close
+0.26667,motor_whine_close_start,close
+2.26667,seal_thud,close
+2.33333,bolt_clack,close

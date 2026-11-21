@@ -187,7 +187,9 @@ func _one(id: String) -> void:
 	await _scored_cycle(door)
 	await _obstruction(door)
 	await _stall_open(door)
+	var clip_t0 := Time.get_ticks_msec()
 	await _clips_and_gaps(door)
+	print("[door_lab] %s clips %.1fs" % [id, float(Time.get_ticks_msec() - clip_t0) / 1000.0])
 	await _snag(door)
 	await _gravity(door)
 	await _cycles(door)
@@ -195,6 +197,7 @@ func _one(id: String) -> void:
 		await _emergency(door)
 	_hardware(door)
 	_albedo(door)
+	_plate_color(door)
 	_defer_pixels(door)
 	door.reset_closed()
 	_hide_probe()
@@ -537,9 +540,14 @@ func _scored_cycle(door: MechDoor) -> void:
 
 
 func _write_motion(door_id: String, rows: Array) -> void:
+	_write_motion_file(door_id, rows, "motion.csv")
+	_write_cues(door_id)
+
+
+func _write_motion_file(door_id: String, rows: Array, file_name: String) -> void:
 	var dir := _out.path_join(door_id)
 	DirAccess.make_dir_recursive_absolute(dir)
-	var f := FileAccess.open(dir.path_join("motion.csv"), FileAccess.WRITE)
+	var f := FileAccess.open(dir.path_join(file_name), FileAccess.WRITE)
 	if f == null:
 		return
 	f.store_line("tick,time_s,phase,leaf,px,py,pz,yaw_deg,vel,leaf_vel,drift_mm,gap_mm,contacts,lamp,collider_enabled,q,leaf_acc,lamp_energy,g")
@@ -562,7 +570,6 @@ func _write_motion(door_id: String, rows: Array) -> void:
 		]
 		f.store_line(line)
 	f.close()
-	_write_cues(door_id)
 
 
 func _analyze_motion(door: MechDoor, rows: Array, finished: bool) -> void:
@@ -885,6 +892,213 @@ func _scalar_report(door: MechDoor) -> Dictionary:
 	return {"ok": ok, "err": err, "note": "max |k-spec| %.4f %s" % [err, cap_note]}
 
 
+## §7 phase windows. Pair open accel/cruise/decel/backcheck/settle stay on the frozen
+## unstretched compiler windows (M-114 blocks the N2 retime). Every other phase is §7.
+func _spec_windows(door_id: String, direction: String) -> Dictionary:
+	var all := {
+		"pocket": {
+			"open": {
+				"request": [0.00, 0.06], "bolt_retract": [0.06, 0.13], "seal_unseat": [0.13, 0.18],
+				"lurch": [0.18, 0.28], "accel": [0.28, 0.54], "cruise": [0.54, 0.62],
+				"decel": [0.62, 0.88], "creep": [0.88, 0.93], "settle": [0.93, 1.08],
+			},
+			"close": {
+				"prewarn": [0.00, 0.24], "accel": [0.24, 0.46], "cruise": [0.46, 1.69],
+				"decel": [1.69, 1.91], "creep": [1.91, 2.25], "seal_seat": [2.25, 2.28],
+				"bolt_throw": [2.28, 2.34], "lamp_idle": [2.34, 2.40],
+			},
+		},
+		"bay3": {
+			"open": {
+				"request": [0.00, 0.06], "strike": [0.06, 0.13], "lurch": [0.13, 0.23],
+				"accel": [0.23, 0.50], "cruise": [0.50, 0.68], "decel": [0.68, 0.95],
+				"backcheck": [0.95, 1.31], "settle": [1.31, 1.54],
+			},
+			"close": {
+				"prewarn": [0.00, 0.18], "accel": [0.18, 0.60], "cruise": [0.60, 1.78],
+				"decel": [1.78, 2.20], "latch_check": [2.20, 2.80], "strike_catch": [2.80, 2.85],
+			},
+		},
+		"pair": {
+			"open": {
+				"request": [0.00, 0.05], "latch_retract": [0.05, 0.12], "lurch": [0.12, 0.20],
+				"accel": [0.20, 0.46], "cruise": [0.46, 0.55], "decel": [0.55, 0.81],
+				"backcheck": [0.81, 0.99], "settle": [0.99, 1.21],
+			},
+			"close": {
+				"accel": [0.00, 0.32], "cruise": [0.32, 1.20], "decel": [1.20, 1.52],
+				"latch_check": [1.52, 1.92], "settle": [1.92, 2.05],
+			},
+		},
+		"hatch": {
+			"open": {
+				"request": [0.00, 0.12], "equalize": [0.12, 1.02], "dogs": [1.02, 1.50],
+				"seal_deflate": [1.50, 1.80], "lurch": [1.80, 2.15], "accel": [2.15, 2.75],
+				"cruise": [2.75, 3.65], "decel": [3.65, 4.25], "settle": [4.25, 4.64],
+			},
+			"close": {
+				"prewarn": [0.00, 0.60], "accel": [0.60, 0.95], "cruise": [0.95, 5.65],
+				"decel": [5.65, 6.00], "final_seat": [6.00, 6.30], "dogs": [6.33, 6.81],
+				"seal_inflate": [6.84, 7.20], "leak_check": [7.20, 7.80],
+			},
+		},
+		"floorhatch": {
+			"open": {
+				"request": [0.00, 0.12], "equalize": [0.12, 1.02], "dogs": [1.02, 1.50],
+				"seal_deflate": [1.50, 1.80], "lurch": [1.80, 2.15], "accel": [2.15, 2.75],
+				"cruise": [2.75, 3.49], "decel": [3.49, 4.09],
+			},
+			"close": {
+				"prewarn": [0.00, 0.60], "accel": [0.60, 1.40], "cruise": [1.40, 3.69],
+				"decel": [3.69, 4.49], "final_seat": [4.49, 4.89], "dogs": [4.92, 5.40],
+				"seal_inflate": [5.43, 5.79], "leak_check": [5.79, 6.39],
+			},
+		},
+	}
+	var door_table: Dictionary = all.get(door_id, {})
+	var windows: Dictionary = (door_table.get(direction, {}) as Dictionary).duplicate(true)
+	if door_id == "pair" and direction == "open":
+		windows["accel"] = [0.200, 0.521]
+		windows["cruise"] = [0.521, 0.550]
+		windows["decel"] = [0.550, 0.871]
+		windows["backcheck"] = [0.871, 1.051]
+		windows["settle"] = [1.051, 1.271]
+	return windows
+
+
+func _spec_totals(door_id: String) -> Vector2:
+	match door_id:
+		"pocket":
+			return Vector2(1.08, 2.40)
+		"bay3":
+			return Vector2(1.54, 2.85)
+		"pair":
+			return Vector2(1.21, 2.05)
+		"hatch":
+			return Vector2(4.64, 7.80)
+		"floorhatch":
+			return Vector2(4.09, 6.39)
+		_:
+			return Vector2(0.0, 0.0)
+
+
+func _measured_phase_spans(door: MechDoor, direction: String) -> Dictionary:
+	var spans := {}
+	var dur := door.profile.duration(direction)
+	var prev := ""
+	var t0 := 0.0
+	var t := 0.0
+	while t <= dur + 0.0015:
+		var ph := str(door.profile.sample(direction, minf(t, dur))["phase"])
+		if t > dur:
+			ph = "settled"
+		if ph != prev:
+			if prev != "" and prev != "idle" and prev != "settled":
+				spans[prev] = Vector2(t0, t)
+			prev = ph
+			t0 = t
+		t += 0.001
+	return spans
+
+
+func _spec_phase_check(door: MechDoor, rows: Array) -> Dictionary:
+	var worst := 0.0
+	var note := ""
+	var ok := true
+	for direction in ["open", "close"]:
+		var windows := _spec_windows(door.door_id, direction)
+		var spans := _measured_phase_spans(door, direction)
+		for name in windows.keys():
+			var want: Array = windows[name]
+			var w0 := float(want[0])
+			var w1 := float(want[1])
+			var tol := 0.10 * maxf(w1 - w0, 0.001) + 0.0015
+			if not spans.has(name):
+				ok = false
+				note = "%s %s missing" % [direction, name]
+				worst = maxf(worst, 9.0)
+				continue
+			var got: Vector2 = spans[name]
+			var err := maxf(absf(got.x - w0), absf(got.y - w1))
+			worst = maxf(worst, err)
+			if err > tol:
+				ok = false
+				if note == "":
+					note = "%s %s %.3f-%.3f want %.3f-%.3f" % [direction, name, got.x, got.y, w0, w1]
+		var state := "opening" if direction == "open" else "closing"
+		var leaf0 := str(door._leaves[0]["name"])
+		for r in rows:
+			var rd: Dictionary = r
+			if str(rd["state"]) != state or str(rd["leaf"]) != leaf0:
+				continue
+			var local := float(rd["motion_t"]) - _stagger(door, leaf0, state)
+			var ph := str(rd["phase"])
+			for name2 in windows.keys():
+				var span: Array = windows[name2]
+				var a := float(span[0])
+				var b := float(span[1])
+				if local > a + _dt + 1.0e-4 and local < b - _dt - 1.0e-4 and ph != name2:
+					ok = false
+					if note == "":
+						note = "%s csv %s at %.3f inside %s" % [direction, ph, local, name2]
+					break
+	return {"ok": ok, "err": worst, "note": note}
+
+
+func _spec_cues(door_id: String) -> Dictionary:
+	return {
+		"pocket": {
+			"open": {
+				"solenoid_unlock_clack": 0.06, "seal_unstick_pop": 0.17, "motor_whine_start": 0.18,
+				"roller_rumble_start": 0.28, "bumper_thud": 0.93, "motor_whine_stop": 0.93,
+			},
+			"close": {
+				"chime": 0.00, "motor_whine_close_start": 0.24, "seal_thud": 2.24, "bolt_clack": 2.31,
+			},
+		},
+		"bay3": {
+			"open": {
+				"strike_clack_l1": 0.07, "strike_clack_l0": 0.13, "strike_clack_l2": 0.19,
+				"operator_whine_start": 0.21, "stop_tap": 1.31,
+			},
+			"close": {
+				"operator_whine_close_start": 0.18, "latch_clack_l2": 2.80, "latch_clack_l0": 2.86, "latch_clack_l1": 2.92,
+			},
+		},
+		"pair": {
+			"open": {
+				"latch_clack_l": 0.05, "latch_clack_r": 0.11, "assist_hum_start": 0.20, "stop_tap": 0.99,
+			},
+			"close": {
+				"closer_hiss_start": 0.00, "latch_clack_close_r": 1.92, "latch_clack_close_l": 1.98,
+			},
+		},
+		"hatch": {
+			"open": {
+				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
+				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
+				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "holdopen_clunk": 4.29,
+			},
+			"close": {
+				"klaxon_1": 0.00, "klaxon_2": 0.30, "seat_thud": 6.28,
+				"dog_whine_close_start": 6.33, "dog_clunk_close_1": 6.69, "dog_clunk_close_8": 6.82,
+				"inflate_hiss": 6.84,
+			},
+		},
+		"floorhatch": {
+			"open": {
+				"equalize_hiss_start": 0.12, "equalize_hiss_stop": 0.99, "dog_whine_start": 1.02,
+				"dog_clunk_1": 1.38, "dog_clunk_8": 1.51, "seal_deflate_hiss": 1.50,
+				"unseat_thunk": 1.85, "actuator_hum_start": 2.15, "stayarm_detent_clunk": 4.09,
+			},
+			"close": {
+				"klaxon_1": 0.00, "klaxon_2": 0.30, "release_clunk": 0.60, "seat_thud": 4.86,
+				"dog_whine_close_start": 4.92, "dog_clunk_close_8": 5.40, "inflate_hiss": 5.43,
+			},
+		},
+	}.get(door_id, {})
+
+
 func _time_report(door: MechDoor, rows: Array) -> Dictionary:
 	var meas_open := -1.0
 	var meas_close := -1.0
@@ -901,31 +1115,31 @@ func _time_report(door: MechDoor, rows: Array) -> Dictionary:
 	for item in door._leaves:
 		max_so = maxf(max_so, float(item.get("stagger_open", 0.0)))
 		max_sc = maxf(max_sc, float(item.get("stagger_close", 0.0)))
-	var target_o := door.profile.open_duration + max_so
-	var target_c := door.profile.close_duration + max_sc
-	var tol_o := 0.10 * door.profile.open_duration
-	var tol_c := 0.10 * door.profile.close_duration
+	var spec := _spec_totals(door.door_id)
+	var target_o := spec.x + max_so
+	var target_c := spec.y + max_sc
+	var tol_o := 0.10 * spec.x
+	var tol_c := 0.10 * spec.y
 	var ok := meas_open >= 0.0 and absf(meas_open - target_o) <= tol_o
 	ok = ok and meas_close >= 0.0 and absf(meas_close - target_c) <= tol_c
-	var exp_o := door.profile.expect_open
-	var exp_c := door.profile.expect_close
-	if exp_o > 0.0:
-		ok = ok and absf(door.profile.open_duration - exp_o) <= 0.10 * exp_o
-	if exp_c > 0.0:
-		ok = ok and absf(door.profile.close_duration - exp_c) <= 0.10 * exp_c
-	var phase_miss := 0
-	if not _phases_within(door, rows):
+	ok = ok and absf(door.profile.open_duration - spec.x) <= tol_o
+	ok = ok and absf(door.profile.close_duration - spec.y) <= tol_c
+	var phase := _spec_phase_check(door, rows)
+	if not bool(phase["ok"]):
 		ok = false
-		phase_miss = 1
 	return {
 		"ok": ok,
 		"meas": meas_open,
 		"lim": target_o,
-		"note": "open %.3f target %.3f (profile %.3f expect %.3f) close %.3f target %.3f (profile %.3f expect %.3f) phase_miss %d" % [meas_open, target_o, door.profile.open_duration, exp_o, meas_close, target_c, door.profile.close_duration, exp_c, phase_miss],
+		"note": "open %.3f spec %.3f+%.3f close %.3f spec %.3f+%.3f profile %.3f/%.3f %s" % [meas_open, spec.x, max_so, meas_close, spec.y, max_sc, door.profile.open_duration, door.profile.close_duration, str(phase["note"])],
 	}
 
 
 func _phases_within(door: MechDoor, rows: Array) -> bool:
+	return bool(_spec_phase_check(door, rows)["ok"])
+
+
+func _phases_within_legacy(door: MechDoor, rows: Array) -> bool:
 	for direction in ["open", "close"]:
 		var state := "opening" if direction == "open" else "closing"
 		var locals: Array = []
@@ -1029,6 +1243,10 @@ func _phase_subseq(door: MechDoor, rows: Array, state: String, direction: String
 
 
 func _phase_windows(door: MechDoor, rows: Array) -> bool:
+	return bool(_spec_phase_check(door, rows)["ok"])
+
+
+func _phase_windows_legacy(door: MechDoor, rows: Array) -> bool:
 	for r in rows:
 		var rd: Dictionary = r
 		var state := str(rd["state"])
@@ -1052,12 +1270,12 @@ func _phase_windows(door: MechDoor, rows: Array) -> bool:
 
 
 func _stagger_error(door: MechDoor, rows: Array) -> float:
-	# Invert the shipped profile so a curved q across a coarse tick does not
-	# bias the crossing. Both leaves then recover the true stagger.
+	# q is the profile at local time, and that curve is not linear. Invert it
+	# at the first sample past the threshold so a 15 Hz tick does not move the
+	# crossing. A leaf that leaves the profile still misses the 20 ms band.
 	var first := {}
-	var prev_q := {}
-	var prev_t := {}
 	var eps := 0.0004 if door.profile.clear_model == "slide" else 0.05
+	var rise := _local_for_q(door, eps)
 	for r in rows:
 		var rd: Dictionary = r
 		if str(rd["state"]) != "opening":
@@ -1066,24 +1284,7 @@ func _stagger_error(door: MechDoor, rows: Array) -> float:
 		var q := absf(float(rd["q"]))
 		var mt := float(rd["motion_t"])
 		if not first.has(leaf) and q >= eps:
-			if prev_q.has(leaf) and float(prev_q[leaf]) < eps:
-				# The tick before the rise is still on the hold, so inverting q=0
-				# lands at profile time 0 and stretches a coarse step. The clock is
-				# motion_t - stagger, and the profile inverse is the rise time.
-				var stagger := _stagger(door, leaf, "opening")
-				var local_prev := float(prev_t[leaf]) - stagger
-				var local_now := mt - stagger
-				var le := _local_for_q(door, eps)
-				if le <= local_prev:
-					first[leaf] = float(prev_t[leaf])
-				elif le >= local_now:
-					first[leaf] = mt
-				else:
-					first[leaf] = stagger + le
-			else:
-				first[leaf] = mt
-		prev_q[leaf] = q
-		prev_t[leaf] = mt
+			first[leaf] = mt - _local_for_q(door, q) + rise
 	if first.is_empty():
 		return 9.0
 	var worst := 0.0
@@ -1092,15 +1293,14 @@ func _stagger_error(door: MechDoor, rows: Array) -> float:
 		if not first.has(nm):
 			return 9.0
 		var expect := float(item.get("stagger_open", 0.0))
-		# Compare leaf-to-leaf deltas against stagger deltas, using the earliest leaf as zero.
+		worst = maxf(worst, absf(float(first[nm]) - (expect + rise)))
 		for other in door._leaves:
 			var nm2 := str(other["name"])
 			if not first.has(nm2):
 				continue
 			var got := float(first[nm]) - float(first[nm2])
-			var want := float(item.get("stagger_open", 0.0)) - float(other.get("stagger_open", 0.0))
+			var want := expect - float(other.get("stagger_open", 0.0))
 			worst = maxf(worst, absf(got - want))
-		worst = maxf(worst, 0.0 * expect)
 	return worst
 
 
@@ -1142,13 +1342,14 @@ func _lurch_moved(door: MechDoor, rows: Array) -> float:
 func _audio_ok(door: MechDoor) -> Dictionary:
 	var worst := 0.0
 	var missing := 0
+	var table: Dictionary = _spec_cues(door.door_id)
 	for direction in ["open", "close"]:
-		for c in door.profile.cues(direction):
-			var want := float(c["t"])
-			var nm := str(c["name"])
+		var cues: Dictionary = table.get(direction, {})
+		for nm in cues.keys():
+			var want := float(cues[nm])
 			var best := 99.0
 			for hit in _cues:
-				if str(hit["name"]) == nm and str(hit["dir"]) == direction:
+				if str(hit["name"]) == str(nm) and str(hit["dir"]) == direction:
 					best = minf(best, absf(float(hit["motion_t"]) - want))
 			if best > 90.0:
 				missing += 1
@@ -1156,7 +1357,7 @@ func _audio_ok(door: MechDoor) -> Dictionary:
 			else:
 				worst = maxf(worst, best)
 	var ok := missing == 0 and worst <= _dt + 1.0e-3
-	return {"ok": ok, "worst": worst, "note": "missing %d, worst %.4f s streams %s" % [missing, worst, _streams_ok(door)]}
+	return {"ok": ok, "worst": worst, "note": "section7 missing %d worst %.4f s tol %.4f" % [missing, worst, _dt]}
 
 
 func _streams_ok(door: MechDoor) -> bool:
@@ -1256,12 +1457,9 @@ func _obstruction(door: MechDoor) -> void:
 	var stop_dist := float(door.profile.obstruction.get("stop_dist", 0.06))
 	var stop_s := float(door.profile.obstruction.get("stop_s", 0.2))
 	var v_cap := float(door.profile.obstruction.get("v_cap", 999.0))
-	# The dwell tick is the one that contains stop_s. Report that instant, not the tick stamp.
-	var stop_meas := t_stopped
-	if t_stopped >= stop_s - 1.0e-4 and t_stopped <= stop_s + _dt + 1.0e-4:
-		stop_meas = stop_s
-	var stop_ok := saw_brake and stop_meas >= 0.0 and stop_meas <= stop_s + 1.0e-4 and moved <= stop_dist + 1.0e-4 and v_reopen <= v_cap + 1.0e-3
-	_rec(door.door_id, "F-OBS-STOP", stop_ok, moved, stop_dist, "u", "stop_s %.2f measured_t %.3f reopen_v %.2f cap %.2f" % [stop_s, t_detect, v_reopen, v_cap], "F")
+	# The dwell tick is the one that contains stop_s. Keep the raw stamp; do not snap it onto stop_s.
+	var stop_ok := saw_brake and t_stopped >= 0.0 and t_stopped <= stop_s + _dt + 1.0e-4 and moved <= stop_dist + 1.0e-4 and v_reopen <= v_cap + 1.0e-3
+	_rec(door.door_id, "F-OBS-STOP", stop_ok, moved, stop_dist, "u", "stop_s %.2f measured_t %.3f reopen_v %.2f cap %.2f" % [stop_s, t_stopped, v_reopen, v_cap], "F")
 	var shove := _probe.global_position.distance_to(origin0)
 	var pass_ok := shove <= 0.005
 	_rec(door.door_id, "F-OBS-PASS", pass_ok, shove, 0.005, "m", "probe origin travel during the stop; edge force is the stop-before-contact case", "F")
@@ -1416,9 +1614,23 @@ func _clips_and_gaps(door: MechDoor) -> void:
 			_clips[door.door_id].append({
 				"door": door.door_id, "q": q, "leaf_m": hit["leaf"], "hw_m": hit["hw"],
 			})
+	var mesh_leaf := 0.0
+	var mesh_hw := 0.0
+	for qmesh in [0.0, door.profile.travel * 0.5, door.profile.travel]:
+		door.force_q(float(qmesh))
+		await get_tree().physics_frame
+		var md := _mesh_tri_depth(door)
+		mesh_leaf = maxf(mesh_leaf, float(md["leaf"]))
+		mesh_hw = maxf(mesh_hw, float(md["hw"]))
+		if float(md["leaf"]) > 0.010 or float(md["hw"]) > 0.030:
+			_clips[door.door_id].append({
+				"door": door.door_id, "q": qmesh, "leaf_m": md["leaf"], "hw_m": md["hw"], "mesh": true,
+			})
+	leaf_worst = maxf(leaf_worst, mesh_leaf)
+	hw_worst = maxf(hw_worst, mesh_hw)
 	door.force_q(0.0)
-	_rec(door.door_id, "F-CLIP-LEAF", leaf_worst <= 0.010, leaf_worst, 0.010, "m", "collide_shape depth, floor body excluded", "F")
-	_rec(door.door_id, "F-CLIP-HW", hw_worst <= 0.030, hw_worst, 0.030, "m", "", "F")
+	_rec(door.door_id, "F-CLIP-LEAF", leaf_worst <= 0.010, leaf_worst, 0.010, "m", "collide plus triangle depth %.4f, floor body excluded" % mesh_leaf, "F")
+	_rec(door.door_id, "F-CLIP-HW", hw_worst <= 0.030, hw_worst, 0.030, "m", "mesh hw %.4f" % mesh_hw, "F")
 	_rec(door.door_id, "F-CLIP-COPLANAR", cop_pairs == 0, float(cop_pairs), 0.0, "count", "pairs with 0 < depth <= 1 mm", "F")
 	_rec(door.door_id, "V-ZFIGHT-GEO", cop_pairs == 0, float(cop_pairs), 0.0, "count", "", "V")
 	var pocket_ok := leaf_worst <= 0.010
@@ -1442,6 +1654,219 @@ func _half_close_q(door: MechDoor) -> float:
 		else:
 			hi = mid
 	return float(door.profile.sample("close", (lo + hi) * 0.5)["q"])
+
+
+func _mesh_tri_depth(door: MechDoor) -> Dictionary:
+	var leaf_w := 0.0
+	var hw_w := 0.0
+	var packs: Array = []
+	for item in door._leaves:
+		var body: Node3D = item["body"]
+		var leaf_tris: Array = _collect_tris(body, false)
+		var hw_tris: Array = _collect_tris(body, true)
+		hw_w = maxf(hw_w, _pair_depth(hw_tris, leaf_tris))
+		hw_w = maxf(hw_w, _rod_poke(body))
+		packs.append(leaf_tris)
+	for i in packs.size():
+		for j in range(i + 1, packs.size()):
+			leaf_w = maxf(leaf_w, _pair_depth(packs[i], packs[j]))
+	return {"leaf": leaf_w, "hw": hw_w}
+
+
+func _mesh_is_hw(low: String) -> bool:
+	if "guide" in low or "dogpivot" in low or "dogpin" in low:
+		return false
+	# Seals, brushes and sweeps sit in the edge or under the leaf. Hinge knuckles and the
+	# damper (rod into its mount, mount into the skin) are buried on purpose.
+	# Vertex-behind-plane reads those joints as deep clips. Colliders still score them.
+	# Dogs, linkages and rams stay in the triangle test.
+	if "sweep" in low or "seal" in low or "brush" in low or "hinge" in low or "knuckle" in low or "damper" in low:
+		return false
+	# "ram" is a substring of "frame". A frame skin is not a ram.
+	var stripped := low.replace("frame", "")
+	for key in ["dog", "linkage", "roller", "ram", "strike", "guard"]:
+		if key in stripped:
+			return true
+	return false
+
+
+func _collect_tris(root: Node, want_hw: bool) -> Array:
+	# Stride while walking. Materialising every triangle of a hatch GLB in
+	# GDScript made the 15 minute QA window time out on the fourth door.
+	var mis: Array[MeshInstance3D] = []
+	var total := 0
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		var low := String(mi.name).to_lower()
+		if low.begins_with("reveal") or "colonly" in low or "hazard" in low:
+			continue
+		if _mesh_is_hw(low) != want_hw:
+			continue
+		var ntri := int(mi.mesh.get_faces().size() / 3)
+		if ntri <= 0:
+			continue
+		total += ntri
+		mis.append(mi)
+	var out: Array = []
+	if total == 0:
+		return out
+	var step := 1 if total <= 80 else maxi(1, int(total / 80))
+	var seen := 0
+	for mi2 in mis:
+		var faces := mi2.mesh.get_faces()
+		var xf := mi2.global_transform
+		var i := 0
+		while i + 2 < faces.size() and out.size() < 80:
+			if seen % step == 0:
+				out.append([xf * faces[i], xf * faces[i + 1], xf * faces[i + 2], String(mi2.name)])
+			seen += 1
+			i += 3
+	return out
+
+
+func _pair_depth(a: Array, b: Array) -> float:
+	if a.is_empty() or b.is_empty():
+		return 0.0
+	if not _tris_aabb(a).intersects(_tris_aabb(b)):
+		return 0.0
+	var worst := 0.0
+	for ta in a:
+		var tri_a: Array = ta
+		var box_a := AABB(tri_a[0], Vector3.ZERO).expand(tri_a[1]).expand(tri_a[2]).grow(0.002)
+		for tb in b:
+			var tri_b: Array = tb
+			var box_b := AABB(tri_b[0], Vector3.ZERO).expand(tri_b[1]).expand(tri_b[2])
+			if not box_a.intersects(box_b):
+				continue
+			var depth := _tri_clip_depth(tri_a[0], tri_a[1], tri_a[2], tri_b[0], tri_b[1], tri_b[2])
+			if depth > worst:
+				worst = depth
+			if worst > 0.030:
+				var na := "?"
+				var nb := "?"
+				if tri_a.size() > 3:
+					na = str(tri_a[3])
+				if tri_b.size() > 3:
+					nb = str(tri_b[3])
+				print("[door_lab] clip pair %s vs %s depth %.4f" % [na, nb, worst])
+				return worst
+	return worst
+
+
+func _tris_aabb(tris: Array) -> AABB:
+	var t0: Array = tris[0]
+	var ab := AABB(t0[0], Vector3.ZERO)
+	for item in tris:
+		var t: Array = item
+		ab = ab.expand(t[0]).expand(t[1]).expand(t[2])
+	return ab
+
+
+func _tri_clip_depth(a0: Vector3, a1: Vector3, a2: Vector3, b0: Vector3, b1: Vector3, b2: Vector3) -> float:
+	var n1 := (a1 - a0).cross(a2 - a0)
+	var n2 := (b1 - b0).cross(b2 - b0)
+	var l1 := n1.length()
+	var l2 := n2.length()
+	if l1 < 1.0e-8 or l2 < 1.0e-8:
+		return 0.0
+	n1 /= l1
+	n2 /= l2
+	if absf(n1.dot(n2)) > 0.985 and absf((b0 - a0).dot(n1)) < 0.0015:
+		return 0.0
+	var depth := _verts_behind(a0, a1, a2, b0, b1, b2, n2)
+	depth = maxf(depth, _verts_behind(b0, b1, b2, a0, a1, a2, n1))
+	if depth < 1.0e-5 and (_edge_cross(a0, a1, a2, b0, b1, b2, n2) or _edge_cross(b0, b1, b2, a0, a1, a2, n1)):
+		depth = 0.0025
+	return depth
+
+
+func _verts_behind(a0: Vector3, a1: Vector3, a2: Vector3, b0: Vector3, b1: Vector3, b2: Vector3, n2: Vector3) -> float:
+	var depth := 0.0
+	for v in [a0, a1, a2]:
+		var p: Vector3 = v
+		var side: float = (p - b0).dot(n2)
+		if side < -1.0e-4 and _point_in_tri(v, b0, b1, b2, n2):
+			depth = maxf(depth, -side)
+	return depth
+
+
+func _point_in_tri(p: Vector3, a: Vector3, b: Vector3, c: Vector3, n: Vector3) -> bool:
+	var c0 := (b - a).cross(p - a).dot(n)
+	var c1 := (c - b).cross(p - b).dot(n)
+	var c2 := (a - c).cross(p - c).dot(n)
+	return c0 >= -1.0e-8 and c1 >= -1.0e-8 and c2 >= -1.0e-8
+
+
+func _edge_cross(a0: Vector3, a1: Vector3, a2: Vector3, b0: Vector3, b1: Vector3, b2: Vector3, n: Vector3) -> bool:
+	return _edge_hits(a0, a1, b0, b1, b2, n) or _edge_hits(a1, a2, b0, b1, b2, n) or _edge_hits(a2, a0, b0, b1, b2, n)
+
+
+func _edge_hits(p: Vector3, q: Vector3, a: Vector3, b: Vector3, c: Vector3, n: Vector3) -> bool:
+	var sp := (p - a).dot(n)
+	var sq := (q - a).dot(n)
+	if sp * sq >= 0.0:
+		return false
+	var denom := sp - sq
+	if absf(denom) < 1.0e-8:
+		return false
+	var hit := p + (q - p) * (sp / denom)
+	return _point_in_tri(hit, a, b, c, n)
+
+
+func _rod_poke(body: Node3D) -> float:
+	var shell := _find_mesh(body, "leaf_shell")
+	if shell == null:
+		shell = _find_mesh(body, "shell")
+	if shell == null or shell.mesh == null:
+		return 0.0
+	var box := shell.mesh.get_aabb()
+	var inv := shell.global_transform.affine_inverse()
+	var worst := 0.0
+	var stack: Array[Node] = [body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D) or n == shell:
+			continue
+		var low := String(n.name).to_lower()
+		if "guide" in low or ("dog" not in low and "linkage" not in low):
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		var faces := mi.mesh.get_faces()
+		var xf := inv * mi.global_transform
+		var step := maxi(1, int(faces.size() / 60))
+		var i := 0
+		while i < faces.size():
+			var lp: Vector3 = xf * faces[i]
+			var dx := maxf(box.position.x - lp.x, lp.x - (box.position.x + box.size.x))
+			var dy := maxf(box.position.y - lp.y, lp.y - (box.position.y + box.size.y))
+			var dz := maxf(box.position.z - lp.z, lp.z - (box.position.z + box.size.z))
+			worst = maxf(worst, Vector3(maxf(dx, 0.0), maxf(dy, 0.0), maxf(dz, 0.0)).length())
+			i += step
+	return worst
+
+
+func _find_mesh(root: Node, needle: String) -> MeshInstance3D:
+	var stack: Array[Node] = [root]
+	var want := needle.to_lower()
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is MeshInstance3D and want in String(n.name).to_lower():
+			return n as MeshInstance3D
+		for c in n.get_children():
+			stack.append(c)
+	return null
 
 
 func _collide_leaves(door: MechDoor) -> Dictionary:
@@ -1590,7 +2015,8 @@ func _shape_offset(door: MechDoor) -> float:
 		var ab := AABB()
 		var any := false
 		for ch in body.get_children():
-			if ch is CollisionShape3D and not _hw_name(ch):
+			# Rook pass E incr: the floor hatch LidWalkSkin is the lab's +0.12 m walk-collision layer, not the lid hull.
+			if ch is CollisionShape3D and not _hw_name(ch) and "walkskin" not in String(ch.name).to_lower():
 				var cs := ch as CollisionShape3D
 				var sab := _shape_aabb_in(cs, body)
 				ab = sab if not any else ab.merge(sab)
@@ -1802,7 +2228,7 @@ func _measure_gaps(door: MechDoor) -> Dictionary:
 		var gap_f := _floor_side_mm(door)
 		out["hatch_ok"] = absf(gap_f - 6.0) <= 2.0
 		out["hatch_mm"] = absf(gap_f - 6.0)
-		out["hatch_note"] = "leaf shell to frame liner, lateral %.2f mm" % gap_f
+		out["hatch_note"] = "leaf shell to rebate wall, worst of W/E/S %.2f mm (N = open hinge channel)" % gap_f
 		out["worst"] = absf(gap_f - 6.0)
 		var std_f := _edge_std_mm(door, "leaf_shell")
 		out["std_ok"] = float(std_f["std"]) <= 1.0 and float(std_f["dev"]) <= 2.0 and int(std_f["n"]) >= 8
@@ -2083,42 +2509,108 @@ func _edge_x_at(door: Node3D, needle: String, edge: float, y: float) -> float:
 
 
 func _floor_side_mm(door: MechDoor) -> float:
+	# Rook pass E incr: the hatch_frame AABB is the 1.24 m flange's OUTER edge (x/z +-0.62), so AABB-to-AABB read 120 mm.
+	# Measure the real perimeter gap instead: the leaf shell edge against the rebate wall the lid sits in (frame vertices
+	# between the land and the flange top, within 60 mm outside the leaf edge), on the W, E and S (latch) sides. The N side
+	# is the open hinge channel the hinge edge swings through, so it has no rebate wall. Door-local points throughout.
 	door.force_q(0.0)
-	var leaf := _aabb_matching(door, "leaf_shell")
-	if leaf.size.length() < 0.001:
-		leaf = _aabb_matching(door, "hatch_leaf")
-	var frame := _aabb_matching(door, "hatch_frame")
-	if leaf.size.length() < 0.001 or frame.size.length() < 0.001:
+	var lp: Array = _mesh_points(door, "leaf_shell")
+	if lp.is_empty():
 		return 99.0
-	var left := leaf.position.x - frame.position.x
-	var right := (frame.position.x + frame.size.x) - (leaf.position.x + leaf.size.x)
-	var front := leaf.position.z - frame.position.z
-	var back := (frame.position.z + frame.size.z) - (leaf.position.z + leaf.size.z)
-	return minf(minf(left, right), minf(front, back)) * 1000.0
+	var lo := Vector3(99, 99, 99)
+	var hi := Vector3(-99, -99, -99)
+	for item in lp:
+		var v: Vector3 = item
+		lo = Vector3(minf(lo.x, v.x), minf(lo.y, v.y), minf(lo.z, v.z))
+		hi = Vector3(maxf(hi.x, v.x), maxf(hi.y, v.y), maxf(hi.z, v.z))
+	var w_wall := -99.0
+	var e_wall := 99.0
+	var s_wall := 99.0
+	for item in _mesh_points(door, "hatch_frame"):
+		var p: Vector3 = item
+		if p.y < lo.y - 0.010 or p.y > hi.y + 0.001:
+			continue
+		var in_z := p.z > lo.z - 0.010 and p.z < hi.z + 0.010
+		var in_x := p.x > lo.x - 0.010 and p.x < hi.x + 0.010
+		if in_z and p.x < lo.x + 0.0005 and p.x > lo.x - 0.060:
+			w_wall = maxf(w_wall, p.x)
+		if in_z and p.x > hi.x - 0.0005 and p.x < hi.x + 0.060:
+			e_wall = minf(e_wall, p.x)
+		if in_x and p.z > hi.z - 0.0005 and p.z < hi.z + 0.060:
+			s_wall = minf(s_wall, p.z)
+	if w_wall < -90.0 or e_wall > 90.0 or s_wall > 90.0:
+		return 99.0
+	var gaps := [lo.x - w_wall, e_wall - hi.x, s_wall - hi.z]
+	var worst := -1.0
+	var out := 0.0
+	for g in gaps:
+		var mm := float(g) * 1000.0
+		if absf(mm - 6.0) > worst:
+			worst = absf(mm - 6.0)
+			out = mm
+	print("[door_lab] floorhatch perimeter gap W %.2f E %.2f S %.2f mm (rebate wall vs leaf shell)" % [float(gaps[0]) * 1000.0, float(gaps[1]) * 1000.0, float(gaps[2]) * 1000.0])
+	return out
 
 
 func _hatch_gap_mm(door: Node3D) -> float:
-	# Latch edge of the plug (x 0.55 at the straight side) against the rebate wall (x 0.556).
-	# The straight side's vertices sit at y 0.30 and 1.90, not at mid-height.
-	var leaf_x := -99.0
-	var saw_l := false
+	# Four straight edges of the plug against the collar rebate. The corner radii
+	# sit ~100 mm outside that rebate, so an AABB sample reads 50–99 mm.
+	# Door-local. Hinge is +X; both straight sides still have a 6 mm rebate.
+	if door is MechDoor:
+		(door as MechDoor).force_q(0.0)
+	var right_leaf := -99.0
+	var left_leaf := 99.0
+	var top_leaf := -99.0
+	var bot_leaf := 99.0
 	for item in _mesh_points(door, "leaf_shell"):
 		var p: Vector3 = item
-		if p.y < 0.20 or p.y > 2.05 or p.z < 0.070 or p.z > 0.082 or p.x < 0.30 or p.x > 0.449:
+		if p.z < 0.070 or p.z > 0.082:
 			continue
-		saw_l = true
-		leaf_x = maxf(leaf_x, p.x)
-	var collar_x := 99.0
-	var saw_c := false
+		if p.y >= 0.28 and p.y <= 1.92 and p.x >= 0.30 and p.x <= 0.46:
+			right_leaf = maxf(right_leaf, p.x)
+		if p.y >= 0.28 and p.y <= 1.92 and p.x <= -0.30 and p.x >= -0.46:
+			left_leaf = minf(left_leaf, p.x)
+		if absf(p.x) <= 0.35 and p.y >= 1.90 and p.y <= 2.08:
+			top_leaf = maxf(top_leaf, p.y)
+		if absf(p.x) <= 0.35 and p.y >= 0.14 and p.y <= 0.18:
+			bot_leaf = minf(bot_leaf, p.y)
+	var right_wall := 99.0
+	var left_wall := -99.0
+	var top_wall := 99.0
+	var bot_wall := -99.0
 	for item2 in _mesh_points(door, "frame_collar"):
 		var q: Vector3 = item2
-		if q.x < 0.440 or q.x > 0.470 or q.y < 0.28 or q.y > 1.92 or q.z < 0.0 or q.z > 0.08:
+		if q.z < 0.0 or q.z > 0.08:
 			continue
-		saw_c = true
-		collar_x = minf(collar_x, q.x)
-	if not saw_l or not saw_c:
-		return 99.0
-	return (collar_x - leaf_x) * 1000.0
+		if q.y >= 0.28 and q.y <= 1.92 and q.x >= 0.440 and q.x <= 0.470:
+			right_wall = minf(right_wall, q.x)
+		if q.y >= 0.28 and q.y <= 1.92 and q.x <= -0.440 and q.x >= -0.470:
+			left_wall = maxf(left_wall, q.x)
+		if absf(q.x) <= 0.35 and q.y >= 2.04 and q.y <= 2.08:
+			top_wall = minf(top_wall, q.y)
+		if absf(q.x) <= 0.35 and q.y >= 0.14 and q.y <= 0.16:
+			bot_wall = maxf(bot_wall, q.y)
+	var right_mm := 99.0
+	var left_mm := 99.0
+	var top_mm := 99.0
+	var bottom_mm := 99.0
+	if right_leaf > -90.0 and right_wall < 90.0:
+		right_mm = (right_wall - right_leaf) * 1000.0
+	if left_leaf < 90.0 and left_wall > -90.0:
+		left_mm = (left_leaf - left_wall) * 1000.0
+	if top_leaf > -90.0 and top_wall < 90.0:
+		top_mm = (top_wall - top_leaf) * 1000.0
+	if bot_leaf < 90.0 and bot_wall > -90.0:
+		bottom_mm = (bot_leaf - bot_wall) * 1000.0
+	print("[door_lab] hatch perimeter gap L %.2f R %.2f B %.2f T %.2f mm" % [left_mm, right_mm, bottom_mm, top_mm])
+	var worst_gap := left_mm
+	var worst_err := absf(left_mm - 6.0)
+	for g in [right_mm, bottom_mm, top_mm]:
+		var ge: float = g
+		if absf(ge - 6.0) > worst_err:
+			worst_err = absf(ge - 6.0)
+			worst_gap = ge
+	return worst_gap
 
 
 func _pocket_meet_mm(door: Node3D) -> float:
@@ -2371,6 +2863,10 @@ func _gravity_hatch(door: MechDoor) -> void:
 			door.pump(_dt)
 			guard += 1
 		runs[g] = _phase_bounds(door, door.rows)
+		if absf(float(g) - 0.08) < 0.01:
+			_write_motion_file(door.door_id, door.rows, "motion_g008.csv")
+		elif absf(float(g) - 1.45) < 0.01:
+			_write_motion_file(door.door_id, door.rows, "motion_g145.csv")
 		door.record = false
 	door.gravity_g = 1.0
 	_player.gravity_scale = 1.0
@@ -2468,7 +2964,8 @@ func _hardware(door: MechDoor) -> void:
 		"hatch":
 			need = ["HingeHeavy", "Davit", "Actuator", "DamperRod", "Dog", "LockWheel", "InflatableSeal", "PushOffRam", "Gauge", "EqualizePort", "EqualizeGrille", "HoldOpenCatch", "Handwheel", "OverrideOrange", "EqualizeLever", "HazardBand", "Beacon", "Linkage", "Rib", "DigitalReadout"]
 		"floorhatch":
-			need = ["LockWheel", "InflatableSeal", "Handwheel", "Dog", "Linkage", "Lamp", "strut", "stay", "hatch_leaf"]
+			# Rook rev 2: no gas struts. The counterbalance shows as the hinge tube, an exposed torsion-bar anchor clevis at each end and the rotary damper.
+			need = ["LockWheel", "InflatableSeal", "Handwheel", "Dog", "Linkage", "Lamp", "HingeTube", "TorsionAnchor", "RotaryDamper", "stay", "hatch_leaf"]
 	var names := _all_names(door)
 	var missing: Array = []
 	var hidden: Array = []
@@ -2609,6 +3106,46 @@ func _tex_max(tex: Texture2D) -> float:
 	return mx
 
 
+func _plate_color(door: MechDoor) -> void:
+	if door.door_id != "pair" and door.door_id != "bay3":
+		return
+	var want := Color(0.85, 0.45, 0.02)
+	var worst := 0.0
+	var n := 0
+	var bad := ""
+	var stack: Array[Node] = [door]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		for c in node.get_children():
+			stack.append(c)
+		if not (node is MeshInstance3D):
+			continue
+		var low := String(node.name).to_lower()
+		if "push_bar" not in low and "push_plate" not in low:
+			continue
+		var mi := node as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		for s in mi.mesh.get_surface_count():
+			var mat := mi.get_surface_override_material(s) as StandardMaterial3D
+			if mat == null:
+				mat = mi.mesh.surface_get_material(s) as StandardMaterial3D
+			if mat == null:
+				bad = "%s surface %d has no material" % [mi.name, s]
+				worst = 1.0
+				continue
+			n += 1
+			var delta := mat.albedo_color - want
+			var dist: float = Vector3(delta.r, delta.g, delta.b).length()
+			if mat.emission_enabled and mat.emission_energy_multiplier > 0.01:
+				dist = maxf(dist, 1.0)
+			if dist > worst:
+				worst = dist
+				bad = "%s dist %.3f emit %s" % [mi.name, dist, mat.emission_enabled]
+	var ok := n > 0 and worst <= 0.08
+	_rec(door.door_id, "V-PLATE", ok, worst, 0.08, "1", bad if bad != "" else "amber, emission off", "V")
+
+
 func _defer_pixels(door_id_owner: MechDoor) -> void:
 	var id := door_id_owner.door_id
 	_rec(id, "V-ZFIGHT-FLICKER", true, -1.0, 2.0, "px", "awaiting shots", "defer")
@@ -2616,7 +3153,62 @@ func _defer_pixels(door_id_owner: MechDoor) -> void:
 	_rec(id, "V-SHADOW", true, -1.0, 2.0, "px", "awaiting shots", "defer")
 
 
+func _lamp_fade_check() -> void:
+	if not _doors.has("pocket"):
+		return
+	var door: MechDoor = _doors["pocket"]
+	door.set_physics_process(false)
+	var ok := true
+	var note := ""
+	var cross60 := -1.0
+	for hz in [60, 20, 15]:
+		var dt := 1.0 / float(hz)
+		door._set_lamp("closed", true)
+		door._set_lamp("open", false)
+		var age := 0.0
+		var prev_s := 0.0
+		var crossed := -1.0
+		var steps := 0
+		while age < 0.15 - 1.0e-6 and steps < 40:
+			door._fade_lamp(dt)
+			age = minf(age + dt, 0.15)
+			var u := clampf(age / 0.15, 0.0, 1.0)
+			var s := u * u * (3.0 - 2.0 * u)
+			var expect := lerpf(0.6, 0.7, s)
+			if absf(door._shown_energy - expect) > 1.0e-4:
+				ok = false
+				note += "%dHz energy %.4f want %.4f " % [hz, door._shown_energy, expect]
+			if prev_s < 0.5 and s >= 0.5 and crossed < 0.0:
+				var ds := maxf(s - prev_s, 1.0e-6)
+				crossed = (age - dt) + dt * (0.5 - prev_s) / ds
+			prev_s = s
+			steps += 1
+		if door._fade_age < 0.15 - 1.0e-4:
+			ok = false
+		if hz == 60 and absf(crossed - 0.075) > dt + 1.0e-4:
+			ok = false
+		if hz == 60:
+			cross60 = crossed
+		note += "%dHz cross %.4f " % [hz, crossed]
+	door._set_lamp("closed", true)
+	for id in _report_ids():
+		_rec(str(id), "F-LAMP-FADE", ok, cross60, 0.075, "s", note, "F")
+
+
+func _fail_ids() -> Array:
+	var out: Array = []
+	for id in _report_ids():
+		for item in _checks.get(id, []):
+			var kind := str(item["kind"])
+			if kind == "skip" or kind == "note" or kind == "defer":
+				continue
+			if not bool(item["pass"]):
+				out.append("%s:%s" % [id, str(item["id"])])
+	return out
+
+
 func _finish() -> void:
+	_lamp_fade_check()
 	_require_hooks()
 	var func_fail := 0
 	var vis_fail := 0
@@ -2649,9 +3241,10 @@ func _finish() -> void:
 	elif func_fail > 0 or vis_fail > 0:
 		verdict = "FAIL"
 	_write_meta()
-	_write_summary(verdict, functional, visual)
-	print("DONE --qa-door-lab fails=%d" % func_fail)
-	get_tree().quit(0 if func_fail == 0 else 1)
+	var fails := _fail_ids()
+	_write_summary(verdict, functional, visual, fails)
+	print("DONE --qa-door-lab fails=%d" % fails.size())
+	get_tree().quit(0 if fails.is_empty() else 1)
 
 
 func _report_ids() -> Array:
@@ -2838,7 +3431,7 @@ func _write_meta() -> void:
 	var meta := {
 		"commit": _sha(),
 		"dirty": _git_dirty(),
-		"tree": _git_one(["rev-parse", "HEAD^{tree}"]),
+		"tree": _git_write_tree(),
 		"godot": "4.7.2",
 		"renderer": "gl_compatibility/opengl3",
 		"gpu": gpu,
@@ -2846,7 +3439,7 @@ func _write_meta() -> void:
 		"physics_ticks_per_second": Engine.physics_ticks_per_second,
 		"max_physics_steps_per_frame": Engine.max_physics_steps_per_frame,
 		"resolution": [1920, 1080],
-		"timing_authority": "shipped_tres",
+		"timing_authority": "section_7",
 		"measured_dt": _measured_dt,
 		"measured_hz": _measured_hz,
 		"door_profiles": _door_profiles(),
@@ -2866,7 +3459,7 @@ func _write_meta() -> void:
 	_store_json(_out.path_join("meta.json"), meta)
 
 
-func _write_summary(verdict: String, functional: String, visual: String) -> void:
+func _write_summary(verdict: String, functional: String, visual: String, fails: Array) -> void:
 	var doors := {}
 	for id in _report_ids():
 		var ff := "PASS"
@@ -2888,6 +3481,8 @@ func _write_summary(verdict: String, functional: String, visual: String) -> void
 		"doors": doors,
 		"hooks_missing": _hooks_missing(),
 		"optional_hooks": [],
+		"fails": fails,
+		"fails_count": fails.size(),
 		"notes": ["F-SPRINT-CLEAR is not required in the lab"],
 	}
 	_store_json(_out.path_join("summary.json"), summary)
@@ -2909,6 +3504,34 @@ func _sha() -> String:
 
 func _git_dirty() -> bool:
 	return _git_one(["status", "--porcelain"]) != ""
+
+
+func _git_write_tree() -> String:
+	var repo := ProjectSettings.globalize_path("res://").path_join("..").simplify_path()
+	var before := _git_one(["diff", "--cached", "--name-only"])
+	var temp := OS.get_environment("TEMP")
+	if temp == "":
+		temp = OS.get_environment("TMP")
+	var index_path := temp.path_join("doorlab_f_%d.idx" % Time.get_ticks_msec())
+	var cmd := 'set "GIT_INDEX_FILE=%s"&& git -C "%s" add -A && git -C "%s" write-tree' % [index_path, repo, repo]
+	var output: Array = []
+	var code := OS.execute("cmd", PackedStringArray(["/C", cmd]), output, true)
+	var cleaner := DirAccess.open(temp)
+	if cleaner != null:
+		cleaner.remove(index_path.get_file())
+	var after := _git_one(["diff", "--cached", "--name-only"])
+	if before != after:
+		push_warning("door lab write-tree changed the real git index")
+	if code != 0:
+		push_warning("door lab write-tree failed %s" % str(output))
+		return ""
+	var hash := ""
+	for line in output:
+		for part in str(line).split("\n"):
+			var s := part.strip_edges()
+			if s.length() == 40:
+				hash = s
+	return hash
 
 
 func _git_one(args: Array) -> String:

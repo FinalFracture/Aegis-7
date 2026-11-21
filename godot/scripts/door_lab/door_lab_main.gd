@@ -3,9 +3,15 @@ extends Node3D
 ## The long QA and the shot pass run only when their flags are on the command line.
 
 func _ready() -> void:
+	# Lab viewport only. project.godot stays at the project default.
+	# 4x MSAA is for the shot pass (bay3 frit alpha-to-coverage). The numeric
+	# QA does not read pixels, and 4x on this GPU blows the 15 minute window.
+	var user := OS.get_cmdline_user_args()
+	if _flag(user, "--qa-door-lab-shots"):
+		get_viewport().msaa_3d = Viewport.MSAA_4X
+	ProjectSettings.set_setting("rendering/textures/anisotropic_filter_level", 16)
 	var info: Dictionary = DoorLabRig.build(self)
 	set_meta("lab_info", info)
-	var user := OS.get_cmdline_user_args()
 	if _flag(user, "--qa-door-lab-shots"):
 		var shots: Node = load("res://tools/qa/door_lab_shots.gd").new()
 		shots.name = "ShotPass"

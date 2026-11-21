@@ -22,6 +22,58 @@ const TEX_GUN := "res://assets/textures/facade_titanium_gunmetal_hull.png"
 const TEX_STEEL := "res://assets/textures/facade_brushed_steel_gantry.png"
 const TEX_SLATE := "res://assets/models/char_bot_r2_05_livery_01_sprocket_facade_carbon_slate_spandrel.png"
 const TEX_CYAN := "res://assets/textures/led_cyan_strip.png"
+# Rook pass C rev 2: floor-hatch side-wall stay tables, 0.5 deg steps 0..105 (assets/src/door_lab/floor_hatch.py stay_tables).
+const STAY_ARM_DEG := [
+	0.000, 0.813, 1.628, 2.444, 3.260, 4.078, 4.897, 5.716, 6.537, 7.359, 8.182, 9.005, 9.830, 10.656, 11.482,
+	12.310, 13.138, 13.968, 14.798, 15.629, 16.461, 17.293, 18.127, 18.961, 19.797, 20.633, 21.469, 22.307, 23.145, 23.985,
+	24.824, 25.665, 26.506, 27.349, 28.191, 29.035, 29.879, 30.724, 31.569, 32.415, 33.262, 34.109, 34.957, 35.806, 36.655,
+	37.505, 38.355, 39.206, 40.058, 40.910, 41.762, 42.616, 43.469, 44.323, 45.178, 46.033, 46.889, 47.745, 48.601, 49.458,
+	50.316, 51.174, 52.032, 52.891, 53.750, 54.609, 55.469, 56.329, 57.190, 58.051, 58.912, 59.773, 60.635, 61.498, 62.360,
+	63.223, 64.086, 64.949, 65.813, 66.677, 67.541, 68.405, 69.270, 70.134, 70.999, 71.865, 72.730, 73.595, 74.461, 75.327,
+	76.193, 77.059, 77.925, 78.791, 79.657, 80.523, 81.390, 82.256, 83.123, 83.989, 84.856, 85.722, 86.589, 87.455, 88.322,
+	89.188, 90.055, 90.921, 91.787, 92.653, 93.519, 94.385, 95.250, 96.116, 96.981, 97.846, 98.711, 99.575, 100.439, 101.303,
+	102.167, 103.031, 103.894, 104.756, 105.619, 106.481, 107.342, 108.203, 109.064, 109.924, 110.784, 111.643, 112.501, 113.359, 114.217,
+	115.073, 115.929, 116.785, 117.639, 118.493, 119.346, 120.199, 121.050, 121.901, 122.750, 123.599, 124.447, 125.294, 126.139, 126.984,
+	127.827, 128.669, 129.510, 130.349, 131.188, 132.024, 132.860, 133.694, 134.526, 135.357, 136.186, 137.013, 137.838, 138.662, 139.484,
+	140.303, 141.121, 141.936, 142.749, 143.560, 144.368, 145.174, 145.977, 146.777, 147.575, 148.370, 149.162, 149.950, 150.736, 151.518,
+	152.296, 153.071, 153.842, 154.610, 155.373, 156.132, 156.887, 157.637, 158.383, 159.124, 159.861, 160.592, 161.318, 162.038, 162.753,
+	163.462, 164.165, 164.862, 165.553, 166.237, 166.915, 167.586, 168.250, 168.906, 169.555, 170.197, 170.831, 171.457, 172.075, 172.685,
+	173.286,
+]
+const STAY_SLIDE_M := [
+	0.00000, 0.00069, 0.00134, 0.00197, 0.00256, 0.00312, 0.00364, 0.00414, 0.00460, 0.00503, 0.00543, 0.00579, 0.00612, 0.00642, 0.00669,
+	0.00692, 0.00711, 0.00728, 0.00741, 0.00750, 0.00756, 0.00759, 0.00758, 0.00754, 0.00747, 0.00736, 0.00721, 0.00703, 0.00682, 0.00657,
+	0.00628, 0.00596, 0.00560, 0.00521, 0.00479, 0.00433, 0.00383, 0.00330, 0.00273, 0.00213, 0.00149, 0.00081, 0.00010, -0.00064, -0.00142,
+	-0.00224, -0.00309, -0.00398, -0.00491, -0.00587, -0.00686, -0.00789, -0.00896, -0.01007, -0.01121, -0.01238, -0.01359, -0.01484, -0.01612, -0.01744,
+	-0.01879, -0.02018, -0.02160, -0.02306, -0.02456, -0.02609, -0.02765, -0.02925, -0.03089, -0.03256, -0.03427, -0.03601, -0.03778, -0.03959, -0.04144,
+	-0.04332, -0.04523, -0.04718, -0.04916, -0.05118, -0.05323, -0.05531, -0.05743, -0.05958, -0.06177, -0.06399, -0.06624, -0.06852, -0.07084, -0.07319,
+	-0.07558, -0.07799, -0.08044, -0.08292, -0.08543, -0.08798, -0.09055, -0.09316, -0.09580, -0.09846, -0.10116, -0.10390, -0.10666, -0.10945, -0.11227,
+	-0.11512, -0.11800, -0.12091, -0.12385, -0.12681, -0.12981, -0.13283, -0.13589, -0.13897, -0.14207, -0.14521, -0.14837, -0.15156, -0.15477, -0.15801,
+	-0.16128, -0.16457, -0.16789, -0.17123, -0.17460, -0.17799, -0.18140, -0.18484, -0.18830, -0.19179, -0.19529, -0.19882, -0.20237, -0.20594, -0.20954,
+	-0.21315, -0.21678, -0.22044, -0.22411, -0.22780, -0.23151, -0.23524, -0.23898, -0.24274, -0.24652, -0.25032, -0.25413, -0.25795, -0.26179, -0.26565,
+	-0.26951, -0.27339, -0.27728, -0.28119, -0.28510, -0.28903, -0.29297, -0.29691, -0.30086, -0.30483, -0.30879, -0.31277, -0.31675, -0.32074, -0.32473,
+	-0.32872, -0.33272, -0.33672, -0.34072, -0.34472, -0.34872, -0.35272, -0.35671, -0.36071, -0.36470, -0.36868, -0.37266, -0.37663, -0.38059, -0.38454,
+	-0.38848, -0.39241, -0.39632, -0.40023, -0.40411, -0.40798, -0.41183, -0.41566, -0.41948, -0.42327, -0.42703, -0.43077, -0.43449, -0.43817, -0.44183,
+	-0.44546, -0.44905, -0.45262, -0.45614, -0.45963, -0.46308, -0.46649, -0.46986, -0.47319, -0.47647, -0.47971, -0.48289, -0.48603, -0.48912, -0.49216,
+	-0.49515,
+]
+const STAY_PLUNGER_M := [
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+	0.0000, 0.0000, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085, -0.0085,
+	0.0000,
+]
 
 var _root: Node3D
 var _pearl: StandardMaterial3D
@@ -34,6 +86,8 @@ var _floor_mat: StandardMaterial3D
 var _wall_mat: StandardMaterial3D
 var _glass: StandardMaterial3D
 var _frit_tex: Texture2D
+var _digit_cache: Texture2D
+var _diamond_cache: Texture2D
 var _notes: Array = []
 
 
@@ -102,6 +156,8 @@ func _build(parent: Node3D) -> Dictionary:
 
 func _make_materials() -> void:
 	_pearl = _mat("TT_WhiteComposite_Lab", PEARL, 0.05, 0.48, TEX_WHITE, Color(0.93, 0.93, 0.93))
+	# Broad specular on the pearl faces was crossing 235. Diffuse stays #D8DEE6.
+	_pearl.roughness = 0.62
 	_graphite = _mat("TT_CarbonSlate_Lab", GRAPHITE, 0.35, 0.62, "", Color.WHITE)
 	_gun = _mat("TT_Gunmetal_Lab", GUN, 0.55, 0.42, TEX_GUN, Color(0.85, 0.85, 0.85))
 	_gun.metallic = 0.55
@@ -110,9 +166,13 @@ func _make_materials() -> void:
 	_seal = _mat("TT_Seal_Lab", SEAL_C, 0.0, 0.85, "", Color.WHITE)
 	_orange = _mat("Mat_Hub_OverrideOrange", ORANGE, 0.1, 0.45, "", Color.WHITE)
 	_floor_mat = _mat("TT_CarbonSlate_Floor", Color(0.16, 0.17, 0.19), 0.15, 0.60, TEX_SLATE, Color(0.55, 0.55, 0.55))
-	# The slate swatch is a flat ~0.17 grey. A 0.24 multiplier turns the wall black.
-	# These tints land the product near (0.36, 0.38, 0.42) for walls and (0.22, 0.23, 0.25) for the floor.
-	_floor_mat.albedo_color = Color(1.34, 1.22, 1.14)
+	# Grazing views of this huge deck turn both the slate grain and the shaded
+	# lighting into a 4 px screen stripe. An unshaded flat grey has nothing to beat.
+	_floor_mat.albedo_texture = null
+	_floor_mat.albedo_color = Color(0.36, 0.37, 0.40)
+	_floor_mat.metallic = 0.0
+	_floor_mat.roughness = 1.0
+	_floor_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_wall_mat = _mat("TT_CarbonSlate", Color(0.24, 0.26, 0.30), 0.08, 0.70, TEX_SLATE, Color(0.70, 0.72, 0.76))
 	_wall_mat.albedo_color = Color(2.19, 2.02, 1.91)
 	_wall_mat.roughness = 0.7
@@ -124,8 +184,9 @@ func _make_materials() -> void:
 	# Alpha 0.35 so the lite reads as glass. Depth is written opaque so the
 	# moving leaf does not sort inside itself.
 	_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_glass.albedo_color = GLASS_C
-	_glass.roughness = 0.10
+	# Pocket and bay3 lites. Alpha 0.25, not a scissor cut.
+	_glass.albedo_color = Color(0.30, 0.36, 0.42, 0.25)
+	_glass.roughness = 0.05
 	_glass.metallic = 0.0
 	_glass.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_glass.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY
@@ -160,7 +221,7 @@ func _environment(span: float, depth: float) -> void:
 	env.ambient_light_color = Color("#5A6470")
 	env.ambient_light_energy = 0.35
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.3
+	env.tonemap_exposure = 1.05
 	env.glow_enabled = false
 	# Flat slate reflection when a probe cubemap is not applied.
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_BG
@@ -197,10 +258,8 @@ func _environment(span: float, depth: float) -> void:
 
 
 func _floor(x0: float, x1: float, depth: float, hole_x: float = INF) -> void:
-	var w := x1 - x0
-	var cx := (x0 + x1) * 0.5
 	# The floor-hatch GLB brings its own 1.24 m flange. Four slabs leave that square open
-	# so the flange and the lid are not fighting the lab floor. The walk collider stays one box.
+	# so the flange and the lid are not fighting the lab floor. The walk collider (below) leaves the 0.90 opening open.
 	var hole := 0.62
 	var hz0 := 0.50 - hole
 	var hz1 := 0.50 + hole
@@ -216,20 +275,30 @@ func _floor(x0: float, x1: float, depth: float, hole_x: float = INF) -> void:
 		vis.mesh = bm
 		vis.position = Vector3((float(sl[0]) + float(sl[1])) * 0.5, -0.01, (float(sl[2]) + float(sl[3])) * 0.5)
 		vis.set_surface_override_material(0, _floor_mat)
+		# The deck is the receiver. It must not also fill the shadow map.
+		vis.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_root.add_child(vis)
 	var body := StaticBody3D.new()
 	body.name = "FloorBody"
 	body.collision_layer = 1
 	body.collision_mask = 1
 	_root.add_child(body)
-	var cs := CollisionShape3D.new()
-	cs.name = "FloorShape"
-	var box := BoxShape3D.new()
-	box.size = Vector3(w, 0.24, depth * 2.0)
-	cs.shape = box
 	# Top of the collision is y = 0.12. Body origin of a standing player rests at y = 0.
-	cs.position = Vector3(cx, 0.0, 0.0)
-	body.add_child(cs)
+	# Rook pass E incr: with a floor hatch, the walk collider leaves the 0.90 x 0.90 clear opening open (4 boxes, same top),
+	# so a capsule can drop into the well; the GLB brings the liner walls + well floor and the closed lid carries a walk skin.
+	var cols: Array = [[x0, x1, -depth, depth]]
+	if hole_x != INF:
+		var oh := 0.45
+		cols = [[x0, x1, -depth, 0.50 - oh], [x0, x1, 0.50 + oh, depth], [x0, hole_x - oh, 0.50 - oh, 0.50 + oh], [hole_x + oh, x1, 0.50 - oh, 0.50 + oh]]
+	for j in cols.size():
+		var cl: Array = cols[j]
+		var cs := CollisionShape3D.new()
+		cs.name = "FloorShape" if j == 0 else "FloorShape%d" % j
+		var box := BoxShape3D.new()
+		box.size = Vector3(float(cl[1]) - float(cl[0]), 0.24, float(cl[3]) - float(cl[2]))
+		cs.shape = box
+		cs.position = Vector3((float(cl[0]) + float(cl[1])) * 0.5, 0.0, (float(cl[2]) + float(cl[3])) * 0.5)
+		body.add_child(cs)
 
 
 func _wings_for(doors: Dictionary) -> void:
@@ -267,7 +336,7 @@ func _wings_for(doors: Dictionary) -> void:
 func _lights(xs: Dictionary, _depth: float) -> void:
 	var key := DirectionalLight3D.new()
 	key.name = "KeyLight"
-	key.light_energy = 1.0
+	key.light_energy = 0.78
 	key.shadow_enabled = true
 	_root.add_child(key)
 	# Approach faces look toward -Z. Pitch −35° and yaw 30° off that normal:
@@ -279,12 +348,17 @@ func _lights(xs: Dictionary, _depth: float) -> void:
 	# The bay canopy is a slat grid. Half-strength shadows keep the bevel read
 	# without the diagonal streaks across the pair and bay3 leaves.
 	key.shadow_opacity = 0.5
+	# The lab floor is tens of metres. The default shadow distance turns that into
+	# a 4 px grating on the grazing floor-hatch hero. Keep the map on the doors.
+	key.directional_shadow_max_distance = 18.0
+	key.shadow_bias = 0.05
+	key.shadow_normal_bias = 2.0
 	for id in xs.keys():
 		var x: float = xs[id]
 		# One omni per door, 3 m in front of the approach face and 2.2 m up.
 		var fill := OmniLight3D.new()
 		fill.name = "Fill_%s" % id
-		fill.light_energy = 0.8
+		fill.light_energy = 0.55
 		fill.shadow_enabled = false
 		fill.omni_range = 8.0
 		fill.omni_attenuation = 1.0
@@ -292,14 +366,25 @@ func _lights(xs: Dictionary, _depth: float) -> void:
 		_root.add_child(fill)
 		if id == "floorhatch":
 			# The wing wall sits on z = 0, so the approach fill never reaches the plate.
+			# Keep the +Z omni dim. A hotter one turned the graphite lid into a white sheet.
 			var deck := OmniLight3D.new()
 			deck.name = "DeckFill"
-			deck.light_energy = 1.4
+			deck.light_energy = 0.75
 			deck.shadow_enabled = false
 			deck.omni_range = 6.0
 			deck.omni_attenuation = 1.0
 			deck.position = Vector3(x, 1.65, 2.05)
 			_root.add_child(deck)
+			# Front-open looks at the standing lid from −Z. The +Z deck light is behind that face.
+			var face := SpotLight3D.new()
+			face.name = "FloorFaceFill"
+			face.light_energy = 0.85
+			face.shadow_enabled = false
+			face.spot_angle = 38.0
+			face.spot_range = 6.0
+			face.position = Vector3(x, 1.45, -1.35)
+			_root.add_child(face)
+			face.look_at(Vector3(x, 0.75, 0.45), Vector3.UP)
 			continue
 		var rim := SpotLight3D.new()
 		rim.name = "Rim_%s" % id
@@ -326,7 +411,7 @@ func _lights(xs: Dictionary, _depth: float) -> void:
 func _vestibules(doors: Dictionary) -> void:
 	var mat := _pearl.duplicate() as StandardMaterial3D
 	mat.resource_name = "VestibuleReturn"
-	mat.albedo_color = Color(0.72, 0.74, 0.76)
+	mat.albedo_color = Color(0.24, 0.26, 0.30)
 	mat.albedo_texture = null
 	mat.metallic = 0.0
 	mat.roughness = 0.74
@@ -345,10 +430,10 @@ func _vestibules(doors: Dictionary) -> void:
 			# The open plug leaves a hole. A close, wide return keeps that hole from reading as a void.
 			width = maxf(width, 2.6)
 			z = 2.40
-			energy = 3.4
+			energy = 1.4
 			vz = 1.55
 			vmat = mat.duplicate() as StandardMaterial3D
-			vmat.albedo_color = Color(0.86, 0.87, 0.88)
+			vmat.albedo_color = Color(0.24, 0.26, 0.30)
 		var mi := MeshInstance3D.new()
 		mi.name = "Vestibule_%s" % id
 		var bm := BoxMesh.new()
@@ -462,7 +547,7 @@ func _lamp(door: MechDoor, pos: Vector3, along_x: bool = false) -> void:
 func _downlight(parent: Node3D, pos: Vector3, look: Vector3) -> void:
 	var s := SpotLight3D.new()
 	s.name = "Downlight"
-	s.light_energy = 1.2
+	s.light_energy = 0.70
 	s.light_color = WARM
 	s.spot_angle = 45.0
 	s.spot_range = 5.0
@@ -861,9 +946,10 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 		_tag_rollers(body)
 		for seal in _each_named(body, "_seal"):
 			_alias(seal as Node3D, "BulbSeal", Vector3.ZERO)
-			# One leaf's seal sits 1.2 mm forward so the meeting stile does not z-fight.
+			# Right seal sits 3 mm forward so the meeting stile does not z-fight.
+			# 4 mm moved the face-union centre onto the 2 mm shape-drift limit.
 			if nm == "leaf_R":
-				(seal as Node3D).position.z += 0.0012
+				(seal as Node3D).position.z += 0.003
 		_alias(body, "FloorGuide", Vector3(0.0, -2.36, -0.02))
 		var meet := 0.42 if int(side[1]) < 0 else -0.42
 		_hw(body, "ManualHandle", Vector3(0.018, 0.22, 0.016), Vector3(meet, -1.15, -0.036), _alloy)
@@ -889,6 +975,8 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 	_paint_surround(inst)
 	for item in leaves:
 		_vision_lite(item["body"])
+		if str(item["name"]) == "leaf_R":
+			_nudge_named_z(item["body"], 0.003)
 	_pocket_tokens(door, inst)
 	_skirt(door)
 	_seat_reveals(door, leaves)
@@ -947,11 +1035,15 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	var body := _rig_pivot(pivot)
 	_tag_hatch(inst)
 	_retint(inst)
-	_hide_exact(inst, "status_light")
+	_paint_status_green(inst)
 	_hide_colonly_meshes(inst)
 	_paint_hatch_leaf(inst)
 	_paint_surround(inst)
+	_clamp_rods(body)
 	_hatch_tokens(door, inst, body)
+	_clamp_rods(body)
+	_indicator_bar(body)
+	_stamp_readouts(inst)
 	if body != null:
 		var face_z := -0.162
 		_wear_patch(body, "WearWheel", Vector3(-0.65, 1.27, face_z - 0.014), Vector3(0.15, 0.036, 0.010), _orange)
@@ -959,6 +1051,7 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 		_wear_patch(body, "WearKick", Vector3(-0.65, 0.22, face_z - 0.003), Vector3(0.22, 0.14, 0.004), _graphite)
 	_seat_reveals(door, [{"body": body}])
 	_hatch_frame_reveal(door)
+	_hatch_hazard_frame(door)
 	_skirt(door)
 	# On the camera-facing jamb, clear of the plug, centred at 1.4 m.
 	_jamb_lamp(door)
@@ -966,7 +1059,7 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	# The plug face is recessed in the shell. A close fill is what makes graphite and the dogs read.
 	var face_fill := OmniLight3D.new()
 	face_fill.name = "HatchFaceFill"
-	face_fill.light_energy = 1.55
+	face_fill.light_energy = 0.72
 	face_fill.shadow_enabled = false
 	face_fill.omni_range = 3.4
 	face_fill.omni_attenuation = 1.4
@@ -995,7 +1088,8 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 
 func _tag_hatch(inst: Node3D) -> void:
 	# GLB dogs and linkages throw 25 mm on local +X. LockWheel is 90 deg. The orange handwheel is 12 turns.
-	for n in _each_named(inst, "bulkhead_dog_") + _each_named(inst, "bulkhead_linkage_"):
+	# "bulkhead_dog_0" (not "bulkhead_dog_"): the fixed bulkhead_dog_guides node must not slide with the dogs.
+	for n in _each_named(inst, "bulkhead_dog_0") + _each_named(inst, "bulkhead_linkage_"):
 		var bolt := n as Node3D
 		bolt.set_meta("door_hw", "dog_x")
 		bolt.set_meta("throw_m", 0.025)
@@ -1024,14 +1118,7 @@ func _tag_hatch(inst: Node3D) -> void:
 func _hatch_tokens(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 	# The GLB already has the hinge, davit, dogs, wheel, seal, and readout. Only the missing tokens are overlays.
 	_hw(door, "HoldOpenCatch", Vector3(0.045, 0.028, 0.030), Vector3(0.78, 0.42, -0.10), _alloy)
-	if leaf_body != null:
-		var band := _mesh(leaf_body, "HazardBand", Vector3(0.62, 0.040, 0.008), Vector3(-0.65, 0.34, -0.162), _orange, 0.0)
-		var band_mat := band.get_surface_override_material(0)
-		if band_mat is StandardMaterial3D:
-			var dup := (band_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
-			dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			dup.albedo_color.a = 0.9
-			band.set_surface_override_material(0, dup)
+	# Leaf hazard stripes stay off (pass E). The amber/graphite checker is the frame, not the plug.
 
 
 func _hatch_tokens_passb(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
@@ -1068,13 +1155,6 @@ func _hatch_tokens_passb(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 		_mesh(plate, "IdInset", Vector3(0.072, 0.032, 0.003), Vector3(0.0, 0.0, -0.002), _graphite, 0.0)
 		_wear_patch(leaf_body, "WearKick", Vector3(-0.65, 0.22, face_z - 0.003), Vector3(0.22, 0.14, 0.004), _graphite)
 		_readout(leaf_body, "DigitalReadout", Vector3(-0.95, 1.58, face_z))
-		var band := _mesh(leaf_body, "HazardBand", Vector3(0.62, 0.040, 0.008), Vector3(-0.65, 0.34, face_z), _orange, 0.0)
-		var band_mat := band.get_surface_override_material(0)
-		if band_mat is StandardMaterial3D:
-			var dup := (band_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
-			dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			dup.albedo_color.a = 0.9
-			band.set_surface_override_material(0, dup)
 	_readout(door, "DigitalReadoutBack", Vector3(0.28, 1.55, 0.22))
 	_linkage_and_ribs(door, leaf_body)
 
@@ -1143,12 +1223,21 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 		_wear_leaf(item["body"], prof.door_id)
 	var face_z := leaf_ab.position.z - door.global_position.z
 	var top_y := leaf_ab.position.y + leaf_ab.size.y
-	# Right jamb, on the corner the hero actually frames. The bay frame's front lip
-	# is half a metre proud of the leaf and falls outside this camera.
 	var leaf_x1 := leaf_ab.position.x + leaf_ab.size.x - door.global_position.x
-	# Bay pier is deep. Sit the strip on the opening side of that pier, clear of the mesh.
-	var jamb_x := leaf_x1 - (0.35 if prof.door_id == "bay3" else -0.03)
-	var lamp_z := face_z - (0.28 if prof.door_id == "bay3" else 0.02)
+	# Pair: 30 mm outboard of the leaf, 20 mm proud of the face, so the hero sees the strip.
+	var jamb_x := leaf_x1 + 0.03
+	var lamp_z := face_z - 0.02
+	if prof.door_id == "bay3":
+		# leaf_x1 − 0.35 m and 0.28 m proud put the moving cyan lamp on the left leaf.
+		# The reveal is already on the frame, outside the glass. Step outboard of that.
+		var jamb := _find(door, "Reveal_JambR", false)
+		if jamb == null:
+			jamb = _find(door, "Reveal_JambL", false)
+		if jamb != null:
+			var local := door.to_local(jamb.global_position)
+			var out := 0.030 if local.x >= 0.0 else -0.030
+			jamb_x = local.x + out
+			lamp_z = local.z
 	_lamp(door, Vector3(jamb_x, 1.40, lamp_z))
 	_downlight(door, Vector3(0, top_y + 0.45, face_z - 0.40), Vector3(x, 1.3, 0))
 	door.bind(prof, leaves, hinge)
@@ -1166,6 +1255,7 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 	_skirt(door)
 	if prof.door_id == "pair":
 		_trim_pair_frame(inst, leaves)
+		_open_pair_meeting(leaves)
 	return door
 
 
@@ -1489,11 +1579,14 @@ func _retint(root: Node) -> void:
 				if mat == null:
 					continue
 				var label := "%s %s" % [mat.resource_name, mi.name]
+				var low := label.to_lower()
+				var mesh_low := String(mi.name).to_lower()
+				if _retint_forced(mi, s, mesh_low, low):
+					i += 1
+					continue
 				if not (mat is BaseMaterial3D):
 					continue
 				var dup := (mat as BaseMaterial3D).duplicate() as BaseMaterial3D
-				var low := label.to_lower()
-				var mesh_low := String(mi.name).to_lower()
 				if "push_bar" in mesh_low or "push_plate" in mesh_low:
 					dup.albedo_color = AMBER_PLATE
 					dup.albedo_texture = null
@@ -1519,23 +1612,32 @@ func _retint(root: Node) -> void:
 					dup.albedo_color = Color(0.80, 0.82, 0.84, 1.0)
 					dup.roughness = 0.32
 					dup.metallic = 0.10
-					dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+					dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+					dup.alpha_antialiasing_mode = BaseMaterial3D.ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE
 					dup.alpha_scissor_threshold = 0.2
 				elif "whitecomposite" in low or "white_composite" in low or "pearl" in low:
 					# Blue stays at 0.900. #D8DEE6's 0.902 is only legal on the WhiteComposite name.
 					dup.albedo_color = Color(0.847, 0.871, 0.900, dup.albedo_color.a)
 					dup.albedo_texture = null
 					dup.metallic = 0.1
-					dup.roughness = 0.48
+					dup.roughness = 0.72
 				elif "glass" in low or "vision" in low:
-					# Frit / interlayer: the X is the mesh, drawn as thin glass, not an opaque grille.
-					dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-					dup.alpha_scissor_threshold = 0.2
-					dup.albedo_color = Color(0.76, 0.86, 0.90, 1.0)
-					dup.roughness = 0.05
-					dup.metallic = 0.0
-					if dup is StandardMaterial3D:
-						(dup as StandardMaterial3D).emission_enabled = false
+					var gid := _owner_id(mi)
+					if gid == "pocket" or gid == "bay3" or gid == "":
+						dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+						dup.albedo_color = Color(0.30, 0.36, 0.42, 0.25)
+						dup.roughness = 0.05
+						dup.metallic = 0.0
+						if dup is StandardMaterial3D:
+							(dup as StandardMaterial3D).emission_enabled = false
+					else:
+						dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+						dup.alpha_scissor_threshold = 0.2
+						dup.albedo_color = Color(0.76, 0.86, 0.90, 1.0)
+						dup.roughness = 0.05
+						dup.metallic = 0.0
+						if dup is StandardMaterial3D:
+							(dup as StandardMaterial3D).emission_enabled = false
 				elif "cyan" in low or "court_line" in low or ("led" in low and "amber" not in low) or ("scissor" in low and "glass" not in low):
 					dup.albedo_color = Color(0.02, 0.10, 0.12, 1.0)
 					if dup is StandardMaterial3D:
@@ -1605,8 +1707,8 @@ func _bay_pair_hw(door: Node3D, _inst: Node3D, id: String, leaves: Array) -> voi
 			var outward2 := -inward2
 			var cy2 := box2.get_center().y
 			var cz2 := box2.get_center().z
-			# Inner face of the knuckle sits 5 mm outboard of the panel edge (Vance 3–5 mm).
-			var knuckle_x := hinge2 + outward2 * 0.025
+			# Inner face sits 4.8 mm outboard. 5.0 mm sampled 5.01 and failed the closed band.
+			var knuckle_x := hinge2 + outward2 * 0.0248
 			for i in 3:
 				_hw(body2, "HingeKnuckle%d" % i, Vector3(0.04, 0.10, 0.04), Vector3(knuckle_x, box2.position.y + 0.22 + float(i) * 0.95, cz2), _alloy)
 			_hw(body2, "CloserArm", Vector3(0.28, 0.02, 0.03), Vector3(hinge2 + inward2 * 0.22, box2.position.y + box2.size.y - 0.08, box2.position.z - 0.03), _alloy)
@@ -1988,11 +2090,14 @@ func _room_shell(x0: float, x1: float) -> void:
 func _reflection_cards(xs: Dictionary) -> void:
 	var mat := StandardMaterial3D.new()
 	mat.resource_name = "ReflectionCard"
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color("#DDE6EE")
+	# Shaded, not unshaded: an unshaded near-white card ignores emission and clips.
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	mat.albedo_color = Color(0.45, 0.48, 0.52)
 	mat.emission_enabled = true
 	mat.emission = Color("#DDE6EE")
-	mat.emission_energy_multiplier = 0.6
+	mat.emission_energy_multiplier = 0.35
+	mat.roughness = 0.85
+	mat.metallic = 0.0
 	var yaw := deg_to_rad(30.0)
 	for id in xs.keys():
 		var x: float = xs[id]
@@ -2075,18 +2180,18 @@ func _hide_show_meshes(root: Node) -> void:
 		for c in n.get_children():
 			stack.append(c)
 		var low := String(n.name).to_lower()
-		var hide := "bollard_ball" in low or "blade_ball" in low or "ball_finial" in low or "ball_bollard" in low
+		# Blade_Court_Stripe and Court_Line_LED sit at the scene root, so they
+		# stay mid-leaf after the left leaf swings. They are the floating cyan.
+		var hide := "bollard_ball" in low or "blade_ball" in low or "ball_finial" in low or "ball_bollard" in low or "blade_court" in low or "court_line_led" in low or "court_stripe" in low or "wayfinding" in low
 		if not hide:
 			continue
-		if n is MeshInstance3D:
-			(n as MeshInstance3D).visible = false
+		# Hide the whole branch. The cyan line is a grandchild mesh, so hiding
+		# only the direct MeshInstance children left it on the open leaf.
+		if n is Node3D:
+			(n as Node3D).visible = false
 		if n is CollisionObject3D:
 			(n as CollisionObject3D).collision_layer = 0
 			(n as CollisionObject3D).collision_mask = 0
-		if n is Node3D:
-			for ch in n.get_children():
-				if ch is MeshInstance3D:
-					(ch as MeshInstance3D).visible = false
 
 
 func _paint_hatch_leaf(root: Node) -> void:
@@ -2112,14 +2217,9 @@ func _paint_hatch_leaf(root: Node) -> void:
 
 
 func _readout(parent: Node3D, nm: String, pos: Vector3) -> void:
-	var mat := StandardMaterial3D.new()
-	mat.resource_name = "DigitalReadout"
-	mat.albedo_color = Color(0.02, 0.08, 0.05)
-	mat.emission_enabled = true
-	mat.emission = Color(0.25, 0.85, 0.40)
-	mat.emission_energy_multiplier = 0.4
-	mat.roughness = 0.4
+	var mat := _digit_mat()
 	_mesh(parent, nm, Vector3(0.09, 0.035, 0.006), pos, mat, 0.0)
+	_stamp_readouts(parent)
 
 
 func _linkage_and_ribs(door: Node3D, leaf_body: Node3D) -> void:
@@ -2209,9 +2309,9 @@ func _wear_patch(parent: Node3D, nm: String, pos: Vector3, size: Vector3, base: 
 	m.resource_name = "Wear"
 	m.emission_enabled = false
 	var c := m.albedo_color
-	var lift := 1.035
+	var lift := 1.06
 	m.albedo_color = Color(minf(c.r * lift, 0.90), minf(c.g * lift, 0.90), minf(c.b * lift, 0.90), 1.0)
-	m.roughness = clampf(m.roughness - 0.10, 0.05, 1.0)
+	m.roughness = clampf(m.roughness - 0.15, 0.05, 1.0)
 	m.metallic = minf(m.metallic, 0.95)
 	_mesh(parent, nm, size, pos, m, 0.0)
 
@@ -2388,6 +2488,61 @@ func _hatch_frame_reveal(door: Node3D) -> void:
 	_reveal(host, "Reveal_JambRB", Vector3(0.015, maxf(0.2, y1 - y0), 0.012), into.call(Vector3(x1 - 0.03, (y0 + y1) * 0.5, z)))
 
 
+## Visual amber/graphite checker on the wall-hatch frame. The leaf stripe stays off.
+func _hatch_hazard_frame(door: Node3D) -> void:
+	# Exact "frame" misses bulkhead_frame. Skip the collar and the hinge bracket.
+	var frame: Node3D = null
+	for n in _each_named(door, "bulkhead_frame"):
+		var node := n as Node3D
+		var low := String(node.name).to_lower()
+		if "collar" in low or "hinge" in low or "colonly" in low:
+			continue
+		if node is MeshInstance3D:
+			frame = node
+			break
+	if frame == null:
+		return
+	var ab := _aabb_node(frame)
+	if ab.size == Vector3.ZERO:
+		return
+	var origin := door.global_position
+	var x0 := ab.position.x - origin.x
+	var x1 := x0 + ab.size.x
+	var y0 := ab.position.y - origin.y
+	var y1 := y0 + ab.size.y
+	var face_z := ab.position.z - origin.z - 0.024
+	var haz := _orange.duplicate() as StandardMaterial3D
+	haz.emission_enabled = false
+	haz.albedo_color = AMBER_PLATE
+	var blk := _graphite.duplicate() as StandardMaterial3D
+	blk.albedo_texture = null
+	blk.albedo_color = Color(0.05, 0.05, 0.05)
+	blk.emission_enabled = false
+	var band := 0.050
+	var thick := 0.006
+	_hazard_run(door, "T", x0, x1 - x0, y1 - band * 0.5, face_z, true, band, thick, haz, blk)
+	_hazard_run(door, "B", x0, x1 - x0, y0 + band * 0.5, face_z, true, band, thick, haz, blk)
+	_hazard_run(door, "L", y0, y1 - y0, x0 + band * 0.5, face_z, false, band, thick, haz, blk)
+	_hazard_run(door, "R", y0, y1 - y0, x1 - band * 0.5, face_z, false, band, thick, haz, blk)
+	# Last child, so the hardware walk hits this centre before a corner segment.
+	var anchor := Node3D.new()
+	anchor.name = "HazardBand"
+	anchor.position = Vector3((x0 + x1) * 0.5, (y0 + y1) * 0.5, face_z)
+	door.add_child(anchor)
+
+
+func _hazard_run(parent: Node3D, tag: String, origin: float, length: float, cross: float, face_z: float, along_x: bool, band: float, thick: float, orange: Material, black: Material) -> void:
+	var seg := 0.05
+	var n := maxi(int(maxf(length, seg) / seg), 1)
+	var step := length / float(n)
+	for i in n:
+		var mat: Material = orange if i % 2 == 0 else black
+		var at := origin + (float(i) + 0.5) * step
+		var pos := Vector3(at, cross, face_z) if along_x else Vector3(cross, at, face_z)
+		var sz := Vector3(step, band, thick) if along_x else Vector3(band, step, thick)
+		_mesh(parent, "HazardBand%s%d" % [tag, i], sz, pos, mat, 0.0)
+
+
 func _floor_frame(door: Node3D) -> void:
 	var mat := _surround_mat()
 	var top := 0.001
@@ -2401,7 +2556,7 @@ func _floor_frame(door: Node3D) -> void:
 	_mesh(door, "FloorFrameE", Vector3(bar, depth, 1.016), Vector3(0.508 + bar * 0.5, yc, 0.50), mat, 0.0)
 	var haz := _orange.duplicate() as StandardMaterial3D
 	haz.emission_enabled = false
-	haz.albedo_color = ORANGE
+	haz.albedo_color = AMBER_PLATE
 	var blk := _graphite.duplicate() as StandardMaterial3D
 	blk.albedo_texture = null
 	blk.albedo_color = Color(0.05, 0.05, 0.05)
@@ -2443,7 +2598,8 @@ func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 		_dump(inst)
 		return door
 	var body := _rig_pivot(pivot)
-	for n in _each_named(inst, "hatch_dog_") + _each_named(inst, "hatch_linkage_"):
+	# "hatch_dog_0" (not "hatch_dog_"): the fixed hatch_dog_guides node must not slide with the dogs.
+	for n in _each_named(inst, "hatch_dog_0") + _each_named(inst, "hatch_linkage_"):
 		(n as Node3D).set_meta("door_hw", "dog_x")
 		(n as Node3D).set_meta("throw_m", 0.025)
 	var lw := _find(inst, "hatch_LockWheel", false)
@@ -2460,25 +2616,31 @@ func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 		seal.set_meta("door_hw", "seal_z")
 		seal.set_meta("seal_axis", "y")
 		seal.set_meta("inflate_scale", 1.208)
-	for tag in ["L", "R"]:
-		var sb := _find(inst, "hatch_strut_%s_body" % tag, false)
-		var sr := _find(inst, "hatch_strut_%s_rod" % tag, false)
-		if sb != null and sr != null:
-			for pair in [[sb, sr], [sr, sb]]:
-				(pair[0] as Node3D).set_meta("door_hw", "piston")
-				(pair[0] as Node3D).set_meta("piston_partner", pair[1])
-				(pair[0] as Node3D).set_meta("piston_front_z", true)
-	var stay := _find(inst, "hatch_stay_arm", false)
-	if stay != null:
-		stay.set_meta("door_hw", "stay")
-		stay.set_meta("stay_table", PackedFloat32Array([0.0, -20.5, -39.25, -55.94, -70.42, -82.73, -93.11, -101.91]))
+	# Rook pass C rev 2 (Vance): no gas struts. The 585 N m counterbalance is a torsion bar in the full-length hinge tube
+	# (hatch_HingeTube rides on the leaf; hatch_TorsionBar, both hatch_TorsionAnchor_* clevises, hatch_HingeBearing_frame and
+	# hatch_RotaryDamper are fixed on the axis, so they need no driver). Side-wall stay outside the 0.90 column, 0.5 deg tables 0..105:
+	# hatch_stay_arm about local X (deg), hatch_stay_slider and hatch_stay_detent_plunger along local Z (m).
+	var stay_nodes := {
+		"hatch_stay_arm": ["stay_table", STAY_ARM_DEG],
+		"hatch_stay_slider": ["stay_slide_table", STAY_SLIDE_M],
+		"hatch_stay_detent_plunger": ["stay_slide_table", STAY_PLUNGER_M],
+	}
+	for nm in stay_nodes:
+		var sn := _find(inst, nm, false)
+		if sn == null:
+			continue
+		sn.set_meta("door_hw", "stay")
+		sn.set_meta(str(stay_nodes[nm][0]), PackedFloat32Array(stay_nodes[nm][1]))
+	_floor_walk_colliders(inst, body)
 	_retint(inst)
+	_dress_floor_lid(inst, body)
+	_clamp_rods(body)
 	# 300 × 10 mm strip lying in the camera-side frame member.
 	_lamp(door, Vector3(0.0, 0.014, 1.055), true)
 	_downlight(door, Vector3(0.0, 2.4, -0.6), Vector3(x, 0.1, 0.4))
 	var top := OmniLight3D.new()
 	top.name = "FloorHatchTop"
-	top.light_energy = 1.8
+	top.light_energy = 0.85
 	top.shadow_enabled = false
 	top.omni_range = 3.2
 	top.omni_attenuation = 1.0
@@ -2501,4 +2663,410 @@ func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	door.set_meta("walk_x", 0.0)
 	door.set_meta("walk_clear", 1.0)
 	door.set_meta("glb", path)
+	# Torque model inputs (mech_door._motion_advance reads these; its literals are the same numbers as fallbacks).
+	door.set_meta("damper_open_dps", 77.8)
+	door.set_meta("damper_close_dps", 33.3)
+	door.set_meta("torque_model", {"weight_moment_Nm": 687.0, "torsion_bar_Nm": 585.0, "net_closing_Nm": 102.0, "actuator_max_Nm": 530.0, "inertia_kgm2": 46.7})
+	_floor_frame(door)
 	return door
+
+
+func _floor_walk_colliders(inst: Node3D, leaf_body: AnimatableBody3D) -> void:
+	# Lab walk colliders sit 0.12 m above the visual surface (FloorShape top y = 0.12, capsule bottom = body origin + 0.12).
+	# The GLB colliders are true geometry, so match the convention where a capsule stands:
+	#  - the well floor (hatch_well_floor-convcolonly) rises 0.12 so a capsule that drops in stands with its origin on the visual floor;
+	#  - the closed lid gets a 0.12 m walk skin over the opening (lid-local, on the top face; it starts 46 mm in from the hinge edge
+	#    so it stays clear of the frame ring through the 105 deg swing). Liner walls are vertical and stay where they are.
+	# Found by shape, not name (the importer can rename collider bodies, e.g. the multi-box frame comes in as @StaticBody3D@n):
+	# the static body whose collision top is more than 0.2 m below the finished floor. The liner walls reach the land (-0.106).
+	var stack: Array[Node] = [inst]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is StaticBody3D) or n == leaf_body:
+			continue
+		var top := -INF
+		for ch in n.get_children():
+			if ch is CollisionShape3D and (ch as CollisionShape3D).shape != null:
+				var dbg := (ch as CollisionShape3D).shape.get_debug_mesh()
+				if dbg != null:
+					var xf := Transform3D.IDENTITY
+					var k: Node = ch
+					while k != inst and k is Node3D:
+						xf = (k as Node3D).transform * xf
+						k = k.get_parent()
+					var ab: AABB = xf * dbg.get_aabb()
+					top = maxf(top, ab.position.y + ab.size.y + inst.position.y)
+		if top > -INF and top < -0.20:
+			(n as Node3D).position.y += 0.12
+			n.set_meta("walk_raise_m", 0.12)
+	var skin := CollisionShape3D.new()
+	skin.name = "LidWalkSkin"
+	var sb := BoxShape3D.new()
+	sb.size = Vector3(0.90, 0.12, 0.854)
+	skin.shape = sb
+	# Pivot-local (= hinge axis, GLB y 0.430 z -0.524): lid top y = +0.032; the opening spans pivot z 0.074..0.974, skin z 0.120..0.974.
+	skin.position = Vector3(0.0, 0.032 + 0.06, 0.524 + (-0.404 + 0.45) * 0.5)
+	leaf_body.add_child(skin)
+
+
+func _owner_id(n: Node) -> String:
+	var p: Node = n
+	while p != null:
+		if p is MechDoor:
+			return (p as MechDoor).door_id
+		p = p.get_parent()
+	return ""
+
+
+func _amber_std() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = AMBER_PLATE
+	m.albedo_texture = null
+	m.metallic = 0.15
+	m.roughness = 0.42
+	m.emission_enabled = false
+	m.emission_energy_multiplier = 0.0
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	m.vertex_color_use_as_albedo = false
+	return m
+
+
+func _gun_std() -> StandardMaterial3D:
+	var m := _gun.duplicate() as StandardMaterial3D
+	m.albedo_color = GUN
+	m.albedo_texture = null
+	m.metallic = 0.55
+	m.roughness = 0.42
+	m.emission_enabled = false
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	m.vertex_color_use_as_albedo = false
+	return m
+
+
+## Push bars, dog rods, and handwheels get a fresh material. A duplicated GLB
+## material kept the emissive amber and the unshaded white rods.
+func _retint_forced(mi: MeshInstance3D, surface: int, mesh_low: String, low: String) -> bool:
+	if "push_bar" in mesh_low or "push_plate" in mesh_low or "push_bar" in low:
+		mi.set_surface_override_material(surface, _amber_std())
+		return true
+	if ("handwheel" in mesh_low or "overrideorange" in mesh_low) and "lever" not in mesh_low:
+		mi.set_surface_override_material(surface, _amber_std())
+		return true
+	if ("dog" in mesh_low or "linkage" in mesh_low) and "guide" not in mesh_low and "dogpivot" not in mesh_low and "dogpin" not in mesh_low:
+		mi.set_surface_override_material(surface, _gun_std())
+		return true
+	if mesh_low == "status_light" or "status_light" in mesh_low:
+		var g := StandardMaterial3D.new()
+		g.albedo_color = Color(0.05, 0.35, 0.12)
+		g.emission_enabled = true
+		g.emission = Color(0.15, 0.85, 0.28)
+		g.emission_energy_multiplier = 0.45
+		g.roughness = 0.4
+		g.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+		mi.set_surface_override_material(surface, g)
+		return true
+	return false
+
+
+func _paint_status_green(root: Node) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is MeshInstance3D and "status_light" in String(n.name).to_lower():
+			(n as MeshInstance3D).visible = true
+
+
+func _indicator_bar(leaf_body: Node3D) -> void:
+	if leaf_body == null:
+		return
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = "IndicatorBar"
+	mat.albedo_color = Color(0.05, 0.28, 0.10)
+	mat.emission_enabled = true
+	mat.emission = Color(0.2, 0.9, 0.35)
+	mat.emission_energy_multiplier = 0.35
+	mat.roughness = 0.45
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	_mesh(leaf_body, "IndicatorBar", Vector3(0.16, 0.012, 0.006), Vector3(-0.78, 1.64, -0.168), mat, 0.0)
+
+
+func _digit_mat() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = "DigitalReadout"
+	mat.albedo_color = Color(0.05, 0.22, 0.10)
+	mat.albedo_texture = _digit_tex()
+	mat.emission_enabled = true
+	mat.emission = Color(0.25, 0.85, 0.40)
+	mat.emission_texture = _digit_tex()
+	mat.emission_energy_multiplier = 0.70
+	mat.roughness = 0.4
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	return mat
+
+
+func _digit_tex() -> Texture2D:
+	if _digit_cache != null:
+		return _digit_cache
+	var img := Image.create(48, 16, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0.04, 0.28, 0.12, 1.0))
+	var glyphs := {
+		"1": "010010010010010",
+		"0": "111101101101111",
+	}
+	var text := "100"
+	var cursor := 4
+	for i in text.length():
+		var bits: String = glyphs[text.substr(i, 1)]
+		for row in 5:
+			for col in 3:
+				if bits.substr(row * 3 + col, 1) == "1":
+					var px := cursor + col * 2
+					var py := 3 + row * 2
+					img.set_pixel(px, py, Color(0.75, 1.0, 0.85, 1.0))
+					img.set_pixel(px + 1, py, Color(0.75, 1.0, 0.85, 1.0))
+					img.set_pixel(px, py + 1, Color(0.75, 1.0, 0.85, 1.0))
+					img.set_pixel(px + 1, py + 1, Color(0.75, 1.0, 0.85, 1.0))
+		cursor += 10
+	_digit_cache = ImageTexture.create_from_image(img)
+	return _digit_cache
+
+
+func _stamp_readouts(root: Node) -> void:
+	var mat := _digit_mat()
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		if "digitalreadout" not in String(n.name).to_lower() and "readout" not in String(n.name).to_lower():
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		# Box and quad readouts already span 0..1. The GLB screen's UVs collapse to one texel.
+		if mi.mesh is BoxMesh or mi.mesh is QuadMesh:
+			for s in mi.mesh.get_surface_count():
+				mi.set_surface_override_material(s, mat)
+			continue
+		var ab := mi.mesh.get_aabb()
+		var face := QuadMesh.new()
+		face.size = Vector2(maxf(ab.size.x, 0.04), maxf(ab.size.y, 0.02))
+		var quad := MeshInstance3D.new()
+		quad.name = "DigitFace"
+		quad.mesh = face
+		quad.position = mi.position + ab.get_center() + mi.basis * Vector3(0.0, 0.0, ab.size.z * 0.5 + 0.003)
+		quad.basis = mi.basis
+		quad.set_surface_override_material(0, mat)
+		var host := mi.get_parent()
+		if host != null:
+			host.add_child(quad)
+		mi.visible = false
+
+
+func _nudge_named_z(body: Node3D, dz: float) -> void:
+	var stack: Array[Node] = [body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D) or n == body:
+			continue
+		var low := String(n.name).to_lower()
+		if "pearl" in low or "vision" in low or "face" in low:
+			(n as MeshInstance3D).position.z += dz
+			(n as GeometryInstance3D).sorting_offset = 2.0
+
+
+## Scale each pair leaf about the hinge so the meeting-stile AABB lands at 5 mm.
+## Translating the whole leaf would push the hinge gap out of 3–5 mm.
+func _open_pair_meeting(leaves: Array) -> void:
+	if leaves.size() < 2:
+		return
+	var spans: Array = []
+	for item in leaves:
+		var ab := _aabb_node(item["body"])
+		var origin := (item["body"] as Node3D).global_position
+		spans.append([ab.position.x, ab.position.x + ab.size.x, origin])
+	spans.sort_custom(func(a, b): return float(a[0]) < float(b[0]))
+	var gap := float(spans[1][0]) - float(spans[0][1])
+	var delta := (0.005 - gap) * 0.5
+	if absf(delta) < 0.00015:
+		return
+	for item in leaves:
+		var body: Node3D = item["body"]
+		var local := _local_aabb(body)
+		if local.size == Vector3.ZERO:
+			continue
+		# Scale about the hinge edge so the meeting stile moves and the hinge gap does not.
+		var x_lo := local.position.x
+		var x_hi := local.position.x + local.size.x
+		var hinge_x := x_lo if absf(x_lo) <= absf(x_hi) else x_hi
+		var far_x := x_hi if absf(x_lo) <= absf(x_hi) else x_lo
+		var span := far_x - hinge_x
+		if absf(span) < 0.05:
+			continue
+		var sign := 1.0 if far_x > hinge_x else -1.0
+		var s := clampf((span - sign * delta) / span, 0.97, 1.03)
+		for c in body.get_children():
+			if c is Node3D:
+				var node := c as Node3D
+				node.position.x = hinge_x + (node.position.x - hinge_x) * s
+				node.scale.x *= s
+
+
+## Pull dog rods and linkages inside the leaf shell. Top rods were past the top edge.
+func _clamp_rods(leaf_body: Node3D) -> void:
+	if leaf_body == null:
+		return
+	var shell := _named_local_aabb(leaf_body, "leaf_shell")
+	if shell.size == Vector3.ZERO:
+		shell = _named_local_aabb(leaf_body, "shell")
+	if shell.size == Vector3.ZERO:
+		return
+	var margin := 0.004
+	var lo := shell.position + Vector3(margin, margin, margin)
+	var hi := shell.position + shell.size - Vector3(margin, margin, margin)
+	var center := shell.get_center()
+	var stack: Array[Node] = [leaf_body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D) or n == leaf_body:
+			continue
+		var low := String(n.name).to_lower()
+		if "guide" in low or "dogpivot" in low or "dogpin" in low:
+			continue
+		if "dog" not in low and "linkage" not in low:
+			continue
+		var mi := n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		var box: AABB = leaf_body.global_transform.affine_inverse() * (mi.global_transform * mi.mesh.get_aabb())
+		var factor := 1.0
+		var corners: Array[Vector3] = [
+			box.position,
+			box.position + Vector3(box.size.x, 0, 0),
+			box.position + Vector3(0, box.size.y, 0),
+			box.position + Vector3(0, 0, box.size.z),
+			box.position + Vector3(box.size.x, box.size.y, 0),
+			box.position + Vector3(box.size.x, 0, box.size.z),
+			box.position + Vector3(0, box.size.y, box.size.z),
+			box.position + box.size,
+		]
+		for corner in corners:
+			var v: Vector3 = corner - center
+			if absf(v.x) > 1.0e-5:
+				var limx := (hi.x - center.x) if v.x > 0.0 else (center.x - lo.x)
+				factor = minf(factor, limx / absf(v.x))
+			if absf(v.y) > 1.0e-5:
+				var limy := (hi.y - center.y) if v.y > 0.0 else (center.y - lo.y)
+				factor = minf(factor, limy / absf(v.y))
+			if absf(v.z) > 1.0e-5:
+				var limz := (hi.z - center.z) if v.z > 0.0 else (center.z - lo.z)
+				factor = minf(factor, limz / absf(v.z))
+		if factor >= 0.999:
+			continue
+		factor = maxf(factor, 0.25)
+		var local_origin := leaf_body.global_transform.affine_inverse() * mi.global_position
+		var new_local := center + (local_origin - center) * factor
+		mi.global_position = leaf_body.global_transform * new_local
+		mi.scale *= factor
+
+
+func _diamond_normal() -> Texture2D:
+	if _diamond_cache != null:
+		return _diamond_cache
+	var n := 64
+	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
+	var period := 16
+	var heights: Array = []
+	heights.resize(n * n)
+	for y in n:
+		for x in n:
+			var dx := absf(float(x % period) - float(period) * 0.5) / (float(period) * 0.5)
+			var dy := absf(float(y % period) - float(period) * 0.5) / (float(period) * 0.5)
+			heights[y * n + x] = 1.0 - maxf(dx, dy)
+	for y2 in n:
+		for x2 in n:
+			var hL: float = heights[y2 * n + ((x2 - 1 + n) % n)]
+			var hR: float = heights[y2 * n + ((x2 + 1) % n)]
+			var hD: float = heights[((y2 - 1 + n) % n) * n + x2]
+			var hU: float = heights[((y2 + 1) % n) * n + x2]
+			var nv := Vector3(hL - hR, hD - hU, 0.55).normalized()
+			img.set_pixel(x2, y2, Color(nv.x * 0.5 + 0.5, nv.y * 0.5 + 0.5, nv.z * 0.5 + 0.5, 1.0))
+	img.generate_mipmaps()
+	_diamond_cache = ImageTexture.create_from_image(img)
+	return _diamond_cache
+
+
+func _lid_graphite() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.resource_name = "FloorLidGraphite"
+	# Lab graphite, not a light grey. The lighter albedo clipped to white under the deck lights.
+	m.albedo_color = GRAPHITE
+	m.metallic = 0.5
+	m.roughness = 0.45
+	m.metallic_specular = 0.18
+	m.emission_enabled = false
+	m.emission_energy_multiplier = 0.0
+	m.normal_enabled = true
+	m.normal_texture = _diamond_normal()
+	m.normal_scale = 0.18
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	m.vertex_color_use_as_albedo = false
+	# Broad tread. 0.75 still broke into grazing specular waves on the hero.
+	m.uv1_scale = Vector3(0.22, 0.22, 0.22)
+	return m
+
+
+func _dress_floor_lid(inst: Node3D, leaf_body: Node3D) -> void:
+	var lid := _lid_graphite()
+	var stack: Array[Node] = [inst]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var mi := n as MeshInstance3D
+		var low := String(mi.name).to_lower()
+		if "colonly" in low or "dog" in low or "linkage" in low or "hinge" in low or "torsion" in low or "damper" in low or "stay" in low or "seal" in low or "wheel" in low or "hand" in low:
+			continue
+		if "shell" in low or "leaf" in low or "lid" in low or "tread" in low or "plate" in low or "disc" in low or "rect" in low:
+			if mi.mesh == null:
+				continue
+			for s in mi.mesh.get_surface_count():
+				mi.set_surface_override_material(s, lid)
+		elif mi.mesh != null:
+			for s2 in mi.mesh.get_surface_count():
+				var mat := mi.get_active_material(s2)
+				if mat is StandardMaterial3D:
+					var sm := (mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+					sm.albedo_color = Color(minf(sm.albedo_color.r, 1.0), minf(sm.albedo_color.g, 1.0), minf(sm.albedo_color.b, 1.0), sm.albedo_color.a)
+					if sm.emission_enabled and sm.emission.r > 0.8 and sm.emission.g > 0.8 and sm.emission.b > 0.8:
+						sm.emission_enabled = false
+						sm.emission_energy_multiplier = 0.0
+					mi.set_surface_override_material(s2, sm)
+	var handle := _find(inst, "hatch_Handle", false)
+	if handle != null:
+		handle.scale *= 2.0
+	var gasket := StandardMaterial3D.new()
+	gasket.albedo_color = Color(0.05, 0.05, 0.05)
+	gasket.roughness = 0.9
+	gasket.metallic = 0.0
+	gasket.emission_enabled = false
+	_mesh(leaf_body, "GasketLine", Vector3(0.96, 0.004, 0.90), Vector3(0.0, 0.028, 0.50), gasket, 0.0)
+	var lamp_mat := _amber_std()
+	lamp_mat.emission_enabled = true
+	lamp_mat.emission = AMBER_PLATE
+	lamp_mat.emission_energy_multiplier = 0.4
+	_mesh(leaf_body, "CornerLampNE", Vector3(0.04, 0.008, 0.04), Vector3(0.42, 0.03, 0.88), lamp_mat, 0.0)
+	_mesh(leaf_body, "CornerLampSW", Vector3(0.04, 0.008, 0.04), Vector3(-0.42, 0.03, 0.12), lamp_mat, 0.0)
