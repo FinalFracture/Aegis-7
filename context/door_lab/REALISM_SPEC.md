@@ -773,4 +773,49 @@ I recomputed from `qa/door_lab/runE{,_20fps,_15fps}/*/{motion,cue_log,metrics}` 
 - **Rebate gap:** 6.0 mm applies to the W, E and S sides only. The N hinge side has no rebate wall.
 - **Column clearances as built:** keeper 2.0 mm and stay arm 1.5 mm, both outside the column. Lock gear 9.62 mm minimum, which meets the ≥ 3 mm target.
 - **Open item (not strut-related):** the floor hatch has **4 dogs** (`hatch_Dog_01..04`), but §7.5 rows 1–5 and 7 say "as 7.4" (8 dogs, 18 ms stagger), and the runE floor-hatch cue log plays 8 clunks. This needs reconciling in pass F: 4 clunks on an 18 ms stagger, or the GLB gets 8 dogs.
+- **Decision (Vance proposal, adopted 2026-11-21, realism owner's call): the floor hatch keeps 4 dogs** (`hatch_Dog_01..04` with `hatch_Linkage_01..04`, as built in Rook 2db8f7b). §7.5 rows 1–5 and 7 now read **"as 7.4, except 4 dogs"**, and the dog cues are **4 clunks, 18 ms apart, end-aligned to each dog phase**:
+  - Open: `dog_clunk_1..4` at **1.456 / 1.474 / 1.492 / 1.510 s**.
+  - Close: `dog_clunk_close_1..4` at **5.346 / 5.364 / 5.382 / 5.400 s**.
+  - Dog whine, phase windows, timing and totals are unchanged (open 4.09 s, close 6.39 s).
+  - R11 tolerance is ±16.7 ms on each clunk. The wall bulkhead keeps 8 dogs and 8 clunks.
+
+---
+
+## §12 Pass F review (Vance, 2026-11-21, against 41ce6cf / merge 1381acf). Verdict: **CONDITIONAL PASS**. Functional is all PASS; 4 visual/audio items remain for pass G.
+I recomputed from `qa/door_lab/runF{,_20fps,_15fps}/*/{motion,cue_log,metrics}.csv/json` and `runF/floorhatch/motion_g008.csv` / `motion_g145.csv`. I viewed `/workspace/door_lab_shots/F` and the Windows mirror `aegis_shots/doorlab_F/<door>/shots` (back, detail, jamb, threshold, top). The N2 pair retime is still **blocked** by Patch M-114 (Jared's call) and is not scored against.
+
+**Pass E fixes confirmed:**
+- **Moving 2° handoff.**
+  - Bulkhead: decel ends at 6.70°/s, then a constant 6.70°/s final seat for 0.300 s (5.98–6.28 rel). Close **7.783 s** against 7.80; Jared's 7.80 s holds.
+  - Floor hatch: decel ends at 5.00°/s, then a constant 5.00°/s final seat for 0.400 s (4.48–4.88). Close **6.383 s** against 6.39.
+  - The same at 20/15 Hz (bulkhead seat 0.333 s at 15 Hz, which is tick quantization).
+- **R2/R11 now reference §7.6/§7** ("spec 7.800+0.000", "section7 … tol 0.0167"), not the shipped profile.
+- **Cues against §7, all within ±16.7 ms:**
+  - Bulkhead: seat 6.283, dog whine 6.333, clunks 6.700–6.833, inflate 6.850, hold-open 4.300.
+  - Floor hatch: seat 4.867, whine 4.933, inflate 5.433, release 0.600, detent 4.100.
+  - Pocket: rumble 0.283, bolt 2.317.
+  - Bay3 2.800/2.867/2.933; pair stop_tap 1.000.
+- **Pocket phase table.** Decel 0.617–0.850 (+1 tick = 0.867), creep 0.867–0.917 (+1 tick = 0.933), against 0.62–0.88 / 0.88–0.93. Open 1.08 s.
+- **Gaps / V-GAP-PAIR gate.** Pair meet 5.00 (3–8), hinge 4.81 (3–5), floor 10.00 (8–12). Bulkhead 6.00 mm deflated. Floor hatch W/E/S 6.00 mm (N excluded per §11). No R8 fails at any rate.
+- **R13.** Real 0.08 G and 1.45 G CSVs. My worst phase-bound deviation is **2.05%** (1.45 G open decel ends 4.150 against 4.067 s; actuator saturation stretch) against 0.05, so PASS. Gage's 0.00216 normalizes differently.
+- **R15.** 9.81 / 7.77 / 6.84 / 9.97 / 7.90 J at all rates.
+- **R5.** Unchanged and passing.
+- **Stall and emergency.** F-STALL-OPEN held 2.02 s. F-OBS-EMERGENCY 5.0°/s, no reverse.
+- **Torsion-bar hatch.** Unchanged (M-118 closed). The clear column holds per Rook 83c56e3.
+- **Renders.**
+  - The bulkhead back camera is now outside the geometry and shows the ribbed back face, the back gauge with a "100" readout, and 2 heavy hinges.
+  - The white backdrop blowout is gone.
+
+**Accepted (Vance proposal, adopted 2026-11-21):** the final-seat → seal-contact stop (6.7 → 0°/s bulkhead, 5 → 0°/s floor hatch in one tick: raw Δv 4.1× and 5.4×) counts as a contact event, like lurch and settle, and is excluded from R3. Contact KE is 1.19 J and 0.36 J. Remaining raw-tick R3 interior excursions are minor: pocket seal_unseat jerk 1.60×; pair latch_check Δv 1.16× (N2-blocked).
+
+**Open for pass G:**
+1. **R11, floor hatch dogs (Gage lab, data only).** It still plays 8 clunks on open (1.383–1.517) and close (5.283–5.400). Target: 4 clunks per the §11 decision (open 1.456/1.474/1.492/1.510; close 5.346/5.364/5.382/5.400). This is a `floorhatch.json` cue-table edit. Deferring was defensible only while §11 left it as an open item; it is decided now and must land in G.
+2. **R6, framing (Gage lab).**
+   - The pocket head internals exist in the GLB (`slide_carriage_*`, `slide_roller_*_antilift`, `slide_BeltClamp_*`, `slide_Bumper`, `slide_Solenoid`/`SolenoidBolt`, `slide_AccessPanel`) but aren't in frame. detail_open looks at the closed head soffit from +Z. Target: shoot from the −Z approach side with `slide_AccessPanel` posed +90° open, and add a pocket-end shot for the bumper.
+   - Bulkhead back_closed/back_open crop the davit (top) and miss the actuator housing (under the lower hinge), `bulkhead_Damper_body`/`DamperRod`, and `bulkhead_PushOffRam_1/2` (latch-edge bores, +12 mm at unseat). Target: frame the full leaf plus 0.3 m margin, and add a latch-edge close-up at t = 1.9 s (rams extended).
+3. **R6, front readout blank (Gage lab).** The front digital readout renders as a plain grey panel, while the back shows "100". Target: the front readout matches the back, showing ΔP in kPa.
+4. **Exposure (Gage lab).** The pocket lower leaf panels still clip to white in the hero and jamb shots. Target: leaf-face mean luma ≤ 0.25 V-LUMA with no clipped region larger than 5% of the leaf.
+- **Advisory.** meta `tree` 932f8ec is not an object on origin, so it can't be checked; it does differ from base a1a426c's tree (37ae0a6), so the bug is fixed. Also record `godot_tree` (the run's `godot/` subtree hash) so it can be compared with the commit's `HEAD:godot`. The bulkhead handwheel renders yellow-gold; confirm the OverrideOrange swatch with Sloane.
+
+**Scores (0–10):** R1 10 · R2 10 · R3 9 · R4 10 · R5 10 · R6 7 · R7 10 · R8 10 · R9 10 · R10 10 · R11 8 · R12 10 · R13 10 · R14 10 · R15 10. **Overall 9.6 / 10** (pass E ≈ 8.0).
 
