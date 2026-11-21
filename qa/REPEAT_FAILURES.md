@@ -60,3 +60,16 @@ Bugs that failed re-test two or more times, or came back after being marked fixe
 | 0ee29a3 | E/F/Tab/V go through `interact` / `rfid_pulse` / `toggle_view` actions (event.is_action_pressed); Tab added to `toggle_view`; held-F arm raise uses Input.is_action_pressed | Gage real key events: Tab PASS, V PASS, E opens DOOR_APT201 PASS; F dispatch not state-checked (no pulse state var); --qa-egress 0 failures |
 | — | — | **QA-05 re-test 8a2a33f (2026-11-03): PASS** — E/F/Tab/V each fire once, F sets _rfid_pulse_timer, runtime remap E->K works, egress 23/23. **Fixed (verified).** Remaining physical-key reads split out as M-90 (SYS-16) / M-91 (SYS-17) |
 **Likely cause:** the movement fix only covered polled movement actions; the one-shot keys lived in a separate physical_keycode match and were never migrated.
+
+## Door lab M-98 / M-99 / M-104 / M-105 / M-106 — failed re-test 2 of 2 (Patch, 2026-11-21)
+Logged at pass A (a603953), re-tested at pass C (4694ea7) and pass E (6f39e8b / merge da136c5). All five still fail against QUALITY_BAR c86527f. M-114 (pair retime, cut tables) is HELD for Jared and is not counted here.
+
+| Bug | 4694ea7 (pass C) | 6f39e8b (pass E) |
+|---|---|---|
+| M-98 harness integrity | ids added, R3 1.1 a′dt; but R3 on commanded `leaf_vel`, F-TIME totals only, F-TRES-SRC on `.json` | R3 raw pose and F-TRES-SRC `.tres` fixed; F-TIME "per phase" (`_phases_within`) only checks that a sample exists in each window, which is always true, so it passed hatch final_seat 0.483 vs 0.30 s (M-117); R5 returns 0 by construction |
+| M-99 clip checks | colliders at 6 poses, bay3 concave query empty | concave warning gone, 22 poses; still colliders plus ~60-vertex sphere probes; no visible mesh-vs-mesh test, hardware meshes untested |
+| M-104 pocket V-ZFIGHT-FLICKER | 0.01141 vs ≤ 0.00784 | 0.01494 vs ≤ 0.00784 (worse each pass: A 0.00894) |
+| M-105 R6 / render artifacts | flat disc wheel; pair plates lemon yellow | wheel/linkage fixed; plates and bay3 bars still render (255, 251, 37) vs amber (0.85, 0.45, 0.02); hatch back cameras flat (σ 0) |
+| M-106 lamp fade | `lamp_energy` constant 0.45 | energy now logged, but the fade is an exponential lerp(dt/0.15): 90% at 0.33 s, 99% at 0.65 s vs "over 0.15 s", fps-dependent; no harness check |
+
+**Likely cause:** each fix targeted the harness's own report, not the bar's measurement. Checks were added that can't fail (phase windows, profile-inverted stagger), or the visible output was never re-checked (shots, colours, fade curve). M-99 has asked for a mesh-vs-mesh test twice and got more collider sampling each time.
