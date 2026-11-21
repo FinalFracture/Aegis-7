@@ -174,3 +174,12 @@ Left in, flagged (not M-122 GLB edits): `hatch_Handle` ×2 (scaled about the hin
 - Mount (advisory): front face now at z −0.024 (was −0.022). A truly flush back face at −0.019 is coplanar with `slide_Track`, which the clip check flags as z-fighting, so the back face sits 1.5 mm into the track (was 2 mm); mount z −0.024…−0.0175.
 - Clip allowance (`door_lab_passC._designed_contact`, per §13.1): only the outer carriage plate vs its own `slide_EndStop` may touch, be coplanar, or overlap ≤ 2.05 mm. New clip pose `open_overshoot_2mm`; `hw_gaps_passG` adds the signed end-stop, bumper and bolt metrics with Vance's limits.
 - Material slots unchanged (waiting on Sloane). Tris 5968/5968/5728/5968/5968.
+
+## Tennis tower Rev 3.10.1 (Vance de5561f): tt_entrance_bay_3l 12 mm saddle + leaf sweeps
+- Source: `assets/src/tennis_tower/rooms/temp-Arrival/entrance_bay_arrival.py` (3l only; 2-leaf/half GLBs byte-identical, keep 50 mm plinth).
+- Frame: per leaf opening (x -1.6..-0.6, -0.5..0.5, 0.6..1.6) a 12 mm saddle: inside bevel z -1.720..-1.696 (0 -> 0.012), flat 0.012 z -1.696..-0.966, outside bevel z -0.966..-0.950 (0.012 -> 0.004 mat). 50 mm block kept under mullions and side jambs.
+- `Leaf_{0,1,2}_Sweep` (TT_CarbonSlate, parented to each leaf): y 0.020..0.062, z -1.076..-1.064. No gasket groove existed in the leaf, so the top is bedded 2 mm into the bottom rail instead of a coplanar 0.060.
+- DoorClear-colonly 4 pieces: P1 inside wedge, P2 flat 0..0.012, P3 outside wedge 0.012 -> 0.004, P4 mat strip 0..0.004. Frame-colonly opening piers now start at y 0.012 (was 0.05).
+- Measured: max walk step 4.00 mm (mat edge into Deck); visual vs collider |dy| 0.00 mm on walk lanes (mullion plinth 50 mm visual vs pier collider, not walkable); sweep to sill min 8.0 mm over the full swing; tris 1964 (was 1784).
+- Tower probe 11 bays x 3 lanes: 0 misses; `--qa-tower-entry` failures=0 (14 routes). Clipping closed + 21-step swing: no new overlaps/coplanars (pre-existing sidelight glass bottoms coplanar with jamb plinth, flagged not fixed). first_pass_check 0 FAIL.
+- Gage door lab: his rig's runtime bay3 FloorSweep (to y 0.008) would sink 4 mm into the saddle and double the GLB sweep. `gage_doorlab_incr_saddle.patch` (on main + incr_G + incr_M122 + incr_threshold) skips it when a leaf has a GLB sweep and makes QA measure sweep-to-sill. Without it QA still passes (fails=0) but on the runtime sweep; with it, fails=0 at 60/20/15, bay3 floor 8.00 mm on the GLB sweep.
