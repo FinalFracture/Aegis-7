@@ -19,7 +19,7 @@
   "pre_equalized": false,
   "full_clear_m": 0.9,
   "clear_model": "swing",
-  "meta": {"plug": "1.10 x 2.10 x 0.12", "clear": "0.90 x 1.90", "dogs": 8, "pre_equalized": false, "close": "wall bulkhead 19.4 deg/s cap, 7.80 s"},
+  "meta": {"plug": "1.10 x 2.10 x 0.12", "clear": "0.90 x 1.90", "dogs": 8, "pre_equalized": false, "close": "wall bulkhead 19.4 deg/s cap, 7.80 s", "inertia_note": "Wall bulkhead I=174 kg m2 at the 19.4 deg/s cap is 9.97 J. Section 8's 5.7 J is the floor hatch I=46.7 at the retired 0.7x cruise (28.6 deg/s), not this leaf."},
   "obstruction": {"stop_s": 0.6, "stop_dist": 12.0, "stop_a": 40.0, "dwell_s": 0.15, "v_cap": 20.0, "hold_s": 5.0, "reopen_to": 30.0, "fault_count": 3, "edge_force_n": 150},
   "leaves": [
     {"name": "leaf", "sign": 1, "stagger_open": 0.0, "stagger_close": 0.0}

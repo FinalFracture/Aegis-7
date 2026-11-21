@@ -278,15 +278,15 @@ RUN="qa/door_lab/$(date +%Y%m%d-%H%M)-CT-$(git -C . rev-parse --short HEAD)"
 # 1) Import (always, headless)
 "$GODOT_BIN" --headless --path godot --import --quit
 
-# 2) Functional, 60 Hz
+# 2) Functional, 60 Hz. --qa-door-lab-fps is required. --fixed-fps alone is eaten by the engine.
 "$GODOT_BIN" --headless --path godot --fixed-fps 60 \
-  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-out "../${RUN}"
+  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 60 --qa-door-lab-out "../${RUN}"
 
-# 3) Functional, low fps (harness caps physics at 1 step/frame)
+# 3) Functional, low fps. The harness fails if the measured physics rate is not N.
 "$GODOT_BIN" --headless --path godot --fixed-fps 20 \
-  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-out "../${RUN}_20fps"
+  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 20 --qa-door-lab-out "../${RUN}_20fps"
 "$GODOT_BIN" --headless --path godot --fixed-fps 15 \
-  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-out "../${RUN}_15fps"
+  res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 15 --qa-door-lab-out "../${RUN}_15fps"
 
 # 4) Screenshots + contact sheet (xvfb / opengl3, NOT --headless)
 xvfb-run -a -s "-screen 0 1920x1080x24" \

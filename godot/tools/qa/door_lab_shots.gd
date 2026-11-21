@@ -3,6 +3,7 @@ extends Node
 ## Rewrites V-LUMA, V-SHADOW, and V-ZFIGHT-FLICKER from the pixels it saves.
 
 const IDS := ["pocket", "bay3", "pair", "hatch"]
+const HEROES := ["pocket", "bay3", "pair", "hatch", "floorhatch"]
 const QA_CAMS := ["front", "oblique45", "jamb", "top", "player"]
 const STATES := ["closed", "025", "050", "open", "closing"]
 
@@ -11,6 +12,7 @@ var _player: CharacterBody3D
 var _doors: Dictionary = {}
 var _out: String = ""
 var _cam: Camera3D
+var _fill: OmniLight3D
 var _vis_fail: int = 0
 var _pixel: Dictionary = {}
 
@@ -33,14 +35,22 @@ func start(lab: Node3D) -> void:
 	_cam = Camera3D.new()
 	_cam.name = "ShotCam"
 	_cam.near = 0.05
+	_fill = OmniLight3D.new()
+	_fill.name = "DetailFill"
+	_fill.light_energy = 1.1
+	_fill.shadow_enabled = false
+	_fill.omni_range = 3.0
+	_fill.visible = false
+	_cam.add_child(_fill)
 	_cam.far = 200.0
 	_lab.add_child(_cam)
 	_cam.current = true
-	for id in IDS:
+	for id in _doors.keys():
 		var door: MechDoor = _doors[id]
 		door.set_physics_process(false)
 		door.reset_closed()
-		_pixel[id] = {"luma": 1.0, "shadow": 0.0, "shadow_hot": 0, "flicker": 0.0, "flicker_hot": 0}
+		if id in IDS:
+			_pixel[id] = {"luma": 1.0, "shadow": 0.0, "shadow_hot": 0, "flicker": 0.0, "flicker_hot": 0}
 	await _shoot_all()
 	_rewrite_metrics()
 	_call_sheet()
@@ -138,26 +148,45 @@ func _open_strip(door: MechDoor, id: String) -> void:
 
 
 func _heroes() -> void:
-	for id in IDS:
+	for id in HEROES:
+		if not _doors.has(id):
+			continue
 		var door: MechDoor = _doors[id]
-		for other in IDS:
+		for other in _doors.keys():
 			(_doors[other] as MechDoor).reset_closed()
-		_pose(door, "050")
+		if id == "hatch":
+			# Closed plug so the graphite face, dogs and approach wheel fill the hero.
+			_pose(door, "closed")
+		elif id == "floorhatch":
+			_pose(door, "025")
+		else:
+			_pose(door, "050")
 		_place(door, "hero")
-		_save(await _one_frame(), "hero_final_%s.png" % id)
+		var img := await _one_frame()
+		_save(img, "hero_final_%s.png" % id)
+		if id == "floorhatch":
+			print("[door_lab] floorhatch V-LUMA measured=%.4f" % _mean_luma(img, _leaf_rect(img)))
 		door.reset_closed()
+	(_doors["pocket"] as MechDoor).set_locked(true)
 	(_doors["pocket"] as MechDoor).reset_closed()
 	_pose(_doors["bay3"], "050")
 	_pose(_doors["pair"], "open")
-	_pose(_doors["hatch"], "025")
+	(_doors["hatch"] as MechDoor).present_fault()
+	if _doors.has("floorhatch"):
+		_pose(_doors["floorhatch"], "050")
 	var a: MechDoor = _doors["pocket"]
 	var b: MechDoor = _doors["hatch"]
 	var mid_x := (a.global_position.x + b.global_position.x) * 0.5
+	# The reflection cards sit in this frustum and read as white slabs. Heroes keep them.
+	_set_reflect_cards(false)
 	_cam.fov = 76.0
-	_cam.global_position = Vector3(mid_x, 8.5, -46.0)
-	_cam.look_at(Vector3(mid_x, 1.6, 0.0), Vector3.UP)
+	_cam.global_position = Vector3(mid_x, 3.7, -12.0)
+	_cam.look_at(Vector3(mid_x, 1.35, 0.15), Vector3.UP)
+	_fill.visible = false
 	_save(await _one_frame(), "overview.png")
-	for id2 in IDS:
+	_set_reflect_cards(true)
+	(_doors["pocket"] as MechDoor).set_locked(false)
+	for id2 in _doors.keys():
 		(_doors[id2] as MechDoor).reset_closed()
 
 
@@ -197,6 +226,8 @@ func _place(door: MechDoor, cam_name: String) -> void:
 	_cam.global_position = spec["at"]
 	var up: Vector3 = spec["up"]
 	_cam.look_at(spec["look"], up)
+	if _fill != null:
+		_fill.visible = cam_name == "detail" or cam_name == "jamb"
 
 
 func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
@@ -204,7 +235,9 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 	var cx := origin.x + float(door.get_meta("walk_x", 0.0))
 	var dz := origin.z
 	var look_y: float = 1.05 if door.door_id == "hatch" else 1.15
-	var look := Vector3(cx, look_y, dz)
+	if door.door_id == "floorhatch":
+		look_y = 0.15
+	var look := Vector3(cx, look_y, dz + (0.45 if door.door_id == "floorhatch" else 0.0))
 	var inset := 0.55
 	if door.door_id == "bay3":
 		inset = 0.90
@@ -225,12 +258,12 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 			at = Vector3(cx + sin(ang45) * 3.2, 1.62, dz - cos(ang45) * 3.2)
 			fov = 50.0
 		"jamb":
-			# In front of the approach face. The old bay3 offset sat inside the wall.
-			at = Vector3(cx - inset - 0.28, 1.22, dz - 1.15)
+			# Outside the frame. Bay3's canopy swallows a camera at z = -1.15.
+			at = Vector3(cx - inset - 0.55, 1.22, dz - 1.75)
 			look = Vector3(cx - inset, 1.15, dz - 0.04)
 			fov = 32.0
 		"detail":
-			at = Vector3(cx - inset * 0.35, 1.32, dz - 0.90)
+			at = Vector3(cx - inset * 0.55, 1.28, dz - 1.70)
 			look = Vector3(cx - inset * 0.15, 1.20, dz - 0.02)
 			fov = 28.0
 		"top":
@@ -242,8 +275,18 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 			at = Vector3(cx, 1.62, dz - 1.8)
 			fov = 70.0
 		"hero":
-			at = Vector3(cx + sin(ang30) * 3.2, 1.6, dz - cos(ang30) * 3.2)
-			fov = 50.0
+			if door.door_id == "floorhatch":
+				# The plate sits on +Z. High enough to see the whole rim without a grazing angle.
+				at = Vector3(cx + 0.15, 2.55, dz + 2.35)
+				look = Vector3(cx, 0.06, dz + 0.48)
+				fov = 42.0
+			elif door.door_id == "hatch":
+				at = Vector3(cx + sin(ang30) * 2.35, 1.32, dz - cos(ang30) * 2.35)
+				look = Vector3(cx - 0.05, 1.12, dz + 0.02)
+				fov = 40.0
+			else:
+				at = Vector3(cx + sin(ang30) * 3.2, 1.6, dz - cos(ang30) * 3.2)
+				fov = 50.0
 		"player_sloane":
 			at = Vector3(cx, 1.65, dz - 1.8)
 			fov = 75.0
@@ -252,6 +295,16 @@ func _cam_spec(door: MechDoor, cam_name: String) -> Dictionary:
 			look = Vector3(cx, 0.35 + tan(deg_to_rad(10.0)) * 1.2, dz)
 			fov = 45.0
 	return {"at": at, "look": look, "fov": fov, "up": up}
+
+
+func _set_reflect_cards(on: bool) -> void:
+	var stack: Array[Node] = [_lab]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if String(n.name).begins_with("ReflectCard") and n is MeshInstance3D:
+			(n as MeshInstance3D).visible = on
 
 
 func _one_frame() -> Image:
@@ -299,7 +352,7 @@ func _leaf_rect(img: Image) -> Rect2i:
 
 
 func _note_luma(id: String, img: Image) -> void:
-	var score := _best_cell_luma(img)
+	var score := _mean_luma(img, _leaf_rect(img))
 	var slot: Dictionary = _pixel[id]
 	slot["luma"] = minf(float(slot["luma"]), score)
 	_pixel[id] = slot
@@ -405,7 +458,7 @@ func _rewrite_metrics() -> void:
 		print("[door_lab] %s V-ZFIGHT-FLICKER %s measured=%.5f hot=%d limit=0.00784" % [id, "PASS" if flicker_ok else "FAIL", flicker, flicker_hot])
 		var path := _out.path_join(id).path_join("metrics.json")
 		var metrics: Array = _load_array(path)
-		_upsert(metrics, "V-LUMA", luma_ok, luma, 0.25, "1", "best cell, Sloane A and front, closed and open")
+		_upsert(metrics, "V-LUMA", luma_ok, luma, 0.25, "1", "leaf-face mean, Sloane A and front, closed and open")
 		_upsert(metrics, "V-SHADOW", shadow_ok, shadow, 2.0 / 255.0, "1", "leaf-face mean |d| hot %d" % shadow_hot)
 		_upsert(metrics, "V-ZFIGHT-FLICKER", flicker_ok, flicker, 2.0 / 255.0, "1", "seam band mean |d| hot %d" % flicker_hot)
 		_store(path, metrics)
@@ -504,12 +557,31 @@ func _store(path: String, data) -> void:
 func _call_sheet() -> void:
 	var script := ProjectSettings.globalize_path("res://").path_join("../tools/door_lab_contact_sheet.py").simplify_path()
 	var output: Array = []
-	var code := OS.execute("python", PackedStringArray([script, _out]), output, true)
-	print("[door_lab] contact_sheet exit=%d %s" % [code, str(output)])
+	var bin := _python_bin()
+	var code := OS.execute(bin, PackedStringArray([script, _out]), output, true)
+	print("[door_lab] contact_sheet %s exit=%d %s" % [bin, code, str(output)])
+
+
+func _python_bin() -> String:
+	for bin in ["python3", "python"]:
+		var output: Array = []
+		var code := OS.execute(bin, PackedStringArray(["-c", "import sys"]), output, true)
+		if code == 0:
+			return bin
+	return "python3"
 
 
 func _mirror_pngs() -> void:
-	var dest := "C:/Users/upchu/aegis_shots/doorlab_B"
+	var dest := ""
+	var args := OS.get_cmdline_user_args()
+	for i in args.size():
+		if args[i] == "--qa-door-lab-mirror" and i + 1 < args.size():
+			dest = str(args[i + 1])
+	if dest == "":
+		return
+	if not DirAccess.dir_exists_absolute(dest):
+		print("[door_lab] mirror skip, absent %s" % dest)
+		return
 	_mirror_dir(_out, dest)
 
 

@@ -1,0 +1,34 @@
+{
+	"doors": {
+		"bay3": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"floorhatch": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"hatch": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"pair": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		},
+		"pocket": {
+			"functional": "PASS",
+			"visual": "PENDING"
+		}
+	},
+	"functional": "PASS",
+	"hooks_missing": [],
+	"notes": [
+		"F-SPRINT-CLEAR is not required in the lab"
+	],
+	"optional_hooks": [],
+	"sloane": "PENDING",
+	"vance": "PENDING",
+	"verdict": "CONDITIONAL",
+	"visual": "PENDING"
+}

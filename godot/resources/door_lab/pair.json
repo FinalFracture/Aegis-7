@@ -27,10 +27,10 @@
   "open_phases": [
     {"name": "request", "t0": 0.0, "t1": 0.08, "kind": "hold", "p0": 0.0, "scale": false},
     {"name": "latch_retract", "t0": 0.08, "t1": 0.2, "kind": "latch", "p0": 0.0, "scale": false},
-    {"name": "lurch", "t0": 0.2, "t1": 0.28, "kind": "cosine", "p0": 0.0, "p1": 1.5, "scale": true},
-    {"name": "travel", "t0": 0.28, "t1": 1.6194, "kind": "scurve", "p0": 1.5, "p1": 86.5, "v": 110.0, "a": 300.0, "j": 1500.0, "scale": true},
-    {"name": "backcheck", "t0": 1.6194, "t1": 2.0194, "kind": "cubic", "p0": 86.5, "p1": 90.0, "scale": true},
-    {"name": "settle", "t0": 2.0194, "t1": 2.2394, "kind": "settle", "p0": 90.0, "p1": 90.0, "amp": 1.0, "sign": 1, "scale": true}
+    {"name": "lurch", "t0": 0.2, "t1": 0.28, "kind": "cosine", "p0": 0.0, "p1": 1.0, "scale": true},
+    {"name": "travel", "t0": 0.28, "t1": 1.770175, "kind": "scurve", "p0": 1.0, "p1": 86.5, "v": 110.0, "a": 187.0, "j": 1500.0, "scale": true},
+    {"name": "backcheck", "t0": 1.770175, "t1": 2.170175, "kind": "cubic", "p0": 86.5, "p1": 90.0, "scale": true},
+    {"name": "settle", "t0": 2.170175, "t1": 2.390175, "kind": "settle", "p0": 90.0, "p1": 90.0, "amp": 1.0, "sign": 1, "scale": true}
   ],
   "close_phases": [
     {"name": "travel", "t0": 0.0, "t1": 3.36667, "kind": "scurve", "p0": 90.0, "p1": 10.0, "v": 30.0, "a": 60.0, "j": 300.0, "scale": true},
@@ -41,7 +41,7 @@
     {"t": 0.08, "name": "latch_clack_l"},
     {"t": 0.14, "name": "latch_clack_r"},
     {"t": 0.28, "name": "assist_hum_start", "loop": true},
-    {"t": 2.0194, "name": "stop_tap"}
+    {"t": 2.170175, "name": "stop_tap"}
   ],
   "cues_close": [
     {"t": 0.0, "name": "closer_hiss_start", "loop": true},

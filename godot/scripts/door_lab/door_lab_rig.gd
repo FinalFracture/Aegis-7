@@ -28,6 +28,9 @@ var _alloy: StandardMaterial3D
 var _seal: StandardMaterial3D
 var _orange: StandardMaterial3D
 var _floor_mat: StandardMaterial3D
+var _wall_mat: StandardMaterial3D
+var _glass: StandardMaterial3D
+var _frit_tex: Texture2D
 var _notes: Array = []
 
 
@@ -41,34 +44,40 @@ func _build(parent: Node3D) -> Dictionary:
 	_make_materials()
 	var profs := {}
 	var max_r := 0.0
-	for id in ["pocket", "bay3", "pair", "hatch"]:
+	for id in ["pocket", "bay3", "pair", "hatch", "floorhatch"]:
 		var prof := load("res://resources/door_lab/%s.tres" % id) as MechDoorProfile
 		prof.load_table()
 		profs[id] = prof
 		max_r = maxf(max_r, prof.trigger_radius(5.2))
-	var spacing := maxf(28.0, 2.0 * max_r + 6.0)
+	# Narrow proximity boxes (not spheres) so the four wall doors can sit a few
+	# metres apart. The floor hatch is off to the side, outside those boxes.
+	var spacing := 5.6
 	var xs := {
-		"pocket": -1.5 * spacing,
-		"bay3": -0.5 * spacing,
-		"pair": 0.5 * spacing,
-		"hatch": 1.5 * spacing,
+		"pocket": -7.6,
+		"bay3": -2.0,
+		"pair": 3.6,
+		"hatch": 7.6,
+		"floorhatch": 12.8,
 	}
 	var depth := maxf(80.0, max_r + 40.0)
-	_environment(xs["hatch"] - xs["pocket"], depth)
-	_floor(xs["pocket"] - 20.0, xs["hatch"] + 20.0, depth)
+	_environment(xs["floorhatch"] - xs["pocket"], depth)
+	_floor(xs["pocket"] - 20.0, xs["floorhatch"] + 8.0, depth)
+	_room_shell(xs["pocket"] - 6.0, xs["floorhatch"] + 3.0)
 	var doors := {}
 	doors["pocket"] = _pocket(profs["pocket"], xs["pocket"])
 	doors["bay3"] = _glb_door(profs["bay3"], xs["bay3"], "res://assets/models/tt_entrance_bay_3l.glb", ["Leaf_0", "Leaf_1", "Leaf_2"], true)
 	doors["pair"] = _glb_door(profs["pair"], xs["pair"], "res://assets/models/tt_door_pair_18.glb", ["Leaf_L", "Leaf_R"], true)
 	doors["hatch"] = _hatch(profs["hatch"], xs["hatch"])
+	doors["floorhatch"] = _floor_hatch(profs["floorhatch"], xs["floorhatch"])
 	_wings_for(doors)
 	# Open shots look through the leaf into the clear color. A lit return gives
 	# that cell a real surface. Visual only: the snag walk must still pass.
 	_vestibules(doors)
+	_reflection_cards(xs)
 	var player := _player(xs["pocket"], -(max_r + 6.0))
 	_lights(xs, depth)
 	print("[door_lab] spacing=%.2f max_trigger=%.2f" % [spacing, max_r])
-	for id in ["pocket", "bay3", "pair", "hatch"]:
+	for id in ["pocket", "bay3", "pair", "hatch", "floorhatch"]:
 		var d: MechDoor = doors[id]
 		print("[door_lab] %s trigger=%.2f open_s=%.3f close_s=%.3f walk_x=%.3f clear=%.3f" % [id, d.trigger_radius, d.profile.open_duration, d.profile.close_duration, float(d.get_meta("walk_x", 0.0)), float(d.get_meta("walk_clear", 0.0))])
 	return {
@@ -79,6 +88,7 @@ func _build(parent: Node3D) -> Dictionary:
 			"bay3": (profs["bay3"] as MechDoorProfile).trigger_radius(5.2),
 			"pair": (profs["pair"] as MechDoorProfile).trigger_radius(5.2),
 			"hatch": 0.0,
+			"floorhatch": 0.0,
 		},
 		"notes": _notes,
 		"player": player,
@@ -89,11 +99,30 @@ func _build(parent: Node3D) -> Dictionary:
 func _make_materials() -> void:
 	_pearl = _mat("TT_WhiteComposite_Lab", PEARL, 0.05, 0.48, TEX_WHITE, Color(0.93, 0.93, 0.93))
 	_graphite = _mat("TT_CarbonSlate_Lab", GRAPHITE, 0.35, 0.62, "", Color.WHITE)
-	_gun = _mat("TT_Gunmetal_Lab", GUN, 0.72, 0.50, TEX_GUN, Color(0.85, 0.85, 0.85))
+	_gun = _mat("TT_Gunmetal_Lab", GUN, 0.55, 0.42, TEX_GUN, Color(0.85, 0.85, 0.85))
+	_gun.metallic = 0.55
+	_gun.roughness = 0.42
 	_alloy = _mat("TT_BrushedAlloy_Lab", ALLOY, 0.95, 0.35, TEX_STEEL, Color(0.80, 0.80, 0.80))
 	_seal = _mat("TT_Seal_Lab", SEAL_C, 0.0, 0.85, "", Color.WHITE)
 	_orange = _mat("Mat_Hub_OverrideOrange", ORANGE, 0.1, 0.45, "", Color.WHITE)
 	_floor_mat = _mat("TT_CarbonSlate_Floor", Color(0.16, 0.17, 0.19), 0.15, 0.60, TEX_SLATE, Color(0.55, 0.55, 0.55))
+	# The slate swatch is a flat ~0.17 grey. A 0.24 multiplier turns the wall black.
+	# These tints land the product near (0.36, 0.38, 0.42) for walls and (0.22, 0.23, 0.25) for the floor.
+	_floor_mat.albedo_color = Color(1.34, 1.22, 1.14)
+	_wall_mat = _mat("TT_CarbonSlate", Color(0.24, 0.26, 0.30), 0.08, 0.70, TEX_SLATE, Color(0.70, 0.72, 0.76))
+	_wall_mat.albedo_color = Color(2.19, 2.02, 1.91)
+	_wall_mat.roughness = 0.7
+	_wall_mat.metallic = 0.08
+	_wall_mat.uv1_triplanar = true
+	_wall_mat.uv1_scale = Vector3(0.5, 0.5, 0.5)
+	_glass = StandardMaterial3D.new()
+	_glass.resource_name = "TT_GlassScissor"
+	_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	_glass.alpha_scissor_threshold = 0.25
+	_glass.albedo_color = Color(0.62, 0.70, 0.74, 1.0)
+	_glass.roughness = 0.20
+	_glass.metallic = 0.0
+	_glass.cull_mode = BaseMaterial3D.CULL_DISABLED
 
 
 func _mat(name: String, albedo: Color, metal: float, rough: float, tex_path: String, tex_tint: Color) -> StandardMaterial3D:
@@ -122,9 +151,10 @@ func _environment(span: float, depth: float) -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#1A1E24")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#1A1E24")
-	env.ambient_light_energy = 0.15
+	env.ambient_light_color = Color("#5A6470")
+	env.ambient_light_energy = 0.35
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_exposure = 1.3
 	env.glow_enabled = false
 	# Flat slate reflection when a probe cubemap is not applied.
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_BG
@@ -150,7 +180,7 @@ func _environment(span: float, depth: float) -> void:
 	probe.max_distance = 80.0
 	probe.interior = true
 	probe.ambient_mode = ReflectionProbe.AMBIENT_COLOR
-	probe.ambient_color = Color("#1A1E24")
+	probe.ambient_color = Color("#3A424C")
 	# Godot #98382: on Windows the compatibility renderer adds a green light to
 	# every mesh inside a ReflectionProbe. Keep the probe (Sloane §5) but do not
 	# apply that cubemap. Metals fall back to the slate background reflection.
@@ -200,82 +230,70 @@ func _wings_for(doors: Dictionary) -> void:
 		var x0 := ab.position.x - 0.040
 		var x1 := ab.position.x + ab.size.x + 0.040
 		if first:
-			_static_box("Wing_Start", Vector3(8.0, 4.0, 0.16), Vector3(x0 - 4.0, 2.0, -0.02), _gun)
+			_static_box("Wing_Start", Vector3(8.0, 4.0, 0.16), Vector3(x0 - 4.0, 2.0, -0.02), _wall_mat)
 			first = false
 		else:
 			var gap := x0 - prev
 			if gap > 0.05:
-				_static_box("Wing_%s" % id, Vector3(gap, 4.0, 0.16), Vector3((prev + x0) * 0.5, 2.0, -0.02), _gun)
+				_static_box("Wing_%s" % id, Vector3(gap, 4.0, 0.16), Vector3((prev + x0) * 0.5, 2.0, -0.02), _wall_mat)
 		prev = x1
-	_static_box("Wing_End", Vector3(8.0, 4.0, 0.16), Vector3(prev + 4.0, 2.0, -0.02), _gun)
+	_static_box("Wing_End", Vector3(8.0, 4.0, 0.16), Vector3(prev + 4.0, 2.0, -0.02), _wall_mat)
 
 
 func _lights(xs: Dictionary, _depth: float) -> void:
 	var key := DirectionalLight3D.new()
 	key.name = "KeyLight"
-	key.light_energy = 0.5
+	key.light_energy = 1.0
 	key.shadow_enabled = true
 	_root.add_child(key)
 	# Approach faces look toward -Z. Pitch −35° and yaw 30° off that normal:
-	# the key comes from the camera side. Euler (−35, 30, 0) aims at world −Z
-	# and leaves the leaf faces in shadow.
+	# the key comes from the camera side. Euler (−35, 30, 0) aims the other way.
 	var yaw := deg_to_rad(30.0)
 	var pitch := deg_to_rad(35.0)
 	var travel := Vector3(sin(yaw) * cos(pitch), -sin(pitch), cos(yaw) * cos(pitch))
 	key.look_at(key.global_position + travel, Vector3.UP)
 	for id in xs.keys():
 		var x: float = xs[id]
-		# One fill on the approach side of each door. Energy stays at Sloane's 0.2.
-		# Closer than the first rig: at z=-2.2 the hatch plug was still near black.
+		# One omni per door, 3 m in front of the approach face and 2.2 m up.
 		var fill := OmniLight3D.new()
 		fill.name = "Fill_%s" % id
-		fill.light_energy = 0.2
+		fill.light_energy = 0.8
 		fill.shadow_enabled = false
 		fill.omni_range = 8.0
-		fill.position = Vector3(x, 1.95, -1.7)
+		fill.omni_attenuation = 1.0
+		fill.position = Vector3(x, 2.2, -3.0)
 		_root.add_child(fill)
+		if id == "floorhatch":
+			# The wing wall sits on z = 0, so the approach fill never reaches the plate.
+			var deck := OmniLight3D.new()
+			deck.name = "DeckFill"
+			deck.light_energy = 1.4
+			deck.shadow_enabled = false
+			deck.omni_range = 6.0
+			deck.omni_attenuation = 1.0
+			deck.position = Vector3(x, 1.65, 2.05)
+			_root.add_child(deck)
+			continue
 		var rim := SpotLight3D.new()
 		rim.name = "Rim_%s" % id
-		rim.light_energy = 0.4
+		rim.light_energy = 0.8
 		rim.light_color = RIM_C
 		rim.spot_angle = 28.0
 		rim.shadow_enabled = false
 		rim.position = Vector3(x, 1.6, 2.4)
 		_root.add_child(rim)
 		rim.look_at(Vector3(x, 1.2, 0.0), Vector3.UP)
-		# Pair is already near white under the key. A wash there only clips it.
-		if id != "pair":
-			var wash := SpotLight3D.new()
-			wash.name = "ApproachWash_%s" % id
-			wash.light_color = Color(1.0, 0.96, 0.92)
-			wash.shadow_enabled = false
-			wash.spot_range = 5.0
-			# The plug is dark metal. The same key that lifts a white stile to 0.34
-			# leaves this face near 0.04, so the hatch wash has to be the stronger one.
-			if id == "hatch":
-				# Frontal cone covers the plug. A second spot sits on the mirror line of
-				# the hero camera (+X), so that 3/4 view gets a broad highlight too.
-				wash.light_energy = 4.0
-				wash.spot_angle = 68.0
-				wash.spot_range = 6.5
-				wash.position = Vector3(x, 1.25, -2.35)
-			else:
-				wash.light_energy = 0.9
-				wash.spot_angle = 48.0
-				wash.position = Vector3(x, 1.7, -2.1)
-			_root.add_child(wash)
-			wash.look_at(Vector3(x, 1.10, 0.02), Vector3.UP)
-			if id == "hatch":
-				var side := SpotLight3D.new()
-				side.name = "ApproachWash_hatch_side"
-				side.light_energy = 4.5
-				side.light_color = Color(1.0, 0.96, 0.92)
-				side.shadow_enabled = false
-				side.spot_angle = 58.0
-				side.spot_range = 6.0
-				side.position = Vector3(x - 1.05, 1.15, -2.05)
-				_root.add_child(side)
-				side.look_at(Vector3(x, 1.05, 0.02), Vector3.UP)
+	# Ceiling wash so the overview reads as a room, not a black plane.
+	for i in 4:
+		var wash := OmniLight3D.new()
+		wash.name = "CeilingWash%d" % i
+		wash.light_energy = 0.55
+		wash.light_color = WARM
+		wash.shadow_enabled = false
+		wash.omni_range = 14.0
+		wash.omni_attenuation = 1.0
+		wash.position = Vector3(-6.0 + float(i) * 6.0, 3.7, -4.0)
+		_root.add_child(wash)
 
 
 func _vestibules(doors: Dictionary) -> void:
@@ -293,6 +311,17 @@ func _vestibules(doors: Dictionary) -> void:
 		var height := 3.6
 		var cx := ab.get_center().x
 		var z := 3.5
+		var energy := 1.4
+		var vz := 2.15
+		var vmat := mat
+		if id == "hatch":
+			# The open plug leaves a hole. A close, wide return keeps that hole from reading as a void.
+			width = maxf(width, 2.6)
+			z = 2.40
+			energy = 3.4
+			vz = 1.55
+			vmat = mat.duplicate() as StandardMaterial3D
+			vmat.albedo_color = Color(0.86, 0.87, 0.88)
 		var mi := MeshInstance3D.new()
 		mi.name = "Vestibule_%s" % id
 		var bm := BoxMesh.new()
@@ -300,16 +329,16 @@ func _vestibules(doors: Dictionary) -> void:
 		mi.mesh = bm
 		mi.position = Vector3(cx, height * 0.5 + 0.02, z)
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		mi.set_surface_override_material(0, mat)
+		mi.set_surface_override_material(0, vmat)
 		_root.add_child(mi)
 		var lamp := OmniLight3D.new()
 		lamp.name = "VestibuleLight_%s" % id
-		lamp.light_energy = 1.4
+		lamp.light_energy = energy
 		lamp.light_color = WARM
 		lamp.shadow_enabled = false
 		lamp.omni_range = 5.5
 		# Between the open leaf and the return, so the approach face stays on the key.
-		lamp.position = Vector3(cx, 1.7, 2.15)
+		lamp.position = Vector3(cx, 1.7, vz)
 		_root.add_child(lamp)
 
 
@@ -349,9 +378,12 @@ func _proximity(door: MechDoor) -> void:
 	area.collision_mask = 1
 	var cs := CollisionShape3D.new()
 	cs.name = "ProximityShape"
-	var sph := SphereShape3D.new()
-	sph.radius = door.trigger_radius
-	cs.shape = sph
+	# A box along the approach (−Z) only. A sphere of this radius would swallow the next door.
+	var depth := door.trigger_radius
+	var box := BoxShape3D.new()
+	box.size = Vector3(3.2, 2.8, depth)
+	cs.shape = box
+	cs.position = Vector3(0.0, 1.3, -depth * 0.5)
 	area.add_child(cs)
 	door.add_child(area)
 	door.attach_proximity(area)
@@ -366,14 +398,16 @@ func _lamp(door: MechDoor, pos: Vector3) -> void:
 	base.resource_name = "Mat_Hub_StateGlow"
 	base.emission_enabled = true
 	base.emission = Color("#FF9500")
-	base.emission_energy_multiplier = 0.6
-	base.albedo_color = Color(0.90, 0.52, 0.0)
-	base.roughness = 0.3
+	base.emission_energy_multiplier = 0.45
+	base.albedo_color = Color(0.10, 0.06, 0.0)
+	base.roughness = 0.35
 	base.metallic = 0.0
+	# Flush vertical jamb strip, 10 × 300 mm, recessed 2 mm behind the face.
+	root.position = pos + Vector3(0.0, 0.0, 0.002)
 	var bar := MeshInstance3D.new()
 	bar.name = "LampBar"
 	var bm := BoxMesh.new()
-	bm.size = Vector3(0.16, 0.012, 0.008)
+	bm.size = Vector3(0.010, 0.300, 0.006)
 	bar.mesh = bm
 	bar.set_surface_override_material(0, base)
 	root.add_child(bar)
@@ -388,9 +422,9 @@ func _lamp(door: MechDoor, pos: Vector3) -> void:
 		var mi := MeshInstance3D.new()
 		mi.name = "LampSeg%d" % i
 		var sm := BoxMesh.new()
-		sm.size = Vector3(0.016, 0.008, 0.006)
+		sm.size = Vector3(0.008, 0.028, 0.004)
 		mi.mesh = sm
-		mi.position = Vector3((float(i) - 3.5) * 0.020, 0.0, -0.005)
+		mi.position = Vector3(0.0, (float(i) - 3.5) * 0.034, 0.001)
 		var seg := base.duplicate() as StandardMaterial3D
 		mi.set_surface_override_material(0, seg)
 		root.add_child(mi)
@@ -401,9 +435,10 @@ func _lamp(door: MechDoor, pos: Vector3) -> void:
 func _downlight(parent: Node3D, pos: Vector3, look: Vector3) -> void:
 	var s := SpotLight3D.new()
 	s.name = "Downlight"
-	s.light_energy = 0.6
+	s.light_energy = 1.2
 	s.light_color = WARM
-	s.spot_angle = 35.0
+	s.spot_angle = 45.0
+	s.spot_range = 5.0
 	s.shadow_enabled = true
 	s.position = pos
 	parent.add_child(s)
@@ -414,10 +449,10 @@ func _reveal(parent: Node3D, name: String, size: Vector3, pos: Vector3) -> void:
 	var m := StandardMaterial3D.new()
 	m.resource_name = "TT_CyanLED"
 	# Emission stays full cyan. Albedo stays under the 0.90 cap even if the strip texture is white.
-	m.albedo_color = Color(0.0, 0.80, 0.85)
+	m.albedo_color = Color(0.02, 0.10, 0.12)
 	m.emission_enabled = true
-	m.emission = CYAN
-	m.emission_energy_multiplier = 0.5
+	m.emission = Color(0.0, 0.55, 0.62)
+	m.emission_energy_multiplier = 0.35
 	m.roughness = 0.3
 	if ResourceLoader.exists(TEX_CYAN):
 		m.albedo_texture = load(TEX_CYAN)
@@ -555,8 +590,11 @@ func _hw(parent: Node3D, name: String, size: Vector3, pos: Vector3, mat: Materia
 
 
 func _wing_seams(body: StaticBody3D, size: Vector3) -> void:
-	var seam := _graphite.duplicate() as StandardMaterial3D
-	seam.roughness = minf(0.92, _graphite.roughness + 0.08)
+	var seam := StandardMaterial3D.new()
+	seam.resource_name = "PanelSeam"
+	seam.albedo_color = Color(0.08, 0.09, 0.10)
+	seam.roughness = 0.85
+	seam.metallic = 0.0
 	var z := -size.z * 0.5 - 0.004
 	var x := -size.x * 0.5 + 0.55
 	var i := 0
@@ -564,13 +602,21 @@ func _wing_seams(body: StaticBody3D, size: Vector3) -> void:
 		var mi := MeshInstance3D.new()
 		mi.name = "PanelSeam%d" % i
 		var bm := BoxMesh.new()
-		bm.size = Vector3(0.008, size.y * 0.90, 0.006)
+		bm.size = Vector3(0.012, size.y * 0.92, 0.008)
 		mi.mesh = bm
 		mi.position = Vector3(x, 0.0, z)
 		mi.set_surface_override_material(0, seam)
 		body.add_child(mi)
 		x += 1.15
 		i += 1
+	var rail := MeshInstance3D.new()
+	rail.name = "PanelRail"
+	var rm := BoxMesh.new()
+	rm.size = Vector3(size.x * 0.98, 0.012, 0.008)
+	rail.mesh = rm
+	rail.position = Vector3(0.0, 0.15, z)
+	rail.set_surface_override_material(0, seam)
+	body.add_child(rail)
 	var band := MeshInstance3D.new()
 	band.name = "WallSkirting"
 	var sb := BoxMesh.new()
@@ -610,10 +656,22 @@ func _seat_reveals(door: Node3D, leaves: Array) -> void:
 	var x1 := x0 + ab.size.x
 	var y0 := ab.position.y - origin.y
 	var y1 := y0 + ab.size.y
-	var zf := ab.position.z - origin.z
-	_reveal(door, "Reveal_Soffit", Vector3(maxf(0.2, x1 - x0), 0.010, 0.010), Vector3((x0 + x1) * 0.5, y1 + 0.014, zf))
-	_reveal(door, "Reveal_JambL", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), Vector3(x0 - 0.018, (y0 + y1) * 0.5, zf))
-	_reveal(door, "Reveal_JambR", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), Vector3(x1 + 0.018, (y0 + y1) * 0.5, zf))
+	# 15 mm behind the approach face (+Z), on the frame so the strip does not ride the leaf.
+	var zf := ab.position.z - origin.z + 0.015
+	var frame := _find(door, "frame", true)
+	if frame == null:
+		frame = _find(door, "Frame", true)
+	var host: Node3D = door
+	var into := func(p: Vector3) -> Vector3:
+		if frame == null:
+			return p
+		var world := door.global_transform * p
+		return frame.global_transform.affine_inverse() * world
+	if frame != null:
+		host = frame
+	_reveal(host, "Reveal_Soffit", Vector3(maxf(0.2, x1 - x0), 0.010, 0.010), into.call(Vector3((x0 + x1) * 0.5, y1 + 0.014, zf)))
+	_reveal(host, "Reveal_JambL", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), into.call(Vector3(x0 - 0.018, (y0 + y1) * 0.5, zf)))
+	_reveal(host, "Reveal_JambR", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), into.call(Vector3(x1 + 0.018, (y0 + y1) * 0.5, zf)))
 
 
 func _skirt(door: Node3D) -> void:
@@ -790,9 +848,12 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 			"axis": Vector3(1, 0, 0),
 		})
 	_retint(inst)
+	_hide_exact(inst, "status_light")
+	for item in leaves:
+		_vision_lite(item["body"])
 	_pocket_tokens(door, inst)
 	_skirt(door)
-	_lamp(door, Vector3(-0.85, 2.46, -0.09))
+	_lamp(door, Vector3(-1.02, 1.35, -0.04))
 	_downlight(door, Vector3(0, 2.85, -0.45), Vector3(x, 1.4, 0))
 	door.bind(prof, leaves, false)
 	door.configure_sensor(Vector3(0, 1.15, 0), Vector3(1.85, 2.15, 0.50))
@@ -840,11 +901,22 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	var body := _rig_pivot(pivot)
 	_tag_hatch(inst)
 	_retint(inst)
-	_hatch_tokens(door, inst)
+	_hide_exact(inst, "status_light")
+	_paint_hatch_leaf(inst)
+	_hatch_tokens(door, inst, body)
 	_seat_reveals(door, [{"body": body}])
 	_skirt(door)
-	_lamp(door, Vector3(0.0, 2.52, -0.20))
+	_lamp(door, Vector3(0.58, 1.45, -0.06))
 	_downlight(door, Vector3(0, 2.90, -0.55), Vector3(x, 1.2, -0.1))
+	# The plug face is recessed in the shell. A close fill is what makes graphite and the dogs read.
+	var face_fill := OmniLight3D.new()
+	face_fill.name = "HatchFaceFill"
+	face_fill.light_energy = 1.55
+	face_fill.shadow_enabled = false
+	face_fill.omni_range = 3.4
+	face_fill.omni_attenuation = 1.4
+	face_fill.position = Vector3(0.08, 1.55, -0.95)
+	door.add_child(face_fill)
 	var leaves: Array = [{
 		"name": "leaf",
 		"sign": int(spec.get("sign", 1)),
@@ -891,7 +963,7 @@ func _tag_hatch(inst: Node3D) -> void:
 		_alias(rod, "DamperRod", Vector3.ZERO)
 
 
-func _hatch_tokens(door: Node3D, inst: Node3D) -> void:
+func _hatch_tokens(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 	var hinge := _find(inst, "hinge_frame", false)
 	if hinge != null:
 		_alias(hinge, "HingeHeavy", Vector3(0.62, 0.55, -0.02))
@@ -901,15 +973,43 @@ func _hatch_tokens(door: Node3D, inst: Node3D) -> void:
 		_alias(rams, "PushOffRam", Vector3(-0.50, 0.85, -0.02))
 	_hw(door, "Davit", Vector3(0.028, 0.028, 0.36), Vector3(-0.10, 2.40, -0.18), _alloy)
 	_hw(door, "EqualizePort", Vector3(0.07, 0.05, 0.010), Vector3(-0.62, 1.62, -0.18), _alloy)
-	_hw(door, "HoldOpenCatch", Vector3(0.045, 0.028, 0.030), Vector3(0.28, 0.38, -0.18), _alloy)
+	_hw(door, "HoldOpenCatch", Vector3(0.045, 0.028, 0.030), Vector3(0.78, 0.42, -0.10), _alloy)
 	_hw(door, "EqualizeLever", Vector3(0.018, 0.12, 0.016), Vector3(-0.62, 1.02, -0.19), _orange)
-	var band := _mesh(door, "HazardBand", Vector3(0.62, 0.040, 0.006), Vector3(0.0, 0.24, -0.18), _orange, 0.0)
-	var band_mat := band.get_surface_override_material(0)
-	if band_mat is StandardMaterial3D:
-		var dup := (band_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
-		dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		dup.albedo_color.a = 0.9
-		band.set_surface_override_material(0, dup)
+	_hw(door, "EqualizeGrille", Vector3(0.10, 0.08, 0.008), Vector3(-0.62, 1.78, -0.16), _alloy)
+	# The plug shell's approach face is local z = -0.14. Hardware behind that is hidden.
+	if leaf_body != null:
+		var face_z := -0.162
+		var wheel := MeshInstance3D.new()
+		wheel.name = "OverrideOrange"
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 0.12
+		cyl.bottom_radius = 0.12
+		cyl.height = 0.016
+		wheel.mesh = cyl
+		wheel.position = Vector3(-0.65, 1.12, face_z)
+		wheel.rotation.x = PI * 0.5
+		wheel.set_surface_override_material(0, _orange)
+		leaf_body.add_child(wheel)
+		_hw(leaf_body, "OverrideHub", Vector3(0.04, 0.04, 0.012), Vector3(-0.65, 1.12, face_z - 0.012), _alloy)
+		var dogs := [
+			Vector2(-1.02, 0.72), Vector2(-1.02, 1.52),
+			Vector2(-0.28, 0.78), Vector2(-0.28, 1.48),
+			Vector2(-0.88, 1.88), Vector2(-0.42, 1.88),
+			Vector2(-0.88, 0.36), Vector2(-0.42, 0.36),
+		]
+		for i in dogs.size():
+			var d: Vector2 = dogs[i]
+			_hw(leaf_body, "DogLug%d" % i, Vector3(0.07, 0.028, 0.014), Vector3(d.x, d.y, face_z), _alloy)
+		_readout(leaf_body, "DigitalReadout", Vector3(-0.95, 1.58, face_z))
+		var band := _mesh(leaf_body, "HazardBand", Vector3(0.62, 0.040, 0.008), Vector3(-0.65, 0.34, face_z), _orange, 0.0)
+		var band_mat := band.get_surface_override_material(0)
+		if band_mat is StandardMaterial3D:
+			var dup := (band_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+			dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			dup.albedo_color.a = 0.9
+			band.set_surface_override_material(0, dup)
+	_readout(door, "DigitalReadoutBack", Vector3(0.28, 1.55, 0.22))
+	_linkage_and_ribs(door, leaf_body)
 
 
 func _wall_piece(body: StaticBody3D, size: Vector3, pos: Vector3) -> void:
@@ -965,6 +1065,8 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 	_shift_to_plane(inst, leaves)
 	_retint(inst)
 	_rename_glass(inst)
+	if prof.door_id == "bay3":
+		_hide_show_meshes(inst)
 	_bay_pair_hw(door, inst, prof.door_id, leaves)
 	_seat_reveals(door, leaves)
 	var leaf_ab := _aabb_node(leaves[0]["body"])
@@ -972,7 +1074,8 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 		leaf_ab = leaf_ab.merge(_aabb_node(item["body"]))
 	var face_z := leaf_ab.position.z - door.global_position.z
 	var top_y := leaf_ab.position.y + leaf_ab.size.y
-	_lamp(door, Vector3(leaf_ab.get_center().x - door.global_position.x, top_y + 0.04, face_z - 0.012))
+	var jamb_x := leaf_ab.position.x - door.global_position.x + 0.04
+	_lamp(door, Vector3(jamb_x, leaf_ab.get_center().y - door.global_position.y, face_z + 0.006))
 	_downlight(door, Vector3(0, top_y + 0.45, face_z - 0.40), Vector3(x, 1.3, 0))
 	door.bind(prof, leaves, hinge)
 	if prof.door_id == "bay3":
@@ -1112,17 +1215,40 @@ func _retint(root: Node) -> void:
 					continue
 				var dup := (mat as BaseMaterial3D).duplicate() as BaseMaterial3D
 				var low := label.to_lower()
-				if "whitecomposite" in low or "white_composite" in low or "pearl" in low:
+				if "door_scissor" in low or "side_scissor" in low or "upper_scissor" in low:
+					# The GLB frit is a flat cyan (184, 219, 237) with the pattern in alpha.
+					# Leaf bodies use a cool project grey. Cyan stays on the reveal strips.
+					if dup is StandardMaterial3D:
+						var frit := dup as StandardMaterial3D
+						frit.albedo_texture = _neutral_frit(frit.albedo_texture)
+						frit.emission_enabled = false
+					dup.albedo_color = Color(0.80, 0.82, 0.84, 1.0)
+					dup.roughness = 0.32
+					dup.metallic = 0.10
+					dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+					dup.alpha_scissor_threshold = 0.2
+				elif "whitecomposite" in low or "white_composite" in low or "pearl" in low:
 					# Blue stays at 0.900. #D8DEE6's 0.902 is only legal on the WhiteComposite name.
 					dup.albedo_color = Color(0.847, 0.871, 0.900, dup.albedo_color.a)
 					dup.albedo_texture = null
 					dup.metallic = 0.1
 					dup.roughness = 0.48
-				elif "glass" in low:
+				elif "glass" in low or "vision" in low:
+					# Frit / interlayer: the X is the mesh, drawn as thin glass, not an opaque grille.
 					dup.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-					dup.albedo_color = Color(0.70, 0.84, 0.89)
-					dup.roughness = 0.08
+					dup.alpha_scissor_threshold = 0.2
+					dup.albedo_color = Color(0.76, 0.86, 0.90, 1.0)
+					dup.roughness = 0.05
 					dup.metallic = 0.0
+					if dup is StandardMaterial3D:
+						(dup as StandardMaterial3D).emission_enabled = false
+				elif "cyan" in low or "court_line" in low or ("led" in low and "amber" not in low) or ("scissor" in low and "glass" not in low):
+					dup.albedo_color = Color(0.02, 0.10, 0.12, 1.0)
+					if dup is StandardMaterial3D:
+						var sd := dup as StandardMaterial3D
+						sd.emission_enabled = true
+						sd.emission = Color(0.0, 0.45, 0.52)
+						sd.emission_energy_multiplier = 0.28
 				elif "seal" in low or "rubber" in low:
 					var c := dup.albedo_color
 					dup.albedo_color = Color(minf(c.r, 0.90), minf(c.g, 0.90), minf(c.b, 0.90), c.a)
@@ -1542,3 +1668,226 @@ func _local_aabb(body: Node3D) -> AABB:
 			ab = box if not any else ab.merge(box)
 			any = true
 	return ab
+
+
+func _room_shell(x0: float, x1: float) -> void:
+	var w := x1 - x0
+	var cx := (x0 + x1) * 0.5
+	var ceil := MeshInstance3D.new()
+	ceil.name = "Ceiling"
+	var bm := BoxMesh.new()
+	bm.size = Vector3(w, 0.08, 18.0)
+	ceil.mesh = bm
+	ceil.position = Vector3(cx, 4.15, -2.0)
+	ceil.set_surface_override_material(0, _wall_mat)
+	_root.add_child(ceil)
+	var deck := MeshInstance3D.new()
+	deck.name = "HatchDeck"
+	var dm := BoxMesh.new()
+	dm.size = Vector3(3.2, 0.04, 3.2)
+	deck.mesh = dm
+	deck.position = Vector3(12.8, -0.02, 0.5)
+	deck.set_surface_override_material(0, _floor_mat)
+	_root.add_child(deck)
+
+
+func _reflection_cards(xs: Dictionary) -> void:
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = "ReflectionCard"
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color("#DDE6EE")
+	mat.emission_enabled = true
+	mat.emission = Color("#DDE6EE")
+	mat.emission_energy_multiplier = 0.6
+	var yaw := deg_to_rad(30.0)
+	for id in xs.keys():
+		var x: float = xs[id]
+		var back := 3.55
+		var mi := MeshInstance3D.new()
+		mi.name = "ReflectCard_%s" % id
+		var card := BoxMesh.new()
+		card.size = Vector3(2.0, 4.0, 0.02)
+		mi.mesh = card
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.position = Vector3(x + sin(yaw) * back, 2.0, -cos(yaw) * back)
+		mi.set_surface_override_material(0, mat)
+		_root.add_child(mi)
+
+
+func _vision_lite(body: Node3D) -> void:
+	var ab := _local_aabb(body)
+	if ab.size == Vector3.ZERO:
+		return
+	var cx := ab.get_center().x
+	var top := ab.position.y + ab.size.y
+	var z := ab.position.z + 0.008
+	_mesh(body, "VisionLite", Vector3(0.45, 0.90, 0.008), Vector3(cx, top - 0.62, z), _glass, 0.0)
+	var xa := _mesh(body, "VisionFritA", Vector3(0.42, 0.008, 0.004), Vector3(cx, top - 0.62, z - 0.004), _glass, 0.0)
+	xa.rotation.z = deg_to_rad(58.0)
+	var xb := _mesh(body, "VisionFritB", Vector3(0.42, 0.008, 0.004), Vector3(cx, top - 0.62, z - 0.004), _glass, 0.0)
+	xb.rotation.z = deg_to_rad(-58.0)
+
+
+func _hide_exact(root: Node, nm: String) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if String(n.name) == nm and n is MeshInstance3D:
+			(n as MeshInstance3D).visible = false
+
+
+func _neutral_frit(src: Texture2D) -> Texture2D:
+	if _frit_tex != null:
+		return _frit_tex
+	if src == null:
+		return null
+	var img := src.get_image()
+	if img == null or img.is_empty():
+		return src
+	img = img.duplicate()
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			img.set_pixel(x, y, Color(0.92, 0.93, 0.94, c.a))
+	_frit_tex = ImageTexture.create_from_image(img)
+	return _frit_tex
+
+
+func _hide_show_meshes(root: Node) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		var low := String(n.name).to_lower()
+		var hide := "bollard_ball" in low or "blade_ball" in low or "ball_finial" in low or "ball_bollard" in low
+		if not hide:
+			continue
+		if n is MeshInstance3D:
+			(n as MeshInstance3D).visible = false
+		if n is CollisionObject3D:
+			(n as CollisionObject3D).collision_layer = 0
+			(n as CollisionObject3D).collision_mask = 0
+		if n is Node3D:
+			for ch in n.get_children():
+				if ch is MeshInstance3D:
+					(ch as MeshInstance3D).visible = false
+
+
+func _paint_hatch_leaf(root: Node) -> void:
+	var face := _graphite.duplicate() as StandardMaterial3D
+	face.metallic = 0.5
+	face.roughness = 0.45
+	face.albedo_texture = null
+	face.albedo_color = GRAPHITE
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var low := String(n.name).to_lower()
+		if "leaf_shell" in low or "leaf_panel" in low or "leaf_face" in low:
+			var mi := n as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			for s in mi.mesh.get_surface_count():
+				mi.set_surface_override_material(s, face)
+
+
+func _readout(parent: Node3D, nm: String, pos: Vector3) -> void:
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = "DigitalReadout"
+	mat.albedo_color = Color(0.02, 0.08, 0.05)
+	mat.emission_enabled = true
+	mat.emission = Color(0.25, 0.85, 0.40)
+	mat.emission_energy_multiplier = 0.4
+	mat.roughness = 0.4
+	_mesh(parent, nm, Vector3(0.09, 0.035, 0.006), pos, mat, 0.0)
+
+
+func _linkage_and_ribs(door: Node3D, leaf_body: Node3D) -> void:
+	for i in 4:
+		var y := 0.55 + float(i) * 0.32
+		var side := -1.0 if i < 2 else 1.0
+		var host: Node3D = leaf_body if leaf_body != null else door
+		# Leaf-local bars beside the dogs. Door-local fallback keeps a frame door from dropping them.
+		var pos := Vector3(-0.65 + side * 0.32, y, -0.160) if leaf_body != null else Vector3(side * 0.22, y, -0.12)
+		_hw(host, "Linkage%d" % i, Vector3(0.014, 0.16, 0.012), pos, _alloy)
+	if leaf_body == null:
+		return
+	var ab := _local_aabb(leaf_body)
+	if ab.size == Vector3.ZERO:
+		return
+	var z := ab.position.z + ab.size.z + 0.008
+	var cx := ab.get_center().x
+	var y0 := ab.position.y + 0.25
+	for i in 5:
+		_hw(leaf_body, "Rib%d" % i, Vector3(ab.size.x * 0.72, 0.018, 0.012), Vector3(cx, y0 + float(i) * ab.size.y * 0.16, z), _gun)
+
+
+func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
+	var door := _door("floorhatch", x)
+	door.hinge_axis = Vector3(1.0, 0.0, 0.0)
+	var pivot := Node3D.new()
+	pivot.name = "LeafPivot"
+	door.add_child(pivot)
+	var body := _new_body(pivot)
+	body.name = "LeafBody"
+	_body_shape(body, Vector3(1.0, 0.10, 1.0))
+	var shape := body.get_node_or_null("LeafShape") as CollisionShape3D
+	if shape != null:
+		shape.position = Vector3(0.0, -0.05, 0.50)
+	var face := _graphite.duplicate() as StandardMaterial3D
+	face.metallic = 0.5
+	face.roughness = 0.45
+	face.albedo_texture = null
+	face.albedo_color = GRAPHITE
+	var plate := _mesh(body, "leaf_shell", Vector3(1.0, 0.10, 1.0), Vector3(0.0, -0.05, 0.50), face, 0.0)
+	plate.name = "leaf_shell"
+	for i in 4:
+		_hw(body, "Rib%d" % i, Vector3(0.78, 0.016, 0.012), Vector3(0.0, 0.012, 0.22 + float(i) * 0.18), _gun)
+	for side in [-1.0, 1.0]:
+		_hw(body, "GasStrut", Vector3(0.028, 0.028, 0.55), Vector3(side * 0.32, 0.04, 0.42), _alloy)
+	_hw(body, "StayArm", Vector3(0.02, 0.02, 0.40), Vector3(0.0, 0.06, 0.28), _alloy)
+	_hw(body, "DamperRod", Vector3(0.03, 0.03, 0.22), Vector3(0.0, 0.02, 0.72), _gun)
+	_hw(body, "LockWheel", Vector3(0.14, 0.02, 0.14), Vector3(0.0, 0.02, 0.55), _orange)
+	_hw(body, "Dog", Vector3(0.06, 0.02, 0.04), Vector3(0.28, 0.02, 0.18), _gun)
+	_mesh(body, "InflatableSeal", Vector3(0.92, 0.012, 0.92), Vector3(0.0, -0.09, 0.50), _seal, 0.0)
+	# Tops sit 30 mm above the floor so the rim does not z-fight the floor plane.
+	_static_box("FloorFrameN", Vector3(1.3, 0.08, 0.12), Vector3(x, -0.01, -0.08), _gun)
+	_static_box("FloorFrameS", Vector3(1.3, 0.08, 0.12), Vector3(x, -0.01, 1.08), _gun)
+	_static_box("FloorFrameW", Vector3(0.12, 0.08, 1.0), Vector3(x - 0.62, -0.01, 0.50), _gun)
+	_static_box("FloorFrameE", Vector3(0.12, 0.08, 1.0), Vector3(x + 0.62, -0.01, 0.50), _gun)
+	_lamp(door, Vector3(0.72, 0.28, -0.05))
+	_downlight(door, Vector3(0.0, 2.4, -0.6), Vector3(x, 0.1, 0.4))
+	var top := OmniLight3D.new()
+	top.name = "FloorHatchTop"
+	top.light_energy = 1.8
+	top.shadow_enabled = false
+	top.omni_range = 3.2
+	top.omni_attenuation = 1.0
+	top.position = Vector3(0.15, 1.55, 0.85)
+	door.add_child(top)
+	var leaves: Array = [{
+		"name": "leaf",
+		"sign": -1,
+		"stagger_open": 0.0,
+		"stagger_close": 0.0,
+		"body": body,
+		"pivot": pivot,
+		"rest": Vector3.ZERO,
+		"axis": Vector3.ZERO,
+	}]
+	door.bind(prof, leaves, true)
+	door.configure_sensor(Vector3(0.0, 0.45, 0.50), Vector3(0.70, 0.70, 0.70))
+	door.set_approach(Vector3(0, 0, -1))
+	door.set_meta("block_x", 0.0)
+	door.set_meta("walk_x", 0.0)
+	door.set_meta("walk_clear", 1.0)
+	door.set_meta("glb", "")
+	return door

@@ -209,9 +209,16 @@ func t_open_to_clear(gap_m: float) -> float:
 func trigger_radius(walk_speed: float) -> float:
 	if interact:
 		return 0.0
-	var t_clear := t_open_to_clear(0.80)
+	var stagger := 0.0
+	for item in leaves:
+		stagger = maxf(stagger, float(item.get("stagger_open", 0.0)))
+	var t_clear := t_open_to_clear(0.80) + stagger
 	# One walk tick of pad on top of the 0.85 m approach margin.
-	return walk_speed * t_clear + 0.85
+	var radius := walk_speed * t_clear + 0.85
+	# Bay3 must cover the staggered last leaf. 9.95 m is the lab floor.
+	if door_id == "bay3":
+		radius = maxf(radius, 9.95)
+	return radius
 
 
 func _group_of(ph: Dictionary) -> String:

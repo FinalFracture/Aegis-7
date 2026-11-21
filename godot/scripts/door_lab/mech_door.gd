@@ -59,6 +59,11 @@ var _played: Dictionary = {}
 var _interact_held: float = 0.0
 var _hw: Array = []
 var _approach_axis := Vector3(0, 0, -1)
+var hinge_axis := Vector3(0, 1, 0)
+var emergency := false
+var klaxon_fired := false
+var _reopen_dur: float = 0.35
+var _log_prev_v: Array = []
 var _sensor: ShapeCast3D
 var _block_sensor: Area3D
 var _prev_phase: String = ""
@@ -135,6 +140,7 @@ func reset_closed() -> void:
 	_stall = false
 	_cue_i = 0
 	_played.clear()
+	klaxon_fired = false
 	_interact_held = 0.0
 	_hold_left = 0.0
 	_open_age = 0.0
@@ -149,6 +155,14 @@ func reset_closed() -> void:
 	_set_state("closed")
 	phase = "idle"
 	rows.clear()
+
+
+func present_fault() -> void:
+	force_q(profile.travel * 0.2)
+	_set_lamp("fault", true)
+	state = "fault"
+	_set_state("fault")
+	phase = "fault"
 
 
 func force_q(q: float) -> void:
@@ -189,9 +203,12 @@ func pump(delta: float) -> void:
 		"opening":
 			_tick_profile("open", delta)
 		"closing":
-			_tick_profile("close", delta)
-			if _obstruction_hit():
-				_begin_brake()
+			if emergency and _obstruction_hit():
+				_emergency_creep(delta)
+			else:
+				_tick_profile("close", delta)
+				if _obstruction_hit() and not emergency:
+					_begin_brake()
 		"braking":
 			_tick_brake(delta)
 		"dwell":
@@ -209,7 +226,7 @@ func pump(delta: float) -> void:
 		"open":
 			_open_age += delta
 			if _open_age > 3.0 and lamp == "open":
-				_target_energy = 0.4
+				_target_energy = 0.35
 			_hold_left -= delta
 			if _zone_occupied() or locked:
 				_hold_left = _hold_seconds()
@@ -408,8 +425,10 @@ func _fire_cues(dir: String) -> void:
 
 func _blip(nm: String) -> void:
 	var player := get_node_or_null("Cue_" + nm) as AudioStreamPlayer3D
-	if player == null or player.stream == null:
+	if player == null:
 		return
+	if player.stream == null:
+		player.stream = _click_stream()
 	player.play()
 
 
@@ -418,7 +437,11 @@ func _pose_leaf(i: int, q: float) -> void:
 	var sign := float(leaf["sign"])
 	var body: AnimatableBody3D = leaf["body"]
 	if _hinge:
-		body.rotation = Vector3(0.0, deg_to_rad(sign * q), 0.0)
+		# Floor hatch swings about local X. Sign -1 lifts a leaf that extends +Z.
+		if absf(hinge_axis.x) > 0.5:
+			body.rotation = Vector3(deg_to_rad(sign * q), 0.0, 0.0)
+		else:
+			body.rotation = Vector3(0.0, deg_to_rad(sign * q), 0.0)
 	else:
 		var rest: Vector3 = leaf["rest"]
 		var axis: Vector3 = leaf["axis"]
@@ -462,6 +485,30 @@ func _obstruction_hit() -> bool:
 
 func _approach_blocked() -> bool:
 	return _obstruction_hit()
+
+
+func _emergency_creep(delta: float) -> void:
+	# Pressure emergency: no reverse. The curtain only slows the close to 5 deg/s.
+	for i in _leaves.size():
+		var q := maxf(0.0, q_now[i] - 5.0 * delta)
+		q_now[i] = q
+		v_now[i] = -5.0 if q > 0.0 else 0.0
+		_pose_leaf(i, q)
+		if i < _leaf_phase.size():
+			_leaf_phase[i] = "emergency"
+	_sync_bodies()
+	phase = "emergency"
+	state = "closing"
+	_set_state("closing")
+	if not klaxon_fired:
+		klaxon_fired = true
+		cue.emit("klaxon_emergency")
+		_blip("klaxon_emergency")
+		var player := get_node_or_null("Cue_klaxon_emergency") as AudioStreamPlayer3D
+		if player != null and player.stream is AudioStreamWAV:
+			(player.stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+			if not player.playing:
+				player.play()
 
 
 func _begin_brake() -> void:
@@ -537,10 +584,14 @@ func _begin_reopen() -> void:
 	_reopen_from = q_now.duplicate()
 	_reopen_t = 0.0
 	var cap := float(spec.get("v_cap", 0.0))
-	var peak := profile.v_peak_open
+	if cap <= 0.0:
+		cap = 0.6 if profile.clear_model == "slide" else 40.0
+	var dist := 0.0
+	for i in _leaves.size():
+		dist = maxf(dist, absf(profile.travel - q_now[i]))
+	# Raised-cosine peak is (pi/2)*dist/dur. Size dur so that peak equals the cap.
+	_reopen_dur = maxf(0.35, (PI * 0.5) * dist / cap)
 	_reopen_scale = 1.0
-	if cap > 0.0 and peak > cap:
-		_reopen_scale = peak / cap
 	state = "reopening"
 	_set_state("reopening")
 	_set_lamp("moving", false)
@@ -558,7 +609,7 @@ func _tick_reopen(delta: float) -> void:
 		# leaf cannot stop on top of the capsule. 30° is the minimum safe pose.
 		if _obstruction_hit():
 			target = profile.travel
-	var dur := maxf(0.35, profile.duration("open") * 0.45 * _reopen_scale)
+	var dur := maxf(_reopen_dur, 0.35)
 	var u := clampf(_reopen_t / dur, 0.0, 1.0)
 	# Raised cosine. Starts and ends at v = 0, no linear segment.
 	var s := 0.5 - 0.5 * cos(PI * u)
@@ -639,19 +690,19 @@ func _set_lamp(mode: String, instant: bool) -> void:
 	match mode:
 		"locked":
 			_target_color = Color("#FF2A2A")
-			_target_energy = 0.8
+			_target_energy = 0.45
 		"closed":
 			_target_color = Color("#FF9500")
-			_target_energy = 0.6
+			_target_energy = 0.45
 		"moving":
 			_target_color = Color("#00E5FF")
-			_target_energy = 0.9
+			_target_energy = 0.45
 		"open":
 			_target_color = Color("#3FAF6A")
-			_target_energy = 0.7
+			_target_energy = 0.45
 		"fault":
 			_target_color = Color("#FF2A2A")
-			_target_energy = 1.0
+			_target_energy = 0.45
 	if instant:
 		_shown_color = _target_color
 		_shown_energy = _target_energy
@@ -662,7 +713,7 @@ func _fade_lamp(delta: float) -> void:
 	if lamp == "fault":
 		var blink := sin(TAU * 2.0 * Time.get_ticks_msec() / 1000.0) > 0.0
 		_target_color = Color("#FF2A2A") if blink else Color("#FF9500")
-		_target_energy = 1.0
+		_target_energy = 0.45
 	var k := clampf(delta / 0.15, 0.0, 1.0)
 	_shown_color = _shown_color.lerp(_target_color, k)
 	_shown_energy = lerpf(_shown_energy, _target_energy, k)
@@ -674,10 +725,8 @@ func _paint_lamp() -> void:
 		_lamp_mat.emission_enabled = true
 		_lamp_mat.emission = _shown_color
 		_lamp_mat.emission_energy_multiplier = _shown_energy
-		# Status hue stays in the emission. Albedo is capped at 0.90.
-		var c := _shown_color
-		# Emission carries the status hue. Albedo stays dark so the lamp is not a white bar.
-		_lamp_mat.albedo_color = Color(0.15, 0.15, 0.15, 1.0)
+		# Dark amber body. A grey albedo plus a bright emission clips to a lemon bar.
+		_lamp_mat.albedo_color = Color(0.10, 0.06, 0.0, 1.0)
 	if _lamp_light != null:
 		_lamp_light.light_color = _shown_color
 		_lamp_light.light_energy = 0.15
@@ -897,6 +946,9 @@ func _log_tick(_delta: float) -> void:
 		var leaf: Dictionary = _leaves[i]
 		var body: AnimatableBody3D = leaf["body"]
 		var o := body.global_position
+		var prev_v := float(_log_prev_v[i]) if i < _log_prev_v.size() else v_now[i]
+		var acc := (v_now[i] - prev_v) / maxf(_delta, 1.0e-5)
+		var yaw := body.rotation_degrees.x if absf(hinge_axis.x) > 0.5 else body.rotation_degrees.y
 		rows.append({
 			"t": sim_t,
 			"motion_t": motion_t,
@@ -904,16 +956,19 @@ func _log_tick(_delta: float) -> void:
 			"leaf": str(leaf["name"]),
 			"px": o.x, "py": o.y, "pz": o.z,
 			"q": q_now[i],
-			"yaw": body.rotation_degrees.y,
+			"yaw": yaw,
 			"vel": v_now[i],
 			"leaf_vel": deg_to_rad(v_now[i]) if _hinge else v_now[i],
+			"leaf_acc": acc,
 			"drift_mm": drift * 1000.0,
 			"gap_mm": gap,
 			"contacts": contacts,
 			"lamp": lamp,
+			"lamp_energy": _shown_energy,
 			"collider": 1 if body.collision_layer != 0 else 0,
 			"state": state,
 		})
+	_log_prev_v = v_now.duplicate()
 
 
 func _drift() -> float:
@@ -944,6 +999,8 @@ func _ensure_sensor() -> void:
 		box.size = Vector3(1.7, 2.1, 0.45)
 	elif door_id == "pair":
 		box.size = Vector3(1.5, 2.1, 0.5)
+	elif door_id == "floorhatch":
+		box.size = Vector3(0.70, 0.55, 0.70)
 	_sensor.shape = box
 	_sensor.target_position = Vector3(0, 0, 0.02)
 	_sensor.collision_mask = 1
@@ -969,8 +1026,25 @@ func _place_sensor() -> void:
 	_sensor.position = _sensor_pos
 
 
+func _click_stream() -> AudioStreamWAV:
+	var stream := AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_8_BITS
+	stream.mix_rate = 8000
+	stream.stereo = false
+	var count := 480
+	var data := PackedByteArray()
+	data.resize(count)
+	for i in count:
+		var env := exp(-float(i) / 90.0)
+		var s := sin(TAU * 880.0 * float(i) / 8000.0) * env
+		data[i] = int(clampf(128.0 + s * 90.0, 0.0, 255.0))
+	stream.data = data
+	return stream
+
+
 func _ensure_cues() -> void:
 	var seen := {}
+	var click := _click_stream()
 	for direction in ["open", "close"]:
 		for c in profile.cues(direction):
 			var nm := str(c["name"])
@@ -980,7 +1054,14 @@ func _ensure_cues() -> void:
 			var p := AudioStreamPlayer3D.new()
 			p.name = "Cue_" + nm
 			p.unit_size = 2.0
+			p.stream = click
 			add_child(p)
+	if not seen.has("klaxon_emergency"):
+		var alarm := AudioStreamPlayer3D.new()
+		alarm.name = "Cue_klaxon_emergency"
+		alarm.unit_size = 4.0
+		alarm.stream = click.duplicate()
+		add_child(alarm)
 
 
 func drift_deg() -> float:

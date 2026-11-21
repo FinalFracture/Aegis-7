@@ -1,0 +1,81 @@
+{
+  "door_id": "floorhatch",
+  "motion": "swing",
+  "travel_time_scale": 0.45,
+  "mech_phase_scale": 0.60,
+  "lurch_scale": 1.0,
+  "settle_scale": 1.0,
+  "close_travel_scale": 0.60,
+  "close_v_cap": 0.0,
+  "inertia_kgm2": 46.7,
+  "expect_open": 4.09,
+  "expect_close": 6.39,
+  "mass_kg": 140,
+  "travel": 105.0,
+  "v_peak_open": 35.0,
+  "a_open": 35.0,
+  "j_open": 105.0,
+  "v_peak_close": 20.0,
+  "a_close": 20.0,
+  "j_close": 60.0,
+  "hold_open_s": 2.0,
+  "interact": true,
+  "pre_equalized": false,
+  "full_clear_m": 1.0,
+  "clear_model": "swing",
+  "hinge_axis": "x",
+  "meta": {
+    "leaf": "1.00 x 1.00 x 0.10",
+    "swing": "local X, sign -1 lifts the +Z leaf",
+    "struts": "2 x 585 N m",
+    "inertia_note": "I=46.7 = 140 * 1^2 / 3 about the hinge edge. Close 0.60x is 33.3 deg/s and 7.9 J. Section 8's 5.7 J was this inertia at the retired 0.7x cruise.",
+    "r13": "0.08 / 1.0 / 1.45"
+  },
+  "obstruction": {"stop_s": 0.6, "stop_dist": 8.0, "stop_a": 40.0, "dwell_s": 0.15, "v_cap": 20.0, "hold_s": 2.0, "reopen_to": 30.0, "fault_count": 3, "edge_force_n": 150},
+  "leaves": [
+    {"name": "leaf", "sign": -1, "stagger_open": 0.0, "stagger_close": 0.0}
+  ],
+  "open_phases": [
+    {"name": "request", "t0": 0.0, "t1": 0.2, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "equalize", "t0": 0.2, "t1": 1.7, "kind": "latch", "p0": 0.0, "scale": false},
+    {"name": "dogs", "t0": 1.7, "t1": 2.5, "kind": "latch", "p0": 0.0, "scale": false},
+    {"name": "seal_deflate", "t0": 2.5, "t1": 3.0, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "lurch", "t0": 3.0, "t1": 3.35, "kind": "cosine", "p0": 0.0, "p1": 0.7, "scale": true},
+    {"name": "travel", "t0": 3.35, "t1": 7.663333, "kind": "scurve", "p0": 0.7, "p1": 105.0, "v": 35.0, "a": 35.0, "j": 105.0, "scale": true}
+  ],
+  "close_phases": [
+    {"name": "prewarn", "t0": 0.0, "t1": 1.0, "kind": "hold", "p0": 105.0, "scale": false},
+    {"name": "travel", "t0": 1.0, "t1": 7.483333, "kind": "scurve", "p0": 105.0, "p1": 2.0, "v": 20.0, "a": 20.0, "j": 60.0, "scale": true},
+    {"name": "final_seat", "t0": 7.483333, "t1": 8.15, "kind": "cubic", "p0": 2.0, "p1": 0.0, "scale": true},
+    {"name": "seat_gap", "t0": 8.15, "t1": 8.2, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "dogs", "t0": 8.2, "t1": 9.0, "kind": "latch", "p0": 0.0, "scale": false},
+    {"name": "dog_gap", "t0": 9.0, "t1": 9.05, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "seal_inflate", "t0": 9.05, "t1": 9.65, "kind": "hold", "p0": 0.0, "scale": false},
+    {"name": "leak_check", "t0": 9.65, "t1": 10.65, "kind": "hold", "p0": 0.0, "scale": false}
+  ],
+  "cues_open": [
+    {"t": 0.2, "name": "equalize_hiss_start", "loop": true},
+    {"t": 1.7, "name": "equalize_hiss_stop", "stop": true},
+    {"t": 1.7, "name": "dog_whine_start", "loop": true},
+    {"t": 2.3, "name": "dog_clunk_1"},
+    {"t": 2.33, "name": "dog_clunk_2"},
+    {"t": 2.36, "name": "dog_clunk_3"},
+    {"t": 2.39, "name": "dog_clunk_4"},
+    {"t": 2.42, "name": "dog_clunk_5"},
+    {"t": 2.45, "name": "dog_clunk_6"},
+    {"t": 2.48, "name": "dog_clunk_7"},
+    {"t": 2.51, "name": "dog_clunk_8"},
+    {"t": 2.5, "name": "seal_deflate_hiss"},
+    {"t": 3.05, "name": "unseat_thunk"},
+    {"t": 3.35, "name": "actuator_hum_start", "loop": true},
+    {"t": 7.663333, "name": "stayarm_detent_clunk"}
+  ],
+  "cues_close": [
+    {"t": 0.0, "name": "klaxon_1"},
+    {"t": 0.5, "name": "klaxon_2"},
+    {"t": 8.1, "name": "seat_thud"},
+    {"t": 8.2, "name": "dog_whine_close_start", "loop": true},
+    {"t": 8.55, "name": "dog_clunk_close_1"},
+    {"t": 9.05, "name": "inflate_hiss"}
+  ]
+}
