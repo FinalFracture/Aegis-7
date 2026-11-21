@@ -1112,3 +1112,21 @@ Everything below that isn't one of those four decisions is **Vance proposal**. T
    - Max step ≤ 4 mm, no ray misses, **visual-minus-collider |Δy| ≤ 1 mm**, no airborne frames walking through at full speed.
    - Add a gap `sweep_to_floor ≥ 8 mm` over the full swing. QUALITY_BAR F-SNAG-CLEAR (clear width) is unaffected.
 6. **Out of scope.** The unplaced 2-leaf and half bays (12 mm mat, DoorClear 0.012) have the same 50 mm plinth. When they are placed, use the same saddle with the flat top at 0.012 and **no exterior bevel**, because the mat top already equals the sill top.
+
+### Rev 3.10.2, 2026-11-21 (Vance): Rev 3.10.1 as built, plus sidelight setting blocks (`tt_entrance_bay_3l`). Vance proposal
+**Status.** Rev 3.10.1 (12 mm saddle) is **still a Vance proposal pending Jared's approval**. Rook built it in `49d6505` ahead of approval. If Jared declines it, revert that commit rather than patching it.
+
+**Rev 3.10.1 as built (verified in the GLB).**
+- The ray probe at x −1.1 / 0 / +1.1 shows visual = `DoorClear-colonly` exactly: 0 at z −1.720 → 12 mm flat over −1.696…−0.966 → 4 mm at −0.950 and on the mat. Max step is 4 mm.
+- `Leaf_{0,1,2}_Sweep` is at y 0.020–0.062, giving 8.0 mm over the sill.
+- The sweep top is 2 mm into the leaf bottom rail. That is **accepted as a kerf-mounted sweep** (REALISM_SPEC §14.5 B3).
+
+**Sidelight glass (Rook GLB).** `Side_Scissor_0` (x −1.913…−1.652) and `Side_Scissor_1` (x +1.652…+1.953) are 22 mm units (z −1.081…−1.059) that sit flush on the 50 mm jamb block at y 0.050. Real glazing sits on setting blocks, not on the frame (*real-world ref*: GANA Glazing Manual).
+- **Glass bottom: y 0.050 → 0.056** (6 mm clearance). The top stays at 2.529, so the head clearance is unchanged.
+- **Setting blocks:** `Side_SettingBlock_{0,1}{a,b}`, two per lite. Each is 100 (x) × 22 (z, the full glass thickness, z −1.081…−1.059) × 7 (y 0.050…0.057). That gives a 1 mm bed into the glass, so the contact isn't coplanar (the same rule as REALISM_SPEC §14.5 B2). Blocks are centred on the quarter points:
+  - Lite 0: x −1.898…−1.798 and −1.767…−1.667.
+  - Lite 1: x +1.677…+1.777 and +1.828…+1.928.
+- Material: the existing gasket slot (AESTHETIC gasket row, 0.06–0.09, rough 0.85). No new slot.
+- Colliders are unchanged (the sidelights are solid in `Frame-colonly`).
+- QA: glass vs blocks ≤ 1.0 mm (designed bed); glass vs jamb block 6.0 mm; first_pass_check 0 FAIL.
+- The unplaced 2-leaf and half bays get the same treatment when they are placed.

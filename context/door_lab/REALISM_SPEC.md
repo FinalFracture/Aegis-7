@@ -870,11 +870,11 @@ I checked the v1–v5 GLB node bounds with trimesh, plus `hw_gaps_passG` in `pas
   - Retracted, the bolt sits 14.32 mm above the tab top.
   - An 18 mm throw puts the tip at y 2.496, only **≈ 4 mm into an 8 mm tab** (≈ 3.7 mm from the measured gap). That's less than half the tab, and a 2 mm anti-lift lift would almost unseat it.
 - **Ruling (Rook GLB):** lower the whole solenoid group (`slide_Solenoid`, `slide_Solenoid_mount`, `slide_SolenoidBolt`) **6.3 mm (−0.0063 Y)**, and keep the 18 mm throw so the §7.1 bolt timing (2.28–2.34 s, clack 2.31) holds. Results:
-  - Retracted tip to tab top: **8.0 mm**. That is ≥ 4× the 2 mm vertical leaf play, so the bolt clears the keeper as the leaf moves.
+  - Retracted tip to tab top: **8.0 mm**. That is ≥ 4× the 2 mm vertical leaf play, so the bolt clears the keeper as the leaf moves. *(Amended §14.B1: the governing number is **7.7 mm vertical**, tip to tab-top plane, with 8.26 mm on the surface metric. 18 = 7.7 + 10.3. Minimum 6 mm, which is 3× the play.)*
   - Thrown engagement: **10.3 mm**, all the way through the 8 mm tab and 2.3 mm below it.
   - Radial window: 3.0 mm, acceptable. (Advisory: 1–2 mm is more typical; leave it unless it's cheap.)
   - Re-measure and report: `bolt_thrown_to_track ≥ 3 mm` (was 16.64; it should drop to about 10) and **`bolt_thrown_tip_to_keeper_post ≥ 3 mm`**. The tip now goes below the tab, so the post/riser under the hole must clear it.
-- **Advisory (Rook GLB):** `slide_Solenoid_mount` (z −0.022…−0.017) overlaps `slide_Track` (z min −0.019) by 2 mm. Seat it flush (z −0.024…−0.019) unless the track profile is open there.
+- **Advisory (Rook GLB):** `slide_Solenoid_mount` (z −0.022…−0.017) overlaps `slide_Track` (z min −0.019) by 2 mm. Seat it flush (z −0.024…−0.019) unless the track profile is open there. *(Amended §14.B2: a 1.0–2.0 mm bed is accepted instead of flush; as built it is 1.5 mm.)*
 
 ### 13.3 Materials: recommendation only (Sloane's call)
 AESTHETIC_SPEC §1 says to reuse existing slots unless one is missing. Pass G added 5 DL_ slots. My realism view:
@@ -895,3 +895,130 @@ AESTHETIC_SPEC §1 says to reuse existing slots unless one is missing. Pass G ad
 - **Open for Rook (GLB):** 13.1 end-stop move; 13.2 solenoid group −6.3 mm plus the two new gap reports; the mount flush advisory.
 - **Open for Gage (lab):** 13.1 QA gaps and clip allowance; §12 item 2 head and end shots with the new names.
 - **Sloane:** 13.3 recommendations.
+
+## §14 Pass G review (Vance, 2026-11-21, against Gage afbbc47 / merge 7319f96) and Rook §13 / Rev 3.10.1 deviation rulings
+Verdict: **CONDITIONAL PASS.**
+- Every realism row passes on the unmodified GLBs.
+- The harness's 7 FAIL rows (hatch and floor hatch F-CLIP-HW / F-CLIP-ALLOW / R7, and floor hatch F-CLIP-LEAF) come from the lab, not the models (§14.2).
+- Four §12 items are still partial (§14.3). Every call here is a **Vance proposal**. Jared approves.
+
+**Inputs.**
+- `qa/door_lab/runG/{PASS_G_REPORT.md, meta.json, summary.json}` at afbbc47.
+- The 60 Hz run tree from the Windows mirror `aegis_shots\doorlab_G`: `*/motion.csv`, `cue_log.csv`, `metrics.json`, `floorhatch/motion_g008.csv` / `motion_g145.csv`, and the shots.
+- `/workspace/door_lab_shots/G/`.
+- GLB measurements with exact point-to-triangle containment: surface samples plus vertices, inside test by 3-axis ray parity. Run on both the b530847 GLBs that pass G ran on and the current main GLBs (c675aca M-122 bake, d855824, 49d6505).
+
+### 14.1 Base, and what pass G actually tested
+- **Stale base.** Pass G ran on **b530847 plus a dirty tree**. That is before Rook's M-122 bake (c675aca), the pair meet fix (80570f1), §13 (d855824) and Rev 3.10.1 (49d6505).
+  - The lab still applied its runtime M-122 edits (pair x-scale 0.9973, hatch dogs ×0.683 / linkages ×0.538, floor dogs ×0.418 / linkages ×0.489).
+  - Those edits are adaptive, so on the baked GLBs they should fall to factor 1. Pass H must still run on current main with Rook's `incr_G` + `incr_M122` + `incr_threshold` patches applied, so the lab tests the GLB as shipped (R14).
+- **Accepted:** deferring the §13.1 end-stop QA and the tower re-probe to pass H. Both depend on commits that came after the pass G base.
+
+### 14.2 Clip rows: lab issues, not model issues
+| Door | Pair (Gage) | Gage depth | My exact depth, both GLB versions | Owner and fix |
+|---|---|---|---|---|
+| hatch | `bulkhead_HingeHeavy_frame` vs frame_skin | 86 mm | **4.0 mm** (bedded into `bulkhead_frame_collar` and `bulkhead_Actuator_housing`) | Gage lab: depth metric |
+| hatch | `bulkhead_damper_mount` vs frame_skin | 76 mm | **4.0 mm** (collar) | Gage lab: depth metric |
+| hatch | `bulkhead_HingeHeavy_leaf` vs leaf_skin | 69.7 mm | **4.0 mm** (`bulkhead_leaf_shell`) | Gage lab: depth metric |
+| hatch | `bulkhead_leaf_damper_mount` vs leaf_skin | 59.7 mm | **4.0 mm** (leaf shell, Davit_arm) | Gage lab: depth metric |
+| floor | `hatch_HingeBearing_frame` vs frame_skin | 70 mm | **4.0 mm** (`hatch_frame`) | Gage lab: depth metric |
+| floor | `hatch_RotaryDamper` vs frame_skin | 35.8 mm | **4.0 mm** (`hatch_frame`) | Gage lab: depth metric |
+| floor | leaf_skin vs frame_skin | 11.5 / 11.3 / 15.2 mm (q 0 / 26.25 / 105) | **0.0 mm** at 0 / 26.25 / 52.5 / 78.75 / 105° (pivot (0, 0.430, −0.524), axis X). Every leaf part was tested against every frame part. | Gage lab: overlays and pose |
+
+- **Hardware rows.** All six are the same deliberate **4.0 mm mounting bed**, a bolted bracket seated in the frame or leaf face. That is under the 3d-part-clipping-check hardware cap (0.030 m) and under the 0.010 m default.
+  - The depth doesn't change with pose, and it isn't a physical depth. The poke-or-slab metric measures through the plate's extent, not the distance back out of the host.
+- **Fix 1 (Gage lab).** Replace poke-or-slab with exact containment, the same method as Rook's passC `hw_gaps` / `lock_gear_gaps`:
+  - depth(A in B) = max over A's vertices plus ≥ 3000 surface samples that test inside B (3-axis ray parity, majority) of the exact point-to-triangle distance to B's surface.
+  - Keep leaf_skin and frame_skin as unions for the gate, but log the **source mesh name** of the deepest point.
+  - Expected: all six hardware pairs at 4.0 mm, PASS with no allowlist row needed.
+- **Fix 2 (Gage lab, floor leaf vs frame).** The unmodified GLB is clean, so the 11.5–15.2 mm comes from the rig. Two definite lab bugs:
+  - `_dress_floor_lid`: `handle.scale *= 2.0` scales `hatch_Handle` about its node origin, which is the leaf pivot. That throws the handle to GLB z 1.308…1.340, about 0.8 m off the leaf (in front of the frame, 12 mm above the deck plane). **Remove it.** If Sloane wants a larger handle, Rook models it.
+  - `CornerLampNE` / `CornerLampSW` are 40×32×40 boxes standing **32 mm proud** of a walk-on lid. That's a trip edge and not real. Make them **flush lenses: 40 × 6 × 40, top at the lid top** (leaf-body y 0.026…0.032), or move them to the frame.
+  - Re-run, and if leaf vs frame is still > 0.5 mm, report the two mesh names and the world point.
+- **Rook GLB: no clip fix required** on the hatch or floor hatch. Advisory only: `bulkhead_HingeHeavy_frame` and `bulkhead_Actuator_housing` overlap each other by 4.0 mm (y). That's acceptable as a bolted interface. Separate them by 1 mm only if a gate flags hardware vs hardware.
+
+### 14.3 §12 items G1–G7
+| # | Item | Result | Evidence and pass H target |
+|---|---|---|---|
+| G1 | Floor-hatch 4 clunks from the door JSON | **PASS** | See detail below. |
+| G2 | Pocket framing with the new node names | **PARTIAL** | See detail below. |
+| G3 | Bulkhead back framing | **PARTIAL** | See detail below. |
+| G4 | Front readout ΔP kPa | **PARTIAL** | See detail below. |
+| G5 | Pocket exposure | **PASS** | V-LUMA 0.2041 ≤ 0.25 (leaf mean 0.137); V-CLIP 0.00% on hero_final / jamb_closed / head_closed / pocket_end_open. |
+| G6 | Meta stamp `godot_tree` | **PARTIAL** | See detail below. |
+| G7 | Handwheel vs OverrideOrange | **OPEN (Sloane)** | See detail below. |
+
+- **G1, floor-hatch clunks.**
+  - `floorhatch.json` `section7.cues` has 1.456 / 1.474 / 1.492 / 1.510 and 5.346 / 5.364 / 5.382 / 5.400. The bulkhead keeps 8.
+  - `cue_log.csv` (60 Hz): open 1.467 / 1.483 / 1.500 / 1.517, close 5.350 / 5.367 / 5.383 / 5.400. Worst error is 11 ms, under one tick.
+- **G2, pocket framing.**
+  - `head_closed` shows the head from −Z: carriages, anti-lift rollers, clamps, red solenoid and the end stops at the ends. These are small but readable, so that part passes.
+  - `pocket_end_open` shows only the leaf face and green strip. The end stop, carriage and bumper are out of frame, and there's no overshoot frame.
+  - Shots used the pre-d855824 GLB.
+  - **Target:** aim `pocket_end_open` at (±1.96, 2.49, 0) from −Z, about 0.6 m off, panel +90° (v1). Show the carriage on the stop at q = 1.000 and at the overshoot peak, with the bumper top visible.
+- **G3, bulkhead back framing.**
+  - `back_open` shows the plug, handwheel, both readouts and the damper/davit bar at the top. It cuts off the hinge edge, so `bulkhead_Actuator_housing` (x 0.585…0.745, y 0.17…0.30) and `bulkhead_Davit_bracket` aren't in frame.
+  - `latch_edge_19` shows a dog-rod tip. The rams were nudged −12 mm for the shot only.
+  - **Target:** frame the full leaf plus 0.3 m including the hinge edge. **Animate `bulkhead_PushOffRam_1/2` in the rig, not per shot:** +Z 0 → 12 mm over 1.80–2.10 s (tracking the lurch), hold to 2.15, retract to 0 by 2.45, open only. Move the latch-edge shot to **t = 2.12 s**.
+- **G4, front readout.**
+  - Both faces now read "100" and match. But the value is static: `back_open` also reads 100 with the leaf open. That contradicts the §4 interlock (opens only at ΔP ≤ 0.5 kPa).
+  - **Target:** both readouts and the needle show live ΔP in kPa. Start at the lab ΔP (100) at the request, ramp to **0.0 by the end of equalize (1.02 s)**, hold 0.0 while open and through the close. Add a "ΔP kPa" legend. Open shots must read 0.0.
+- **G6, meta stamp.**
+  - `head_godot` 731a9e8 = `b530847:godot` ✓.
+  - `godot_tree` 88ce84e isn't an object on origin and doesn't match the committed `afbbc47:godot` (58d7a50), so the run tree can't be tied to the commit. The likely cause is a write-tree that included untracked files.
+  - **Target:** run from a clean checkout and stamp `commit`, `dirty: false`, and `godot_tree` == `git rev-parse <commit>:godot`. The harness fails the run if they differ.
+- **G7, handwheel vs OverrideOrange.**
+  - The wheel is now **unshaded Color8 (217, 115, 5)**, which is the amber *accent* target. It is not `Mat_Hub_OverrideOrange` (0.851, 0.357, 0.149, metal 0.1, rough 0.45).
+  - Realism view: manual-release hardware should be lit (real paint) and keep the override colour distinct from status amber.
+  - **Recommendation to Sloane:** use `Mat_Hub_OverrideOrange` lit, and give the wheel its own V-AMBER reference.
+
+### 14.4 R1–R15 recompute (60 Hz run tree)
+- **Timing (R2).**
+  - Pocket: open 1.083, close 2.417 (prewarn 4.117 → settled 6.517); spec 1.08 / 2.40.
+  - Bulkhead close: **7.800 s** (close request 7.633 → settled 15.433). Final seat 6.000–6.283 relative, dogs 6.333–6.800, clunks 6.700–6.833.
+  - Floor-hatch close: 6.400 (spec 6.39, one tick).
+  - Gage's 20 / 15 Hz tables were not re-derived; those CSVs weren't in the mirror.
+- **R11:** floor clunks as in G1. Pocket bumper_thud 0.933, bolt_clack 2.317.
+- **R13:** floor hatch at 1.45 G, open decel ends 4.150 against 4.067, a 2.0% stretch. 0.08 G and 1.45 G close are both 6.384 s. PASS.
+- **R15 (from motion, close only):** 9.81 / 7.77 / 6.84 / 9.97 / 7.90 J.
+- **R3:** the harness reports PASS (worst raw ratio about 0.91). I did not independently re-derive it this pass, so it stays at 9.
+- **R7:** model clean (§14.2), harness FAIL is the lab (scored 8).
+- **R14:** the lab still edits the GLB at runtime, and the run used the pre-bake GLBs (scored 9).
+
+**Scores (0–10):** R1 10 · R2 10 · R3 9 · R4 10 · R5 10 · R6 8 · R7 8 · R8 10 · R9 10 · R10 10 · R11 10 · R12 10 · R13 10 · R14 9 · R15 10. **Overall 9.6 / 10** (pass F 9.6). R11 is up from 8 to 10. R6 is up from 7 to 8. R7 drops to 8 and R14 to 9, both lab-side.
+
+### 14.5 Rook deviations on d855824 (§13) and 49d6505 (Rev 3.10.1). Verified in the GLBs
+**Verified on all five pocket variants (v1 and v3 measured in full):**
+- `slide_EndStop_{L,R}` at x ±1.930–1.990, y 2.466–2.512, z −0.044…−0.017. The carriage L1 outer face at full open is −1.930, so contact is 0.0 mm.
+- Solenoid group lowered 6.3 mm: can y 2.5157–2.5537, bolt 2.5077–2.5377. The thrown tip is at 2.4897, giving **10.3 mm engagement**, 2.3 mm through the tab.
+- Exact distances: bolt retracted to keeper 8.26; thrown bolt to track 11.84; thrown bolt to keeper window 3.0.
+- Mount bed into the track: 1.5 mm.
+
+**Tower bay (49d6505, `tt_entrance_bay_3l`):**
+- The ray probe at x −1.1 / 0 / +1.1 gives visual = collider exactly: 0 (z −1.720) → 6 (−1.708) → 12 (−1.696…−0.966) → 8 (−0.958) → 4 (−0.950 onward). Max step is 4 mm.
+- `Leaf_{0,1,2}_Sweep` is at y 0.020–0.062 and z −1.076…−1.064, leaf width minus 5 mm each end, so it sits **8.0 mm** over the flat sill.
+- `Frame-colonly` starts at y 0.012.
+
+**Rulings:**
+- **B1. Retracted gap 7.7 vertical vs 8.26 surface: accepted.**
+  - The surface metric finds the hole edge diagonally: √(7.7² + 3.0²) = 8.26.
+  - The governing number is **7.7 mm vertical**, from the tip to the tab-top plane, and 18 = 7.7 + 10.3 is the right stack. My "8.0" came from the surface reading.
+  - The requirement becomes **≥ 6 mm vertical (3× the 2 mm leaf play)**. §13.2 is amended to match. No change.
+- **B2. Mount bedded 1.5 mm instead of flush: accepted.**
+  - Exactly flush faces fail the coplanar rule (≤ 1 mm over > 1 cm²).
+  - A designed contact that would otherwise be coplanar gets a **1.0–2.0 mm bed**. 1.5 mm reads as flush and stays under the 0.010 m cap. §13.2 is amended. No change.
+- **B3. Sweep top 0.062, 2 mm into the leaf bottom rail: accepted.**
+  - It reads as a kerf-mounted sweep, the way a real one is retained (insert in a routed kerf, or screwed into a retainer), centred in the leaf's thickness and invisible.
+  - It's under the 0.010 m cap. No gasket slot is needed. No change.
+  - If a lab gate flags it, the allowlist row is `Leaf_*_Sweep` vs leaf_skin ≤ 0.003 m "kerf insertion".
+- **B4. Sidelight glass sitting flush on the jamb block: specify setting blocks** (tennis tower Rev 3.10.2, Vance proposal).
+  - Real practice is two EPDM/neoprene setting blocks (80–90 Shore A) at the quarter points, with about 6 mm (¼") bottom clearance and blocks ≥ 100 mm long (*real-world ref*: GANA Glazing Manual).
+  - Exact numbers are in `design/strip5_tennis_tower_v1.md` Rev 3.10.2. This is Rook GLB work.
+
+### 14.6 Open for pass H
+- **Gage lab:** §14.1 base and patches, §14.2 Fix 1 and Fix 2, G2 / G3 / G4 / G6 targets, the §13.1 end-stop QA, and the tower re-probe for Rev 3.10.1.
+  - Also: the bay3 lab `FloorSweep` (`_bay_guards`) must be skipped when a leaf has a `*_Sweep` child. With 49d6505 the leaf AABB bottom is 0.020, so the rig would add a second sweep at y 0.008…0.016. That puts it **4 mm into the 12 mm saddle**.
+  - Drop `_sink_mat` (mat top is already 0.004).
+- **Rook GLB:** Rev 3.10.2 setting blocks. The hinge/actuator 1 mm separation is advisory only.
+- **Sloane:** G7.
+- **Jared:** Rev 3.10.1 (12 mm sill) is built (49d6505) but still **pending Jared's approval**. If he declines it, 49d6505 is reverted, not patched.
