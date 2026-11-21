@@ -12,14 +12,20 @@ from access_rev37 import export_kit, gd
 
 # ------------------------------------------------------------------ #3 pair door (local: X across the 1.8 m opening, Z through a 0.3 m wall, Y up)
 DW, DH, WT = 1.8, 2.4, .3
+# Rook M-122 (2026-11-21, door lab): the as-built leaves meet at 5.0 mm (Vance 3-8 mm band; was 8.0 mm, which Gage's lab reached by
+# scaling the leaves 1.0016x in x at runtime), and the +Z (swing-side) casing jambs are set back to |x| 0.957 = hinge 0.900 + 55 mm
+# (the push bar's reach on the thin axis at 90 deg) + 2 mm, so the open leaf clears them (the lab used to pull 112 collider
+# vertices outboard at runtime). The -Z casing (non-swing side) is unchanged: the leaf never swings through it.
+MEET = .0025                 # half of the 5.0 mm meeting-stile gap
+SWING_JAMB = .057            # +Z casing jamb inner face, outboard of the hinge axis
 def door_pair():
     h = DW / 2; zc = 0.0; P = []; C = []
-    cas = [box(-h - .08, -h + E, 0, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)] + \
-          [box(h - E, h + .08, 0, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)] + \
+    cas = [box(-h - .08, -h + E if zs < 0 else -h - SWING_JAMB, 0, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)] + \
+          [box(h - E if zs < 0 else h + SWING_JAMB, h + .08, 0, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)] + \
           [box(-h - .08 + E, h + .08 - E, DH - E, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)]
     P.append(("Door_Casing", ALY, cas)); C.append(("Frame-colonly", cas))
     P.append(("Head_Court_Line", AM, [box(-h + .05, h - .05, DH - .045, DH - .005, WT/2 - .02, WT/2 + .002), box(-h + .05, h - .05, DH - .045, DH - .005, -WT/2 - .002, -WT/2 + .02)]))
-    for tag, a, b in (("L", -h + .005, -.004), ("R", .004, h - .005)):
+    for tag, a, b in (("L", -h + .005, -MEET), ("R", MEET, h - .005)):
         P.append((f"Leaf_{tag}_Panel", WH, [box(a, b, .01, 1.0, -.025, .025), box(a, b, 2.0, DH - .01, -.025, .025),
                                              box(a, a + .2, 1.0 - E, 2.0 + E, -.025, .025), box(b - .2, b, 1.0 - E, 2.0 + E, -.025, .025)]))
         P.append((f"Leaf_{tag}_Vision_Scissor", SCR, [box(a + .2 - E, b - .2 + E, 1.0 - E, 2.0 + E, -.006, .006)]))

@@ -37,10 +37,15 @@ COL_OFF, COL_Z0 = .40, -.30
 GRV_I, GRV_O, GRV_D = .033, .067, .020
 OPEN_DEG = 100.0
 DOG_DEG, DOG_THROW, DOG_LEN = 90.0, .025, .13
-DOG_Z0, DOG_Z1 = PZ0 - .022, PZ0 - .004   # dog bar (4 mm standoff on guide straps)
-KEEP_Z0, KEEP_Z1, KEEP_IN = PZ0 - .0025, PZ0 + .014, .010
-LINK_Z0, LINK_Z1 = DOG_Z0 - .014, DOG_Z0 - .002
-DISC_Z0, DISC_Z1 = DOG_Z0 + .0005, DOG_Z0 + .011  # cam disc sits between the plug face hub and the linkage plane
+# Rook M-122 (2026-11-21): the dogging gear is HOUSED in the leaf. The plug face is a tray (TRAY_IN inside the opening outline, floor
+# TRAY_Z), with the dogs, linkages and cam disc stacked inside it (front to back: dogs, linkage bars, cam disc + lobes), so every dog /
+# linkage sits >= 4 mm inside the leaf shell's bounds (Gage's lab used to scale them toward the shell centre at runtime, x0.68 / x0.54).
+# The dogs run out to the keepers through slots in the tray rim; the keepers moved back with them (still behind the thrown dog tip).
+TRAY_IN, TRAY_Z = .024, PZ0 + .0485
+DOG_Z0, DOG_Z1 = PZ0 + .004, PZ0 + .018   # dog bar, 14 mm, its front 4 mm behind the plug face
+KEEP_Z0, KEEP_Z1, KEEP_IN = DOG_Z1 + .0015, DOG_Z1 + .018, .009
+LINK_Z0, LINK_Z1 = DOG_Z1 + .002, DOG_Z1 + .012   # linkage bars behind the dogs
+DISC_Z0, DISC_Z1 = LINK_Z1 + .002, LINK_Z1 + .0125  # cam disc behind the linkages (lobes on its back, 2 mm off the tray floor)
 SEAL_Z0 = -GRV_D - .002; SEAL_TOP = FZ0 - .002
 SEAL_INFLATE_SCALE = ((FZ0 + .008) - SEAL_Z0) / (SEAL_TOP - SEAL_Z0)
 
@@ -169,6 +174,10 @@ def leaf(rig, b):
     st = LAPW - .012
     prof = [(-PLUG_IN1, PZ0), (-PLUG_IN0, FZ0), (st, FZ0), (st, FZ0 + .015), (LAPW, FZ0 + .015), (LAPW, FZ1 - .010), (LAPW - .010, FZ1)]
     shell = solid_rr(CW, CH, CR, prof, 4, (0, b.CY))
+    cuts = [rr_prism(b, -TRAY_IN, PZ0 - .01, TRAY_Z, 3)]
+    for i in range(8):   # dog slots through the tray rim (dog 24 x 14 mm, 2 mm clear)
+        cuts.append(place(b, box(-.045, .002, -.014, .014, DOG_Z0 - .002, DOG_Z1 + .002), i))
+    shell = boolean("difference", [shell] + cuts)
     rig.part("bulkhead_leaf_shell", g, G, [shell])
     # +Z back face ribs (stiffeners) clear of the hinge straps, damper clevis, davit hanger and the hub ring
     rb = []; RZ0, RZ1 = FZ1 - E, FZ1 + .030
@@ -196,8 +205,9 @@ def leaf(rig, b):
     rig.part("bulkhead_leaf_damper_mount", g, ALY, lm)
     # ---- approach (-Z) plug face: gearbox hub, cam disc (lock wheel), 8 dogs + guides + linkages, OverrideOrange handwheel
     hc = (0, b.CY)
-    gb = [cap((0, b.CY, (PZ0 + E + DISC_Z0 - .004)/2), .05, (PZ0 + E) - (DISC_Z0 - .004), 12, "z"),
-          cap((0, b.CY, (DISC_Z0 - .004 + (-.150))/2), .075, (DISC_Z0 - .004) - (-.150), 14, "z")]
+    GB_Z = LINK_Z0 - .002   # gearbox body (r 75) from just in front of the linkage plane to the handwheel; hub (r 50) through the disc to the tray floor
+    gb = [cap((0, b.CY, (TRAY_Z + E + GB_Z)/2), .05, (TRAY_Z + E) - GB_Z, 12, "z"),
+          cap((0, b.CY, (GB_Z + E + (-.150))/2), .075, (GB_Z + E) - (-.150), 14, "z")]
     rig.part("bulkhead_override_gearbox", g, G, gb)
     wc = np.array([0, b.CY, (DISC_Z0 + DISC_Z1)/2])
     disc = [annulus_z(hc, .054, .22, DISC_Z0, DISC_Z1, 16)]
@@ -216,17 +226,17 @@ def leaf(rig, b):
         dog = [box(-DOG_LEN, -.006, -.012, .012, -dz, dz), box(-.006 - E, 0, -.012, .012, -dz, dz*.3)]
         rig.part(f"bulkhead_Dog_{i + 1:02d}", g, ST, [xf(m, R=Wd) for m in dog], W=Wd)
         zc = (DOG_Z0 + DOG_Z1)/2
-        for m in (box(-.09, -.07, .014, .020, PZ0 + E - zc, -dz - .003), box(-.09, -.07, -.020, -.014, PZ0 + E - zc, -dz - .003),
-                  box(-.09, -.07, -.020, .020, -dz - .009, -dz - .003)):
-            gd.append(xf(m, R=Wd))
+        # guide: two cheeks standing on the tray floor + a strap across the dog's front (1.5 mm clear, 0.5 mm behind the plug face)
+        zf, zs, zb = -dz - .0035, -dz - .0015, TRAY_Z + E - zc
+        gd.append(xf(prism_x([(-.020, zf), (.020, zf), (.020, zb), (.014, zb), (.014, zs), (-.014, zs), (-.014, zb), (-.020, zb)], -.09, -.07), R=Wd))
         # linkage: bar from the cam-follower pin (r = 0.17 on the disc) to a riser on the dog's inner end
         inner = tip - d*(DOG_LEN - .012)
         v0 = inner - np.array(hc); pin = np.array(hc) + v0/np.linalg.norm(v0)*.17
         Lw = T((pin[0], pin[1], (LINK_Z0 + LINK_Z1)/2)) @ TF.rotation_matrix(ang, [0, 0, 1])
         v = inner - pin; L = np.linalg.norm(v); th = np.arctan2(v[1], v[0])
         bar = xf(box(0, L, -.008, .008, LINK_Z0, LINK_Z1), R=TF.rotation_matrix(th, [0, 0, 1]), t=(pin[0], pin[1], 0))
-        riser = box(inner[0] - .008, inner[0] + .008, inner[1] - .008, inner[1] + .008, LINK_Z1 - E, DOG_Z0 + E)
-        head = cap((pin[0], pin[1], LINK_Z0 - .003), .011, .006 + E, 8, "z")
+        riser = box(inner[0] - .008, inner[0] + .008, inner[1] - .008, inner[1] + .008, DOG_Z1 - E, LINK_Z0 + E)
+        head = cap((pin[0], pin[1], LINK_Z0 - .003), .011, .006 + E, 6, "z")
         rig.part(f"bulkhead_Linkage_{i + 1:02d}", g, ALY, [bar, riser, head], W=Lw)
     rig.part("bulkhead_dog_guides", g, ALY, gd)
     # two convex hulls (plug + flange): one hull over both cut the reveal corner by 40 mm (Gage F-CLIP-LEAF)

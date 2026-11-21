@@ -109,9 +109,9 @@ Units: s, m, mm, kg, deg. Every timestamp is measured from the request (t = 0). 
 - [ ] **2 carriages per leaf**, each with 2 × Ø60 nylon rollers plus an **anti-lift roller** above the track.
 - [ ] Toothed belt with a belt clamp bracket on each leaf; motor/gearbox at centre head with a belt tensioner pulley at each end.
 - [ ] Floor guide shoe and floor channel.
-- [ ] Rubber end-stop bumper in each pocket.
+- [ ] Rubber end-stop bumper in each pocket. *(Amended §13.1: a rubber track end stop at each outer carriage is the primary stop, and the pocket bumper is the secondary backstop.)*
 - [ ] Meeting-stile bulb seals.
-- [ ] Head solenoid bolt and keeper.
+- [ ] Head solenoid bolt and keeper. *(Amended §13.2: the bolt is spring-thrown vertically (−Y) into a keeper on the leaf and is fail-secure, never gravity-dropped. It engages at least 10 mm.)*
 - [ ] Lamp strip on the jamb, both faces.
 - [ ] Jamb light-curtain lenses (4 per jamb).
 - [ ] Radar head over the opening.
@@ -812,6 +812,21 @@ I recomputed from `qa/door_lab/runF{,_20fps,_15fps}/*/{motion,cue_log,metrics}.c
 1. **R11, floor hatch dogs (Gage lab, data only).** It still plays 8 clunks on open (1.383–1.517) and close (5.283–5.400). Target: 4 clunks per the §11 decision (open 1.456/1.474/1.492/1.510; close 5.346/5.364/5.382/5.400). This is a `floorhatch.json` cue-table edit. Deferring was defensible only while §11 left it as an open item; it is decided now and must land in G.
 2. **R6, framing (Gage lab).**
    - The pocket head internals exist in the GLB (`slide_carriage_*`, `slide_roller_*_antilift`, `slide_BeltClamp_*`, `slide_Bumper`, `slide_Solenoid`/`SolenoidBolt`, `slide_AccessPanel`) but aren't in frame. detail_open looks at the closed head soffit from +Z. Target: shoot from the −Z approach side with `slide_AccessPanel` posed +90° open, and add a pocket-end shot for the bumper.
+   - **Node names updated for pass G (`b530847`, 2026-11-21).** Use these names in any framing or lookup code:
+     - `slide_carriage_{L,R}{1,2}` (no change).
+     - `slide_AntiLiftRoller_{L,R}{1,2}` replaces `slide_roller_*_antilift`. It is now a Ø40 acetal tyre.
+     - `slide_BeltClamp_{L,R}` (no change).
+     - `slide_Bumper_{L,R}` replaces `slide_Bumper`. These are the pocket backstops at x ±2.050–2.079.
+     - **New:** `slide_EndStop_{L,R}`, the track end stops at x ±1.934–1.994. §13.1 moves them to ±1.930–1.990.
+     - `slide_Solenoid`, `slide_SolenoidBolt` (it now throws −Y), and the **new** `slide_Solenoid_mount`.
+     - `slide_Keeper` is now the polished tab with its post.
+     - `slide_AccessPanel` and `slide_AccessPanel_hinge` (no change).
+   - **Framing targets restated for pass G.**
+     - detail_open covers only x ±1.1. At full open the clamps sit at x ±1.52 and the end stops at x ±1.93, so they fall outside it.
+     - The clamps, anti-lift rollers, solenoid and keeper need a **closed-pose head shot** from −Z with `slide_AccessPanel` at +90°. Look it up by exact name; `slide_AccessPanel_hinge` must not match.
+     - The end stops and bumpers need a **pocket-end shot at each end at full open** (q = 1.000, plus one frame at the 2 mm overshoot). That shot shows the carriage on the stop (§13.1) and the bumper 23–25 mm behind the leaf tail.
+     - Rook's `rook_ttqa/doorlab_passC/gage_doorlab_incr_G.patch` (antilift r 0.020, exact panel lookup at +90°) is the starting point. Gage owns it.
+     - Pass G shots 1–8 in `/workspace/renders/doorlab_passG/` already show the parts. Shot 1 (gage_open_detail) still shows mostly soffit, so this item stays open until the head shot and end shots become standard lab cameras.
    - Bulkhead back_closed/back_open crop the davit (top) and miss the actuator housing (under the lower hinge), `bulkhead_Damper_body`/`DamperRod`, and `bulkhead_PushOffRam_1/2` (latch-edge bores, +12 mm at unseat). Target: frame the full leaf plus 0.3 m margin, and add a latch-edge close-up at t = 1.9 s (rams extended).
 3. **R6, front readout blank (Gage lab).** The front digital readout renders as a plain grey panel, while the back shows "100". Target: the front readout matches the back, showing ΔP in kPa.
 4. **Exposure (Gage lab).** The pocket lower leaf panels still clip to white in the hero and jamb shots. Target: leaf-face mean luma ≤ 0.25 V-LUMA with no clipped region larger than 5% of the leaf.
@@ -819,3 +834,64 @@ I recomputed from `qa/door_lab/runF{,_20fps,_15fps}/*/{motion,cue_log,metrics}.c
 
 **Scores (0–10):** R1 10 · R2 10 · R3 9 · R4 10 · R5 10 · R6 7 · R7 10 · R8 10 · R9 10 · R10 10 · R11 8 · R12 10 · R13 10 · R14 10 · R15 10. **Overall 9.6 / 10** (pass E ≈ 8.0).
 
+
+## §13 Pass G pocket-slider hardware ruling (Vance, 2026-11-21, against Rook `b530847`)
+I checked the v1–v5 GLB node bounds with trimesh, plus `hw_gaps_passG` in `passC_qa.json` and PASSC_NOTES. I viewed the 24 renders in `/workspace/renders/doorlab_passG/` (before / after_panel90 / after_panel-110, shots 1–8). Every call in this section is a **Vance proposal**. Jared approves.
+
+**Confirmed as built:**
+- **Anti-lift roller:** Ø40×24 acetal tyre (measured 40×40×24). Clearances: 2 mm to the rail/track, 6.8 mm to the Ø60 rollers, 2 mm under the upper rail.
+- **Belt clamps:** 100 mm jaw, 2 mm to the belt over the full travel.
+- **Solenoid:** can 60×38×28, mount 72×39×5, bolt Ø12×30.
+- **Keeper:** tab 52×8×30 with an 18×18 hole, top at y 2.500.
+- **Clearances (all variants):** solenoid to carriages/clamps (closed) 23.46; keeper to solenoid 22.0; bolt to keeper window (thrown) 3.0 radial.
+- **Tris:** 5968 / 5968 / 5728 / 5968 / 5968.
+- **Renders:**
+  - The end stops, anti-lift rollers, solenoid (red), keeper tab and clamps all read in shots 3–8.
+  - Belt clamps render cream/near-white, not yellow zinc (see §13.3).
+  - Carriage plates blow out to white. That is the §12 item 4 exposure issue, still open.
+
+### 13.1 End stops: keep both parts, and make the track stop take contact
+- **They aren't redundant.** `slide_EndStop_{L,R}` (60×46×27 rubber block on the track, in line with the outer carriage) is the **primary mechanical stop**. On a real bi-parting operator, the carriage stops on a track-mounted rubber stop, not on the leaf tail.
+  - `slide_Bumper_{L,R}` (2 × 25×80×30 buffers in the pocket) is the **secondary backstop**. It catches a leaf pushed by hand past the operator stop or a carriage that has come off the stop. Keep both.
+- **The 4.0 mm gap is wrong for this profile.**
+  - §7.1 has a 2 mm bumper-settle overshoot (6 Hz, ζ 0.6) and a `bumper_thud` cue at 0.93 s, so both say the leaf hits rubber.
+  - With 4.0 mm at q = 1.000 and 2.0 mm at the overshoot, nothing touches: the thud plays against air, and the settle has no cause.
+- **Ruling:** move the track stops **4.0 mm inboard to x ±1.930–1.990** (y 2.466–2.512 and z −0.044…−0.017 stay the same; Rook GLB).
+  - The outer carriage (L1 outer face at x −0.930 closed, so −1.930 at full open) then **meets the stop at q = 1.000** (gap 0.0 mm).
+  - The 2 mm overshoot compresses the rubber by **2.0 mm, which is 3.3% of the 60 mm block**. That is a realistic rubber-stop deflection and drives the 6 Hz settle.
+  - The contact face is 46 (y) × 19 (z) mm of carriage-to-stop overlap ✓.
+- **Pocket bumper stays where it is.** It sits 25 mm off the leaf tail at full open, and **23 mm at the overshoot**. It must never touch in the normal cycle. Add a QA gap `leaf_tail_to_pocket_bumper ≥ 20 mm` at max overshoot.
+- **QA (Gage lab):** `carriage_to_endstop` reads 0.0 mm at q = 1.000 and −2.0 mm (compression) at the overshoot peak. The 3d-part-clipping-check must allow this one pair up to 2.0 mm, because it is a designed rubber compression.
+
+### 13.2 Bolt: vertical (−Y) throw approved, with a spring throw and deeper engagement
+- **Vertical vs Z.** A vertical down-throw from the head into a keeper on the leaf is the usual head-lock form on bi-parting operators (*real-world ref*). It shears against the leaf's opening direction (X), which is the forcing direction, and doesn't depend on the leaf's Z play. A Z throw would rely on the 2 mm anti-lift/guide play to hold the keeper. **The −Y 18 mm throw is approved** and replaces the old +Z.
+- **Throw drive.** Spin gravity runs 0.08–1.45 G, so the bolt must be **spring-thrown and solenoid-retracted (fail-secure)**, never gravity-dropped. This is a description and audio point only: the `solenoid_clack` at 2.31 s is the spring snap. No extra geometry.
+- **Engagement fails as built.**
+  - Retracted, the bolt sits 14.32 mm above the tab top.
+  - An 18 mm throw puts the tip at y 2.496, only **≈ 4 mm into an 8 mm tab** (≈ 3.7 mm from the measured gap). That's less than half the tab, and a 2 mm anti-lift lift would almost unseat it.
+- **Ruling (Rook GLB):** lower the whole solenoid group (`slide_Solenoid`, `slide_Solenoid_mount`, `slide_SolenoidBolt`) **6.3 mm (−0.0063 Y)**, and keep the 18 mm throw so the §7.1 bolt timing (2.28–2.34 s, clack 2.31) holds. Results:
+  - Retracted tip to tab top: **8.0 mm**. That is ≥ 4× the 2 mm vertical leaf play, so the bolt clears the keeper as the leaf moves.
+  - Thrown engagement: **10.3 mm**, all the way through the 8 mm tab and 2.3 mm below it.
+  - Radial window: 3.0 mm, acceptable. (Advisory: 1–2 mm is more typical; leave it unless it's cheap.)
+  - Re-measure and report: `bolt_thrown_to_track ≥ 3 mm` (was 16.64; it should drop to about 10) and **`bolt_thrown_tip_to_keeper_post ≥ 3 mm`**. The tip now goes below the tab, so the post/riser under the hole must clear it.
+- **Advisory (Rook GLB):** `slide_Solenoid_mount` (z −0.022…−0.017) overlaps `slide_Track` (z min −0.019) by 2 mm. Seat it flush (z −0.024…−0.019) unless the track profile is open there.
+
+### 13.3 Materials: recommendation only (Sloane's call)
+AESTHETIC_SPEC §1 says to reuse existing slots unless one is missing. Pass G added 5 DL_ slots. My realism view:
+- **DL_BumperRubber → fold into DL_SealRubber.** Both fall in the AESTHETIC gasket row (0.06–0.09, rough 0.80–0.90). 0.06 vs 0.07–0.08 can't be told apart at head distance.
+- **DL_PolishedSteel → fold into TT_BrushedAlloy / Mat_Hub_BrushedSteel** (the hardware row: 0.75–0.82, metal 0.9–1.0, rough 0.30–0.40).
+  - Its 0.86 albedo is above the row's 0.82 cap.
+  - Brushed stainless is just as real for a keeper and bolt.
+  - If Sloane wants a polish read, use the AESTHETIC §2 wear rule (ORM roughness −0.15, about 0.18–0.25) on the same slot rather than adding a new one.
+- **DL_YellowZincPlate:** no existing slot. It currently renders cream/white (pass G shots 4–7), so the hue is lost.
+  - Either Gage exempts it from the lab retint lift, or it **folds into TT_BrushedAlloy as clear zinc**, which is equally real.
+  - No realism objection either way.
+- **DL_AcetalWhite:** keep. Natural acetal is warm off-white, and the bluish Pearl/WhiteComposite slots would read as painted metal. It's a minor item, and a fold into TT_WhiteComposite is acceptable if Sloane prefers.
+- **DL_SolenoidRed:** keep. There is no red paint slot. It is non-emissive and darker than the Locked lamp #FF2A2A, and it doesn't touch OverrideOrange, which stays reserved for the manual release. A black can (TT_Gunmetal) is equally real if Sloane wants fewer accents.
+
+### 13.4 Status
+- §1.6 is amended (end-stop and bolt lines).
+- §12 item 2 has the node-name and framing update.
+- **Open for Rook (GLB):** 13.1 end-stop move; 13.2 solenoid group −6.3 mm plus the two new gap reports; the mount flush advisory.
+- **Open for Gage (lab):** 13.1 QA gaps and clip allowance; §12 item 2 head and end shots with the new names.
+- **Sloane:** 13.3 recommendations.

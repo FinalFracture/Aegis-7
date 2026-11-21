@@ -17,6 +17,15 @@ try:
 except ImportError:
     from struct_lib import SCR, finish_scissor
 H, TD, T2 = 6.1, 2.6, 4.35
+# Rev 3.10.1 (Vance, de5561f): 3l 12 mm bevelled saddle threshold, pre-recenter z (GLB z = this - 1.07). Profile (z, y), convex:
+# interior bevel 0 -> 0.012 over z -0.650..-0.626, flat 0.012 to -0.626..+0.104, exterior bevel 0.012 -> 0.004 over +0.104..+0.120 (meets the mat).
+SAD_Z = (-.65, -.626, .104, .12); SAD_Y, MAT3_Y = .012, .004
+SADDLE = [(SAD_Z[0], 0), (SAD_Z[1], SAD_Y), (SAD_Z[2], SAD_Y), (SAD_Z[3], MAT3_Y), (SAD_Z[3], 0)]
+OPEN3 = ((-1.6, -.6), (-.5, .5), (.6, 1.6))
+def xhull(x0, x1, prof_zy):
+    """convex prism along X over a (z, y) profile (closed, with uv metadata like the box primitive)"""
+    m = trimesh.convex.convex_hull(np.array([(x, y, z) for x in (x0, x1) for z, y in prof_zy], float))
+    m.metadata["uv"] = m.vertices[:, [0, 2]] + m.vertices[:, [1, 1]] * [0, 1]; return m
 def build(q):
     """Court Wayfinding bay. width defaults to 4.0; other widths still build. 4.0 and 2.0 are promoted."""
     w = q.get("width", 4.0); h = w/2; X0, X1 = -h + .001, h - .001; p = Part()
@@ -27,11 +36,16 @@ def build(q):
     # Inner faces stay put (left hf+.025, right h-.045) so the door module is unchanged.
     lj0, lj1 = hf, hf + .025
     rj0, rj1 = h - .045, h - .020
-    F = [box(X0, X1, 0, .05, -.65, .12), box(X0, X1, H - .15, H, -.65, .08),
+    F = [box(X0, X1, H - .15, H, -.65, .08),
          box(lj0, lj1, .05 - E, H - .15 + E, .03 - .6, .03),
          box(rj0, rj1, .05 - E, H - .15 + E, -.04, .04)]
     cols = [(lj1, rj0)]
     L3 = bool(q.get("leaves3"))   # r8b Rev 3.7 #12 (TTQA-031): 3 x 1.0 m clear leaves at -1.6..-0.6 / -0.5..0.5 / 0.6..1.6, 0.10 m mullions
+    if L3:   # Rev 3.10.1: 50 mm plinth only under the side jambs/lights and the mullions; a 12 mm bevelled saddle in each leaf opening
+        F += [box(u, v, 0, .05, -.65, .12) for u, v in ((X0, -1.6), (-.6, -.5), (.5, .6), (1.6, X1))]
+        F += [xhull(u, v, SADDLE) for u, v in OPEN3]
+    else:
+        F.insert(0, box(X0, X1, 0, .05, -.65, .12))
     if w > 3 and not L3:
         F.append(box(-.05, .05, .05 - E, H - .15 + E, -.05, .05)); cols = [(lj1, -.05), (.05, rj0)]
     if L3:
@@ -49,6 +63,10 @@ def build(q):
             # Rev 3.9 TTQA-031 outswing (egress to +Z): push bar on the interior (-Z) face
             p.add(f"Leaf_{i}_Push_Bar", ALY, tube((a + .15, 1.05, -.07), (b - .15, 1.05, -.07), .02, 8), tube((a + .15, 1.05, -.07), (a + .15, 1.05, -.03 + E), .012, 6), tube((b - .15, 1.05, -.07), (b - .15, 1.05, -.03 + E), .012, 6))
             p.add(f"Leaf_{i}-colonly", ALY, box(a, b, .06, TD - .08, -.03, .03))
+            # Rev 3.10.1: brush/EPDM door-bottom sweep, gasket slot (TT_CarbonSlate = AESTHETIC gasket row), visible y 0.020..0.060,
+            # 12 mm thick centred in the leaf, leaf width minus 5 mm each end. The leaf has no groove, so its top is bedded 2 mm into
+            # the bottom rail / stiles (0.062) instead of sharing the 0.060 face (coplanar). 8 mm over the 0.012 saddle flat.
+            p.add(f"Leaf_{i}_Sweep", SL, box(a + .005, b - .005, .020, .062, -.006, .006))
         for k, (a0, b0) in enumerate(((lj1, -1.65), (1.65, rj0))):
             p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .05, TD - .075 + E, 0))
         for i, (a0, b0) in enumerate(((lj1, -.6), (-.5, .5), (.6, rj0))):
@@ -88,7 +106,11 @@ def build(q):
     p.add("Blade_Leaf_Crest", LF, crest((0, by1 + .05 - E, (bz0 + bz1)/2 + .12)))
     p.add("Fascia_Leaf_Crests", LF, *[crest((x, y1 + .12 - E, zt - .1)) for x in np.arange(-h + .4, h - .3, .8) if abs(x) > .3])
     # slate walk mat only — kerb, hedge and planted edge stay out of the 6 m egress
-    p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, .012, .122, 1.4))
+    # Rook 2026-11-21 (door lab pass H): on the 3l the outswing leaves' 8 mm sweep crosses the mat, so the mat is a 4 mm
+    # low-profile slate mat (top y 0.004, still bedded on grade at y 0). Gage's lab used to sink the 12 mm mat 8 mm at runtime
+    # (_sink_mat), which buried it in the floor. The 2-leaf bays keep the 12 mm mat.
+    MAT_T = .004 if L3 else .012
+    p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, MAT_T, .122, 1.4))
     # w>=3: pair at +-h/2 (4.0 m -> +-1.0, pitch 2.0 m). w<3: one bollard at x=0 so pitch stays >= 1.5 m.
     # r8b Rev 3.7 #12 placed posts at +-0.55 (0.95 m clear between, in front of the centre mullion). That
     # put Bollard0 on the W-entrance walk line (bay_z 39.005 through bay 582: local x -0.495, collider
@@ -106,10 +128,18 @@ def build(q):
         # Y 0.05..2.525); mullions/leaf jambs/side lights/transom are solid. Leaves (3 mm clear all round) carry their own colliders.
         ot = TD - .075
         p.add("Frame-colonly", G, box(X0, X1, ot, H, -.08, .02),
-              *[box(u, v, .05, ot + E, -.08, .02) for u, v in ((X0, -1.6), (-.6, -.5), (.5, .6), (1.6, X1))])
+              *[box(u, v, SAD_Y, ot + E, -.08, .02) for u, v in ((X0, -1.6), (-.6, -.5), (.5, .6), (1.6, X1))])   # Rev 3.10.1: openings Y 0.012..2.525
     else:
         p.add("Wall-colonly", G, box(X0, X1, .5, H, -.08, .02))
-    p.add("DoorClear-colonly", SL, box(X0, X1, 0, .02, -.3, 1.4))
+    # Rook 2026-11-21 (Gage, pass H): the walk strip's top is flush with the Threshold_Mat top (3l 0.004, 2-leaf 0.012); it was 0.020,
+    # a step the player hopped (the tower floor colliders either side, Struct inside / Deck outside, are at y 0).
+    if L3:   # Rev 3.10.1: four convex pieces following the saddle and the mat exactly (P1 ramp, P2 flat, P3 ramp, P4 mat)
+        p.add("DoorClear-colonly", SL, xhull(X0, X1, [(SAD_Z[0], 0), (SAD_Z[1], SAD_Y), (SAD_Z[1], 0)]),
+              box(X0, X1, 0, SAD_Y, SAD_Z[1], SAD_Z[2]),
+              xhull(X0, X1, [(SAD_Z[2], 0), (SAD_Z[2], SAD_Y), (SAD_Z[3], MAT3_Y), (SAD_Z[3], 0)]),
+              box(X0, X1, 0, MAT_T, SAD_Z[3], 1.4))
+    else:
+        p.add("DoorClear-colonly", SL, box(X0, X1, 0, MAT_T, -.3, 1.4))
     for a, b in ([] if L3 else cols):
         p.add("Jamb-colonly", G, box(a - .02, a + .02, 0, H, -.08, .14), box(b - .02, b + .02, 0, H, -.08, .14))
     p.add("Canopy-colonly", SL, box(cx0, cx1, y0, y1, .061, zt))
@@ -148,7 +178,7 @@ def group_leaves3(gp, p):
         lo, hi = p.P[f"Leaf_{i}_Stiles"][1].bounds
         P = [float(lo[0] if side < 0 else hi[0]), 0.0, float(hi[2])]; piv[f"Leaf_{i}"] = [round(v, 4) for v in P]
         kids = [j for j, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf_{i}_") or n.name == f"Leaf_{i}-colonly")]
-        assert len(kids) == 4, kids
+        assert len(kids) == 5, kids   # Stiles, Door_Scissor, Push_Bar, Sweep (Rev 3.10.1), -colonly
         for j in kids:
             t = g.nodes[j].translation or [0, 0, 0]; g.nodes[j].translation = [t[0] - P[0], t[1] - P[1], t[2] - P[2]]
         g.nodes.append(pg.Node(name=f"Leaf_{i}", translation=P, children=kids)); sc.nodes = [j for j in sc.nodes if j not in kids] + [len(g.nodes) - 1]

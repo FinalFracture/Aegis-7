@@ -7,9 +7,9 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 ## Variants (visual tris, budget < 6000)
 | asset | v1 (placed) | v2 | v3 | v4 | v5 |
 |---|---|---|---|---|---|
-| bulkhead_hatch | RH 150 coaming 5766 | LH 5766 | RH 300 coaming 5776 | LH 300 5776 | RH, 6 ribs + kick 5960 |
-| biparting_slide (pass G) | panel shown swung up 5968 | panel closed 5968 | no panel (service) 5728 | v1 handed 5968 | v2 handed 5968 |
-| floor_hatch (rev 2) | RH stay, 0.45 well 4360 | LH 4360 | RH 0.75 well 4360 | LH 0.75 4360 | RH 0.30 well 4360 |
+| bulkhead_hatch (M-122) | RH 150 coaming 5798 | LH 5798 | RH 300 coaming 5810 | LH 300 5810 | RH, 6 ribs + kick 5992 |
+| biparting_slide (M-122) | panel closed 5968 | panel shown swung up 5968 | no panel (service) 5728 | v1 handed 5968 | v2 handed 5968 |
+| floor_hatch (rev 2, M-122) | RH stay, 0.45 well 4388 | LH 4388 | RH 0.75 well 4388 | LH 0.75 4388 | RH 0.30 well 4388 |
 
 ## Animated nodes (pivot on the axis, closed pose = modelled)
 **bulkhead_hatch** (recenter shift z +0.0725; pass B was +0.0745)
@@ -29,7 +29,7 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 - `slide_AntiLiftRoller_{L,R}{1,2}` (pass G, was `slide_roller_*_antilift`): spin about local Z by travel/r, r 0.020 (was 0.015), opposite sign. Gage's `_tag_rollers` still matches on "antilift" (case-insensitive); `gage_doorlab_incr_G.patch` sets its radius to 0.020.
 - `slide_SolenoidBolt`: local -Y 0.018 m (locked; pass G vertical throw, was +Z). Origin is on the bolt axis at its top end inside the can.
 - `slide_HexRelease_socket`: about local Z, 90° (manual release).
-- `slide_AccessPanel`: about local X; closed to open is +90°. V1 bakes the open pose, so closing from V1 is -90°.
+- `slide_AccessPanel`: about local X; closed to open is +90°. M-122: V1 (placed) and V4 now bake the closed pose (was V2/V5), so the lab no longer turns it -90° at load; V2/V5 bake the open pose.
 - `slide_Keeper`, `slide_BeltClamp_L/R` and `slide_AntiLiftRoller_*` ride on their leaf (`slide_Keeper` on leaf_L; on the handed v4/v5 it rides leaf_R, on the solenoid side).
 
 **floor_hatch**, rev 2 (Vance's counterbalance decision, 2026-11-20). The finished floor is GLB y 0.462; the opening is centred on GLB x/z = 0. Below, a "pre-recenter" coordinate is the pre-recenter frame (floor at y = 0); add 0.462 to get a GLB y.
@@ -146,3 +146,40 @@ Gage patch: `/workspace/rook_ttqa/doorlab_passC/gage_doorlab_incr_G.patch` (agai
 - `door_lab_shots.gd` `_set_access_panel`: exact-name lookup of `slide_AccessPanel` (the substring lookup picked `slide_AccessPanel_hinge`, so the panel stayed closed over the head box) and a +90° open (-110° swung the panel inward through the track).
 The open-pose `detail_open` framing covers x ±1.1, so the open clamps (x ±1.52) and the end stops (x ±1.93) are outside it. Gage still needs to add a closed-pose head shot or a pocket-end shot; the patch does not change that framing.
 
+## M-122: runtime GLB edits baked into the generators (2026-11-21)
+Patch M-122: Gage's lab edited the as-built GLBs at load. Found with a scratch probe (`rook_ttqa/m122/rook_m122_probe.gd`: every GLB node vs a fresh instance; logs `probe_before.log` / `probe_after.log`). Gage confirmed none is test-only. Baked:
+
+| runtime edit (door_lab_rig.gd) | nodes / delta (pass G, 41ce6cf + incr_G) | baked as |
+|---|---|---|
+| `_open_pair_meeting` | `tt_door_pair_18` Leaf_L/R children (Panel, Vision_Scissor, Kick_Plate, Push_Bar, collider) ×1.001603 in x about the hinge edge, ±1.51 mm → meet 8.0 → 5.0 mm | `links_rev38.py` `MEET = .0025`: leaves run x ±0.0025…±0.895 (were ±0.004). Pivots ±0.900 and node names unchanged |
+| `_trim_pair_frame` | Frame concave collider: 112 vertices, jamb inner faces x ∓0.896 → ∓0.957 on both casings ("cheek past 0.0550") | `links_rev38.py` `SWING_JAMB = .057`: the +Z (swing-side) casing jambs start at \|x\| 0.957 = hinge + 55 mm push-bar reach + 2 mm, in mesh and collider. The -Z casing stays (the leaf never swings through it); a ~62 mm reveal (0.957 - 0.895) shows beside each hinge stile on the +Z face |
+| `_clamp_rods` (bulkhead) | Dog_01..08 ×0.6829, Linkage_01..08 ×0.5385 toward the shell centre (z-limited: the gear stood proud of the plug face) | housed gear: plug-face tray `TRAY_IN .024` deep to `PZ0+.0485`; dogs 14 mm thick at `PZ0+.004…+.018` in 8 slots through the tray rim (2 mm clear); U guides (1.5 mm clear strap, 0.5 mm behind the face); keepers `KEEP_IN .009`; linkages `DOG_Z1+.002…+.012`, disc behind them, lobes 2 mm off the tray floor; gearbox from `LINK_Z0-.002` |
+| `_clamp_rods` (floor hatch) | Dog_01..04 ×0.4182, Linkage_01..04 ×0.4894 (y-limited: the gear hung under the lid) | underside pocket \|x\| ≤ 0.455, z -0.135…0.455, to y -0.040; dogs (y -0.095…-0.075) run in enclosed edge bores, tips 0.495 retracted / 0.520 thrown into rebate-wall keeper pockets; LockWheel and linkages raised into the pocket (`GEAR_DY .065`) |
+| pocket `_pocket` loop / `_nudge_named_z` | leaf_R_seal z +3 mm (leaf_R_face too, hidden anyway) | `biparting_slide.bake_meet_seal` (`MEET_SEAL_DZ .003`) on all variants |
+| `_set_access_panel` at load | slide_AccessPanel -90° about X (closing v1's baked-open panel) | v1/v4 model the panel closed (v1/v2 and v4/v5 definitions swapped) |
+
+Check: `door_lab_passC.gear_housed()` repeats Gage's clamp criterion on the GLB (leaf_shell AABB shrunk 4 mm). Min factor is 1.0 on all 10 hatch variants, so the clamp would be a no-op; it is part of the pass criterion (`gear_housed_M122`).
+Floor hatch lock gear: swing min gap 9.05 mm (was 9.62), thrown dog to keeper 3.10 mm (was 3.97), retracted dog to keeper 11.70 mm (was 13.47), all ≥ 3 mm. LockWheel to liner 327 mm (was 298). Sweeps unchanged (TorsionBar/anchor 0.002 by design).
+Removal patch: `rook_ttqa/doorlab_passC/gage_doorlab_incr_M122.patch` (stacked on incr_G; also applies on bare b530847). It removes the calls and deletes `_open_pair_meeting`, `_clamp_rods`, `_trim_pair_frame`, `_hinge_swing`, `_visual_jamb_past`. `_nudge_named_z` skips GLB `leaf_*` nodes, and the QA scores hardware against its own leaf in the leaf-body frame (see below). `..._rig_only.patch` is the same without the QA hunk.
+QA hunk: `_mesh_tri_depth` hw-vs-skin now runs in the leaf-body frame. In world space a 50° yawed leaf inflates the triangle AABBs, and the plane test paired bulkhead_Linkage_05 with bulkhead_Rib_back 86 mm away (0.103 m F-CLIP-HW). An exhaustive (no-stride) replica (`rook_ttqa/m122/tri_depth*.py`) finds 24 such false pairs (>30 mm) at 50° even on the pass G GLB with the clamp applied, and 0 at 0°/100° or in the leaf frame. Only the stride sampling had hidden it.
+Left in, flagged (not M-122 GLB edits): `hatch_Handle` ×2 (scaled about the hinge axis, which throws it about 0.8 m off the lid, a rig bug), floor walk collider +0.12 m (test harness), bay3 Threshold_Mat -8 mm (tower asset), placements, hides/overlays (pocket skins → Gage's vision-lite), readout quads, collision layers, convex conversion, animated poses.
+
+## REALISM_SPEC §13 (Vance, de5561f): pocket-slider end stop + solenoid (all v1–v5; handed variants follow swap_lr)
+- `slide_EndStop_{L,R}` moved 4.0 mm inboard to x ±1.930–1.990 (y 2.466–2.512, z −0.044…−0.017 unchanged; `END_STOP_X` lost its +0.004). It is the primary stop. The outer carriage plate meets it at q = 1.000 (signed gap 0.0 mm, contact 46 × 19 mm in y × z), and the 2 mm overshoot squeezes the rubber −2.0 mm.
+- `slide_Bumper_{L,R}` is unchanged as the backstop: leaf tail gap 25.0 mm at full open, 23.0 mm at the overshoot (≥ 20).
+- `slide_Solenoid`, `slide_Solenoid_mount` and `slide_SolenoidBolt` are 6.3 mm lower (`SOL_DY`); the throw is still 18 mm (−Y).
+  - Retracted tip: 7.7 mm vertically above the tab top; 8.26 mm surface distance (Vance's metric, was 14.32).
+  - Thrown: 10.3 mm engagement (through the 8 mm tab, 2.3 mm below it). Window 3.0 mm radial; `bolt_thrown_to_track` 11.84 (was 16.64); `bolt_thrown_tip_to_keeper_post` 12.0.
+  - Throw 18 = 7.7 + 10.3, so the ruling's "8.0 retracted" holds on the surface-distance metric, not vertically.
+- Mount (advisory): front face now at z −0.024 (was −0.022). A truly flush back face at −0.019 is coplanar with `slide_Track`, which the clip check flags as z-fighting, so the back face sits 1.5 mm into the track (was 2 mm); mount z −0.024…−0.0175.
+- Clip allowance (`door_lab_passC._designed_contact`, per §13.1): only the outer carriage plate vs its own `slide_EndStop` may touch, be coplanar, or overlap ≤ 2.05 mm. New clip pose `open_overshoot_2mm`; `hw_gaps_passG` adds the signed end-stop, bumper and bolt metrics with Vance's limits.
+- Material slots unchanged (waiting on Sloane). Tris 5968/5968/5728/5968/5968.
+
+## Tennis tower Rev 3.10.1 (Vance de5561f): tt_entrance_bay_3l 12 mm saddle + leaf sweeps
+- Source: `assets/src/tennis_tower/rooms/temp-Arrival/entrance_bay_arrival.py` (3l only; 2-leaf/half GLBs byte-identical, keep 50 mm plinth).
+- Frame: per leaf opening (x -1.6..-0.6, -0.5..0.5, 0.6..1.6) a 12 mm saddle: inside bevel z -1.720..-1.696 (0 -> 0.012), flat 0.012 z -1.696..-0.966, outside bevel z -0.966..-0.950 (0.012 -> 0.004 mat). 50 mm block kept under mullions and side jambs.
+- `Leaf_{0,1,2}_Sweep` (TT_CarbonSlate, parented to each leaf): y 0.020..0.062, z -1.076..-1.064. No gasket groove existed in the leaf, so the top is bedded 2 mm into the bottom rail instead of a coplanar 0.060.
+- DoorClear-colonly 4 pieces: P1 inside wedge, P2 flat 0..0.012, P3 outside wedge 0.012 -> 0.004, P4 mat strip 0..0.004. Frame-colonly opening piers now start at y 0.012 (was 0.05).
+- Measured: max walk step 4.00 mm (mat edge into Deck); visual vs collider |dy| 0.00 mm on walk lanes (mullion plinth 50 mm visual vs pier collider, not walkable); sweep to sill min 8.0 mm over the full swing; tris 1964 (was 1784).
+- Tower probe 11 bays x 3 lanes: 0 misses; `--qa-tower-entry` failures=0 (14 routes). Clipping closed + 21-step swing: no new overlaps/coplanars (pre-existing sidelight glass bottoms coplanar with jamb plinth, flagged not fixed). first_pass_check 0 FAIL.
+- Gage door lab: his rig's runtime bay3 FloorSweep (to y 0.008) would sink 4 mm into the saddle and double the GLB sweep. `gage_doorlab_incr_saddle.patch` (on main + incr_G + incr_M122 + incr_threshold) skips it when a leaf has a GLB sweep and makes QA measure sweep-to-sill. Without it QA still passes (fails=0) but on the runtime sweep; with it, fails=0 at 60/20/15, bay3 floor 8.00 mm on the GLB sweep.

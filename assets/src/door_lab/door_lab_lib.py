@@ -217,6 +217,13 @@ def Vm(m):
 def boolean(op, ms):
     r = getattr(trimesh.boolean, op)([Vm(m) for m in ms], engine="manifold"); r.fix_normals(); return uvp(r)
 
+def prism_x(pts_yz, x0, x1):
+    """Rook M-122: straight prism along X of a simple polygon given in (y, z) (one solid instead of a union of boxes)."""
+    from shapely.geometry import Polygon
+    m = trimesh.creation.extrude_polygon(Polygon(pts_yz).buffer(0), x1 - x0)
+    M = np.eye(4); M[:3, :3] = [[0, 0, 1], [1, 0, 0], [0, 1, 0]]; M[0, 3] = x0
+    m.apply_transform(M); m.fix_normals(); return uvp(m)
+
 def handwheel(R=.18, r_rim=.012, spokes=5, hub_r=.03, hub_h=.04, seg=18, sseg=6, spoke_w=.016):
     """handwheel in its own frame: axis = local Z, rim torus at z=0, spokes radial, hub boss. Returns a list of meshes."""
     ms = [torus(R, r_rim, seg, sseg), cap((0, 0, 0), hub_r, hub_h, 10, "z")]

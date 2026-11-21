@@ -1073,3 +1073,42 @@ Everything below that isn't one of those four decisions is **Vance proposal**. T
      - The colliders are `*-colonly` only.
    - Gage re-audits in r4.
 5. **Door-lab note:** door timing for any doors placed in this tower now follows `context/door_lab/REALISM_SPEC.md` §7 (game tempo, Jared 2026-11-20).
+
+### Rev 3.10.1, 2026-11-21 (Vance): W entrance bay threshold (`tt_entrance_bay_3l`, 11 placed). Option A, Vance proposal
+**Problem (on main after `487acc3` / `746e551`).**
+- `DoorClear-colonly` sits at y 0..0.004 (z −1.370..0.330), flush with the 4 mm `Threshold_Mat` (y 0..0.004, z −0.948..0.330).
+- The visual `Frame` bottom is a solid plinth at **y 0..0.050 across the full frame depth (z −1.720..−0.950)** and the full width.
+- So over z −1.720..−0.950, feet sink **46 mm** into the visible sill (50 mm from the interior side, where only Struct at y 0 is under it).
+- `Frame-colonly` also leaves a 0..0.050 wall-collider kerb under each leaf opening (openings start at y 0.05).
+- Leaves are y 0.060..2.520, so they clear the old sill by 10 mm. No sweep geometry exists.
+
+**Ruling (Jared leans A; the numbers are a Vance proposal, and Jared approves).** Use a **12 mm bevelled saddle threshold** that meets the ADA-style rule: changes of 6–13 mm are bevelled no steeper than 1:2 (*real-world ref*: ADA 303.3 / ICC A117.1). Bay-local coordinates throughout.
+
+1. **Sill (Rook GLB, `Frame`).** Inside each leaf opening (x −1.600..−0.600, −0.500..+0.500, +0.600..+1.600), replace the 0..0.050 plinth with a saddle:
+   - **Flat top y 0.012** over z −1.696..−0.966.
+   - **Interior bevel:** z −1.720..−1.696, rising from **y 0.000 to 0.012** (24 mm run, 1:2).
+   - **Exterior bevel:** z −0.966..−0.950, falling from **y 0.012 to 0.004** (16 mm run, 1:2). It meets the mat top exactly at the frame face z −0.950.
+   - No vertical lip on either side (0 mm, within ≤ 6 mm). Material is unchanged (TT_Gunmetal frame; Sloane may use the alloy wear rule on the flat top).
+   - The plinth stays at 0..0.050 only under the mullions (x ±0.500..0.600) and the outer jambs/sidelights (|x| ≥ 1.600). The sidelight glass (bottom y 0.050) stays seated, and the 38 mm mullion feet read as mullion bases.
+2. **Leaf bottom seal (Rook GLB).** Leaves stay at y 0.060..2.520, so they clear the sill flat by 48 mm and the mat by 56 mm.
+   - Add `Leaf_{0,1,2}_Sweep`: a brush/EPDM door-bottom sweep, **y 0.020..0.060**, 12 mm thick and centred in the leaf (z −1.076..−1.064), leaf width minus 5 mm each end.
+   - Material: the existing gasket slot (AESTHETIC gasket row, 0.06–0.09, rough 0.85). No new slot.
+   - Sweep bottom to sill flat **8 mm** (the same 8–12 mm band as the door-lab floor gap). Over the swing (outswing, +Z) it clears the bevel by ≥ 8 mm and the mat by **16 mm**, so nothing drags and the 3d-part-clipping-check stays clean.
+   - Leaf colliders stay at y 0.060 (the sweep is visual and soft).
+3. **Walk collider (Rook GLB, `DoorClear-colonly`).** Make it follow the saddle exactly, so the top surface matches the visual top everywhere with a 0 mm step. Use four convex pieces across x −1.999..+1.999:
+   - **P1** interior bevel wedge: z −1.720..−1.696, top y 0.000 → 0.012.
+   - **P2** sill flat: z −1.696..−0.966, top y 0.012.
+   - **P3** exterior bevel wedge: z −0.966..−0.950, top y 0.012 → 0.004.
+   - **P4** mat: z −0.950..0.330, top y 0.004 (as now).
+   - This **extends the strip inboard from z −1.370 to −1.720** so it covers the whole frame depth.
+   - `Frame-colonly` leaf openings change from **Y 0.05..2.525 to Y 0.012..2.525**. Its kerb top is then coplanar with P2, not a hidden 50 mm lip.
+4. **Why this has no sink or hop.**
+   - The worst slope is 1:2 (26.6°). The player's `floor_max_angle` is 50°, so it's walkable with no step-up.
+   - The largest vertical discontinuity is 4 mm, at the mat's outer edge (z 0.330 → Deck at 0.000), which is under the 6 mm rule.
+   - The visual and collider tops are coincident to 0 mm on every piece.
+5. **QA (Gage lab / tower probe).**
+   - Re-run the across-bay probe on all 11 bays along z −2.0 → +0.6 at x = −1.1, 0.0, +1.1.
+   - Expected heights: Struct 0.000 → P1 ramp → **0.012 flat** → P3 ramp → 0.004 mat → Deck 0.000.
+   - Max step ≤ 4 mm, no ray misses, **visual-minus-collider |Δy| ≤ 1 mm**, no airborne frames walking through at full speed.
+   - Add a gap `sweep_to_floor ≥ 8 mm` over the full swing. QUALITY_BAR F-SNAG-CLEAR (clear width) is unaffected.
+6. **Out of scope.** The unplaced 2-leaf and half bays (12 mm mat, DoorClear 0.012) have the same 50 mm plinth. When they are placed, use the same saddle with the flat top at 0.012 and **no exterior bevel**, because the mat top already equals the sill top.

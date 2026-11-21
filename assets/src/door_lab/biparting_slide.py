@@ -99,8 +99,10 @@ def leaf(rig, tag, s):
 HEX_C = (-(HW + .08), 1.15)          # recessed hex-key release plate on the approach (-Z) face of the left jamb trim
 LENS_Y = (.20, .60, 1.00, 1.60)      # light-curtain lens heights above the threshold (4 per jamb, both faces)
 SOL_X, SOL_Z = -.055, -.034              # head solenoid bolt axis (pass G: vertical, on the approach side of the track at leaf L's meeting stile)
-SOL_Y0 = SOF_Y + .088                    # solenoid can underside (bolt exits downward into the keeper tab)
-END_STOP_X = HW + LAP + TRAVEL - .18 + .085 + .004   # track end-stop face: 4 mm past the outer carriage plate at full open (2 mm after the 2 mm overshoot)
+SOL_DY = -.0063                          # Vance 13.2: whole solenoid group 6.3 mm lower -> retracted tip 8.0 mm over the tab, thrown 10.3 mm engagement
+SOL_Y0 = SOF_Y + .088 + SOL_DY           # solenoid can underside (bolt exits downward into the keeper tab)
+END_STOP_X = HW + LAP + TRAVEL - .18 + .085   # Vance REALISM_SPEC 13.1: track end-stop face ON the outer carriage plate at full open (q = 1.000, 0 mm);
+                                                # the 2 mm settle overshoot squeezes the 60 mm rubber 2.0 mm (was 4 mm clear, so the thud hit air)
 PANEL_HY, PANEL_HZ = CAP_Y0 - .008, -(FZ1 - .02) - .018   # head-box access panel hinge axis (along X)
 
 def frame(rig, panel=1):
@@ -158,8 +160,10 @@ def frame(rig, panel=1):
     # head solenoid (fail-secure lock): body on the soffit plate, bolt throws +Z 18 mm across the slot into the leaf-L keeper
     # pass G: red can 60 x 38 x 28 hung on an alloy back plate bolted to the upper (anti-lift) rail face, in front of the running gap and
     # clear of every carriage (26 mm at closed, they only move away); d12 x 30 polished bolt drops 18 mm (-Y) into the keeper tab on leaf L
-    # (retracted: 8 mm shows under the can, tip 14 mm over the tab; thrown: 26 mm shows, tip 4 mm into the tab's 18 mm hole, 3 mm all round).
-    rig.part("slide_Solenoid_mount", None, ALY, [box(SOL_X - .036, SOL_X + .036, SOF_Y + .100, UP_Y0 + .010, -.022, -.017)])
+    # (13.2: group 6.3 mm lower, retracted tip 8 mm over the tab; thrown tip through the 8 mm tab, 10.3 mm engagement, 3 mm all round).
+    # Vance 13.2: mount lowered with the can (-6.3 mm); 13.2 advisory: front face moved to z -0.024 (was -0.022). A true flush back face at
+    # -0.019 is coplanar with the track face (clip check z-fight rule), so the back face is bedded 1.5 mm into the track (was 2 mm).
+    rig.part("slide_Solenoid_mount", None, ALY, [box(SOL_X - .036, SOL_X + .036, SOF_Y + .100 + SOL_DY, UP_Y0 + .010 + SOL_DY, -.024, -.0175)])
     rig.part("slide_Solenoid", None, SRED, [bplate(SOL_X - .030, SOL_X + .030, SOL_Y0, SOL_Y0 + .038, -.048, -.020, .004, front=False)])
     rig.part("slide_SolenoidBolt", None, POL, [cap((0, 0, 0), .006, .030, 8, "y")], world=False, W=T((SOL_X, SOL_Y0 + .007, SOL_Z)))
     # threshold plate with the 14 x 12 floor channel (real cut: two plates + channel floor), bevelled leading edges
@@ -225,6 +229,12 @@ def swap_lr(rig):
     return out
 
 PANEL_OPEN_DEG = 90.0
+
+MEET_SEAL_DZ = .003
+def bake_meet_seal(rig):
+    """Rook M-122: leaf_R's meeting bulb sits 3 mm toward +Z (back) of leaf_L's so the two compressed bulbs never share a face plane
+    (Gage's lab used to move it at runtime). Applied by name after the optional swap_lr, so it is always the node called leaf_R_seal."""
+    rig.N["leaf_R_seal"]["W"] = T((0, 0, MEET_SEAL_DZ)) @ rig.N["leaf_R_seal"]["W"]; return rig
 def deltas(rig=None, f=0.0, f_lock=0.0, f_panel=None, f_hex=0.0, mirror=False):
     """(swap_lr variants use mirror=False: the swapped names keep leaf_L on -X and every node frame is a plain translation.)
     f 0 closed .. 1 open; f_lock 0 retracted .. 1 bolt thrown (only valid when f == 0); f_panel 0 closed .. 1 swung up

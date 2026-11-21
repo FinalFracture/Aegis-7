@@ -1,3 +1,4 @@
+import re
 """Rook door_lab pass C runner (Vance REALISM_SPEC section 9 re-check, 2026-11-20): builds the 5 variants of each door-lab asset,
 exports them, runs the clip / motion-sweep / flush / clear-opening / tri-budget QA and renders the closed + open views and a variant
 contact sheet.
@@ -29,7 +30,7 @@ def _bh(prm, mir):
     return r, mir
 def _bs(panel, hand):
     r = bs.build(panel); bs.finalize(r)
-    return (bs.swap_lr(r) if hand else r), False
+    return bs.bake_meet_seal(bs.swap_lr(r) if hand else r), False
 def _fh(prm, mir):
     r = fh.build(prm); fh.finalize(r)
     if mir: m = mirror_rig(r); m.meta = dict(r.meta); r = m
@@ -39,9 +40,10 @@ VARIANTS = {
     "bulkhead_hatch": [("v1", "RH 150 mm coaming (placed)", lambda: _bh({}, False)), ("v2", "LH 150 mm coaming", lambda: _bh({}, True)),
                        ("v3", "RH 300 mm marine coaming", lambda: _bh(dict(sill=.30), False)), ("v4", "LH 300 mm marine coaming", lambda: _bh(dict(sill=.30), True)),
                        ("v5", "RH coaming, 6 back ribs + kick plate", lambda: _bh(dict(ribs=6, kick=True), False))],
-    "biparting_slide": [("v1", "access panel shown swung up (placed)", lambda: _bs(2, False)), ("v2", "access panel closed (20 mm carriage slot)", lambda: _bs(1, False)),
-                        ("v3", "no panel - service area, track exposed", lambda: _bs(0, False)), ("v4", "V1 handed (release + solenoid on the right)", lambda: _bs(2, True)),
-                        ("v5", "V2 handed", lambda: _bs(1, True))],
+    # M-122: the placed v1 ships with the access panel CLOSED (the lab used to close it at runtime); the swung-up display pose moved to v2.
+    "biparting_slide": [("v1", "access panel closed (20 mm carriage slot) (placed)", lambda: _bs(1, False)), ("v2", "access panel shown swung up", lambda: _bs(2, False)),
+                        ("v3", "no panel - service area, track exposed", lambda: _bs(0, False)), ("v4", "V1 handed (release + solenoid on the right)", lambda: _bs(1, True)),
+                        ("v5", "V2 handed", lambda: _bs(2, True))],
     "floor_hatch": [("v1", "RH stay, 0.45 m well (placed)", lambda: _fh({}, False)), ("v2", "LH stay, 0.45 m well", lambda: _fh({}, True)),
                     ("v3", "RH stay, 0.75 m step-down well", lambda: _fh(dict(well=.75), False)), ("v4", "LH stay, 0.75 m well", lambda: _fh(dict(well=.75), True)),
                     ("v5", "RH stay, 0.30 m shallow well", lambda: _fh(dict(well=.30), False))],
@@ -54,7 +56,8 @@ def poses(asset, r, mir):
                 "equalize_open_110kPa": D(f_open=0, f_dog=1, f_eq=1, kpa=110), "open_100deg": D(f_open=1, f_dog=0)}
     if asset == "biparting_slide":
         D = lambda **k: bs.deltas(r, **k)
-        out = {"closed_locked": D(f=0, f_lock=1), "closed": D(f=0), "half": D(f=.5), "open_hex_released": D(f=1, f_hex=1)}
+        out = {"closed_locked": D(f=0, f_lock=1), "closed": D(f=0), "half": D(f=.5), "open_hex_released": D(f=1, f_hex=1),
+               "open_overshoot_2mm": D(f=1.002)}   # Vance 13.1: carriage squeezes the track end stop 2.0 mm (designed contact, allowed below)
         if "slide_AccessPanel" in r.N: out["closed_panel_shut"] = D(f=0, f_panel=0); out["closed_panel_open"] = D(f=0, f_panel=1)
         return out
     D = lambda **k: fh.deltas(r, mirror=mir, **k)
@@ -133,6 +136,24 @@ def sweeps(asset, r, mir):
         res["dogs_throw"] = w
     return {k: dict(depth_m=round(float(v[0]), 4), parts=[v[1], v[2]], at=v[3]) for k, v in res.items()}
 
+def gear_housed(r, leaf, shell):
+    """Rook M-122: Gage's _clamp_rods criterion, evaluated on the as-built GLB. Every dog / linkage (closed pose, modelled = retracted) must
+    sit inside the leaf shell's bounds shrunk by 4 mm (leaf-local AABB); factor = the scale about the shell centre the lab would have applied
+    (1.0 = untouched). ok when every factor >= 0.999, i.e. the runtime pull-in is a no-op on the shipped GLB."""
+    P = r.world_parts(); inv = np.linalg.inv(r.pose()[leaf])
+    def lb(n):
+        v = P[n][1].vertices @ inv[:3, :3].T + inv[:3, 3]; return v.min(0), v.max(0)
+    slo, shi = lb(shell); lo, hi, c = slo + .004, shi - .004, (slo + shi)/2; out = {}
+    for n in P:
+        l = n.lower()
+        if not (("dog" in l or "linkage" in l) and "guide" not in l and "dogpivot" not in l and "dogpin" not in l) or n not in _desc(r, leaf): continue
+        a, b = lb(n); f = 1.0
+        for k in range(3):
+            for v in (a[k] - c[k], b[k] - c[k]):
+                if abs(v) > 1e-5: f = min(f, ((hi[k] - c[k]) if v > 0 else (c[k] - lo[k]))/abs(v))
+        out[n] = round(float(f), 4)
+    return dict(factors=out, min_factor=min(out.values()), ok=bool(min(out.values()) >= .999))
+
 def _mindist(a, b, n=1500):
     """min surface distance between two meshes (vertex + area samples, both ways; no penetration here, the sweeps cover that)."""
     best = 9.0
@@ -148,9 +169,18 @@ def slide_hw_gaps(r):
     out = {}; mm = lambda v: round(1000*v, 2)
     D = lambda **k: bs.deltas(r, **k)
     for T in "LR":
-        g1 = min(_mindist(r.world_parts(D(f=1.0))[f"slide_EndStop_{T}"][1], r.world_parts(D(f=1.0))[f"slide_carriage_{T}{k}"][1]) for k in (1, 2))
-        P = r.world_parts(D(f=1.002)); g2 = min(_mindist(P[f"slide_EndStop_{T}"][1], P[f"slide_carriage_{T}{k}"][1]) for k in (1, 2))
-        out[f"endstop_{T}_to_carriage_full_open"] = mm(g1); out[f"endstop_{T}_to_carriage_2mm_overshoot"] = mm(g2)
+        # Vance 13.1: signed X gap outer carriage plate -> track end stop face (0.0 at q = 1.000, -2.0 = rubber squeeze at the 2 mm overshoot),
+        # plus the y/z contact overlap; and the pocket backstop gap to the leaf tail (25 at full open, 23 at overshoot, >= 20).
+        for lab, f in (("full_open", 1.0), ("2mm_overshoot", 1.002)):
+            P = r.world_parts(D(f=f)); st = P[f"slide_EndStop_{T}"][1].bounds; sg = np.sign(st.mean(0)[0])
+            cb = [P[f"slide_carriage_{T}{k}"][1].bounds for k in (1, 2)]
+            gap = min(((c[0][0] - st[1][0]) if sg < 0 else (st[0][0] - c[1][0])) for c in cb)
+            c = min(cb, key=lambda c: ((c[0][0] - st[1][0]) if sg < 0 else (st[0][0] - c[1][0])))
+            out[f"carriage_to_endstop_{T}_{lab}_signed"] = mm(gap)
+            if lab == "full_open": out[f"carriage_endstop_{T}_contact_yz_mm"] = [mm(min(c[1][i], st[1][i]) - max(c[0][i], st[0][i])) for i in (1, 2)]
+            bump = P[f"slide_Bumper_{T}"][1]; bb = bump.bounds
+            leaf = [P[n][1] for n in _desc(r, f"leaf_{T}") if n in P and "colonly" not in n and np.all(P[n][1].bounds[0] < bb[1] + .1) and np.all(bb[0] < P[n][1].bounds[1] + .1)]
+            out[f"leaf_tail_to_pocket_bumper_{T}_{lab}"] = mm(min(_mindist(m, bump) for m in leaf))
         w = min(_mindist(r.world_parts(D(f=f))[f"slide_BeltClamp_{T}"][1], r.world_parts(D(f=f))["slide_Belt"][1]) for f in np.linspace(0, 1, 6))
         out[f"beltclamp_{T}_to_belt_0_1000mm"] = mm(w)
         P = r.world_parts(D(f=0))
@@ -160,6 +190,14 @@ def slide_hw_gaps(r):
     out["bolt_retracted_to_keeper"] = mm(_mindist(P0["slide_SolenoidBolt"][1], P0["slide_Keeper"][1]))
     out["bolt_thrown_to_keeper_window"] = mm(_mindist(P1["slide_SolenoidBolt"][1], P1["slide_Keeper"][1]))
     out["bolt_thrown_to_track"] = mm(_mindist(P1["slide_SolenoidBolt"][1], P1["slide_Track"][1]))
+    # Vance 13.2: retracted tip to tab top, thrown engagement below the tab top, thrown tip to the keeper post/riser under the tab (>= 3)
+    kp = P0["slide_Keeper"][1]; bt0 = P0["slide_SolenoidBolt"][1].bounds[0][1]; bt1 = P1["slide_SolenoidBolt"][1].bounds[0][1]
+    bx, bz = P1["slide_SolenoidBolt"][1].bounds.mean(0)[[0, 2]]
+    tab = kp.vertices[(np.abs(kp.vertices[:, 0] - bx) < .03) & (np.abs(kp.vertices[:, 2] - bz) < .03)]
+    tab_top = float(tab[:, 1].max())
+    out["bolt_retracted_tip_to_tab_top"] = mm(bt0 - tab_top); out["bolt_thrown_engagement"] = mm(tab_top - bt1)
+    below = kp.slice_plane([0, tab_top - .008 - 1e-4, 0], [0, -1, 0], cap=True)   # keeper below the 8 mm tab = post/riser/crank
+    out["bolt_thrown_tip_to_keeper_post"] = mm(_mindist(P1["slide_SolenoidBolt"][1], below)) if below is not None and len(below.faces) else None
     out["keeper_to_solenoid_closed"] = mm(min(_mindist(P0["slide_Keeper"][1], P0[k][1]) for k in ("slide_Solenoid", "slide_Solenoid_mount")))
     mov = [n for n in _desc(r, "leaf_L") + _desc(r, "leaf_R") if n in P0 and n != "slide_Keeper"]
     out["solenoid_to_carriages_clamps_closed"] = mm(min(_mindist(P0[k][1], P0[m][1]) for k in ("slide_Solenoid", "slide_Solenoid_mount") for m in mov
@@ -167,7 +205,17 @@ def slide_hw_gaps(r):
     if "slide_AccessPanel" in r.N:
         Pc = r.world_parts(D(f=0, f_panel=0))
         out["panel_closed_to_solenoid_clamps"] = mm(min(_mindist(Pc["slide_AccessPanel"][1], Pc[k][1]) for k in ("slide_Solenoid", "slide_BeltClamp_L", "slide_BeltClamp_R")))
-    out["ok"] = all(v >= 1.0 for k, v in out.items() if k != "ok")
+    def _ok(k, v):
+        if k.startswith("carriage_to_endstop"): return (-2.05 <= v <= .05) if "overshoot" in k else abs(v) <= .05
+        if k.startswith("carriage_endstop"): return all(x > 10 for x in v)
+        if k.startswith("leaf_tail_to_pocket_bumper"): return v >= 20.0
+        if k in ("bolt_thrown_to_track", "bolt_thrown_tip_to_keeper_post"): return v is not None and v >= 3.0
+        if k == "bolt_retracted_to_keeper": return v >= 8.0          # Vance's 13.2 metric (was 14.32): surface distance tip edge -> tab
+        if k == "bolt_retracted_tip_to_tab_top": return v >= 7.5     # vertical (throw 18 = 7.7 + 10.3), > 3.5x the 2 mm leaf play
+        if k == "bolt_thrown_engagement": return v >= 10.0
+        if k == "bolt_thrown_to_keeper_window": return v >= 1.0
+        return v >= 1.0
+    out["ok"] = all(_ok(k, v) for k, v in out.items() if k != "ok")
     return out
 
 def _rays(meshes, o, dirs):
@@ -331,6 +379,19 @@ def dog_phase_check():
                 forced_pose_threshold_travel_u=float(forced.group(1)) if forced else None,
                 ok=bool(dog_o["t1"] <= move_o["t0"] and dog_c["t0"] >= seat_c["t1"] and src_ok))
 
+_DC = re.compile(r"^slide_(carriage_([LR])[12]|EndStop_([LR]))\[")
+def _designed_contact(s):
+    """Vance 13.1 (3d-part-clipping-check allowance): outer carriage plate vs its own track end stop is a designed rubber contact,
+    0 mm at q = 1.000 and up to 2.0 mm squeeze at the overshoot, so that one pair may touch / be coplanar / overlap <= 2.05 mm."""
+    def ok(a, b, depth=0.0):
+        ma, mb = _DC.match(str(a)), _DC.match(str(b))
+        if not (ma and mb) or ("EndStop" in str(a)) == ("EndStop" in str(b)): return False
+        side = lambda m: m.group(2) or m.group(3)
+        return side(ma) == side(mb) and float(depth) <= .00205
+    s["coplanar"] = [c for c in s["coplanar"] if not ok(c[0], c[1])]
+    s["bad_overlaps"] = [o for o in s["bad_overlaps"] if not ok(o[0], o[1], o[2])]
+    return s
+
 def main(only=None, do_render=True):
     rep = json.load(open(QA_JSON)) if os.path.exists(QA_JSON) and only else {}
     for asset, vars_ in VARIANTS.items():
@@ -346,14 +407,15 @@ def main(only=None, do_render=True):
             if asset == "floor_hatch": e["floor_y"] = round(r.meta["floor_y"], 4)
             e["clip"] = {}
             for lab, d in poses(asset, r, mir).items():
-                s = summarize(clip(r, d, n_samp=250))
+                s = _designed_contact(summarize(clip(r, d, n_samp=250)))
                 e["clip"][lab] = dict(worst_overlap=s["worst_overlap"], bad_overlaps=[list(map(str, o)) for o in s["bad_overlaps"]],
                                       coplanar=[list(map(str, o)) for o in s["coplanar"]], open=[str(o) for o in s["open"]])
             e["sweeps"] = sweeps(asset, r, mir)
             if asset == "biparting_slide": e["hw_gaps_passG"] = slide_hw_gaps(r)
             if asset == "floor_hatch": r.meta["_vid"] = vid; e["hatch"] = hatch_checks(r, mir)
+            if asset != "biparting_slide": e["gear_housed_M122"] = gear_housed(r, *(("leaf", "bulkhead_leaf_shell") if asset == "bulkhead_hatch" else ("hatch_leaf", "hatch_leaf_shell")))
             e["pass"] = (e["under_budget"] and all(not c["bad_overlaps"] and not c["coplanar"] and not c["open"] for c in e["clip"].values())
-                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "biparting_slide" or e["hw_gaps_passG"]["ok"]) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
+                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "biparting_slide" or e["hw_gaps_passG"]["ok"]) and (asset == "biparting_slide" or e["gear_housed_M122"]["ok"]) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
             rep[asset][vid] = e
             print(asset, vid, label, "tris", tris["visual"], "pass", e["pass"], "sweeps", {k: v["depth_m"] for k, v in e["sweeps"].items()},
                   f"{time.time() - t0:.0f}s", flush=True)
