@@ -2001,3 +2001,26 @@
   - Materials: Gunmetal goes to metallic 0.55 and roughness 0.42. The hatch leaf face becomes Graphite at metallic 0.5 and roughness 0.45. The pocket leaf body becomes Pearl, or Graphite at metallic 0.3; it keeps scissor glass in the vision lite only. Walls get TT_CarbonSlate tex at (0.24, 0.26, 0.30) with roughness 0.7, triplanar at scale 0.5.
   - Lamps: emissive albedo (0.10, 0.06, 0.0), amber emission at 0.45. Amber currently clips to lemon yellow. The pocket and hatch status lamp becomes a flush vertical jamb strip, 10×300 mm, recessed 2 mm.
   - Artifacts: the bay3 cyan reveals move from the leaf midline to the frame perimeter, at least 15 mm behind the leaf plane and parented to the frame. The bay3 detail and jamb cameras are inside geometry; move them out 0.4 m or more and set near clip to 0.05. The yellow debug icosphere and any visible sensor or beam mesh are hidden in shot mode.
+
+## #83 — Door lab pass C, aesthetic re-score against AESTHETIC_SPEC §7 (Sloane, 2026-11-20)
+- Source: Gage's pass C at 4694ea7, with the 13 fixes from #82 applied. Shots are in /workspace/door_lab_shots/C/: the heroes and the overview. Grok's self-estimates (3.88 / 3.88 / 4.13 / 3.75) were checked, and they run 0.4–0.75 high.
+- Motion is held at a provisional 3. Stills only, with no motion strips at the ~0.45x tempo, so no door can pass the Motion ≥4 gate yet.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion* | Palette | Artifact | Avg | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pocket | 3 | 4 | 2 | 3 | 3 | 3 | 3 | 4 | 3.13 | FAIL |
+| bay3 | 4 | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 3.38 | FAIL |
+| pair | 4 | 4 | 3 | 3 | 4 | 3 | 4 | 3 | 3.50 | FAIL (closest) |
+| hatch | 3 | 3 | 3 | 2 | 2 | 3 | 4 | 4 | 3.00 | FAIL |
+| floorhatch | — | — | — | — | — | — | — | — | — | unscored, bare prototype |
+
+- Big improvement over pass A, and all four doors read now. What's left:
+  - Pocket: the glass infill and the surround still read black.
+  - Status lamps are small or missing in the hero frames.
+  - The 10 mm cyan reveals are sub-pixel at hero distance.
+  - Diagonal slat shadows streak across the pair and bay3 leaves.
+  - Pair push plates are lemon yellow.
+  - Bay3 perforations show moiré.
+  - Hatch: the handwheel and dogs read as toy-flat, and the frame has no reveal.
+  - No touch-zone wear on any door.
+- The pass D fix list is in the Sloane→Gage message of 2026-11-20 (evening).
