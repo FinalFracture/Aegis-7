@@ -688,3 +688,40 @@ Reviewed: `/workspace/door_lab_shots/A/` renders + motion PNGs, `qa/door_lab/run
 - **Lamps (R6/R7):** the bay3 and bulkhead cyan lamp lines stay fixed in space while the leaves move. They sit mid-leaf, not on the jambs or mullions.
 - **meta.json** records commit f2ccf57 (Patch count 78), not the pass A commit.
 - **Looks right:** phase order and shape (lurch knee, back-check/latch-check knees on the swing doors, slider close creep), the bi-parting mirror, the bay3 3-leaf stagger, outswing bay3 and +Z pair (R14), kick plates, push bars, finger guards, the 8 mm sweeps, and fails=0 at 60/20/15 fps.
+
+---
+
+## §9 Pass C review (Vance, 2026-11-20, against 4694ea7). Verdict: **FAIL**
+I recomputed everything from `qa/door_lab/runC{,_20fps,_15fps}/*/motion.csv` and `cue_log.csv`. I did not use the self-report.
+- **PASS: R2.** All §7.6 totals are within ±10%: pocket 1.08/2.40; bay3 1.55/2.85 (last leaf 1.67/2.97); pair 1.27/2.05 (+4.7% open; trailing leaf 1.32/2.10); bulkhead 4.62/7.78; floor hatch 4.08/6.38. The bulkhead and floor-hatch phase t0/t1 values match §7.4/§7.5 to within one tick.
+- **PASS: R15.** Max close KE over every tick: pocket 9.81 J (v 0.640 m/s), bay3 7.77 J (50.0°/s), pair 6.84 J (66.7°/s), bulkhead 9.97 J (19.4°/s), floor hatch 7.90 J (33.3°/s). The values are identical at 60/20/15 Hz.
+- **PASS: R5.** Bay3 open is 0/+67/+133 ms and close (L2/L0/L1) is 0/+67/+133 ms. Pair is +50 ms each way.
+- **PASS: peaks.** Open peaks: pocket 2.89 m/s, bay3 177.8°/s, pair 244.4°/s, bulkhead 66.7°/s, floor hatch 77.8°/s.
+- **Minor: R3, raw per-tick values (60 Hz only).** The harness averages 3 ticks; §7.8 does not.
+  - Pocket open: seal_unseat jerk 1.60× and creep jerk 1.52× the 1.1·j′·dt limit.
+  - Pair close latch_check: Δv 1.16×.
+  - Bulkhead final_seat: Δv 1.12×, Δa 1.33×.
+  - Floor hatch final_seat: Δv 1.25×, Δa 1.35× (also present at 20/15 Hz).
+  - **Vance proposal:** accept a 3-tick average only on phase-entry ticks, and smooth the final_seat entry anyway.
+- **FAIL: R11.**
+  - The bulkhead close has 1 dog clunk; §7.4 calls for ×8 at 6.69→6.82 s on an 18 ms stagger. The floor hatch close also has 1 (it should have ×8 at the end of the 4.92–5.40 dog drive).
+  - The floor hatch close has no release clunk at 0.60 s.
+  - The bay3 latch_clack_l1 fires at 2.85 s, but Leaf_1 strike_catch is at 2.917 s (§7.2: 2.80/2.86/2.92).
+  - Pair stop_tap is at 1.067 s against 0.99 s in §7.3. The pair open back-check runs 0.867–1.033 against 0.81–0.99, about 50 ms late.
+  - The bay3 strike clack for l2 is at 0.167 s against 0.19 s, and stop_tap is at 1.333 s against 1.31 s.
+- **Not verifiable: R13 / F-STALL-OPEN / F-OBS-EMERGENCY.** `metrics.json` is not committed.
+  - `_gravity()` changes only `_player.gravity_scale` and samples once at 55% of open. The kinematic door cannot change, so R13 passes by construction and the test is vacuous.
+  - The stall hold is checked for only 8 ticks.
+  - The emergency test sets `door.emergency` directly instead of a ΔP > 2 kPa rise, and checks klaxon-fired rather than a continuous klaxon.
+- **FAIL: meta.json.** `commit` is a80cc47 (the pass B merge); the code changes are in 4694ea7. The `profiles` list omits floorhatch, and the settlement text still says "Four doors".
+- **FAIL: R6, bulkhead (§4.7)**, from the heroes only.
+  - Visible: about 8 dog blocks on the face with no linkage bars and no central locking wheel. The orange disc is flat, with no rim or spokes.
+  - Visible and good: the gauge, readout and keypad on the jamb (one face only).
+  - Not visible: seal bead or groove, keepers, push-off rams, hinges, davit, actuator, damper, equalize port or lever, and the far-face gauge.
+  - The edge is still a slab. The R150 corners are good.
+  - There is no open or back-face render.
+- **FAIL: R6, floor hatch (§4.6).**
+  - The closed leaf sits about 100 mm proud of the floor on loose frame strips.
+  - Not shown: the 2 gas struts, stay arm with detent, rotary damper, seal, dogs, handle or frame flange.
+- **Partial: pocket (§1.6).** Visible: radar head, jamb sensors (3 of 4), leaf pulls and floor guide. Not visible: carriages, anti-lift rollers, belt clamp, end bumpers, solenoid bolt and keeper, and the hex-key plate. There is no access slot or panel.
+- **Fixed: exposure and lamps.** Exposure is good in the heroes, but no detail or jamb cameras were rendered in pass C. The lamp strips now sit on the jambs and mullions, and the floating mid-leaf lines are gone. Pair glazing now reads as a tinted lite with a pattern.
