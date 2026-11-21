@@ -33,9 +33,9 @@ Godot 4.7.2, from the repo root. Pass `--qa-door-lab-out`. Relative paths join `
 Functional:
 
 ```
-godot --headless --path godot --fixed-fps 60 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 60 --qa-door-lab-out ../qa/door_lab/runC
-godot --headless --path godot --fixed-fps 20 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 20 --qa-door-lab-out ../qa/door_lab/runC_20fps
-godot --headless --path godot --fixed-fps 15 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 15 --qa-door-lab-out ../qa/door_lab/runC_15fps
+godot --headless --path godot --fixed-fps 60 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 60 --qa-door-lab-out ../qa/door_lab/runD
+godot --headless --path godot --fixed-fps 20 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 20 --qa-door-lab-out ../qa/door_lab/runD_20fps
+godot --headless --path godot --fixed-fps 15 res://scenes/test/door_lab.tscn -- --qa-door-lab --qa-door-lab-fps 15 --qa-door-lab-out ../qa/door_lab/runD_15fps
 ```
 
 `--fixed-fps` alone is not enough: the engine consumes it, so the harness requires `--qa-door-lab-fps N`, prints `Engine.physics_ticks_per_second` and the measured physics dt, and fails the run when the measured rate is not N.
@@ -45,7 +45,11 @@ The harness sets `physics_ticks_per_second` to N and `max_physics_steps_per_fram
 Shots are windowed. Windows has no xvfb; opengl3 is the driver. Shots rewrite V-LUMA (leaf-face mean, limit 0.25) and copy PNGs only when `--qa-door-lab-mirror` names a directory that already exists.
 
 ```
-godot --path godot --rendering-driver opengl3 --fixed-fps 60 res://scenes/test/door_lab.tscn -- --qa-door-lab-shots --qa-door-lab-out ../qa/door_lab/runC --qa-door-lab-mirror C:\Users\upchu\aegis_shots\doorlab_C
+godot --path godot --rendering-driver opengl3 --fixed-fps 60 res://scenes/test/door_lab.tscn -- --qa-door-lab-shots --qa-door-lab-out ../qa/door_lab/runD --qa-door-lab-mirror C:\Users\upchu\aegis_shots\doorlab_D
 ```
 
-`tools/door_lab_contact_sheet.py` writes `contact_sheet.png` and a `motion.png` per door from `motion.csv`. Half-open heroes are `hero_final_<door>.png`. The four-door frame is `overview.png`.
+`tools/door_lab_contact_sheet.py` writes `contact_sheet.png` and a `motion.png` per door from `motion.csv`. Half-open heroes are `hero_final_<door>.png`. The four-door frame is `overview.png`. Shots also write `<door>_motion_strip.png` (closed, lurch, 25/50/75%, open, close mid, settle) and `<door>_curve.png` (position and velocity against time, with axes and phase markers) at the run root.
+
+## Pass D look
+
+Lab only. Pocket vision lites use TT_GlassScissor at albedo (0.55, 0.62, 0.68), alpha 0.35, roughness 0.10, with the lower 60% of the core as opaque pearl. Pocket cladding and the hatch surround use albedo (0.16, 0.18, 0.21), metallic 0.5, roughness 0.45. Each door has a 10×300 mm status strip on the camera-facing jamb, centred at 1.4 m (the floor hatch strip lies in the frame). Lamp colours follow AESTHETIC_SPEC §3. Cyan reveals are 15 mm at emission 0.7. The key shadow opacity is 0.5 and the bay canopy does not cast, so the slat grid does not stripe the leaves. Pair push plates are non-emissive amber (0.85, 0.45, 0.02). Bay scissor materials use anisotropic mipmaps and a 2× pattern scale. The hatch handwheel is a 4-spoke tube rim (30 mm tube), dogs have pivot blocks, the leaf edges have 3 mm bevels, and the loose lugs are one ID plate. Touch-zone wear is a ~150 mm patch, roughness −0.10, albedo +3.5%, capped at 0.90. The floor hatch frame is flush with the floor (±2 mm), with a gasket line, a recessed lift handle, a 50 mm hazard border, and the lid sitting in the frame.

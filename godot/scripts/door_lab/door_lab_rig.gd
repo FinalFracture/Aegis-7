@@ -13,6 +13,9 @@ const ORANGE := Color(0.72, 0.28, 0.05)
 const CYAN := Color("#00E5FF")
 const WARM := Color("#FFE9D2")
 const RIM_C := Color("#CFF7FF")
+const SURROUND := Color(0.16, 0.18, 0.21)
+const AMBER_PLATE := Color(0.85, 0.45, 0.02)
+const GLASS_C := Color(0.55, 0.62, 0.68, 0.35)
 
 const TEX_WHITE := "res://assets/textures/facade_aerospace_white_cladding.png"
 const TEX_GUN := "res://assets/textures/facade_titanium_gunmetal_hull.png"
@@ -76,6 +79,7 @@ func _build(parent: Node3D) -> Dictionary:
 	_reflection_cards(xs)
 	var player := _player(xs["pocket"], -(max_r + 6.0))
 	_lights(xs, depth)
+	_mute_grid_shadows(_root)
 	print("[door_lab] spacing=%.2f max_trigger=%.2f" % [spacing, max_r])
 	for id in ["pocket", "bay3", "pair", "hatch", "floorhatch"]:
 		var d: MechDoor = doors[id]
@@ -117,12 +121,14 @@ func _make_materials() -> void:
 	_wall_mat.uv1_scale = Vector3(0.5, 0.5, 0.5)
 	_glass = StandardMaterial3D.new()
 	_glass.resource_name = "TT_GlassScissor"
-	_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-	_glass.alpha_scissor_threshold = 0.25
-	_glass.albedo_color = Color(0.62, 0.70, 0.74, 1.0)
-	_glass.roughness = 0.20
+	# Alpha 0.35 so the lite reads as glass. Depth is written opaque so the
+	# moving leaf does not sort inside itself.
+	_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_glass.albedo_color = GLASS_C
+	_glass.roughness = 0.10
 	_glass.metallic = 0.0
 	_glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_glass.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY
 
 
 func _mat(name: String, albedo: Color, metal: float, rough: float, tex_path: String, tex_tint: Color) -> StandardMaterial3D:
@@ -252,6 +258,9 @@ func _lights(xs: Dictionary, _depth: float) -> void:
 	var pitch := deg_to_rad(35.0)
 	var travel := Vector3(sin(yaw) * cos(pitch), -sin(pitch), cos(yaw) * cos(pitch))
 	key.look_at(key.global_position + travel, Vector3.UP)
+	# The bay canopy is a slat grid. Half-strength shadows keep the bevel read
+	# without the diagonal streaks across the pair and bay3 leaves.
+	key.shadow_opacity = 0.5
 	for id in xs.keys():
 		var x: float = xs[id]
 		# One omni per door, 3 m in front of the approach face and 2.2 m up.
@@ -389,7 +398,7 @@ func _proximity(door: MechDoor) -> void:
 	door.attach_proximity(area)
 
 
-func _lamp(door: MechDoor, pos: Vector3) -> void:
+func _lamp(door: MechDoor, pos: Vector3, along_x: bool = false) -> void:
 	var root := Node3D.new()
 	root.name = "StatusLamp"
 	root.position = pos
@@ -398,16 +407,16 @@ func _lamp(door: MechDoor, pos: Vector3) -> void:
 	base.resource_name = "Mat_Hub_StateGlow"
 	base.emission_enabled = true
 	base.emission = Color("#FF9500")
-	base.emission_energy_multiplier = 0.45
+	base.emission_energy_multiplier = 0.6
 	base.albedo_color = Color(0.10, 0.06, 0.0)
 	base.roughness = 0.35
 	base.metallic = 0.0
-	# Flush vertical jamb strip, 10 × 300 mm, recessed 2 mm behind the face.
-	root.position = pos + Vector3(0.0, 0.0, 0.002)
+	# 10 × 300 mm strip. Vertical on a wall jamb, flat along X when the lamp
+	# sits in a floor frame. MechDoor paints §3 colours onto this material.
 	var bar := MeshInstance3D.new()
 	bar.name = "LampBar"
 	var bm := BoxMesh.new()
-	bm.size = Vector3(0.010, 0.300, 0.006)
+	bm.size = Vector3(0.300, 0.010, 0.008) if along_x else Vector3(0.010, 0.300, 0.010)
 	bar.mesh = bm
 	bar.set_surface_override_material(0, base)
 	root.add_child(bar)
@@ -422,9 +431,9 @@ func _lamp(door: MechDoor, pos: Vector3) -> void:
 		var mi := MeshInstance3D.new()
 		mi.name = "LampSeg%d" % i
 		var sm := BoxMesh.new()
-		sm.size = Vector3(0.008, 0.028, 0.004)
+		sm.size = Vector3(0.032, 0.008, 0.006) if along_x else Vector3(0.008, 0.032, 0.006)
 		mi.mesh = sm
-		mi.position = Vector3(0.0, (float(i) - 3.5) * 0.034, 0.001)
+		mi.position = Vector3((float(i) - 3.5) * 0.036, 0.0, 0.002) if along_x else Vector3(0.0, (float(i) - 3.5) * 0.036, 0.002)
 		var seg := base.duplicate() as StandardMaterial3D
 		mi.set_surface_override_material(0, seg)
 		root.add_child(mi)
@@ -451,8 +460,8 @@ func _reveal(parent: Node3D, name: String, size: Vector3, pos: Vector3) -> void:
 	# Emission stays full cyan. Albedo stays under the 0.90 cap even if the strip texture is white.
 	m.albedo_color = Color(0.02, 0.10, 0.12)
 	m.emission_enabled = true
-	m.emission = Color(0.0, 0.55, 0.62)
-	m.emission_energy_multiplier = 0.35
+	m.emission = CYAN
+	m.emission_energy_multiplier = 0.7
 	m.roughness = 0.3
 	if ResourceLoader.exists(TEX_CYAN):
 		m.albedo_texture = load(TEX_CYAN)
@@ -669,9 +678,9 @@ func _seat_reveals(door: Node3D, leaves: Array) -> void:
 		return frame.global_transform.affine_inverse() * world
 	if frame != null:
 		host = frame
-	_reveal(host, "Reveal_Soffit", Vector3(maxf(0.2, x1 - x0), 0.010, 0.010), into.call(Vector3((x0 + x1) * 0.5, y1 + 0.014, zf)))
-	_reveal(host, "Reveal_JambL", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), into.call(Vector3(x0 - 0.018, (y0 + y1) * 0.5, zf)))
-	_reveal(host, "Reveal_JambR", Vector3(0.010, maxf(0.2, y1 - y0), 0.010), into.call(Vector3(x1 + 0.018, (y0 + y1) * 0.5, zf)))
+	_reveal(host, "Reveal_Soffit", Vector3(maxf(0.2, x1 - x0), 0.015, 0.012), into.call(Vector3((x0 + x1) * 0.5, y1 + 0.016, zf)))
+	_reveal(host, "Reveal_JambL", Vector3(0.015, maxf(0.2, y1 - y0), 0.012), into.call(Vector3(x0 - 0.020, (y0 + y1) * 0.5, zf)))
+	_reveal(host, "Reveal_JambR", Vector3(0.015, maxf(0.2, y1 - y0), 0.012), into.call(Vector3(x1 + 0.020, (y0 + y1) * 0.5, zf)))
 
 
 func _skirt(door: Node3D) -> void:
@@ -849,11 +858,16 @@ func _pocket(prof: MechDoorProfile, x: float) -> MechDoor:
 		})
 	_retint(inst)
 	_hide_exact(inst, "status_light")
+	_hide_named_contains(inst, "reveal_strips")
+	_hide_colonly_meshes(inst)
+	_paint_surround(inst)
 	for item in leaves:
 		_vision_lite(item["body"])
 	_pocket_tokens(door, inst)
 	_skirt(door)
-	_lamp(door, Vector3(-1.02, 1.35, -0.04))
+	_seat_reveals(door, leaves)
+	# Camera sits on +X / −Z. The right jamb face is the one in the hero frame.
+	_lamp(door, Vector3(1.10, 1.40, -0.125))
 	_downlight(door, Vector3(0, 2.85, -0.45), Vector3(x, 1.4, 0))
 	door.bind(prof, leaves, false)
 	door.configure_sensor(Vector3(0, 1.15, 0), Vector3(1.85, 2.15, 0.50))
@@ -902,11 +916,15 @@ func _hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	_tag_hatch(inst)
 	_retint(inst)
 	_hide_exact(inst, "status_light")
+	_hide_colonly_meshes(inst)
 	_paint_hatch_leaf(inst)
+	_paint_surround(inst)
 	_hatch_tokens(door, inst, body)
 	_seat_reveals(door, [{"body": body}])
+	_hatch_frame_reveal(door)
 	_skirt(door)
-	_lamp(door, Vector3(0.58, 1.45, -0.06))
+	# On the camera-facing jamb, clear of the plug, centred at 1.4 m.
+	_jamb_lamp(door)
 	_downlight(door, Vector3(0, 2.90, -0.55), Vector3(x, 1.2, -0.1))
 	# The plug face is recessed in the shell. A close fill is what makes graphite and the dogs read.
 	var face_fill := OmniLight3D.new()
@@ -979,18 +997,10 @@ func _hatch_tokens(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 	# The plug shell's approach face is local z = -0.14. Hardware behind that is hidden.
 	if leaf_body != null:
 		var face_z := -0.162
-		var wheel := MeshInstance3D.new()
-		wheel.name = "OverrideOrange"
-		var cyl := CylinderMesh.new()
-		cyl.top_radius = 0.12
-		cyl.bottom_radius = 0.12
-		cyl.height = 0.016
-		wheel.mesh = cyl
-		wheel.position = Vector3(-0.65, 1.12, face_z)
-		wheel.rotation.x = PI * 0.5
-		wheel.set_surface_override_material(0, _orange)
-		leaf_body.add_child(wheel)
-		_hw(leaf_body, "OverrideHub", Vector3(0.04, 0.04, 0.012), Vector3(-0.65, 1.12, face_z - 0.012), _alloy)
+		_spoke_wheel(leaf_body, "OverrideOrange", Vector3(-0.65, 1.12, face_z), 0.15, 0.015, _orange)
+		# 150 mm scuff along the top of the tube. A square behind the rim reads as a card.
+		_wear_patch(leaf_body, "WearWheel", Vector3(-0.65, 1.27, face_z - 0.014), Vector3(0.15, 0.036, 0.010), _orange)
+		_hatch_bevels(leaf_body, face_z)
 		var dogs := [
 			Vector2(-1.02, 0.72), Vector2(-1.02, 1.52),
 			Vector2(-0.28, 0.78), Vector2(-0.28, 1.48),
@@ -999,7 +1009,11 @@ func _hatch_tokens(door: Node3D, inst: Node3D, leaf_body: Node3D) -> void:
 		]
 		for i in dogs.size():
 			var d: Vector2 = dogs[i]
-			_hw(leaf_body, "DogLug%d" % i, Vector3(0.07, 0.028, 0.014), Vector3(d.x, d.y, face_z), _alloy)
+			var block := _mesh(leaf_body, "DogPivot%d" % i, Vector3(0.034, 0.034, 0.030), Vector3(d.x, d.y, face_z), _alloy, 0.003)
+			_mesh(block, "DogPin", Vector3(0.014, 0.014, 0.022), Vector3(0.0, 0.0, -0.012), _gun, 0.0)
+		var plate := _mesh(leaf_body, "IdPlate", Vector3(0.10, 0.055, 0.005), Vector3(-0.95, 1.72, face_z), _alloy, 0.001)
+		_mesh(plate, "IdInset", Vector3(0.072, 0.032, 0.003), Vector3(0.0, 0.0, -0.002), _graphite, 0.0)
+		_wear_patch(leaf_body, "WearKick", Vector3(-0.65, 0.22, face_z - 0.003), Vector3(0.22, 0.14, 0.004), _graphite)
 		_readout(leaf_body, "DigitalReadout", Vector3(-0.95, 1.58, face_z))
 		var band := _mesh(leaf_body, "HazardBand", Vector3(0.62, 0.040, 0.008), Vector3(-0.65, 0.34, face_z), _orange, 0.0)
 		var band_mat := band.get_surface_override_material(0)
@@ -1064,6 +1078,7 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 		return door
 	_shift_to_plane(inst, leaves)
 	_retint(inst)
+	_hide_colonly_meshes(inst)
 	_rename_glass(inst)
 	if prof.door_id == "bay3":
 		_hide_show_meshes(inst)
@@ -1072,10 +1087,16 @@ func _glb_door(prof: MechDoorProfile, x: float, path: String, pivots: Array, hin
 	var leaf_ab := _aabb_node(leaves[0]["body"])
 	for item in leaves:
 		leaf_ab = leaf_ab.merge(_aabb_node(item["body"]))
+		_wear_leaf(item["body"], prof.door_id)
 	var face_z := leaf_ab.position.z - door.global_position.z
 	var top_y := leaf_ab.position.y + leaf_ab.size.y
-	var jamb_x := leaf_ab.position.x - door.global_position.x + 0.04
-	_lamp(door, Vector3(jamb_x, leaf_ab.get_center().y - door.global_position.y, face_z + 0.006))
+	# Right jamb, on the corner the hero actually frames. The bay frame's front lip
+	# is half a metre proud of the leaf and falls outside this camera.
+	var leaf_x1 := leaf_ab.position.x + leaf_ab.size.x - door.global_position.x
+	# Bay pier is deep. Sit the strip on the opening side of that pier, clear of the mesh.
+	var jamb_x := leaf_x1 - (0.35 if prof.door_id == "bay3" else -0.03)
+	var lamp_z := face_z - (0.28 if prof.door_id == "bay3" else 0.02)
+	_lamp(door, Vector3(jamb_x, 1.40, lamp_z))
 	_downlight(door, Vector3(0, top_y + 0.45, face_z - 0.40), Vector3(x, 1.3, 0))
 	door.bind(prof, leaves, hinge)
 	if prof.door_id == "bay3":
@@ -1215,6 +1236,19 @@ func _retint(root: Node) -> void:
 					continue
 				var dup := (mat as BaseMaterial3D).duplicate() as BaseMaterial3D
 				var low := label.to_lower()
+				var mesh_low := String(mi.name).to_lower()
+				if "push_bar" in mesh_low or "push_plate" in mesh_low:
+					dup.albedo_color = AMBER_PLATE
+					dup.albedo_texture = null
+					dup.metallic = 0.15
+					dup.roughness = 0.42
+					if dup is StandardMaterial3D:
+						var plate := dup as StandardMaterial3D
+						plate.emission_enabled = false
+						plate.emission_energy_multiplier = 0.0
+					mi.set_surface_override_material(s, dup)
+					i += 1
+					continue
 				if "door_scissor" in low or "side_scissor" in low or "upper_scissor" in low:
 					# The GLB frit is a flat cyan (184, 219, 237) with the pattern in alpha.
 					# Leaf bodies use a cool project grey. Cyan stays on the reveal strips.
@@ -1222,6 +1256,9 @@ func _retint(root: Node) -> void:
 						var frit := dup as StandardMaterial3D
 						frit.albedo_texture = _neutral_frit(frit.albedo_texture)
 						frit.emission_enabled = false
+						# Pattern twice as large, anisotropic mips, so the header and the leaves do not moire.
+						frit.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+						frit.uv1_scale = Vector3(0.5, 0.5, 0.5)
 					dup.albedo_color = Color(0.80, 0.82, 0.84, 1.0)
 					dup.roughness = 0.32
 					dup.metallic = 0.10
@@ -1715,17 +1752,35 @@ func _reflection_cards(xs: Dictionary) -> void:
 
 
 func _vision_lite(body: Node3D) -> void:
-	var ab := _local_aabb(body)
-	if ab.size == Vector3.ZERO:
+	var core := _named_local_aabb(body, "_core")
+	if core.size == Vector3.ZERO:
+		core = _local_aabb(body)
+	if core.size == Vector3.ZERO:
 		return
-	var cx := ab.get_center().x
-	var top := ab.position.y + ab.size.y
-	var z := ab.position.z + 0.008
-	_mesh(body, "VisionLite", Vector3(0.45, 0.90, 0.008), Vector3(cx, top - 0.62, z), _glass, 0.0)
-	var xa := _mesh(body, "VisionFritA", Vector3(0.42, 0.008, 0.004), Vector3(cx, top - 0.62, z - 0.004), _glass, 0.0)
+	# The GLB face is an opaque white skin and the core is graphite. Both sit in the
+	# opening, so the lite never reads as glass until they are hidden. Stiles stay.
+	_hide_pocket_skins(body)
+	# Approach face is the min-Z side. Sit the panels in the recessed core, proud of the inset.
+	var z := core.position.z - 0.004
+	var x0 := core.position.x + core.size.x * 0.04
+	var x1 := core.position.x + core.size.x * 0.96
+	var y0 := core.position.y
+	var h := core.size.y
+	var w := x1 - x0
+	var cx := (x0 + x1) * 0.5
+	var glass_h := h * 0.34
+	var gy := y0 + h - glass_h * 0.5 - h * 0.03
+	var pearl_top := gy - glass_h * 0.5 + 0.012
+	var lower_h := maxf(0.2, pearl_top - y0)
+	_mesh(body, "PearlLower", Vector3(w, lower_h, 0.008), Vector3(cx, y0 + lower_h * 0.5, z), _pearl, 0.0)
+	_mesh(body, "VisionLite", Vector3(w * 0.92, glass_h, 0.008), Vector3(cx, gy, z - 0.002), _glass, 0.0)
+	var xa := _mesh(body, "VisionFritA", Vector3(w * 0.70, 0.006, 0.003), Vector3(cx, gy, z - 0.006), _alloy, 0.0)
 	xa.rotation.z = deg_to_rad(58.0)
-	var xb := _mesh(body, "VisionFritB", Vector3(0.42, 0.008, 0.004), Vector3(cx, top - 0.62, z - 0.004), _glass, 0.0)
+	var xb := _mesh(body, "VisionFritB", Vector3(w * 0.70, 0.006, 0.003), Vector3(cx, gy, z - 0.006), _alloy, 0.0)
 	xb.rotation.z = deg_to_rad(-58.0)
+	# Handle zone sits on the pearl, under the lite. Kick zone is the bottom of the leaf.
+	_wear_patch(body, "WearHandle", Vector3(cx, y0 + lower_h * 0.72, z - 0.006), Vector3(0.15, 0.15, 0.003), _pearl)
+	_wear_patch(body, "WearKick", Vector3(cx, y0 + 0.09, z - 0.006), Vector3(0.20, 0.14, 0.003), _pearl)
 
 
 func _hide_exact(root: Node, nm: String) -> void:
@@ -1830,6 +1885,292 @@ func _linkage_and_ribs(door: Node3D, leaf_body: Node3D) -> void:
 		_hw(leaf_body, "Rib%d" % i, Vector3(ab.size.x * 0.72, 0.018, 0.012), Vector3(cx, y0 + float(i) * ab.size.y * 0.16, z), _gun)
 
 
+func _surround_mat() -> StandardMaterial3D:
+	var m := _mat("TT_Gunmetal_Surround", SURROUND, 0.5, 0.45, "", Color.WHITE)
+	m.albedo_texture = null
+	m.albedo_color = SURROUND
+	m.metallic = 0.5
+	m.roughness = 0.45
+	return m
+
+
+func _paint_surround(root: Node) -> void:
+	var mat := _surround_mat()
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if not (n is MeshInstance3D):
+			continue
+		var low := String(n.name).to_lower()
+		if "leaf" in low or "colonly" in low or "dog" in low or "hinge" in low or "seal" in low:
+			continue
+		if low == "frame" or low.begins_with("frame_") or "frame_collar" in low or "cladding" in low:
+			var mi := n as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			for s in mi.mesh.get_surface_count():
+				mi.set_surface_override_material(s, mat)
+
+
+func _hide_colonly_meshes(root: Node) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is MeshInstance3D and "colonly" in String(n.name).to_lower():
+			(n as MeshInstance3D).visible = false
+
+
+func _hide_named_contains(root: Node, needle: String) -> void:
+	var want := needle.to_lower()
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if want in String(n.name).to_lower() and n is MeshInstance3D:
+			(n as MeshInstance3D).visible = false
+
+
+func _mute_grid_shadows(root: Node) -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		var low := String(n.name).to_lower()
+		var grid := "canopy" in low or "upper_scissor" in low or "slat" in low or "louver" in low or low.begins_with("grid")
+		if grid and n is GeometryInstance3D:
+			(n as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _wear_patch(parent: Node3D, nm: String, pos: Vector3, size: Vector3, base: StandardMaterial3D) -> void:
+	var m := base.duplicate() as StandardMaterial3D
+	m.resource_name = "Wear"
+	m.emission_enabled = false
+	var c := m.albedo_color
+	var lift := 1.035
+	m.albedo_color = Color(minf(c.r * lift, 0.90), minf(c.g * lift, 0.90), minf(c.b * lift, 0.90), 1.0)
+	m.roughness = clampf(m.roughness - 0.10, 0.05, 1.0)
+	m.metallic = minf(m.metallic, 0.95)
+	_mesh(parent, nm, size, pos, m, 0.0)
+
+
+func _wear_leaf(body: Node3D, id: String) -> void:
+	var leaf_ab := _named_local_aabb(body, "panel")
+	if leaf_ab.size == Vector3.ZERO:
+		leaf_ab = _named_local_aabb(body, "scissor")
+	if leaf_ab.size == Vector3.ZERO:
+		leaf_ab = _local_aabb(body)
+	if leaf_ab.size == Vector3.ZERO:
+		return
+	var z := leaf_ab.position.z - 0.003
+	var bar := _named_local_aabb(body, "push")
+	var raw_x := bar.get_center().x if bar.size != Vector3.ZERO else leaf_ab.get_center().x
+	var cy := bar.get_center().y if bar.size != Vector3.ZERO else leaf_ab.get_center().y
+	# Keep the scuff inside the leaf. A patch that crosses the meeting stile closes the pair gap.
+	var cx := _inset_x(leaf_ab, raw_x, 0.075)
+	var face := _override_mat(body, "scissor") if id == "bay3" else _pearl
+	_wear_patch(body, "WearPush", Vector3(cx, cy, z), Vector3(0.15, 0.15, 0.004), face)
+	if bar.size != Vector3.ZERO:
+		var amber := _mat("PushPlateWear", AMBER_PLATE, 0.15, 0.32, "", Color.WHITE)
+		amber.albedo_texture = null
+		amber.albedo_color = AMBER_PLATE
+		var bh := clampf(bar.size.y * 0.8, 0.012, 0.045)
+		var bx := _inset_x(leaf_ab, bar.get_center().x, 0.075)
+		_wear_patch(body, "WearBar", Vector3(bx, bar.get_center().y, bar.position.z - 0.002), Vector3(0.15, bh, 0.003), amber)
+	var kick_y := leaf_ab.position.y + 0.08
+	_wear_patch(body, "WearKick", Vector3(_inset_x(leaf_ab, cx, 0.09), kick_y, z), Vector3(0.18, 0.12, 0.004), _pearl)
+
+
+func _inset_x(ab: AABB, x: float, half_w: float) -> float:
+	var lo := ab.position.x + half_w + 0.006
+	var hi := ab.position.x + ab.size.x - half_w - 0.006
+	if hi < lo:
+		return ab.get_center().x
+	return clampf(x, lo, hi)
+
+
+func _override_mat(body: Node3D, token: String) -> StandardMaterial3D:
+	var needle := token.to_lower()
+	var stack: Array[Node] = [body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is MeshInstance3D and needle in String(n.name).to_lower():
+			var mi := n as MeshInstance3D
+			var m := mi.get_surface_override_material(0)
+			if m is StandardMaterial3D:
+				return (m as StandardMaterial3D).duplicate() as StandardMaterial3D
+	return _pearl
+
+
+func _hide_pocket_skins(body: Node3D) -> void:
+	var stack: Array[Node] = [body]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		var low := String(n.name).to_lower()
+		if n is MeshInstance3D and (low.ends_with("_face") or low.ends_with("_core")):
+			(n as MeshInstance3D).visible = false
+
+
+func _jamb_lamp(door: Node3D) -> void:
+	# Reveal depth is the approach face that already reads in the hero.
+	# The gauge's X is that same surround, beside the disc so the strip is not inside it.
+	var z := -0.22
+	var x := 0.55
+	var frame := _find(door, "frame", true)
+	if frame != null:
+		var ab := _aabb_node(frame)
+		var origin := door.global_position
+		z = ab.position.z - origin.z - 0.02
+	var g := _find(door, "gauge_housing_front", false)
+	if g != null:
+		x = door.to_local(g.global_position).x - 0.14
+	_lamp(door, Vector3(x, 1.40, z))
+
+
+func _spoke_wheel(parent: Node3D, nm: String, center: Vector3, radius: float, tube_r: float, mat: Material) -> Node3D:
+	var root := Node3D.new()
+	root.name = nm
+	root.position = center
+	parent.add_child(root)
+	var n := 18
+	for i in n:
+		var a := TAU * float(i) / float(n)
+		var tangent := Vector3(-sin(a), cos(a), 0.0)
+		var radial := Vector3(cos(a), sin(a), 0.0)
+		var seg := MeshInstance3D.new()
+		seg.name = "Rim%d" % i
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = tube_r
+		cyl.bottom_radius = tube_r
+		cyl.height = radius * TAU / float(n) * 1.18
+		seg.mesh = cyl
+		seg.position = radial * radius
+		var y_axis := tangent.normalized()
+		var z_axis := Vector3(0.0, 0.0, 1.0)
+		var x_axis := y_axis.cross(z_axis).normalized()
+		seg.basis = Basis(x_axis, y_axis, z_axis)
+		seg.set_surface_override_material(0, mat)
+		root.add_child(seg)
+	for k in 4:
+		var a2 := TAU * float(k) / 4.0
+		var spoke := MeshInstance3D.new()
+		spoke.name = "Spoke%d" % k
+		var sc := CylinderMesh.new()
+		sc.top_radius = 0.008
+		sc.bottom_radius = 0.008
+		sc.height = radius - tube_r
+		spoke.mesh = sc
+		var dir := Vector3(cos(a2), sin(a2), 0.0)
+		spoke.position = dir * (radius - tube_r) * 0.5
+		var y2 := dir.normalized()
+		var x2 := y2.cross(Vector3(0.0, 0.0, 1.0)).normalized()
+		spoke.basis = Basis(x2, y2, Vector3(0.0, 0.0, 1.0))
+		spoke.set_surface_override_material(0, mat)
+		root.add_child(spoke)
+	var hub := MeshInstance3D.new()
+	hub.name = "Hub"
+	var hc := CylinderMesh.new()
+	hc.top_radius = 0.028
+	hc.bottom_radius = 0.028
+	hc.height = 0.022
+	hub.mesh = hc
+	hub.rotation.x = PI * 0.5
+	hub.set_surface_override_material(0, _alloy)
+	root.add_child(hub)
+	return root
+
+
+func _hatch_bevels(body: Node3D, face_z: float) -> void:
+	var ab := _named_local_aabb(body, "leaf_shell")
+	if ab.size == Vector3.ZERO:
+		return
+	var x0 := ab.position.x
+	var x1 := x0 + ab.size.x
+	var y0 := ab.position.y
+	var y1 := y0 + ab.size.y
+	# 3 mm thick, 14 mm deep toward the camera so the arris catches the key at hero distance.
+	var z := face_z - 0.008
+	var t := 0.003
+	var depth := 0.014
+	_mesh(body, "EdgeBevelT", Vector3(x1 - x0, t, depth), Vector3((x0 + x1) * 0.5, y1 - t, z), _alloy, 0.0)
+	_mesh(body, "EdgeBevelB", Vector3(x1 - x0, t, depth), Vector3((x0 + x1) * 0.5, y0 + t, z), _alloy, 0.0)
+	_mesh(body, "EdgeBevelL", Vector3(t, y1 - y0, depth), Vector3(x0 + t, (y0 + y1) * 0.5, z), _alloy, 0.0)
+	_mesh(body, "EdgeBevelR", Vector3(t, y1 - y0, depth), Vector3(x1 - t, (y0 + y1) * 0.5, z), _alloy, 0.0)
+
+
+func _hatch_frame_reveal(door: Node3D) -> void:
+	var frame := _find(door, "frame", true)
+	if frame == null:
+		return
+	var ab := _aabb_node(frame)
+	if ab.size == Vector3.ZERO:
+		return
+	var origin := door.global_position
+	var x0 := ab.position.x - origin.x
+	var x1 := x0 + ab.size.x
+	var y0 := ab.position.y - origin.y
+	var y1 := y0 + ab.size.y
+	# Proud of the approach face so the 15 mm strip is in the hero, not inside the collar.
+	var z := ab.position.z - origin.z - 0.016
+	var host: Node3D = frame
+	var into := func(p: Vector3) -> Vector3:
+		var world := door.global_transform * p
+		return frame.global_transform.affine_inverse() * world
+	_reveal(host, "Reveal_SoffitB", Vector3(maxf(0.2, x1 - x0), 0.015, 0.012), into.call(Vector3((x0 + x1) * 0.5, y1 - 0.02, z)))
+	_reveal(host, "Reveal_SillB", Vector3(maxf(0.2, x1 - x0), 0.015, 0.012), into.call(Vector3((x0 + x1) * 0.5, y0 + 0.03, z)))
+	_reveal(host, "Reveal_JambLB", Vector3(0.015, maxf(0.2, y1 - y0), 0.012), into.call(Vector3(x0 + 0.03, (y0 + y1) * 0.5, z)))
+	_reveal(host, "Reveal_JambRB", Vector3(0.015, maxf(0.2, y1 - y0), 0.012), into.call(Vector3(x1 - 0.03, (y0 + y1) * 0.5, z)))
+
+
+func _floor_frame(door: Node3D) -> void:
+	var mat := _surround_mat()
+	var top := 0.001
+	var depth := 0.05
+	var yc := top - depth * 0.5
+	var bar := 0.07
+	# Lid is x −0.5..0.5, z 0..1. Inner clearance is 8 mm. Visual only: no extra collision.
+	_mesh(door, "FloorFrameN", Vector3(1.0 + bar * 2.0, depth, bar), Vector3(0.0, yc, -0.008 - bar * 0.5), mat, 0.0)
+	_mesh(door, "FloorFrameS", Vector3(1.0 + bar * 2.0, depth, bar), Vector3(0.0, yc, 1.008 + bar * 0.5), mat, 0.0)
+	_mesh(door, "FloorFrameW", Vector3(bar, depth, 1.016), Vector3(-0.508 - bar * 0.5, yc, 0.50), mat, 0.0)
+	_mesh(door, "FloorFrameE", Vector3(bar, depth, 1.016), Vector3(0.508 + bar * 0.5, yc, 0.50), mat, 0.0)
+	var haz := _orange.duplicate() as StandardMaterial3D
+	haz.emission_enabled = false
+	haz.albedo_color = ORANGE
+	var blk := _graphite.duplicate() as StandardMaterial3D
+	blk.albedo_texture = null
+	blk.albedo_color = Color(0.05, 0.05, 0.05)
+	blk.emission_enabled = false
+	var hy := 0.004
+	var hw := 0.050
+	# 50 mm band, alternating orange and black, sitting on the frame.
+	_hazard_band(door, "N", Vector3(0.0, hy, -0.008 - hw * 0.5), Vector3(1.16, 0.004, hw), true, haz, blk)
+	_hazard_band(door, "S", Vector3(0.0, hy, 1.008 + hw * 0.5), Vector3(1.16, 0.004, hw), true, haz, blk)
+	_hazard_band(door, "W", Vector3(-0.508 - hw * 0.5, hy, 0.50), Vector3(hw, 0.004, 1.016), false, haz, blk)
+	_hazard_band(door, "E", Vector3(0.508 + hw * 0.5, hy, 0.50), Vector3(hw, 0.004, 1.016), false, haz, blk)
+
+
+func _hazard_band(door: Node3D, tag: String, center: Vector3, size: Vector3, along_x: bool, orange: Material, black: Material) -> void:
+	var length := size.x if along_x else size.z
+	var seg := 0.05
+	var n := maxi(int(length / seg), 1)
+	var used := float(n) * seg
+	for i in n:
+		var mat: Material = orange if i % 2 == 0 else black
+		var shift := (float(i) + 0.5) * seg - used * 0.5
+		var pos := center + (Vector3(shift, 0.0, 0.0) if along_x else Vector3(0.0, 0.0, shift))
+		var sz := Vector3(seg, size.y, size.z) if along_x else Vector3(size.x, size.y, seg)
+		_mesh(door, "HazardBorder%s%d" % [tag, i], sz, pos, mat, 0.0)
+
+
 func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	var door := _door("floorhatch", x)
 	door.hinge_axis = Vector3(1.0, 0.0, 0.0)
@@ -1847,23 +2188,33 @@ func _floor_hatch(prof: MechDoorProfile, x: float) -> MechDoor:
 	face.roughness = 0.45
 	face.albedo_texture = null
 	face.albedo_color = GRAPHITE
-	var plate := _mesh(body, "leaf_shell", Vector3(1.0, 0.10, 1.0), Vector3(0.0, -0.05, 0.50), face, 0.0)
+	# Top of the 100 mm lid is y = 0.001, flush with the floor within 2 mm.
+	var plate := _mesh(body, "leaf_shell", Vector3(1.0, 0.10, 1.0), Vector3(0.0, -0.049, 0.50), face, 0.003)
 	plate.name = "leaf_shell"
+	# Hardware stays on the underside so nothing floats above the closed lid.
 	for i in 4:
-		_hw(body, "Rib%d" % i, Vector3(0.78, 0.016, 0.012), Vector3(0.0, 0.012, 0.22 + float(i) * 0.18), _gun)
+		_hw(body, "Rib%d" % i, Vector3(0.78, 0.012, 0.016), Vector3(0.0, -0.085, 0.22 + float(i) * 0.18), _gun)
 	for side in [-1.0, 1.0]:
-		_hw(body, "GasStrut", Vector3(0.028, 0.028, 0.55), Vector3(side * 0.32, 0.04, 0.42), _alloy)
-	_hw(body, "StayArm", Vector3(0.02, 0.02, 0.40), Vector3(0.0, 0.06, 0.28), _alloy)
-	_hw(body, "DamperRod", Vector3(0.03, 0.03, 0.22), Vector3(0.0, 0.02, 0.72), _gun)
-	_hw(body, "LockWheel", Vector3(0.14, 0.02, 0.14), Vector3(0.0, 0.02, 0.55), _orange)
-	_hw(body, "Dog", Vector3(0.06, 0.02, 0.04), Vector3(0.28, 0.02, 0.18), _gun)
-	_mesh(body, "InflatableSeal", Vector3(0.92, 0.012, 0.92), Vector3(0.0, -0.09, 0.50), _seal, 0.0)
-	# Tops sit 30 mm above the floor so the rim does not z-fight the floor plane.
-	_static_box("FloorFrameN", Vector3(1.3, 0.08, 0.12), Vector3(x, -0.01, -0.08), _gun)
-	_static_box("FloorFrameS", Vector3(1.3, 0.08, 0.12), Vector3(x, -0.01, 1.08), _gun)
-	_static_box("FloorFrameW", Vector3(0.12, 0.08, 1.0), Vector3(x - 0.62, -0.01, 0.50), _gun)
-	_static_box("FloorFrameE", Vector3(0.12, 0.08, 1.0), Vector3(x + 0.62, -0.01, 0.50), _gun)
-	_lamp(door, Vector3(0.72, 0.28, -0.05))
+		_hw(body, "GasStrut", Vector3(0.028, 0.028, 0.55), Vector3(side * 0.32, -0.07, 0.42), _alloy)
+	_hw(body, "StayArm", Vector3(0.02, 0.02, 0.40), Vector3(0.0, -0.06, 0.28), _alloy)
+	_hw(body, "DamperRod", Vector3(0.03, 0.03, 0.22), Vector3(0.0, -0.075, 0.72), _gun)
+	_hw(body, "LockWheel", Vector3(0.10, 0.016, 0.10), Vector3(0.0, -0.07, 0.55), _orange)
+	_hw(body, "Dog", Vector3(0.06, 0.016, 0.04), Vector3(0.28, -0.08, 0.18), _gun)
+	# Gasket line in the 8 mm gap. A full slab would cover the lid.
+	_mesh(body, "GasketN", Vector3(1.02, 0.004, 0.008), Vector3(0.0, 0.003, -0.004), _seal, 0.0)
+	_mesh(body, "InflatableSeal", Vector3(1.02, 0.004, 0.008), Vector3(0.0, 0.003, 1.004), _seal, 0.0)
+	_mesh(body, "GasketW", Vector3(0.008, 0.004, 1.00), Vector3(-0.504, 0.003, 0.50), _seal, 0.0)
+	_mesh(body, "GasketE", Vector3(0.008, 0.004, 1.00), Vector3(0.504, 0.003, 0.50), _seal, 0.0)
+	# Dark tray whose top is a few millimetres above the lid, with the bar inside it.
+	var recess := _gun.duplicate() as StandardMaterial3D
+	recess.albedo_texture = null
+	recess.albedo_color = Color(0.04, 0.045, 0.05)
+	_mesh(body, "LiftRecess", Vector3(0.18, 0.008, 0.056), Vector3(0.0, 0.001, 0.72), recess, 0.0)
+	_mesh(body, "LiftHandle", Vector3(0.12, 0.004, 0.012), Vector3(0.0, 0.002, 0.72), _alloy, 0.0)
+	_wear_patch(body, "WearHandle", Vector3(0.0, 0.004, 0.72), Vector3(0.16, 0.003, 0.16), _graphite)
+	_floor_frame(door)
+	# 300 × 10 mm strip lying in the camera-side frame member.
+	_lamp(door, Vector3(0.0, 0.014, 1.055), true)
 	_downlight(door, Vector3(0.0, 2.4, -0.6), Vector3(x, 0.1, 0.4))
 	var top := OmniLight3D.new()
 	top.name = "FloorHatchTop"

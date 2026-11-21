@@ -1,0 +1,10 @@
+t,name,dir
+0.08333,strike_clack_l1,open
+0.11667,strike_clack_l0,open
+0.16667,strike_clack_l2,open
+0.21667,operator_whine_start,open
+1.33333,stop_tap,open
+0.18333,operator_whine_close_start,close
+2.80000,latch_clack_l2,close
+2.85000,latch_clack_l0,close
+2.85000,latch_clack_l1,close

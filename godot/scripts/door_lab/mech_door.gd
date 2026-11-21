@@ -687,22 +687,23 @@ func _set_lamp(mode: String, instant: bool) -> void:
 	if lamp == mode and not instant:
 		return
 	lamp = mode
+	# AESTHETIC_SPEC §3. Dark lamp albedo keeps energy × peak channel ≤ 1.
 	match mode:
 		"locked":
 			_target_color = Color("#FF2A2A")
-			_target_energy = 0.45
+			_target_energy = 0.8
 		"closed":
 			_target_color = Color("#FF9500")
-			_target_energy = 0.45
+			_target_energy = 0.6
 		"moving":
 			_target_color = Color("#00E5FF")
-			_target_energy = 0.45
+			_target_energy = 0.9
 		"open":
 			_target_color = Color("#3FAF6A")
-			_target_energy = 0.45
+			_target_energy = 0.7
 		"fault":
 			_target_color = Color("#FF2A2A")
-			_target_energy = 0.45
+			_target_energy = 1.0
 	if instant:
 		_shown_color = _target_color
 		_shown_energy = _target_energy
@@ -713,7 +714,7 @@ func _fade_lamp(delta: float) -> void:
 	if lamp == "fault":
 		var blink := sin(TAU * 2.0 * Time.get_ticks_msec() / 1000.0) > 0.0
 		_target_color = Color("#FF2A2A") if blink else Color("#FF9500")
-		_target_energy = 0.45
+		_target_energy = 1.0
 	var k := clampf(delta / 0.15, 0.0, 1.0)
 	_shown_color = _shown_color.lerp(_target_color, k)
 	_shown_energy = lerpf(_shown_energy, _target_energy, k)
@@ -727,6 +728,18 @@ func _paint_lamp() -> void:
 		_lamp_mat.emission_energy_multiplier = _shown_energy
 		# Dark amber body. A grey albedo plus a bright emission clips to a lemon bar.
 		_lamp_mat.albedo_color = Color(0.10, 0.06, 0.0, 1.0)
+	# Chase segments are separate materials. A still frame never runs _chase, so paint them here too.
+	for seg in _lamp_segs:
+		var mi := seg as MeshInstance3D
+		if mi == null:
+			continue
+		var mat := mi.get_surface_override_material(0) as StandardMaterial3D
+		if mat == null:
+			continue
+		mat.emission_enabled = true
+		mat.emission = _shown_color
+		mat.emission_energy_multiplier = _shown_energy
+		mat.albedo_color = Color(0.10, 0.06, 0.0, 1.0)
 	if _lamp_light != null:
 		_lamp_light.light_color = _shown_color
 		_lamp_light.light_energy = 0.15
