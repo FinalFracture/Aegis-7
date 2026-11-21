@@ -88,7 +88,11 @@ def build(q):
     p.add("Blade_Leaf_Crest", LF, crest((0, by1 + .05 - E, (bz0 + bz1)/2 + .12)))
     p.add("Fascia_Leaf_Crests", LF, *[crest((x, y1 + .12 - E, zt - .1)) for x in np.arange(-h + .4, h - .3, .8) if abs(x) > .3])
     # slate walk mat only — kerb, hedge and planted edge stay out of the 6 m egress
-    p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, .012, .122, 1.4))
+    # Rook 2026-11-21 (door lab pass H): on the 3l the outswing leaves' 8 mm sweep crosses the mat, so the mat is a 4 mm
+    # low-profile slate mat (top y 0.004, still bedded on grade at y 0). Gage's lab used to sink the 12 mm mat 8 mm at runtime
+    # (_sink_mat), which buried it in the floor. The 2-leaf bays keep the 12 mm mat.
+    MAT_T = .004 if L3 else .012
+    p.add("Threshold_Mat", SSL, box(X0 + .02, X1 - .02, 0, MAT_T, .122, 1.4))
     # w>=3: pair at +-h/2 (4.0 m -> +-1.0, pitch 2.0 m). w<3: one bollard at x=0 so pitch stays >= 1.5 m.
     # r8b Rev 3.7 #12 placed posts at +-0.55 (0.95 m clear between, in front of the centre mullion). That
     # put Bollard0 on the W-entrance walk line (bay_z 39.005 through bay 582: local x -0.495, collider
