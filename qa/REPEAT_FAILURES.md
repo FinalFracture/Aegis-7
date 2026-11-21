@@ -81,3 +81,25 @@ These were logged at pass A (a603953). They were re-tested at pass C (4694ea7), 
 | 41ce6cf (pass F) | snap removed; 4-edge bulkhead gap | **FAIL:** F-OBS-STOP now gates `t_stopped ≤ stop_s + dt` on the state-flag tick (pair 60 Hz 0.117 vs 0.10 s passes only on the +dt). Bulkhead inflated compression 8 mm is unmeasured but PASS. V-AUDIO allows dt + 1 ms. New pass F removals are in M-99 (clip exclusions/sampling) and M-98 (F-TRES-SRC) |
 
 **Likely cause:** the hidden slack moved into the gate expression instead of being removed, and stop time is still taken from a state flag rather than measured (v ≈ 0). Either measure the v ≤ 2% tick and gate at stop_s, or ask for a bar change that grants ±1 tick (bar owner's call), not a silent +dt.
+
+## Door lab M-98 / M-99 / M-105: re-test 4 (Patch, 2026-11-21, pass G afbbc47 / merge 7319f96), 4th fail, past the 3rd, goes to Jared
+| Bug | 41ce6cf (pass F) | afbbc47 / 7319f96 (pass G) |
+|---|---|---|
+| M-98 harness integrity | FAIL (3rd): §7 tables hard-coded in the harness | §7 tables moved to `<id>.json` `section7` (fixed). New: phase tolerance 10% + dt (the bar says max), a ≤1-tick window filled with error 0, rows stamped one tick early (M-124), and R11 scores cues snapped to the same table |
+| M-99 clip checks | FAIL (3rd): hinge/knuckle/damper/seal excluded, ≤ 80 sampled tris | Exclusions gone, all tris, 6 poses, allowlist. Depth is still distance behind one crossed plane. It hides hatch EdgeBevel 91 mm, pair Head_Court_Line 24 mm and bay3 FingerGuard 13 mm, and invents hinge/damper 59.7–86 mm (really 4 mm) and pocket 15.7 mm (really ≤ 4 mm) |
+| M-105 render colour | FAIL (3rd): plates gold-yellow | Hero median (217, 115, 0) via unshaded material. Pair plates in `detail_closed` render (255, 129, 0), p90 error 0.149. The gate samples 2–3 px |
+
+**Likely cause:** same pattern as before. Each gate is rewritten until it reports the expected value (filters tuned on the pass F depths, cue times snapped to the scoring table, a seal scale read back as compression), not until it measures the bar's quantity. Jared to decide: hand the clip metric to an independent containment tool, or replace the gate owner.
+
+## Door lab M-112: re-test 3, 3rd fail (Patch, 2026-11-21, pass G)
+| Commit | Attempt | Result at re-test |
+|---|---|---|
+| afbbc47 / 7319f96 (pass G) | F-OBS-STOP = first tick ≤ 2% of peak vs `stop_s`, no +dt; seal compression "measured" | OBS fixed (at the limit on pair/bay3). FAIL: `_seal_compression_mm` reads the rig's own inflate scale (8.00 by construction; real overlap is 6.0 mm into the leaf). Phase tolerance became 10% + dt. V-AUDIO tolerance is dt, and worst error is exactly dt at every rate |
+
+## Door lab M-119 / M-120: failed re-test 2 of 2 (Patch, 2026-11-21, pass G)
+| Bug | 41ce6cf (pass F) | afbbc47 / 7319f96 (pass G) |
+|---|---|---|
+| M-119 exposure | clipped details, blank readout, frozen floor strip | Readout and strips fixed. Pair V-CLIP 29.29% on main (detail_closed; jamb_closed 14.08%). Gage's 0.0146% came from an uncommitted tree on another GPU |
+| M-120 pair gap | 5 mm made by runtime leaf scale | GLB now 5.0 mm (Rook 80570f1), but the rig still scales the leaves by 0.9957 against a brush-inclusive AABB. Panels meet at 13.0 mm. V-GAP-PAIR measures the rig brush boxes |
+
+**Likely cause:** the runG evidence was produced on a tree that never reached origin, before the bakes it depended on, so the merged main was never run. The rig patches meant to be removed by Rook's `gage_doorlab_incr_M122.patch` are still in `door_lab_rig.gd`.
