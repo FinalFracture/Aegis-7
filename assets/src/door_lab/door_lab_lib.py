@@ -92,7 +92,7 @@ def T(t=(0, 0, 0), yaw=0.0, axis=(0, 1, 0)):
 # ------------------------------------------------------------------ rig
 class Rig:
     """nodes: name -> dict(parent, W (closed-pose world 4x4), mesh (material, local mesh) | None)."""
-    def __init__(s, name): s.name = name; s.N = {}; s.order = []
+    def __init__(s, name): s.name = name; s.N = {}; s.order = []; s.extras = {}
     def group(s, name, parent=None, W=None):
         s.N[name] = dict(parent=parent, W=np.eye(4) if W is None else W, mesh=None); s.order.append(name); return name
     def part(s, name, parent, mat, meshes, world=True, W=None):
@@ -146,6 +146,7 @@ class Rig:
         for n in s.order:
             L = s.local(n); q = TF.quaternion_from_matrix(L)  # w x y z
             node = pg.Node(name=n, translation=[float(v) for v in L[:3, 3]])
+            if getattr(s, "extras", {}).get(n): node.extras = dict(s.extras[n])   # glTF extras -> Godot node metadata
             if abs(q[0] - 1) > 1e-9: node.rotation = [float(q[1]), float(q[2]), float(q[3]), float(q[0])]
             mm = s.N[n]["mesh"]
             if mm:
@@ -240,6 +241,7 @@ def mirror_rig(rig, name=None):
         if d["mesh"]:
             mk_, m = d["mesh"]; uv = m.metadata["uv"]; m2 = m.copy(); m2.apply_transform(M); m2.metadata["uv"] = uv; mm = (mk_, m2)   # trimesh re-winds reflected meshes itself
         out.N[n] = dict(parent=d["parent"], W=M @ d["W"] @ M, mesh=mm); out.order.append(n)
+    out.extras = dict(getattr(rig, "extras", {}))
     return out
 
 def tri_count(rig):

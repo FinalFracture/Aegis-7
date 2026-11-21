@@ -9,7 +9,7 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 |---|---|---|---|---|---|
 | bulkhead_hatch | RH 150 coaming 5766 | LH 5766 | RH 300 coaming 5776 | LH 300 5776 | RH, 6 ribs + kick 5960 |
 | biparting_slide | panel shown swung up 5808 | panel closed 5808 | no panel (service) 5568 | v1 handed 5808 | v2 handed 5808 |
-| floor_hatch | RH stay, 0.45 well 4370 | LH 4370 | RH 0.75 well 4370 | LH 0.75 4370 | RH 0.30 well 4370 |
+| floor_hatch (rev 2) | RH stay, 0.45 well 4360 | LH 4360 | RH 0.75 well 4360 | LH 0.75 4360 | RH 0.30 well 4360 |
 
 ## Animated nodes (pivot on the axis, closed pose = modelled)
 **bulkhead_hatch** (recenter shift z +0.0725; pass B was +0.0745)
@@ -31,23 +31,63 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 - `slide_AccessPanel`: about local X; closed to open is +90°. V1 bakes the open pose, so closing from V1 is -90°.
 - `slide_Keeper` rides on leaf_L.
 
-**floor_hatch** (finished floor plane = GLB y 0.462; opening centred on GLB x/z = 0)
-- `hatch_leaf`: group on the hinge axis (0, 0.446, -0.524). Open = about local +X, -105°.
+**floor_hatch**, rev 2 (Vance's counterbalance decision, 2026-11-20). The finished floor is GLB y 0.462; the opening is centred on GLB x/z = 0. Below, a "pre-recenter" coordinate is the pre-recenter frame (floor at y = 0); add 0.462 to get a GLB y.
+- `hatch_leaf`: group whose origin is on the hinge axis, GLB (0, 0.430, -0.524). Open = rotate about local +X by -105°. The axis is now 32 mm below the floor (pass C had 16 mm), so the Ø56 tube top stays 4 mm under the floor.
+- The leaf stays 1.00 × 1.00 × 0.10 and flush (0.0 mm). It has a 4 mm top and a 6 mm underside chamfer on the hinge edge, plus a 3 mm-clearance scallop around the tube.
+- Hinge and counterbalance. There are no gas struts.
+  - `hatch_HingeTube` (leaf child): Ø56 tube running x -0.490…+0.450, with end caps, a -X journal, and 4 webs to the leaf's rear face.
+  - `hatch_TorsionBar` (fixed): Ø25 bar inside the tube, x -0.575…+0.467. It carries 585 N·m. Its round surface makes the twist invisible, so it is static in the GLB.
+  - `hatch_TorsionAnchor_frame` (fixed): the exposed anchor clevis at the -X end. It has 2 cheeks on the channel floor, a pin, and the torque arm on the bar end. Its pin is at 200° and 30 mm about the axis.
+  - `hatch_TorsionAnchor_leaf` (leaf child): the exposed anchor clevis on the tube's +X end cap. It has 2 cheeks, a pin, the torque arm on the bar end, and the journal stub through the +X bearing into the damper. Its pin is at 135° and 30 mm about the axis.
+  - `hatch_HingeBearing_frame` (fixed): end bearings at x ±0.505…0.530.
+  - `hatch_RotaryDamper` (fixed): on the hinge axis, outboard at x 0.535…0.590. Speed caps are 77.8°/s opening and 33.3°/s closing. These are in the GLB extras, which Godot imports as node meta `extras`, and in Gage's door metas `damper_open_dps` / `damper_close_dps`. They match floorhatch.json: 35/0.45 = 77.8 and close 0.60× = 33.3.
+  - Everything sits in an open hinge channel behind the leaf: z -0.575…-0.506, floor 72 mm down, |x| ≤ 0.600. Under the flange it widens to z -0.488 at the bearing, damper and anchor ends. Nothing protrudes above the floor.
+- Torque model at 1 G (phase timing unchanged):
+
+| term | N·m |
+|---|---|
+| leaf weight moment | 687 |
+| torsion bar | 585 |
+| net closing at the closed position | about 102 |
+| actuator | ≤ 530 |
+
+  The figures are in `hatch_TorsionBar` extras and Gage's `torque_model` meta.
+- Stay. It moved to the non-hinge +X side wall (mirrored on the LH variants) and lies entirely in the band x 0.4515…0.4805, which is outside the 0.45 column.
+  - `hatch_stay_leaf_lug` (leaf child): x 0.4585…0.4615, on the column side of the seal bead. Its pin is at pre-recenter (y -0.125, z -0.274), i.e. 0.25 m from the axis.
+  - `hatch_stay_arm` (leaf child): origin on the lug pin; it rotates about local X relative to the leaf. It is 5 × 20 mm flat bar, 0.40 m between pins, and carries its own pins.
+    - Angle relative to the leaf: 0° closed, 89.19° at 52.5°, 173.29° at 105°.
+  - `hatch_stay_slider` (root): origin on the foot pin at pre-recenter y -0.145. It travels along local Z in a slot in the side-wall recess.
+    - Travel: 0 closed, +7.6 mm at 10.5°, back to 0 at 21°, -115.1 mm at 52.5°, -495.2 mm at 105°, the end of the slot.
+  - Detent:
+    - `hatch_stay_detent_housing` (fixed) sits under the slot.
+    - `hatch_stay_detent_plunger` (root, local Z = world +Y) is up (0) whenever the slider is clear of it. It is pressed down -8.5 mm from 98.5° to 104.5° while the slider runs over it. At 105° it pops up behind the slider's trailing face (2.5 mm gap), so the stay locks at 105°.
+    - `hatch_stay_detent_knob` (child of the plunger) is an OverrideOrange pull knob. It sits in the recess so it can be seen, and it rides with the plunger.
+  - Recess in the liner wall: 12.5 mm deep (x 0.449…0.4625), z -0.40…+0.16, y -0.19 up to the land. The slot and plunger pocket go to x 0.482, i.e. 32 mm, within the 40 mm limit.
+  - Tables are at 0.5° steps (211 entries) in `floor_hatch.stay_tables()` and Gage's `STAY_ARM_DEG` / `STAY_SLIDE_M` / `STAY_PLUNGER_M`.
+  - On the LH variants, rotation about X and travel along Z keep their sign.
 - `hatch_LockWheel`: about local Y, +90°.
 - `hatch_OverrideOrange_Handwheel`: about local Y, 4320°.
 - `hatch_OverrideOrange_Lever`: about local Z, +70°.
 - `hatch_Dog_01..04` / `hatch_Linkage_01..04`: local +X, +0.025 m.
-- `hatch_InflatableSeal`: scale local Y ×1.208 (4 mm compression).
-- `hatch_strut_L/R_body` (root) / `_rod` (leaf child): each aims local +Z at the other.
-- `hatch_stay_arm` (root): about local X. Table at 0..105° in 15° steps: 0, -20.5, -39.25, -55.94, -70.42, -82.73, -93.11, -101.91°.
+- `hatch_InflatableSeal`: scale local Y ×1.208.
+- Removed in rev 2: `hatch_strut_L_body`, `hatch_strut_R_body`, `hatch_strut_L_rod`, `hatch_strut_R_rod`, `hatch_frame_strut_clevis`, `hatch_leaf_clevises`, `hatch_stay_pivot_bracket`, `hatch_stay_track_detent`, `hatch_HingeHeavy_frame`, `hatch_HingeHeavy_leaf`.
 
 ## QA (`passC_qa.json`)
 - All 15 variants pass:
   - Clip check at every key pose: no bad overlaps, no coplanar faces, no open meshes.
   - Motion sweeps: worst penetration ≤ 0.1 mm.
   - Tri budget.
-- Floor hatch:
-  - Leaf top flush with the flange: 0.0 mm.
-  - Liner clear opening measured 0.900 × 0.900 m (rays at -0.15 and -0.30 m).
-  - Dog keepers sit in pockets behind the liner.
-- Known spec conflict: the hinge-side counterbalance hardware sits inside the 0.90 prism. That covers the strut and stay frame clevises (up to 82 / 105 mm from the hinge-side liner, 0.12–0.18 m below the floor) and, at full open, the strut bodies and the stay arm (≤ 94 mm, up to 0.26 m above the floor). The cause is the hinge geometry: with the axis 24 mm outboard of a 1.00 m leaf, the open leaf's underside sits on the liner line, so any strut between that underside and the frame lies in front of it.
+- Floor hatch, rev 2:
+  - The leaf top is flush with the flange: 0.0 mm.
+  - The liner clear opening measures 0.900 × 0.900 by ray cast (the throat ray reads 0.932 in x where it meets the stay recess).
+  - Clear column sweep (`column_sweep` in `passC_qa.json`, plus `floor_hatch_column_sweep.txt`). The column is |x|, |z| < 0.450 from the well-floor top to floor +2 m, checked at 0…105° in 0.5° steps on all 5 variants:
+
+| category | min clearance to the column | worst part |
+|---|---|---|
+| fixed hardware | 2.0 mm | `hatch_Keeper`, in its pocket |
+| moving counterbalance / stay / damper | 1.5 mm | `hatch_stay_arm` |
+| leaf and leaf-borne lock gear at 105° | 17.5 mm | — |
+
+    Nothing in the first two categories enters the column at any step. The leaf (the lid) crosses the column from 0° to 94.5°, which it must do to open.
+  - The stay, slider and detent have 0.0 mm penetration at 1° steps, and through the detent pop-up with Godot-style table interpolation at 0.1° steps from 100° to 105°.
+  - The torsion bar ends sit 2 mm into the anchor hubs, as the splined engagement intends.

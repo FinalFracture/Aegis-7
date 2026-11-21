@@ -1,0 +1,44 @@
+Rook floor hatch column sweep (door_lab_passC.py, 2026-11-20 22:15 CST)
+Column: |x|,|z| < 0.450 m from the well-floor top to floor + 2.0 m. Clearance = horizontal distance to the column (negative = inside).
+fixed = every non-moving node except the frame/liner (liner faces = the column boundary); mechanism = hinge tube, leaf torsion anchor, stay arm, lug, slider, detent plunger/knob;
+leaf_body = leaf shell + leaf-borne lock gear (the lid itself; it covers the column when closed and swings through it by definition).
+
+[v1] RH stay, 0.45 m well (placed)  step 0.5 deg  ok=True
+  fixed      min 2.0 mm (hatch_Keeper)
+  mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
+  liner      min -0.0 mm (frame liner faces = boundary)
+  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
+  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
+  sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
+
+[v2] LH stay, 0.45 m well  step 0.5 deg  ok=True
+  fixed      min 2.0 mm (hatch_Keeper)
+  mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
+  liner      min -0.0 mm (frame liner faces = boundary)
+  leaf body at 105 deg  min 17.46 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
+  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
+  sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
+
+[v3] RH stay, 0.75 m step-down well  step 0.5 deg  ok=True
+  fixed      min 2.0 mm (hatch_Keeper)
+  mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
+  liner      min -0.0 mm (frame liner faces = boundary)
+  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
+  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
+  sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
+
+[v4] LH stay, 0.75 m well  step 0.5 deg  ok=True
+  fixed      min 2.0 mm (hatch_Keeper)
+  mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
+  liner      min -0.0 mm (frame liner faces = boundary)
+  leaf body at 105 deg  min 17.46 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
+  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
+  sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
+
+[v5] RH stay, 0.30 m shallow well  step 0.5 deg  ok=True
+  fixed      min 2.0 mm (hatch_Keeper)
+  mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
+  liner      min -0.0 mm (frame liner faces = boundary)
+  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
+  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
+  sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}}
