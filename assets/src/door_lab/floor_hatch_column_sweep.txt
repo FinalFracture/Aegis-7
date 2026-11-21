@@ -1,4 +1,4 @@
-Rook floor hatch column sweep + lock-gear gaps + dog retraction (door_lab_passC.py, 2026-11-20 23:47 CST)
+Rook floor hatch column sweep + lock-gear gaps + dog retraction (door_lab_passC.py, 2026-11-21 04:24 CST)
 Column: |x|,|z| < 0.450 m from the well-floor top to floor + 2.0 m. Clearance = horizontal distance to the column (negative = inside).
 fixed = every non-moving node except the frame/liner (liner faces = the column boundary); mechanism = hinge tube, leaf torsion anchor, stay arm, lug, slider, detent plunger/knob;
 leaf_body = leaf shell + leaf-borne lock gear (the lid itself; it covers the column when closed and swings through it by definition).

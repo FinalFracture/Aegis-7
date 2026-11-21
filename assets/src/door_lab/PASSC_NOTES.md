@@ -72,7 +72,23 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 - `hatch_InflatableSeal`: scale local Y ×1.208.
 - Removed in rev 2: `hatch_strut_L_body`, `hatch_strut_R_body`, `hatch_strut_L_rod`, `hatch_strut_R_rod`, `hatch_frame_strut_clevis`, `hatch_leaf_clevises`, `hatch_stay_pivot_bracket`, `hatch_stay_track_detent`, `hatch_HingeHeavy_frame`, `hatch_HingeHeavy_leaf`.
 
-## QA (`passC_qa.json`)
+## Floor hatch colliders (pass E, for Gage's open walk-collision issue)
+All 5 variants and the placed copy carry these colliders. None of them is visible, and the tri counts above are visual only.
+
+| node | shape | what it is |
+|---|---|---|
+| `hatch_leaf-convcolonly` | convex box 1.00 × 0.10 × 1.00 | the lid (on the `hatch_leaf` pivot, unchanged) |
+| `hatch_frame-colonly` | trimesh, 7 boxes | flange and frame ring outside the rebate (top = finished floor), plus the hinge-channel floor |
+| `hatch_well_wall_N/S/W/E-convcolonly` | convex box each | liner walls, inner face on the 0.900 column, from the well floor up to the rebate land (−0.106) |
+| `hatch_well_floor-convcolonly` | convex box | well floor slab, top = −well depth |
+
+- The 0.90 × 0.90 opening is open from the land down to the well floor.
+- The well pieces are convex, so they are solid. As trimesh, a falling capsule tunnelled through the 12 mm floor slab's top face and stuck inside it.
+- The wall boxes fill the keeper pockets and the stay recess behind the 0.450 face, so a capsule meets a flat liner. The dogs and the stay arm move inside that volume, but they are not colliders. Gage's leaf-collide check is clean at 60/20/15 fps.
+- Before this change, one `hatch_frame-colonly` trimesh held the ring, the liner walls (below −0.20 only) and the floor.
+
+V-GAP-HATCH (pass E read 114 mm). The GLB perimeter gap is 6.0 mm on the W, E and S sides: the rebate wall is at ±0.506 and the leaf edge at ±0.500. Gage's `_floor_side_mm` compared the leaf AABB with the `hatch_frame` AABB, which is the flange's outer edge at ±0.62. That gives 120 mm, which reads as 114 mm off the 6 mm target. The measurement is fixed in the pass E incremental patch, which now reads W, E and S at 6.00 mm. The N side is the open hinge channel, which the lid's hinge edge needs through the 105° swing, so it has no rebate wall.
+
 - All 15 variants pass:
   - Clip check at every key pose: no bad overlaps, no coplanar faces, no open meshes.
   - Motion sweeps: worst penetration ≤ 0.1 mm.

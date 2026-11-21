@@ -270,13 +270,20 @@ def build(prm=None):
     prm = prm or {}; WELL = float(prm.get("well", .45))
     rig = Rig("door_lab_floor_hatch"); rig.extras = {}
     frame(rig); g = leaf(rig); hinge_torsion(rig, g); stay(rig, g)
+    # Walk / physics colliders, one StaticBody per node. The 0.90 x 0.90 opening is open from the land down to the well floor so a
+    # 0.35 m capsule can drop in; the lid's own collider is hatch_leaf-convcolonly.
+    #   hatch_frame-colonly                    flange + frame ring outside the rebate (top = finished floor), hinge channel floor (trimesh)
+    #   hatch_well_wall_{N,S,W,E}-convcolonly  liner walls, inner face on the 0.900 column, well floor up to the rebate land (LAND_Y)
+    #   hatch_well_floor-convcolonly           well floor slab (top = -WELL)
+    # The well pieces are single boxes as CONVEX colliders (solid): as trimesh, a falling capsule tunnels through the 12 mm slab's top face.
     col = [box(-FL, FL, -FD, 0, -FL, CH_Z0), box(-FL, FL, -FD, CH_Y0, CH_Z0, -REB), box(-FL, -CH_X, -FD, 0, CH_Z0, -REB), box(CH_X, FL, -FD, 0, CH_Z0, -REB),
-           box(-FL, FL, -FD, 0, REB, FL), box(-FL, -REB, -FD, 0, -REB, REB), box(REB, FL, -FD, 0, -REB, REB),
-           box(-OPEN_HALF - WT, OPEN_HALF + WT, -WELL - .012, -WELL, -OPEN_HALF - WT, OPEN_HALF + WT)]
-    for s in (-1, 1):
-        col += [box(s*OPEN_HALF - (WT if s < 0 else 0), s*OPEN_HALF + (WT if s > 0 else 0), -WELL, -FD, -OPEN_HALF - WT, OPEN_HALF + WT),
-                box(-OPEN_HALF, OPEN_HALF, -WELL, -FD, s*OPEN_HALF - (WT if s < 0 else 0), s*OPEN_HALF + (WT if s > 0 else 0))]
+           box(-FL, FL, -FD, 0, REB, FL), box(-FL, -REB, -FD, 0, -REB, REB), box(REB, FL, -FD, 0, -REB, REB)]
     rig.part("hatch_frame-colonly", None, G, col)
+    wo = REB                                   # wall outer face meets the rebate wall / frame ring
+    walls = dict(W=box(-wo, -OPEN_HALF, -WELL, LAND_Y, -wo, wo), E=box(OPEN_HALF, wo, -WELL, LAND_Y, -wo, wo),
+                 N=box(-OPEN_HALF, OPEN_HALF, -WELL, LAND_Y, -wo, -OPEN_HALF), S=box(-OPEN_HALF, OPEN_HALF, -WELL, LAND_Y, OPEN_HALF, wo))
+    for k, m in walls.items(): rig.part(f"hatch_well_wall_{k}-convcolonly", None, G, [m])
+    rig.part("hatch_well_floor-convcolonly", None, G, [box(-wo, wo, -WELL - .012, -WELL, -wo, wo)])
     angs, arm, slide, plg = stay_tables(.5)
     rig.meta = dict(stay_len=ST_L, stay_tables=dict(step_deg=.5, arm_deg=arm.tolist(), slide_m=slide.tolist(), plunger_m=plg.tolist()))
     return rig

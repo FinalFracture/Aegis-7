@@ -1296,7 +1296,12 @@
     "hatch_stay_detent_housing  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
     "hatch_stay_detent_plunger  world_origin=(0.4720, 0.3165, -0.3467)  tris=40",
     "  hatch_stay_detent_knob  world_origin=(0.4720, 0.3165, -0.3467)  tris=48",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=192"
+    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
+    "hatch_well_wall_W-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_E-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_N-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_S-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_floor-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16"
    ],
    "floor_y": 0.462,
    "clip": {
@@ -2029,7 +2034,12 @@
     "hatch_stay_detent_housing  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
     "hatch_stay_detent_plunger  world_origin=(-0.4720, 0.3165, -0.3467)  tris=40",
     "  hatch_stay_detent_knob  world_origin=(-0.4720, 0.3165, -0.3467)  tris=48",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=192"
+    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
+    "hatch_well_wall_W-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_E-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_N-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_wall_S-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16",
+    "hatch_well_floor-convcolonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=16"
    ],
    "floor_y": 0.462,
    "clip": {
@@ -2762,7 +2772,12 @@
     "hatch_stay_detent_housing  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
     "hatch_stay_detent_plunger  world_origin=(0.4720, 0.6165, -0.3467)  tris=40",
     "  hatch_stay_detent_knob  world_origin=(0.4720, 0.6165, -0.3467)  tris=48",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=192"
+    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
+    "hatch_well_wall_W-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_E-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_N-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_S-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_floor-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16"
    ],
    "floor_y": 0.762,
    "clip": {
@@ -3495,7 +3510,12 @@
     "hatch_stay_detent_housing  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
     "hatch_stay_detent_plunger  world_origin=(-0.4720, 0.6165, -0.3467)  tris=40",
     "  hatch_stay_detent_knob  world_origin=(-0.4720, 0.6165, -0.3467)  tris=48",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=192"
+    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
+    "hatch_well_wall_W-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_E-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_N-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_wall_S-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16",
+    "hatch_well_floor-convcolonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=16"
    ],
    "floor_y": 0.762,
    "clip": {
@@ -4228,7 +4248,12 @@
     "hatch_stay_detent_housing  world_origin=(0.0000, 0.3120, 0.0000)  tris=112",
     "hatch_stay_detent_plunger  world_origin=(0.4720, 0.1665, -0.3467)  tris=40",
     "  hatch_stay_detent_knob  world_origin=(0.4720, 0.1665, -0.3467)  tris=48",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=192"
+    "hatch_frame-colonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=112",
+    "hatch_well_wall_W-convcolonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=16",
+    "hatch_well_wall_E-convcolonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=16",
+    "hatch_well_wall_N-convcolonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=16",
+    "hatch_well_wall_S-convcolonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=16",
+    "hatch_well_floor-convcolonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=16"
    ],
    "floor_y": 0.312,
    "clip": {
