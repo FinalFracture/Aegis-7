@@ -205,7 +205,7 @@ Gaps follow Vance §n.5, **±2 mm** (R8). Swing angles in the open pose **±0.5�
 | V-GAP-POCKET | Meeting stiles: **0 mm** visible (2 × 12 mm bulbs compressed **3 mm**). At bolt release: **6 mm**. Leaf–jamb pocket faces **6 mm**. Leaf–floor **8 mm**. Leaf–soffit **10 mm**. Full-open lap into pocket **25 mm**. |
 | V-GAP-BAY | Meeting / mullion **3 mm** each side. Hinge stile to frame: as-built 55 mm must be covered by a finger guard so **visible** gap **≤ 10 mm** (Vance §2.5; if the guard is missing, R6/R8 FAIL, do not silently accept 55 mm). Leaf–floor required **8 mm** (as-built 60 mm / 48 mm visible is a known Rook flag — FAIL V-GAP-BAY until filled or formally waived). |
 | V-GAP-PAIR | Meeting stile **3–8 mm** (as-built 8 mm, at the limit). Hinge edge **3–5 mm**. Leaf–floor **8–12 mm** (as-built 10 mm). |
-| V-GAP-HATCH | Leaf to frame, seal deflated, **6 mm** all round. Inflated compression **8 mm**. Leaf to sill **6 mm**. |
+| V-GAP-HATCH | Wall bulkhead `hatch`: leaf to frame, seal deflated, **6 mm** all round. Inflated compression **8 mm**. Leaf to sill **6 mm**. **Floor hatch only:** leaf to rebate wall **6 ± 2 mm on the W, E and S sides**, measured from the leaf edge (±0.500) to the rebate wall (±0.506), not to the flange outer edge. The **N (hinge) side is excluded**, because it is the open hinge channel and has no rebate wall (`REALISM_SPEC.md` a1a426c §4.7/§11). |
 | V-GAP-STD | Along any one gap, ≥ 8 samples over the clear height: std dev **≤ 1.0 mm**, max deviation from the mean **≤ 2.0 mm**. |
 | V-ALIGN-YAW | Closed leaf yaw vs frame **≤ 0.25°**. Open angle vs 90° (or hatch 100°) **±0.5°** (R8). |
 
