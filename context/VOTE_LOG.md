@@ -2091,3 +2091,38 @@
   4. Hatch Motion: about 2 s of request and dogs before the leaf moves, and about 4.2 s total open. The dogs still look about 1 s each, against the ≤0.5 s target. The close of about 5.8 s is inside the 7.8 s target. The readout screen reads blank grey at hero distance, and the wheel spokes lean lemon.
   5. Floorhatch: the dog phase is about 2 s before the lid lifts. Gage still needs to report the 10 J-capped close number. Brushed radial streaks remain on the lid. Wear isn't visible. The corner lamps are tiny.
 - Sent to Gage for pass G, priority true.
+
+## #87 — Door lab pass G, full re-score against AESTHETIC_SPEC §7 (Sloane, 2026-11-21)
+- Source: Gage's pass G at afbbc47 (merge 7319f96). Shots are in /workspace/door_lab_shots/G/. Curves are in qa/door_lab/runG/. Gage's self-scores are not counted.
+- Motion basis:
+  - The hatch and floorhatch dog and dwell phases sit inside the published §7 windows, and Gage reports that tightening them fails R2.
+  - The bulkhead close stays at 7.8 s, which Jared chose. The floorhatch close is 6.39 s, with R15 at 7.90 J, under the 10 J cap.
+  - Both are now scored 4 against those constraints. In F they were 3 on a misread of the dog durations.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion | Palette | Artifact | Avg | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pocket | 4 | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 3.88 | FAIL (avg, Wear) |
+| bay3 | 4 | 4 | 3 | 4 | 3 | 4 | 4 | 3 | 3.63 | FAIL (Status) |
+| pair | 4 | 4 | 4 | 4 | 2 | 4 | 4 | 3 | 3.63 | FAIL (Wear) |
+| hatch | 4 | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 3.88 | FAIL (avg, Wear) |
+| floorhatch | 3 | 4 | 4 | 4 | 2 | 4 | 4 | 3 | 3.50 | FAIL (Mat, Wear) |
+
+- Fixed:
+  - The white clipping is gone on every door. Pocket glass now reads as glass.
+  - The pair leaves sit below clip, and the jamb lamp is amber.
+  - The hatch wheel is amber and the readout digits show.
+  - The floorhatch hazard frame and corner lamps read.
+- The top fix for pass H is touch-zone wear on all five doors. It's the only thing keeping the pocket and the hatch under 4.0. See the Sloane→Gage message of 2026-11-21 13:3x CT.
+- Other open items:
+  - Bay3 has no status lamp in the hero frame, and its perforations still read as a soft X moiré.
+  - The pair leaves show diagonal slat-shadow streaks again.
+  - The floorhatch lid still has radial brushed streaks.
+  - Out of my scope but noted: the hatch and floorhatch functional clip rows (hinge and damper embeds) are still failing.
+
+### Material slot ruling on Vance's REALISM_SPEC §13.3 recommendations (Sloane, 2026-11-21)
+- DL_BumperRubber: fold into DL_SealRubber.
+- DL_PolishedSteel: fold into TT_BrushedAlloy. For a polished look, use the §2 wear rule (roughness −0.15) on the touch zones. The 0.86 albedo is over the 0.82 cap.
+- DL_YellowZincPlate: fold into TT_BrushedAlloy as clear zinc. Yellow zinc would compete with the safety amber, and the lab retint already turns it cream.
+- DL_AcetalWhite: fold into TT_WhiteComposite (reuse rule).
+- DL_SolenoidRed: keep. There's no existing red paint slot, and it doesn't clash with the lamp red or OverrideOrange.
+- Net: 5 new DL_ slots become 1.
