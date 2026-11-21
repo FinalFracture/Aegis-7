@@ -203,3 +203,44 @@ def render(rig, deltas, path, R=None, title=None, size=720):
     R = views()[3] if R is None else R
     im = crop(dc.render_view(geo, R, size=size, shadow=True)); os.makedirs(os.path.dirname(path), exist_ok=True)
     plt.imsave(path, np.clip(im, 0, 1)); return path
+
+# ------------------------------------------------------------------ pass C additions (Rook 2026-11-20, Vance REALISM_SPEC section 9)
+# OverrideOrange: same name/values as Sloane's door_hub_kit "orange" (Mat_Hub_OverrideOrange) so Gage's _retint keeps it.
+_m("dl_orange", "Mat_Hub_OverrideOrange", (.851, .357, .149), .1, .45)
+_m("dl_green", "TT_StatusGreen", (.25, .69, .42), 0, .4, em=(.25, .69, .42))
+ORANGE, GREEN = "dl_orange", "dl_green"
+
+def Vm(m):
+    m = trimesh.Trimesh(m.vertices, m.faces, process=True); m.fix_normals(); return m
+
+def boolean(op, ms):
+    r = getattr(trimesh.boolean, op)([Vm(m) for m in ms], engine="manifold"); r.fix_normals(); return uvp(r)
+
+def handwheel(R=.18, r_rim=.012, spokes=5, hub_r=.03, hub_h=.04, seg=18, sseg=6, spoke_w=.016):
+    """handwheel in its own frame: axis = local Z, rim torus at z=0, spokes radial, hub boss. Returns a list of meshes."""
+    ms = [torus(R, r_rim, seg, sseg), cap((0, 0, 0), hub_r, hub_h, 10, "z")]
+    for k in range(spokes):
+        a = 2*np.pi*k/spokes
+        ms.append(xf(box(hub_r - .004, R - r_rim*.4, -spoke_w/2, spoke_w/2, -spoke_w*.35, spoke_w*.35), R=TF.rotation_matrix(a, [0, 0, 1])))
+    return ms
+
+def place_axis(ms, c, z_dir):
+    """move meshes built around local Z to centre c with local Z along z_dir (unit)."""
+    R = trimesh.geometry.align_vectors([0, 0, 1], np.asarray(z_dir, float)); out = []
+    for m in ms:
+        M = R.copy(); M[:3, 3] = c; out.append(xf(m.copy(), R=M))
+    return out
+
+def mirror_rig(rig, name=None):
+    """left-hand copy: mirror every node in X (W' = M W M, local mesh mirrored; trimesh keeps the winding outward on reflection).
+    Animation in the mirrored rig: rotations about local Y and Z flip sign, translations along local X flip sign."""
+    M = np.diag([-1.0, 1, 1, 1]); out = Rig(name or rig.name)
+    for n in rig.order:
+        d = rig.N[n]; mm = None
+        if d["mesh"]:
+            mk_, m = d["mesh"]; uv = m.metadata["uv"]; m2 = m.copy(); m2.apply_transform(M); m2.metadata["uv"] = uv; mm = (mk_, m2)   # trimesh re-winds reflected meshes itself
+        out.N[n] = dict(parent=d["parent"], W=M @ d["W"] @ M, mesh=mm); out.order.append(n)
+    return out
+
+def tri_count(rig):
+    return sum(len(rig.N[n]["mesh"][1].faces) for n in rig.order if rig.N[n]["mesh"] and "colonly" not in n)
