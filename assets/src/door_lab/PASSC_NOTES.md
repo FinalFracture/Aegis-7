@@ -195,3 +195,26 @@ Left in, flagged (not M-122 GLB edits): `hatch_Handle` ×2 (scaled about the hin
   - Two deviations from the spec box, both for the coplanar rule (14.5 B2: designed contact gets a 1.0-2.0 mm bed): bottom 0.049 instead of 0.050 (sitting exactly on the 0.050 jamb-block top was flagged coplanar, Frame vs block), and 25 mm deep instead of 22 (22 = the glass thickness, so both block side faces were coplanar with the glass faces; now 1.5 mm proud each side).
 - Colliders unchanged. Tris 2028 (was 1964). Clip check: the pre-existing Frame vs Side_Scissor glass coplanar pair is gone; Side_*+Frame clean at n=600/1500, worst 0.003. The full-asset check still shows a sampler-dependent Fascia_Slate/Fascia_Gunmetal(/Court_Line_LED) coplanar flag whose geometry is byte-identical to HEAD (not touched). first_pass_check 0 FAIL.
 - Independent of 49d6505 (Rev 3.10.1 sill): tested in a scratch clone, `git revert 49d6505` on top of B4 reverts the generator cleanly and keeps the setting blocks (the plinth top is 0.050 either way). The 3l GLB is binary, so a revert conflicts on it and needs a re-export (regen) afterwards; PASSC_NOTES.md also conflicts (notes only).
+
+## Pass H (Gage pass G afbbc47 / 7319f96): clip rows + brush bake
+### Gage's 7 GLB-side clip rows: all lab-side (Vance 14.5 agrees: beds 4.0 mm, leaf vs frame 0.0 mm)
+Re-run at HEAD + incr_M122 + threshold + saddle (rebased onto 7319f96), current GLBs. The pre-M122 runtime edits were not the cause: the same depths repeat without them. Two lab-side causes, found with a per-mesh dump and a volume re-score (winding-number inside test, distance to the nearest surface):
+| door | pair | G report | rerun (poke) | true volume | cause | after (clipvol + floorframe) |
+|---|---|---|---|---|---|---|
+| hatch | bulkhead_HingeHeavy_frame vs frame_skin | 86 | 86 | 4.0 (vs bulkhead_frame_collar, designed bed) | poke metric: a collar vertex 4 mm under the bracket is measured to the bracket's far side face (bracket width) | 4.0 pass |
+| hatch | bulkhead_damper_mount vs frame_skin | 76 | 76 | 4.0 (collar) | same | 4.0 pass |
+| hatch | bulkhead_HingeHeavy_leaf vs leaf_skin | 69.7 | 69.7 | 4.0 (bulkhead_leaf_shell) | same | 4.0 pass |
+| hatch | bulkhead_leaf_damper_mount vs leaf_skin | 59.7 | 59.7 | 4.0 (leaf shell) | same | 4.0 pass |
+| floorhatch | hatch_HingeBearing_frame vs frame_skin | 70 | 70 | 24.8 vs the lab's runtime FloorFrameN; 4.0 vs hatch_frame | rig _floor_frame N bar (50 mm deep, z -0.078..-0.008) sits in the open hinge channel; W/E bars run 8 mm into it (12 mm) | 4.0 pass |
+| floorhatch | hatch_RotaryDamper vs frame_skin | 35.8 | 35.8 / 33.0 | 24.8 FloorFrameN, 12.0 FloorFrameE; 4.0 vs hatch_frame | same | 4.0 pass |
+| floorhatch | leaf_skin vs frame_skin (q 105) | 15.2 | 15.2 | 23.2 hatch_TorsionAnchor_leaf vs FloorFrameN; 0 vs the GLB frame | same (N bar) + poke | 9.2 pass |
+Also over the limit in the rerun, all 0.0 mm true volume (poke-only, neighbouring-bin triangles up to 11 mm apart): floorhatch hatch_Dog_01-04 vs frame_skin 14.5, hatch_Linkage_01-04 vs leaf_skin 14.0, pocket leaf_skin vs frame_skin 15.7 (q 0).
+- Not re-seated (Vance 14.5). Advisory HingeHeavy_frame vs Actuator_housing 4 mm: no gate flags it, so not separated.
+- `gage_doorlab_incr_clipvol.patch` (QA): an over-limit pair is re-scored as a volume (deepest vertex inside the other closed mesh, to its nearest surface; 2.5 mm edge-cross floor kept; poke and the two mesh names logged). Pairs at or under their limit are unchanged.
+- `gage_doorlab_incr_floorframe.patch` (rig): no FloorFrameN when the hatch has a hinge channel (hatch_HingeBearing_frame present), and W/E bars start at z 0.006 (2 mm past the damper).
+### Brush bake (Gage pass G runtime BrushSeal moved "onto the meeting face")
+- The rig adds BrushSeal at runtime to bay3 (tt_entrance_bay_3l) and pair (tt_door_pair_18) leaves; there is no brush in the biparting slide (its leaf_*_seal is unchanged). Gage's boxes floated 6 mm (bay3) / 4 mm (pair) off the approach face, ran 4 mm past the meeting edge, and the two pair brushes overlapped each other 3 mm.
+- Baked as Leaf_<i>_BrushSeal (bay3, entrance_bay_arrival.py) and Leaf_<L|R>_BrushSeal (pair, links_rev38.py), TT_CarbonSlate, parented to each leaf: 6 mm wide on the -Z approach face, outer edge 1.5 mm inboard of the meeting edge, 10 mm deep with 1.5 mm bedded (B2 rule), 0.90 / 0.88 of the stile / leaf height. Inboard because any face part reaching the edge swings 0.64 mm from the bay3 mullion at 4.5 deg, and an overhang leaves its end face < 1 mm off the panel edge face (coplanar).
+- `gage_doorlab_incr_brush.patch`: rig skips its BrushSeal when the leaf has a GLB brushseal; allowlist rows renamed to the per-leaf nodes (same 0.010 m seal limit).
+- bay3 sweep re-hang: pass G hangs FloorSweep from the whole leaf; 49d6505's Leaf_i_Sweep already covers it (8.00 mm over the saddle), so `incr_saddle` (rebased) skips the runtime sweep when the leaf has a *_Sweep.
+- Gates: tris 3l 2076, pair 576; closed clip + 21-step swing clean for the brushes (3l, pair); first_pass_check 0 FAIL (both GLBs + both sources). QA pair meet 5.00, bay3 floor 8.00, BrushSeal vs leaf 8.5 mm poke (1.5 mm true) under 0.010.

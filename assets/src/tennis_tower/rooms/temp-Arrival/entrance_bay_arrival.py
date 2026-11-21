@@ -60,6 +60,12 @@ def build(q):
             p.add(f"Leaf_{i}_Stiles", ALY, box(a, a + .07, .06, TD - .08, -.03, .03), box(b - .07, b, .06, TD - .08, -.03, .03),
                   *[box(a + .07 - E, b - .07 + E, u, v, -.03, .03) for (u, v) in ((.06, .18), (TD - .2, TD - .08))])
             p.add(f"Leaf_{i}_Door_Scissor", SCR, pane(a + .072, b - .072, .18 - E, TD - .2 + E, 0, t=.016))
+            # Rook pass H (Gage pass G BrushSeal baked): meeting-stile brush strip on the approach (-Z) face, 6 mm wide, its outer edge
+            # 1.5 mm inboard of the meeting edge, 8.5 mm proud with 1.5 mm bedded into the face (B2 bed rule), 0.90 of the stile height.
+            # Gage's runtime box floated 6 mm off the face and ran 4 mm past the edge; anything on the face that reaches the edge swings
+            # closer to the mullion than the stile corner does (0.64 mm at 4.5 deg), so it stays inboard.
+            me, sg = (b, 1) if HINGE3[i][1] < 0 else (a, -1); bc, bhh = (.06 + TD - .08)/2, (TD - .08 - .06)*.45
+            p.add(f"Leaf_{i}_BrushSeal", SL, box(*sorted((me - sg*.0075, me - sg*.0015)), bc - bhh, bc + bhh, -.0385, -.0285))
             # Rev 3.9 TTQA-031 outswing (egress to +Z): push bar on the interior (-Z) face
             p.add(f"Leaf_{i}_Push_Bar", ALY, tube((a + .15, 1.05, -.07), (b - .15, 1.05, -.07), .02, 8), tube((a + .15, 1.05, -.07), (a + .15, 1.05, -.03 + E), .012, 6), tube((b - .15, 1.05, -.07), (b - .15, 1.05, -.03 + E), .012, 6))
             p.add(f"Leaf_{i}-colonly", ALY, box(a, b, .06, TD - .08, -.03, .03))
@@ -185,7 +191,7 @@ def group_leaves3(gp, p):
         lo, hi = p.P[f"Leaf_{i}_Stiles"][1].bounds
         P = [float(lo[0] if side < 0 else hi[0]), 0.0, float(hi[2])]; piv[f"Leaf_{i}"] = [round(v, 4) for v in P]
         kids = [j for j, n in enumerate(g.nodes) if n.name and (n.name.startswith(f"Leaf_{i}_") or n.name == f"Leaf_{i}-colonly")]
-        assert len(kids) == 5, kids   # Stiles, Door_Scissor, Push_Bar, Sweep (Rev 3.10.1), -colonly
+        assert len(kids) == 6, kids   # Stiles, Door_Scissor, Push_Bar, Sweep (Rev 3.10.1), BrushSeal (pass H), -colonly
         for j in kids:
             t = g.nodes[j].translation or [0, 0, 0]; g.nodes[j].translation = [t[0] - P[0], t[1] - P[1], t[2] - P[2]]
         g.nodes.append(pg.Node(name=f"Leaf_{i}", translation=P, children=kids)); sc.nodes = [j for j in sc.nodes if j not in kids] + [len(g.nodes) - 1]

@@ -32,6 +32,12 @@ def door_pair():
         P.append((f"Leaf_{tag}_Kick_Plate", ALY, [box(a + .03, b - .03, .03, .25, *((.023, .029) if sz > 0 else (-.029, -.023))) for sz in (-1, 1)]))
         hx = (b - .1, b - .07) if tag == "L" else (a + .07, a + .1)
         P.append((f"Leaf_{tag}_Push_Bar", AM, [box(*hx, .95, 1.15, *((.023, .055) if sz > 0 else (-.055, -.023))) for sz in (-1, 1)]))
+        # Rook pass H (Gage pass G BrushSeal baked): meeting-stile brush strip on the -Z approach face, 6 mm wide, outer edge 1.5 mm
+        # inboard of the meeting edge (an overhang leaves its end face < 1 mm off the panel edge face = coplanar; the meet gap stays 5.0 mm),
+        # 8.5 mm proud with 1.5 mm bedded into the face (B2 bed rule). Gage's runtime box floated 4 mm off the face and the two overlapped
+        # 3 mm across the gap. 0.88 of the leaf height.
+        me, sg = (b, 1) if tag == "L" else (a, -1); yc, yh = (.01 + DH - .01)/2, (DH - .02)*.44
+        P.append((f"Leaf_{tag}_BrushSeal", SL, [box(*sorted((me - sg*.0075, me - sg*.0015)), yc - yh, yc + yh, -.0335, -.0235)]))
         C.append((f"Leaf_{tag}-colonly", [box(a, b, .01, DH - .01, -.025, .025)]))
     return P, C
 
