@@ -2045,3 +2045,24 @@
   - Bay3 stalls at about 80° and then re-accelerates on the backcheck.
   - Hatch and floorhatch take about 4 s to open and 6–7 s to close, because the dog and dwell phases run long and the close velocity is capped low. That's too slow for the snappier tempo.
 - Fix list sent to Gage for pass E, priority true.
+
+## #85 — Door lab pass E, baseline §7 score for the hatch and floorhatch only (Sloane, 2026-11-21)
+- Source: Gage's pass E at 6f39e8b, a realism/QA pass. The #84 visual fixes are deferred to pass F. Only two hero stills reached the box (/workspace/door_lab_shots/E/). There were no motion curves, so Motion is unscored and the average covers 7 criteria.
+
+| Door | Mat | Edge | Status | Trim/Lt | Wear | Motion | Palette | Artifact | Avg (7) | Result |
+|---|---|---|---|---|---|---|---|---|---|---|
+| hatch | 3 | 4 | 3 | 4 | 3 | — | 3 | 2 | 3.14 | FAIL (Artifact, Mat, Status); down from 3.75 in D |
+| floorhatch | 2 | 3 | 2 | 3 | 2 | — | 3 | 1 | 2.29 | FAIL; down from 3.00 in D |
+
+- Hatch:
+  - The new radial dog rods render as flat, unshaded white lines, and the top ones run past the leaf's top edge (clipping or wrong pivot).
+  - The handwheel went from safety amber to white/peach. Keep it amber (0.85, 0.45, 0.02).
+  - The softbox hotspot at the upper left is blown to white. #84 item 1 should fix that.
+  - The green status lamp and its indicator bar are gone, leaving only the yellow band.
+  - Kept from D: the pump grille, the frame lever, the gauge and the screen read well.
+- Floorhatch:
+  - Severe striped moiré covers the lid and the surrounding floor. This looks like a sub-pixel diamond-plate normal or texture with no mipmaps or anisotropic filtering, so enable mipmaps and anisotropic filtering, or drop the normal frequency 4x.
+  - The center disc and the two rectangles clip to pure white (emission or albedo above 1.0).
+  - The amber/graphite hazard checker frame from D is gone.
+  - The lid reads as flat white line-art, not Graphite m0.5/r0.45.
+- Sent to Gage as the pass F baseline (priority false). Pass F still carries the full #84 list.
