@@ -138,7 +138,7 @@ def frame(rig, panel=1):
     for p in fr: p.fix_normals()
     rig.part("frame", None, G, [p for p in fr])
     # rubber end-stop bumpers in each pocket: 25 mm, 25 mm off the tail at full open (Vance section 1 / Gage V-GAP-POCKET lap 25)
-    # pass G: one node per pocket (_L = -X pocket), own DL_BumperRubber slot; plus the visible track end stop in the head box (rubber block
+    # pass G: one node per pocket (_L = -X pocket), DL_SealRubber slot (Sloane #87, was DL_BumperRubber); plus the visible track end stop in the head box (rubber block
     # bolted to the running-rail face, struck by the outer carriage plate), 60 x 46 x 27, bevelled toward the approach side
     for s in (-1, 1):
         bx0, bx1 = sorted((s*(END_X + E), s*(END_X - .025)))
