@@ -8,7 +8,7 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 | asset | v1 (placed) | v2 | v3 | v4 | v5 |
 |---|---|---|---|---|---|
 | bulkhead_hatch | RH 150 coaming 5766 | LH 5766 | RH 300 coaming 5776 | LH 300 5776 | RH, 6 ribs + kick 5960 |
-| biparting_slide | panel shown swung up 5808 | panel closed 5808 | no panel (service) 5568 | v1 handed 5808 | v2 handed 5808 |
+| biparting_slide (pass G) | panel shown swung up 5968 | panel closed 5968 | no panel (service) 5728 | v1 handed 5968 | v2 handed 5968 |
 | floor_hatch (rev 2) | RH stay, 0.45 well 4360 | LH 4360 | RH 0.75 well 4360 | LH 0.75 4360 | RH 0.30 well 4360 |
 
 ## Animated nodes (pivot on the axis, closed pose = modelled)
@@ -25,11 +25,12 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
 
 **biparting_slide**
 - `leaf_L` / `leaf_R`: X -1.000 / +1.000 m.
-- `slide_roller_*`: spin about local Z by travel/r (r 0.030; antilift r 0.015, opposite sign). Gage's `_tag_rollers` is unchanged.
-- `slide_SolenoidBolt`: +Z 0.018 m (locked).
+- `slide_roller_*`: spin about local Z by travel/r (r 0.030).
+- `slide_AntiLiftRoller_{L,R}{1,2}` (pass G, was `slide_roller_*_antilift`): spin about local Z by travel/r, r 0.020 (was 0.015), opposite sign. Gage's `_tag_rollers` still matches on "antilift" (case-insensitive); `gage_doorlab_incr_G.patch` sets its radius to 0.020.
+- `slide_SolenoidBolt`: local -Y 0.018 m (locked; pass G vertical throw, was +Z). Origin is on the bolt axis at its top end inside the can.
 - `slide_HexRelease_socket`: about local Z, 90° (manual release).
 - `slide_AccessPanel`: about local X; closed to open is +90°. V1 bakes the open pose, so closing from V1 is -90°.
-- `slide_Keeper` rides on leaf_L.
+- `slide_Keeper`, `slide_BeltClamp_L/R` and `slide_AntiLiftRoller_*` ride on their leaf (`slide_Keeper` on leaf_L; on the handed v4/v5 it rides leaf_R, on the solenoid side).
 
 **floor_hatch**, rev 2 (Vance's counterbalance decision, 2026-11-20). The finished floor is GLB y 0.462; the opening is centred on GLB x/z = 0. Below, a "pre-recenter" coordinate is the pre-recenter frame (floor at y = 0); add 0.462 to get a GLB y.
 - `hatch_leaf`: group whose origin is on the hinge axis, GLB (0, 0.430, -0.524). Open = rotate about local +X by -105°. The axis is now 32 mm below the floor (pass C had 16 mm), so the Ø56 tube top stays 4 mm under the floor.
@@ -125,3 +126,23 @@ V-GAP-HATCH (pass E read 114 mm). The GLB perimeter gap is 6.0 mm on the W, E an
   - Godot findings for the coming incremental patch (Gage-owned files, not edited here):
     1. `_floor_hatch` tags `_each_named(inst, "hatch_dog_")`. That is a case-insensitive substring match, so it also catches `hatch_dog_guides`, the fixed guide blocks on the leaf. The guides then slide 25 mm in +X with the dogs whenever the dogs are thrown, which includes the closed rest pose. `_tag_hatch` does the same with `bulkhead_dog_guides`. The fix is to match `hatch_dog_0` / `bulkhead_dog_0`.
     2. A forced pose (`force_q`) with 0 < q ≤ 2% of travel (≤ 2.1°) shows the dogs thrown while the leaf is lifted, because of the `travel_u > 0.02` test in `_dog_throw_u` / `_pose_dog`. The animated sequence never does this, but a static pose would. The fix is to test `travel_u > 0.0`.
+
+## Pass G: pocket slider head readability (Gage's pass F open-detail shot)
+Applies to all biparting_slide variants v1..v5. The handed variants v4/v5 swap `_L`/`_R` (regex `_([LR])(?=\d|_|-|$)`), so `_L` stays on the -X leaf.
+New material slots (`door_lab_lib.py`) use the same UV0 planar projection as every other slot, so Sloane's PBR textures drop in per slot. None of the names contains "rubber"/"seal", so Gage's `_retint` can lift them and still clamps them at 0.90.
+
+| part | before (pass F) | after (pass G) | parent |
+|---|---|---|---|
+| (a) anti-lift roller | `slide_roller_{L,R}{1,2}_antilift`, Ø30 × 20, DL_SealRubber, hidden behind the carriage plate | `slide_AntiLiftRoller_{L,R}{1,2}`, Ø40 × 24 acetal tyre (Ø24 bore), DL_AcetalWhite (0.80, 0.80, 0.76). The carriage plate is lowered to the roller line so it shows. Ø14 axle cap. | leaf_L / leaf_R |
+| (b) belt clamp | `slide_BeltClamp_{L,R}`, 60 mm long on carriage 1, TT_BrushedSteel | same names. A 100 mm jaw pair with a 100 × 32 × 4 front plate and 2 Ø13 cap-screw heads, on its own hanger at the leaf centre. DL_YellowZincPlate (0.70, 0.59, 0.30, metallic 0.55, roughness 0.42). On v1–v3 leaf L grips the upper belt run and leaf R the lower; the handed v4/v5 mirror this. 2 mm to the belt over the full travel. | leaf_L / leaf_R |
+| (c) end-stop bumper | `slide_Bumper` (4 pocket buffers 25 × 80 × 30, DL_SealRubber, hidden in the pocket) | `slide_Bumper_{L,R}` (the same buffers, DL_BumperRubber 0.06 grey) + new `slide_EndStop_{L,R}` track stops 60 × 46 × 27, DL_BumperRubber, at x ±1.934. 4.0 mm to the carriage at full open, 2.0 mm at 2 mm overshoot. | root (fixed) |
+| (d) solenoid body | `slide_Solenoid` 40 × 22 × 22, TT_BrushedSteel | `slide_Solenoid` 60 × 38 × 28, DL_SolenoidRed (0.56, 0.05, 0.04), plus `slide_Solenoid_mount` (DL alloy) bracket on the upper rail face. Centre x -0.055 (+0.055 on v4/v5). | root (fixed) |
+| (d) solenoid bolt | `slide_SolenoidBolt` Ø8 × 20, Z throw | `slide_SolenoidBolt` Ø12 × 30, DL_PolishedSteel (0.86, metallic 1, roughness 0.12). Vertical throw 18 mm down through the keeper hole. Retracted it clears the keeper by 14.3 mm; thrown, 3.0 mm to the hole walls. | root, origin on the throw axis |
+| (d) keeper | `slide_Keeper` U-staple, TT_BrushedSteel | `slide_Keeper` 52 × 8 × 30 windowed tab with an 18 × 18 hole on a post and riser, DL_PolishedSteel | leaf_L (leaf_R on v4/v5, the handed solenoid side) |
+
+Gaps are checked every run in `door_lab_passC.py` (`hw_gaps_passG` in `passC_qa.json`); all variants pass. Unchanged in pass G: `slide_AccessPanel_hinge` keeps its name (renaming it made Gage's V-HW test the panel origin on the hinge axis, which is outside his frustums).
+Gage patch: `/workspace/rook_ttqa/doorlab_passC/gage_doorlab_incr_G.patch` (against 41ce6cf):
+- `door_lab_rig.gd` `_tag_rollers`: antilift `roller_r` 0.015 → 0.020.
+- `door_lab_shots.gd` `_set_access_panel`: exact-name lookup of `slide_AccessPanel` (the substring lookup picked `slide_AccessPanel_hinge`, so the panel stayed closed over the head box) and a +90° open (-110° swung the panel inward through the track).
+The open-pose `detail_open` framing covers x ±1.1, so the open clamps (x ±1.52) and the end stops (x ±1.93) are outside it. Gage still needs to add a closed-pose head shot or a pocket-end shot; the patch does not change that framing.
+

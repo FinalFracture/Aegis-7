@@ -246,3 +246,14 @@ def mirror_rig(rig, name=None):
 
 def tri_count(rig):
     return sum(len(rig.N[n]["mesh"][1].faces) for n in rig.order if rig.N[n]["mesh"] and "colonly" not in n)
+
+# ------------------------------------------------------------------ pass G (Rook 2026-11-21, Gage pocket open-detail readability)
+# Separate slots so the pocket head hardware reads against the alloy track / black belt / gunmetal head box. Untextured PBR factors;
+# meshes keep the shared planar UV0 (uvp) like every other door-lab part, so Sloane's PBR sets can be dropped onto these names later.
+# Names avoid Gage's _retint substrings (glass/vision/cyan/led/pearl/scissor/dog/linkage); the bumper keeps "Rubber" so _retint leaves it dark.
+_m("dl_bumper", "DL_BumperRubber", (.06, .06, .065), 0, .9)         # AESTHETIC_SPEC rubber band 0.06-0.09 / rough 0.80-0.90
+_m("dl_yzinc", "DL_YellowZincPlate", (.70, .59, .30), .55, .42)    # yellow-passivated zinc plate (belt clamp); dyed chromate film -> metal 0.55 keeps the hue under the head fill; saturation 0.57 stays out of the amber-accent band (first_pass_check s>0.6)
+_m("dl_solred", "DL_SolenoidRed", (.56, .05, .04), 0, .45)         # red powder-coated solenoid can
+_m("dl_polish", "DL_PolishedSteel", (.86, .87, .88), 1, .12)       # polished stainless (keeper, bolt)
+_m("dl_acetal", "DL_AcetalWhite", (.80, .80, .76), 0, .5)          # natural acetal anti-lift tyre (main rollers stay black nylon)
+BUMP, YZN, SRED, POL, ACET = "dl_bumper", "dl_yzinc", "dl_solred", "dl_polish", "dl_acetal"

@@ -133,6 +133,43 @@ def sweeps(asset, r, mir):
         res["dogs_throw"] = w
     return {k: dict(depth_m=round(float(v[0]), 4), parts=[v[1], v[2]], at=v[3]) for k, v in res.items()}
 
+def _mindist(a, b, n=1500):
+    """min surface distance between two meshes (vertex + area samples, both ways; no penetration here, the sweeps cover that)."""
+    best = 9.0
+    for p, q in ((a, b), (b, a)):
+        S = np.vstack([p.vertices, trimesh.sample.sample_surface(p, n, seed=3)[0]])
+        S = S[np.all((S > q.bounds[0] - .05) & (S < q.bounds[1] + .05), axis=1)]
+        if len(S): best = min(best, float(trimesh.proximity.closest_point(q, S)[1].min()))
+    return best
+
+def slide_hw_gaps(r):
+    """pass G (Gage open-detail readability): clearances of the bumped pocket head hardware, in mm (all must be >= 1 mm).
+    Leaves only move away from the solenoid, so its closed-pose clearance is the minimum over the travel."""
+    out = {}; mm = lambda v: round(1000*v, 2)
+    D = lambda **k: bs.deltas(r, **k)
+    for T in "LR":
+        g1 = min(_mindist(r.world_parts(D(f=1.0))[f"slide_EndStop_{T}"][1], r.world_parts(D(f=1.0))[f"slide_carriage_{T}{k}"][1]) for k in (1, 2))
+        P = r.world_parts(D(f=1.002)); g2 = min(_mindist(P[f"slide_EndStop_{T}"][1], P[f"slide_carriage_{T}{k}"][1]) for k in (1, 2))
+        out[f"endstop_{T}_to_carriage_full_open"] = mm(g1); out[f"endstop_{T}_to_carriage_2mm_overshoot"] = mm(g2)
+        w = min(_mindist(r.world_parts(D(f=f))[f"slide_BeltClamp_{T}"][1], r.world_parts(D(f=f))["slide_Belt"][1]) for f in np.linspace(0, 1, 6))
+        out[f"beltclamp_{T}_to_belt_0_1000mm"] = mm(w)
+        P = r.world_parts(D(f=0))
+        out[f"antilift_{T}_to_rollers_track"] = mm(min(_mindist(P[f"slide_AntiLiftRoller_{T}{k}"][1], P[o][1]) for k in (1, 2)
+                                                  for o in (f"slide_roller_{T}{k}a", f"slide_roller_{T}{k}b", "slide_Track", f"slide_carriage_{T}{k}") if o != f"slide_carriage_{T}{k}") )
+    P0, P1 = r.world_parts(D(f=0, f_lock=0)), r.world_parts(D(f=0, f_lock=1))
+    out["bolt_retracted_to_keeper"] = mm(_mindist(P0["slide_SolenoidBolt"][1], P0["slide_Keeper"][1]))
+    out["bolt_thrown_to_keeper_window"] = mm(_mindist(P1["slide_SolenoidBolt"][1], P1["slide_Keeper"][1]))
+    out["bolt_thrown_to_track"] = mm(_mindist(P1["slide_SolenoidBolt"][1], P1["slide_Track"][1]))
+    out["keeper_to_solenoid_closed"] = mm(min(_mindist(P0["slide_Keeper"][1], P0[k][1]) for k in ("slide_Solenoid", "slide_Solenoid_mount")))
+    mov = [n for n in _desc(r, "leaf_L") + _desc(r, "leaf_R") if n in P0 and n != "slide_Keeper"]
+    out["solenoid_to_carriages_clamps_closed"] = mm(min(_mindist(P0[k][1], P0[m][1]) for k in ("slide_Solenoid", "slide_Solenoid_mount") for m in mov
+                                                        if np.all(P0[m][1].bounds[0] < P0[k][1].bounds[1] + .3) and np.all(P0[k][1].bounds[0] < P0[m][1].bounds[1] + .3)))
+    if "slide_AccessPanel" in r.N:
+        Pc = r.world_parts(D(f=0, f_panel=0))
+        out["panel_closed_to_solenoid_clamps"] = mm(min(_mindist(Pc["slide_AccessPanel"][1], Pc[k][1]) for k in ("slide_Solenoid", "slide_BeltClamp_L", "slide_BeltClamp_R")))
+    out["ok"] = all(v >= 1.0 for k, v in out.items() if k != "ok")
+    return out
+
 def _rays(meshes, o, dirs):
     M = trimesh.util.concatenate(meshes); out = []
     for d in dirs:
@@ -313,9 +350,10 @@ def main(only=None, do_render=True):
                 e["clip"][lab] = dict(worst_overlap=s["worst_overlap"], bad_overlaps=[list(map(str, o)) for o in s["bad_overlaps"]],
                                       coplanar=[list(map(str, o)) for o in s["coplanar"]], open=[str(o) for o in s["open"]])
             e["sweeps"] = sweeps(asset, r, mir)
+            if asset == "biparting_slide": e["hw_gaps_passG"] = slide_hw_gaps(r)
             if asset == "floor_hatch": r.meta["_vid"] = vid; e["hatch"] = hatch_checks(r, mir)
             e["pass"] = (e["under_budget"] and all(not c["bad_overlaps"] and not c["coplanar"] and not c["open"] for c in e["clip"].values())
-                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
+                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "biparting_slide" or e["hw_gaps_passG"]["ok"]) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
             rep[asset][vid] = e
             print(asset, vid, label, "tris", tris["visual"], "pass", e["pass"], "sweeps", {k: v["depth_m"] for k, v in e["sweeps"].items()},
                   f"{time.time() - t0:.0f}s", flush=True)

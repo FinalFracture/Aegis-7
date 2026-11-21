@@ -6,6 +6,11 @@ Rig: leaf_L / leaf_R slide along X (leaf_L -X, leaf_R +X) by TRAVEL; leaf origin
 (leaf centre X, running-rail top Y, Z 0). slide_roller_* = wheels, children of their leaf, origin on the axle (axle along Z,
 spin = travel / r). Pass C (Vance REALISM_SPEC section 9): carriages/belt on the approach (-Z) side behind a top-hinged access panel,
 4 light-curtain lenses per jamb, head solenoid bolt + keeper, recessed hex-key release, pocket end-stop bumpers.
+Pass G (Gage open-detail readability, 2026-11-21): anti-lift roller d30 -> d40 acetal (slide_AntiLiftRoller_<L|R><1|2>) above a lowered
+carriage plate; belt clamp on its own leaf-centre hanger, 100 mm yellow-zinc jaws + 2 cap screws (slide_BeltClamp_<L|R>); rubber track end
+stop in the open head box per pocket (slide_EndStop_<L|R>) + the pocket buffers split per side (slide_Bumper_<L|R>); red solenoid can on an
+alloy plate on the upper-rail face (slide_Solenoid / _mount), d12 polished bolt (slide_SolenoidBolt, origin on the throw axis) into a
+polished keeper tab on leaf L (slide_Keeper); the bolt throws down (-Y). Handed variants swap the _L/_R tags (swap_lr).
 Run: python3 assets/src/door_lab/biparting_slide.py"""
 import os, sys, re, json, numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +32,7 @@ SOF_Y = LEAF_TOP + .010              # soffit underside (10 mm)
 RAIL_Y0, RAIL_Y1 = SOF_Y + .036, SOF_Y + .048
 ROLLER_R = .030; ROLLER_Y = RAIL_Y1 + ROLLER_R + .002
 UP_Y0 = ROLLER_Y + .049              # upper (anti-lift) rail underside
-AL_R = .015; AL_Y = UP_Y0 - AL_R - .002
+AL_R = .020; AL_Y = UP_Y0 - AL_R - .002     # pass G: anti-lift d30 -> d40 (6.8 mm to the d60 rollers, 2 mm under the upper rail)
 BELT_LO, BELT_HI = UP_Y0 + .022, UP_Y0 + .062
 CAP_Y0 = BELT_HI + .03; CAP_Y1 = CAP_Y0 + .05
 
@@ -61,30 +66,41 @@ def leaf(rig, tag, s):
     # carriages (pass C: on the -Z / approach side of the running rail so the open head box shows them): hanger up the 20 mm soffit slot,
     # bridge toward -Z, carriage plate holding 2 x d60 rollers + 1 anti-lift roller under the upper rail
     for k, cx in enumerate((a + .18, b - .18)):
+        # pass G (tri budget: plain plate, 4-seg hidden axles): carriage plate stops at the roller axle line so the anti-lift roller shows above it; a narrow post carries its axle
         car = [box(cx - .04, cx + .04, LEAF_TOP - E, SOF_Y + .024, -.006, .006), box(cx - .04, cx + .04, SOF_Y + .016, SOF_Y + .028, -.006, .036),
-               bplate(cx - .085, cx + .085, SOF_Y + .016, AL_Y + .022, .026, .036, .004)]
-        for dx in (-.05, .05): car.append(cap((cx + dx, ROLLER_Y, .021), .008, .010 + 2*E, 8, "z"))
-        car.append(cap((cx, AL_Y, .021), .006, .010 + 2*E, 8, "z"))
+               box(cx - .085, cx + .085, SOF_Y + .016, ROLLER_Y + .002, .026, .036), box(cx - .009, cx + .009, ROLLER_Y + .002 - E, AL_Y + .009, .026, .036)]
+        for dx in (-.05, .05): car.append(cap((cx + dx, ROLLER_Y, .021), .008, .010 + 2*E, 4, "z"))   # hidden behind the plate: 4-seg
+        car.append(cap((cx, AL_Y, .021), .007, .010 + 2*E, 8, "z"))
         rig.part(f"slide_carriage_{tag}{k + 1}", g, ALY, [mz(m) for m in car])
         for dx in (-.05, .05):
             c = (cx + dx, ROLLER_Y, 0); n = f"slide_roller_{tag}{k + 1}{'ab'[dx > 0]}"
             rig.part(n, g, SEAL, [mz(annulus_z(c, .011, ROLLER_R, -.008, .016, 8))], W=T(c))
-        c = (cx, AL_Y, 0); rig.part(f"slide_roller_{tag}{k + 1}_antilift", g, SEAL, [mz(annulus_z(c, .009, AL_R, -.004, .016, 8))], W=T(c))
-    # belt clamp bracket: leaf L grips the upper belt run, leaf R the lower run (mirrored motion); jaws clear the belt by 1 mm
-    cx = (a + .18) if s < 0 else (b - .18); by = BELT_HI if s < 0 else BELT_LO
-    bc = [box(cx - .03, cx + .03, AL_Y + .022 - E, by + .013, .028, .039), box(cx - .03, cx + .03, by + .006, by + .013, .039 - E, .062),
-          box(cx - .03, cx + .03, by - .013, by - .006, .039 - E, .062), box(cx - .03, cx + .03, by - .013, by + .013, .058, .062)]
-    rig.part(f"slide_BeltClamp_{tag}", g, ST, [mz(m) for m in bc])
-    if s < 0:   # head solenoid keeper: U-staple on leaf L's top rail, rising through the 20 mm carriage slot (bolt window 14 x 10 mm)
-        kp = [box(-.068, -.062, LEAF_TOP - E, SOF_Y + .032, -.004, .004), box(-.048, -.042, LEAF_TOP - E, SOF_Y + .032, -.004, .004),
-              box(-.068, -.042, SOF_Y + .028, SOF_Y + .032, -.004, .004), box(-.072, -.038, LEAF_TOP - E, LEAF_TOP + .004, -.008, .008)]
-        rig.part("slide_Keeper", g, ST, kp)
+        c = (cx, AL_Y, 0); rig.part(f"slide_AntiLiftRoller_{tag}{k + 1}", g, ACET, [mz(annulus_z(c, .012, AL_R, -.006, .018, 8))], W=T(c))
+    # belt clamp bracket (pass G: own hanger at the leaf centre, clear of the carriages; 100 mm jaws + 2 cap screws, yellow zinc).
+    # Leaf L grips the upper belt run, leaf R the lower run (mirrored motion); jaws clear the belt by 2 mm, the web clears the other run by 3 mm.
+    xc = (a + b)/2; by = BELT_HI if s < 0 else BELT_LO
+    bc = [box(xc - .03, xc + .03, LEAF_TOP - E, SOF_Y + .024, -.006, .006), box(xc - .03, xc + .03, SOF_Y + .016, SOF_Y + .028, -.006, .026 + E),
+          box(xc - .05, xc + .05, SOF_Y + .016, by + .016, .026, .037),
+          box(xc - .05, xc + .05, by + .005, by + .013, .037 - E, .058), box(xc - .05, xc + .05, by - .013, by - .005, .037 - E, .058),
+          box(xc - .05, xc + .05, by - .016, by + .016, .056, .060)]
+    bc += [cap((xc + dx, by, .0618), .0065, .0036, 6, "z") for dx in (-.03, .03)]
+    rig.part(f"slide_BeltClamp_{tag}", g, YZN, [mz(m) for m in bc])
+    if s < 0:   # head solenoid keeper (pass G): post up the 20 mm slot beside the bolt axis, cranked under the running rail to the approach
+        # side, riser in front of the rail, polished keeper tab 52 x 8 x 30 with an 18 x 18 bolt hole on the (vertical) solenoid axis (rides leaf L)
+        KX, ty0, ty1, hz0, hz1 = SOL_X - .026, SOF_Y + .058, SOF_Y + .066, SOL_Z - .009, SOL_Z + .009
+        kp = [box(KX - .014, KX + .014, LEAF_TOP - E, LEAF_TOP + .004, -.010, .010), box(KX - .008, KX + .008, LEAF_TOP - .002, SOF_Y + .032, -.006, .006),
+              box(KX - .008, KX + .008, SOF_Y + .024, SOF_Y + .032, -.034, -.006 + E), box(KX - .008, KX + .008, SOF_Y + .032 - E, SOF_Y + .062, -.034, -.024),
+              box(KX - .008, SOL_X - .009, ty0, ty1, -.050, -.020), box(SOL_X + .009, SOL_X + .018, ty0, ty1, -.050, -.020),
+              box(SOL_X - .009 - E, SOL_X + .009 + E, ty0, ty1, -.050, hz0), box(SOL_X - .009 - E, SOL_X + .009 + E, ty0, ty1, hz1, -.020)]
+        rig.part("slide_Keeper", g, POL, kp)
     rig.part(f"slide_FloorGuide_shoes_{tag}", g, ALY, shoes)
     rig.part(f"leaf_{tag}-convcolonly", g, G, [box(a, b, LEAF_BOT, LEAF_TOP, -LT, LT)])
 
 HEX_C = (-(HW + .08), 1.15)          # recessed hex-key release plate on the approach (-Z) face of the left jamb trim
 LENS_Y = (.20, .60, 1.00, 1.60)      # light-curtain lens heights above the threshold (4 per jamb, both faces)
-SOL_X, SOL_Y = -.055, SOF_Y + .022   # head solenoid bolt axis (along Z, over the carriage slot at leaf L's meeting stile)
+SOL_X, SOL_Z = -.055, -.034              # head solenoid bolt axis (pass G: vertical, on the approach side of the track at leaf L's meeting stile)
+SOL_Y0 = SOF_Y + .088                    # solenoid can underside (bolt exits downward into the keeper tab)
+END_STOP_X = HW + LAP + TRAVEL - .18 + .085 + .004   # track end-stop face: 4 mm past the outer carriage plate at full open (2 mm after the 2 mm overshoot)
 PANEL_HY, PANEL_HZ = CAP_Y0 - .008, -(FZ1 - .02) - .018   # head-box access panel hinge axis (along X)
 
 def frame(rig, panel=1):
@@ -120,10 +136,13 @@ def frame(rig, panel=1):
     for p in fr: p.fix_normals()
     rig.part("frame", None, G, [p for p in fr])
     # rubber end-stop bumpers in each pocket: 25 mm, 25 mm off the tail at full open (Vance section 1 / Gage V-GAP-POCKET lap 25)
-    bm = []
+    # pass G: one node per pocket (_L = -X pocket), own DL_BumperRubber slot; plus the visible track end stop in the head box (rubber block
+    # bolted to the running-rail face, struck by the outer carriage plate), 60 x 46 x 27, bevelled toward the approach side
     for s in (-1, 1):
-        bx0, bx1 = sorted((s*(END_X + E), s*(END_X - .025))); bm += [box(bx0, bx1, y - .04, y + .04, -.015, .015) for y in (.6, 1.8)]
-    rig.part("slide_Bumper", None, SEAL, bm)
+        bx0, bx1 = sorted((s*(END_X + E), s*(END_X - .025)))
+        rig.part(f"slide_Bumper_{'L' if s < 0 else 'R'}", None, BUMP, [box(bx0, bx1, y - .04, y + .04, -.015, .015) for y in (.6, 1.8)])
+        ex0, ex1 = sorted((s*END_STOP_X, s*(END_STOP_X + .060)))
+        rig.part(f"slide_EndStop_{'L' if s < 0 else 'R'}", None, BUMP, [bplate(ex0, ex1, RAIL_Y0 - .004, RAIL_Y1 + .030, -.044, -.017, .005, front=False)])
     # light-curtain lenses: 4 per jamb on the trim returns facing across the opening, both faces
     ln = []
     for s in (-1, 1):
@@ -135,10 +154,14 @@ def frame(rig, panel=1):
     hz = -(FZ1 + .023)
     rig.part("slide_HexRelease_plate", None, ALY, [box(HEX_C[0] - .03, HEX_C[0] + .03, HEX_C[1] - .045, HEX_C[1] + .045, hz - .003, hz + E)])
     hc = (HEX_C[0], HEX_C[1] + .015, hz - .003)
-    rig.part("slide_HexRelease_socket", None, G, [cap((0, 0, -.0015), .009, .003 + .002, 6, "z"), box(-.003, .003, -.018, -.012, -.0025, .0005)], world=False, W=T(hc))
+    rig.part("slide_HexRelease_socket", None, G, [cap((0, 0, -.0015), .009, .003 + .002, 6, "z"), box(-.003, .003, -.018, -.012, -.0035, .0015)], world=False, W=T(hc))
     # head solenoid (fail-secure lock): body on the soffit plate, bolt throws +Z 18 mm across the slot into the leaf-L keeper
-    rig.part("slide_Solenoid", None, ST, [box(SOL_X - .02, SOL_X + .02, SOF_Y + .012 - E, SOF_Y + .034, -.038, -.016), box(SOL_X - .026, SOL_X + .026, SOF_Y + .012 - E, SOF_Y + .016, -.042, -.012)])
-    rig.part("slide_SolenoidBolt", None, ST, [cap((0, 0, -.010), .004, .020, 8, "z")], world=False, W=T((SOL_X, SOL_Y, -.010)))
+    # pass G: red can 60 x 38 x 28 hung on an alloy back plate bolted to the upper (anti-lift) rail face, in front of the running gap and
+    # clear of every carriage (26 mm at closed, they only move away); d12 x 30 polished bolt drops 18 mm (-Y) into the keeper tab on leaf L
+    # (retracted: 8 mm shows under the can, tip 14 mm over the tab; thrown: 26 mm shows, tip 4 mm into the tab's 18 mm hole, 3 mm all round).
+    rig.part("slide_Solenoid_mount", None, ALY, [box(SOL_X - .036, SOL_X + .036, SOF_Y + .100, UP_Y0 + .010, -.022, -.017)])
+    rig.part("slide_Solenoid", None, SRED, [bplate(SOL_X - .030, SOL_X + .030, SOL_Y0, SOL_Y0 + .038, -.048, -.020, .004, front=False)])
+    rig.part("slide_SolenoidBolt", None, POL, [cap((0, 0, 0), .006, .030, 8, "y")], world=False, W=T((SOL_X, SOL_Y0 + .007, SOL_Z)))
     # threshold plate with the 14 x 12 floor channel (real cut: two plates + channel floor), bevelled leading edges
     thr = []; XO = HW - .002; XP = END_X - .002
     for zs in (1, -1):
@@ -211,8 +234,8 @@ def deltas(rig=None, f=0.0, f_lock=0.0, f_panel=None, f_hex=0.0, mirror=False):
     for tag, sg in (("L", 1), ("R", -1)):
         for k in (1, 2):
             for x in "ab": d[f"slide_roller_{tag}{k}{x}"] = T(yaw=sg*sx*TRAVEL*f/ROLLER_R, axis=(0, 0, 1))
-            d[f"slide_roller_{tag}{k}_antilift"] = T(yaw=-sg*sx*TRAVEL*f/AL_R, axis=(0, 0, 1))
-    d["slide_SolenoidBolt"] = T((0, 0, .018*f_lock))
+            d[f"slide_AntiLiftRoller_{tag}{k}"] = T(yaw=-sg*sx*TRAVEL*f/AL_R, axis=(0, 0, 1))
+    d["slide_SolenoidBolt"] = T((0, -.018*f_lock, 0))   # pass G: vertical throw, down into the keeper tab
     d["slide_HexRelease_socket"] = T(yaw=sx*np.radians(90*f_hex), axis=(0, 0, 1))
     if rig is not None and "slide_AccessPanel" in rig.N:
         rest = rig.meta.get("panel_rest", 0.0); fp = rest if f_panel is None else f_panel
