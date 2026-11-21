@@ -1260,22 +1260,17 @@
   "v1": {
    "label": "RH stay, 0.45 m well (placed)",
    "glb": "assets/glb/door_lab/floor_hatch/v1.glb",
-   "tris_visual": 4370,
-   "tris_collider": 160,
+   "tris_visual": 4360,
+   "tris_collider": 208,
    "under_budget": true,
    "mirror_deltas": false,
    "nodes": [
-    "hatch_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=342",
+    "hatch_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=442",
     "hatch_InflatableSeal  world_origin=(0.0000, 0.3360, 0.0000)  tris=192",
     "hatch_Keeper  world_origin=(0.0000, 0.4620, 0.0000)  tris=64",
-    "hatch_HingeHeavy_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=224",
-    "hatch_RotaryDamper  world_origin=(0.0000, 0.4620, 0.0000)  tris=128",
-    "hatch_frame_strut_clevis  world_origin=(0.0000, 0.4620, 0.0000)  tris=128",
-    "hatch_stay_pivot_bracket  world_origin=(0.0000, 0.4620, 0.0000)  tris=48",
-    "hatch_leaf (group)  world_origin=(0.0000, 0.4460, -0.5240)",
-    "  hatch_leaf_shell  world_origin=(0.0000, 0.4460, -0.5240)  tris=262",
-    "  hatch_HingeHeavy_leaf  world_origin=(0.0000, 0.4460, -0.5240)  tris=224",
-    "  hatch_Handle  world_origin=(0.0000, 0.4460, -0.5240)  tris=64",
+    "hatch_leaf (group)  world_origin=(0.0000, 0.4300, -0.5240)",
+    "  hatch_leaf_shell  world_origin=(0.0000, 0.4300, -0.5240)  tris=178",
+    "  hatch_Handle  world_origin=(0.0000, 0.4300, -0.5240)  tris=64",
     "  hatch_OverrideOrange_Handwheel  world_origin=(0.0000, 0.4460, 0.0000)  tris=360",
     "  hatch_OverrideOrange_Lever  world_origin=(0.2350, 0.4440, -0.2000)  tris=64",
     "  hatch_LockWheel  world_origin=(0.0000, 0.3330, 0.0000)  tris=168",
@@ -1287,39 +1282,56 @@
     "  hatch_Linkage_03  world_origin=(-0.0625, 0.3470, 0.0577)  local_yaw=180.00deg  tris=64",
     "  hatch_Dog_04  world_origin=(0.4350, 0.3120, 0.3000)  tris=32",
     "  hatch_Linkage_04  world_origin=(0.0625, 0.3470, 0.0577)  tris=64",
-    "  hatch_dog_guides  world_origin=(0.0000, 0.4460, -0.5240)  tris=192",
-    "  hatch_leaf_clevises  world_origin=(0.0000, 0.4460, -0.5240)  tris=128",
-    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.4460, -0.5240)  tris=16",
-    "  hatch_strut_L_rod  world_origin=(-0.3400, 0.3020, 0.1760)  tris=184",
-    "  hatch_strut_R_rod  world_origin=(0.3400, 0.3020, 0.1760)  tris=184",
-    "  hatch_stay_track_detent  world_origin=(0.0000, 0.4460, -0.5240)  tris=134",
-    "hatch_strut_L_body  world_origin=(-0.3400, 0.3020, -0.3800)  tris=352",
-    "hatch_strut_R_body  world_origin=(0.3400, 0.3020, -0.3800)  tris=352",
-    "hatch_stay_arm  world_origin=(0.4200, 0.3120, -0.3700)  tris=192",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=144"
+    "  hatch_dog_guides  world_origin=(0.0000, 0.4300, -0.5240)  tris=192",
+    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.4300, -0.5240)  tris=16",
+    "  hatch_HingeTube  world_origin=(0.0000, 0.4300, -0.5240)  tris=608",
+    "  hatch_TorsionAnchor_leaf  world_origin=(0.0000, 0.4300, -0.5240)  tris=400",
+    "  hatch_stay_leaf_lug  world_origin=(0.0000, 0.4300, -0.5240)  tris=68",
+    "  hatch_stay_arm  world_origin=(0.4540, 0.3370, -0.2740)  tris=192",
+    "hatch_TorsionBar  world_origin=(0.0000, 0.4620, 0.0000)  tris=56",
+    "hatch_TorsionAnchor_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=124",
+    "hatch_HingeBearing_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=288",
+    "hatch_RotaryDamper  world_origin=(0.0000, 0.4620, 0.0000)  tris=248",
+    "hatch_stay_slider  world_origin=(0.0000, 0.3170, 0.1255)  tris=68",
+    "hatch_stay_detent_housing  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
+    "hatch_stay_detent_plunger  world_origin=(0.4720, 0.3165, -0.3467)  tris=40",
+    "  hatch_stay_detent_knob  world_origin=(0.4720, 0.3165, -0.3467)  tris=48",
+    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=192"
    ],
    "floor_y": 0.462,
    "clip": {
     "closed_dogged": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "closed_seal_inflated": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "undogged_lever_up": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_52deg": {
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_104deg": {
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "open_105deg": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
@@ -1327,14 +1339,22 @@
    },
    "sweeps": {
     "leaf_swing_0_105deg": {
-     "depth_m": 0.0001,
+     "depth_m": 0.002,
      "parts": [
-      "hatch_frame",
-      "hatch_leaf_shell"
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
-     "at": 40.0
+     "at": 80.0
     },
-    "struts_stay_vs_all": {
+    "stay_arm_slider_detent_1deg": {
+     "depth_m": 0.0,
+     "parts": [
+      null,
+      null
+     ],
+     "at": 105.0
+    },
+    "detent_table_interp_100_105_0p1deg": {
      "depth_m": 0.0,
      "parts": [
       null,
@@ -1343,10 +1363,10 @@
      "at": 105.0
     },
     "dogs_throw": {
-     "depth_m": 0.0,
+     "depth_m": 0.002,
      "parts": [
-      null,
-      null
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
      "at": 1.0
     }
@@ -1359,7 +1379,7 @@
     "flush_ok": true,
     "liner_clear_xz": {
      "throat_-0.15": {
-      "x": 0.9,
+      "x": 0.932,
       "z": 0.9
      },
      "well_-0.30": {
@@ -1368,139 +1388,604 @@
      }
     },
     "liner_ok": true,
-    "hardware_inside_clear_prism": {
-     "closed": {
-      "hatch_frame_strut_clevis": {
-       "n": 800,
-       "x": [
-        -0.364,
-        0.364
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+    "column_sweep": {
+     "step_deg": 0.5,
+     "column": "|x|,|z| < 0.450 m, well floor top .. floor + 2.0 m",
+     "fixed": {
+      "min_clearance_mm": 2.0,
+      "part": "hatch_Keeper",
+      "at_deg": 0.0
+     },
+     "mechanism": {
+      "min_clearance_mm": 1.5,
+      "part": "hatch_stay_arm",
+      "at_deg": 91.0
+     },
+     "liner_boundary": {
+      "min_clearance_mm": -0.0,
+      "part": "hatch_frame",
+      "at_deg": 0.0
+     },
+     "leaf_body_at_105": {
+      "min_clearance_mm": 17.5,
+      "part": "hatch_leaf_shell"
+     },
+     "leaf_body_inside_deg": [
+      0.0,
+      94.5
+     ],
+     "per_5deg": [
+      {
+       "deg": 0.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 376,
-       "x": [
-        0.438,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      {
+       "deg": 5.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 10.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 15.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 20.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 25.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 30.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 35.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 40.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 45.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 50.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 55.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 60.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 65.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 70.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 75.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 80.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 85.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 90.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 95.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 100.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 105.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      }
+     ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
      },
-     "open": {
-      "hatch_frame_strut_clevis": {
-       "n": 2796,
-       "x": [
-        -0.366,
-        0.366
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.138
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 1946,
-       "x": [
-        0.41,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.12
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_L_body": {
-       "n": 2322,
-       "x": [
-        -0.36,
-        -0.32
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_R_body": {
-       "n": 2322,
-       "x": [
-        0.32,
-        0.36
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_arm": {
-       "n": 2311,
-       "x": [
-        0.414,
-        0.426
-       ],
-       "z": [
-        -0.449,
-        -0.356
-       ],
-       "y_above_floor": [
-        -0.163,
-        0.162
-       ],
-       "depth_from_hinge_liner_mm": 94.0
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_track_detent": {
-       "n": 26,
-       "x": [
-        0.404,
-        0.436
-       ],
-       "z": [
-        -0.449,
-        -0.445
-       ],
-       "y_above_floor": [
-        0.176,
-        0.19
-       ],
-       "depth_from_hinge_liner_mm": 4.8
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
-     }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -1508,22 +1993,17 @@
   "v2": {
    "label": "LH stay, 0.45 m well",
    "glb": "assets/glb/door_lab/floor_hatch/v2.glb",
-   "tris_visual": 4370,
-   "tris_collider": 160,
+   "tris_visual": 4360,
+   "tris_collider": 208,
    "under_budget": true,
    "mirror_deltas": true,
    "nodes": [
-    "hatch_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=342",
+    "hatch_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=442",
     "hatch_InflatableSeal  world_origin=(0.0000, 0.3360, 0.0000)  tris=192",
     "hatch_Keeper  world_origin=(0.0000, 0.4620, 0.0000)  tris=64",
-    "hatch_HingeHeavy_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=224",
-    "hatch_RotaryDamper  world_origin=(0.0000, 0.4620, 0.0000)  tris=128",
-    "hatch_frame_strut_clevis  world_origin=(0.0000, 0.4620, 0.0000)  tris=128",
-    "hatch_stay_pivot_bracket  world_origin=(0.0000, 0.4620, 0.0000)  tris=48",
-    "hatch_leaf (group)  world_origin=(0.0000, 0.4460, -0.5240)",
-    "  hatch_leaf_shell  world_origin=(0.0000, 0.4460, -0.5240)  tris=262",
-    "  hatch_HingeHeavy_leaf  world_origin=(0.0000, 0.4460, -0.5240)  tris=224",
-    "  hatch_Handle  world_origin=(0.0000, 0.4460, -0.5240)  tris=64",
+    "hatch_leaf (group)  world_origin=(0.0000, 0.4300, -0.5240)",
+    "  hatch_leaf_shell  world_origin=(0.0000, 0.4300, -0.5240)  tris=178",
+    "  hatch_Handle  world_origin=(0.0000, 0.4300, -0.5240)  tris=64",
     "  hatch_OverrideOrange_Handwheel  world_origin=(0.0000, 0.4460, 0.0000)  tris=360",
     "  hatch_OverrideOrange_Lever  world_origin=(-0.2350, 0.4440, -0.2000)  tris=64",
     "  hatch_LockWheel  world_origin=(0.0000, 0.3330, 0.0000)  tris=168",
@@ -1535,39 +2015,56 @@
     "  hatch_Linkage_03  world_origin=(0.0625, 0.3470, 0.0577)  local_yaw=-180.00deg  tris=64",
     "  hatch_Dog_04  world_origin=(-0.4350, 0.3120, 0.3000)  tris=32",
     "  hatch_Linkage_04  world_origin=(-0.0625, 0.3470, 0.0577)  tris=64",
-    "  hatch_dog_guides  world_origin=(0.0000, 0.4460, -0.5240)  tris=192",
-    "  hatch_leaf_clevises  world_origin=(0.0000, 0.4460, -0.5240)  tris=128",
-    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.4460, -0.5240)  tris=16",
-    "  hatch_strut_L_rod  world_origin=(0.3400, 0.3020, 0.1760)  tris=184",
-    "  hatch_strut_R_rod  world_origin=(-0.3400, 0.3020, 0.1760)  tris=184",
-    "  hatch_stay_track_detent  world_origin=(0.0000, 0.4460, -0.5240)  tris=134",
-    "hatch_strut_L_body  world_origin=(0.3400, 0.3020, -0.3800)  tris=352",
-    "hatch_strut_R_body  world_origin=(-0.3400, 0.3020, -0.3800)  tris=352",
-    "hatch_stay_arm  world_origin=(-0.4200, 0.3120, -0.3700)  tris=192",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=144"
+    "  hatch_dog_guides  world_origin=(0.0000, 0.4300, -0.5240)  tris=192",
+    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.4300, -0.5240)  tris=16",
+    "  hatch_HingeTube  world_origin=(0.0000, 0.4300, -0.5240)  tris=608",
+    "  hatch_TorsionAnchor_leaf  world_origin=(0.0000, 0.4300, -0.5240)  tris=400",
+    "  hatch_stay_leaf_lug  world_origin=(0.0000, 0.4300, -0.5240)  tris=68",
+    "  hatch_stay_arm  world_origin=(-0.4540, 0.3370, -0.2740)  tris=192",
+    "hatch_TorsionBar  world_origin=(0.0000, 0.4620, 0.0000)  tris=56",
+    "hatch_TorsionAnchor_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=124",
+    "hatch_HingeBearing_frame  world_origin=(0.0000, 0.4620, 0.0000)  tris=288",
+    "hatch_RotaryDamper  world_origin=(0.0000, 0.4620, 0.0000)  tris=248",
+    "hatch_stay_slider  world_origin=(0.0000, 0.3170, 0.1255)  tris=68",
+    "hatch_stay_detent_housing  world_origin=(0.0000, 0.4620, 0.0000)  tris=112",
+    "hatch_stay_detent_plunger  world_origin=(-0.4720, 0.3165, -0.3467)  tris=40",
+    "  hatch_stay_detent_knob  world_origin=(-0.4720, 0.3165, -0.3467)  tris=48",
+    "hatch_frame-colonly  world_origin=(0.0000, 0.4620, 0.0000)  tris=192"
    ],
    "floor_y": 0.462,
    "clip": {
     "closed_dogged": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "closed_seal_inflated": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "undogged_lever_up": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_52deg": {
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_104deg": {
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "open_105deg": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
@@ -1575,14 +2072,22 @@
    },
    "sweeps": {
     "leaf_swing_0_105deg": {
-     "depth_m": 0.0001,
+     "depth_m": 0.002,
      "parts": [
-      "hatch_frame",
-      "hatch_leaf_shell"
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
-     "at": 40.0
+     "at": 80.0
     },
-    "struts_stay_vs_all": {
+    "stay_arm_slider_detent_1deg": {
+     "depth_m": 0.0,
+     "parts": [
+      null,
+      null
+     ],
+     "at": 105.0
+    },
+    "detent_table_interp_100_105_0p1deg": {
      "depth_m": 0.0,
      "parts": [
       null,
@@ -1591,10 +2096,10 @@
      "at": 105.0
     },
     "dogs_throw": {
-     "depth_m": 0.0,
+     "depth_m": 0.002,
      "parts": [
-      null,
-      null
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
      "at": 1.0
     }
@@ -1607,7 +2112,7 @@
     "flush_ok": true,
     "liner_clear_xz": {
      "throat_-0.15": {
-      "x": 0.9,
+      "x": 0.932,
       "z": 0.9
      },
      "well_-0.30": {
@@ -1616,139 +2121,604 @@
      }
     },
     "liner_ok": true,
-    "hardware_inside_clear_prism": {
-     "closed": {
-      "hatch_frame_strut_clevis": {
-       "n": 793,
-       "x": [
-        -0.364,
-        0.364
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+    "column_sweep": {
+     "step_deg": 0.5,
+     "column": "|x|,|z| < 0.450 m, well floor top .. floor + 2.0 m",
+     "fixed": {
+      "min_clearance_mm": 2.0,
+      "part": "hatch_Keeper",
+      "at_deg": 0.0
+     },
+     "mechanism": {
+      "min_clearance_mm": 1.5,
+      "part": "hatch_stay_arm",
+      "at_deg": 91.0
+     },
+     "liner_boundary": {
+      "min_clearance_mm": -0.0,
+      "part": "hatch_frame",
+      "at_deg": 0.0
+     },
+     "leaf_body_at_105": {
+      "min_clearance_mm": 17.46,
+      "part": "hatch_leaf_shell"
+     },
+     "leaf_body_inside_deg": [
+      0.0,
+      94.5
+     ],
+     "per_5deg": [
+      {
+       "deg": 0.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 362,
-       "x": [
-        -0.449,
-        -0.438
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      {
+       "deg": 5.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 10.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 15.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 20.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 25.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 30.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 35.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 40.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 45.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 50.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 55.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 60.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 65.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 70.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 75.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 80.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 85.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 90.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 95.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 100.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 105.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      }
+     ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
      },
-     "open": {
-      "hatch_frame_strut_clevis": {
-       "n": 2789,
-       "x": [
-        -0.366,
-        0.366
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.138
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 1943,
-       "x": [
-        -0.449,
-        -0.41
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.12
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_L_body": {
-       "n": 2305,
-       "x": [
-        0.32,
-        0.36
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_R_body": {
-       "n": 2305,
-       "x": [
-        -0.36,
-        -0.32
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_arm": {
-       "n": 2331,
-       "x": [
-        -0.426,
-        -0.414
-       ],
-       "z": [
-        -0.449,
-        -0.356
-       ],
-       "y_above_floor": [
-        -0.163,
-        0.162
-       ],
-       "depth_from_hinge_liner_mm": 94.0
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_track_detent": {
-       "n": 24,
-       "x": [
-        -0.436,
-        -0.404
-       ],
-       "z": [
-        -0.449,
-        -0.445
-       ],
-       "y_above_floor": [
-        0.176,
-        0.19
-       ],
-       "depth_from_hinge_liner_mm": 4.8
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
-     }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -1756,22 +2726,17 @@
   "v3": {
    "label": "RH stay, 0.75 m step-down well",
    "glb": "assets/glb/door_lab/floor_hatch/v3.glb",
-   "tris_visual": 4370,
-   "tris_collider": 160,
+   "tris_visual": 4360,
+   "tris_collider": 208,
    "under_budget": true,
    "mirror_deltas": false,
    "nodes": [
-    "hatch_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=342",
+    "hatch_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=442",
     "hatch_InflatableSeal  world_origin=(0.0000, 0.6360, 0.0000)  tris=192",
     "hatch_Keeper  world_origin=(0.0000, 0.7620, 0.0000)  tris=64",
-    "hatch_HingeHeavy_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=224",
-    "hatch_RotaryDamper  world_origin=(0.0000, 0.7620, 0.0000)  tris=128",
-    "hatch_frame_strut_clevis  world_origin=(0.0000, 0.7620, 0.0000)  tris=128",
-    "hatch_stay_pivot_bracket  world_origin=(0.0000, 0.7620, 0.0000)  tris=48",
-    "hatch_leaf (group)  world_origin=(0.0000, 0.7460, -0.5240)",
-    "  hatch_leaf_shell  world_origin=(0.0000, 0.7460, -0.5240)  tris=262",
-    "  hatch_HingeHeavy_leaf  world_origin=(0.0000, 0.7460, -0.5240)  tris=224",
-    "  hatch_Handle  world_origin=(0.0000, 0.7460, -0.5240)  tris=64",
+    "hatch_leaf (group)  world_origin=(0.0000, 0.7300, -0.5240)",
+    "  hatch_leaf_shell  world_origin=(0.0000, 0.7300, -0.5240)  tris=178",
+    "  hatch_Handle  world_origin=(0.0000, 0.7300, -0.5240)  tris=64",
     "  hatch_OverrideOrange_Handwheel  world_origin=(0.0000, 0.7460, 0.0000)  tris=360",
     "  hatch_OverrideOrange_Lever  world_origin=(0.2350, 0.7440, -0.2000)  tris=64",
     "  hatch_LockWheel  world_origin=(0.0000, 0.6330, 0.0000)  tris=168",
@@ -1783,39 +2748,56 @@
     "  hatch_Linkage_03  world_origin=(-0.0625, 0.6470, 0.0577)  local_yaw=180.00deg  tris=64",
     "  hatch_Dog_04  world_origin=(0.4350, 0.6120, 0.3000)  tris=32",
     "  hatch_Linkage_04  world_origin=(0.0625, 0.6470, 0.0577)  tris=64",
-    "  hatch_dog_guides  world_origin=(0.0000, 0.7460, -0.5240)  tris=192",
-    "  hatch_leaf_clevises  world_origin=(0.0000, 0.7460, -0.5240)  tris=128",
-    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.7460, -0.5240)  tris=16",
-    "  hatch_strut_L_rod  world_origin=(-0.3400, 0.6020, 0.1760)  tris=184",
-    "  hatch_strut_R_rod  world_origin=(0.3400, 0.6020, 0.1760)  tris=184",
-    "  hatch_stay_track_detent  world_origin=(0.0000, 0.7460, -0.5240)  tris=134",
-    "hatch_strut_L_body  world_origin=(-0.3400, 0.6020, -0.3800)  tris=352",
-    "hatch_strut_R_body  world_origin=(0.3400, 0.6020, -0.3800)  tris=352",
-    "hatch_stay_arm  world_origin=(0.4200, 0.6120, -0.3700)  tris=192",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=144"
+    "  hatch_dog_guides  world_origin=(0.0000, 0.7300, -0.5240)  tris=192",
+    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.7300, -0.5240)  tris=16",
+    "  hatch_HingeTube  world_origin=(0.0000, 0.7300, -0.5240)  tris=608",
+    "  hatch_TorsionAnchor_leaf  world_origin=(0.0000, 0.7300, -0.5240)  tris=400",
+    "  hatch_stay_leaf_lug  world_origin=(0.0000, 0.7300, -0.5240)  tris=68",
+    "  hatch_stay_arm  world_origin=(0.4540, 0.6370, -0.2740)  tris=192",
+    "hatch_TorsionBar  world_origin=(0.0000, 0.7620, 0.0000)  tris=56",
+    "hatch_TorsionAnchor_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=124",
+    "hatch_HingeBearing_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=288",
+    "hatch_RotaryDamper  world_origin=(0.0000, 0.7620, 0.0000)  tris=248",
+    "hatch_stay_slider  world_origin=(0.0000, 0.6170, 0.1255)  tris=68",
+    "hatch_stay_detent_housing  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
+    "hatch_stay_detent_plunger  world_origin=(0.4720, 0.6165, -0.3467)  tris=40",
+    "  hatch_stay_detent_knob  world_origin=(0.4720, 0.6165, -0.3467)  tris=48",
+    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=192"
    ],
    "floor_y": 0.762,
    "clip": {
     "closed_dogged": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "closed_seal_inflated": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "undogged_lever_up": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_52deg": {
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_104deg": {
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "open_105deg": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
@@ -1823,14 +2805,22 @@
    },
    "sweeps": {
     "leaf_swing_0_105deg": {
-     "depth_m": 0.0001,
+     "depth_m": 0.002,
      "parts": [
-      "hatch_frame",
-      "hatch_leaf_shell"
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
-     "at": 40.0
+     "at": 80.0
     },
-    "struts_stay_vs_all": {
+    "stay_arm_slider_detent_1deg": {
+     "depth_m": 0.0,
+     "parts": [
+      null,
+      null
+     ],
+     "at": 105.0
+    },
+    "detent_table_interp_100_105_0p1deg": {
      "depth_m": 0.0,
      "parts": [
       null,
@@ -1839,10 +2829,10 @@
      "at": 105.0
     },
     "dogs_throw": {
-     "depth_m": 0.0,
+     "depth_m": 0.002,
      "parts": [
-      null,
-      null
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
      "at": 1.0
     }
@@ -1855,7 +2845,7 @@
     "flush_ok": true,
     "liner_clear_xz": {
      "throat_-0.15": {
-      "x": 0.9,
+      "x": 0.932,
       "z": 0.9
      },
      "well_-0.30": {
@@ -1864,139 +2854,604 @@
      }
     },
     "liner_ok": true,
-    "hardware_inside_clear_prism": {
-     "closed": {
-      "hatch_frame_strut_clevis": {
-       "n": 800,
-       "x": [
-        -0.364,
-        0.364
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+    "column_sweep": {
+     "step_deg": 0.5,
+     "column": "|x|,|z| < 0.450 m, well floor top .. floor + 2.0 m",
+     "fixed": {
+      "min_clearance_mm": 2.0,
+      "part": "hatch_Keeper",
+      "at_deg": 0.0
+     },
+     "mechanism": {
+      "min_clearance_mm": 1.5,
+      "part": "hatch_stay_arm",
+      "at_deg": 91.0
+     },
+     "liner_boundary": {
+      "min_clearance_mm": -0.0,
+      "part": "hatch_frame",
+      "at_deg": 0.0
+     },
+     "leaf_body_at_105": {
+      "min_clearance_mm": 17.5,
+      "part": "hatch_leaf_shell"
+     },
+     "leaf_body_inside_deg": [
+      0.0,
+      94.5
+     ],
+     "per_5deg": [
+      {
+       "deg": 0.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 376,
-       "x": [
-        0.438,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      {
+       "deg": 5.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 10.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 15.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 20.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 25.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 30.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 35.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 40.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 45.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 50.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 55.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 60.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 65.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 70.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 75.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 80.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 85.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 90.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 95.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 100.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 105.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      }
+     ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 319.69,
+       "at_deg": 4.5,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
      },
-     "open": {
-      "hatch_frame_strut_clevis": {
-       "n": 2796,
-       "x": [
-        -0.366,
-        0.366
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.138
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 325.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 1946,
-       "x": [
-        0.41,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.12
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_L_body": {
-       "n": 2322,
-       "x": [
-        -0.36,
-        -0.32
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_R_body": {
-       "n": 2322,
-       "x": [
-        0.32,
-        0.36
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_arm": {
-       "n": 2311,
-       "x": [
-        0.414,
-        0.426
-       ],
-       "z": [
-        -0.449,
-        -0.356
-       ],
-       "y_above_floor": [
-        -0.163,
-        0.162
-       ],
-       "depth_from_hinge_liner_mm": 94.0
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_track_detent": {
-       "n": 26,
-       "x": [
-        0.404,
-        0.436
-       ],
-       "z": [
-        -0.449,
-        -0.445
-       ],
-       "y_above_floor": [
-        0.176,
-        0.19
-       ],
-       "depth_from_hinge_liner_mm": 4.8
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
-     }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -2004,22 +3459,17 @@
   "v4": {
    "label": "LH stay, 0.75 m well",
    "glb": "assets/glb/door_lab/floor_hatch/v4.glb",
-   "tris_visual": 4370,
-   "tris_collider": 160,
+   "tris_visual": 4360,
+   "tris_collider": 208,
    "under_budget": true,
    "mirror_deltas": true,
    "nodes": [
-    "hatch_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=342",
+    "hatch_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=442",
     "hatch_InflatableSeal  world_origin=(0.0000, 0.6360, 0.0000)  tris=192",
     "hatch_Keeper  world_origin=(0.0000, 0.7620, 0.0000)  tris=64",
-    "hatch_HingeHeavy_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=224",
-    "hatch_RotaryDamper  world_origin=(0.0000, 0.7620, 0.0000)  tris=128",
-    "hatch_frame_strut_clevis  world_origin=(0.0000, 0.7620, 0.0000)  tris=128",
-    "hatch_stay_pivot_bracket  world_origin=(0.0000, 0.7620, 0.0000)  tris=48",
-    "hatch_leaf (group)  world_origin=(0.0000, 0.7460, -0.5240)",
-    "  hatch_leaf_shell  world_origin=(0.0000, 0.7460, -0.5240)  tris=262",
-    "  hatch_HingeHeavy_leaf  world_origin=(0.0000, 0.7460, -0.5240)  tris=224",
-    "  hatch_Handle  world_origin=(0.0000, 0.7460, -0.5240)  tris=64",
+    "hatch_leaf (group)  world_origin=(0.0000, 0.7300, -0.5240)",
+    "  hatch_leaf_shell  world_origin=(0.0000, 0.7300, -0.5240)  tris=178",
+    "  hatch_Handle  world_origin=(0.0000, 0.7300, -0.5240)  tris=64",
     "  hatch_OverrideOrange_Handwheel  world_origin=(0.0000, 0.7460, 0.0000)  tris=360",
     "  hatch_OverrideOrange_Lever  world_origin=(-0.2350, 0.7440, -0.2000)  tris=64",
     "  hatch_LockWheel  world_origin=(0.0000, 0.6330, 0.0000)  tris=168",
@@ -2031,39 +3481,56 @@
     "  hatch_Linkage_03  world_origin=(0.0625, 0.6470, 0.0577)  local_yaw=-180.00deg  tris=64",
     "  hatch_Dog_04  world_origin=(-0.4350, 0.6120, 0.3000)  tris=32",
     "  hatch_Linkage_04  world_origin=(-0.0625, 0.6470, 0.0577)  tris=64",
-    "  hatch_dog_guides  world_origin=(0.0000, 0.7460, -0.5240)  tris=192",
-    "  hatch_leaf_clevises  world_origin=(0.0000, 0.7460, -0.5240)  tris=128",
-    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.7460, -0.5240)  tris=16",
-    "  hatch_strut_L_rod  world_origin=(0.3400, 0.6020, 0.1760)  tris=184",
-    "  hatch_strut_R_rod  world_origin=(-0.3400, 0.6020, 0.1760)  tris=184",
-    "  hatch_stay_track_detent  world_origin=(0.0000, 0.7460, -0.5240)  tris=134",
-    "hatch_strut_L_body  world_origin=(0.3400, 0.6020, -0.3800)  tris=352",
-    "hatch_strut_R_body  world_origin=(-0.3400, 0.6020, -0.3800)  tris=352",
-    "hatch_stay_arm  world_origin=(-0.4200, 0.6120, -0.3700)  tris=192",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=144"
+    "  hatch_dog_guides  world_origin=(0.0000, 0.7300, -0.5240)  tris=192",
+    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.7300, -0.5240)  tris=16",
+    "  hatch_HingeTube  world_origin=(0.0000, 0.7300, -0.5240)  tris=608",
+    "  hatch_TorsionAnchor_leaf  world_origin=(0.0000, 0.7300, -0.5240)  tris=400",
+    "  hatch_stay_leaf_lug  world_origin=(0.0000, 0.7300, -0.5240)  tris=68",
+    "  hatch_stay_arm  world_origin=(-0.4540, 0.6370, -0.2740)  tris=192",
+    "hatch_TorsionBar  world_origin=(0.0000, 0.7620, 0.0000)  tris=56",
+    "hatch_TorsionAnchor_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=124",
+    "hatch_HingeBearing_frame  world_origin=(0.0000, 0.7620, 0.0000)  tris=288",
+    "hatch_RotaryDamper  world_origin=(0.0000, 0.7620, 0.0000)  tris=248",
+    "hatch_stay_slider  world_origin=(0.0000, 0.6170, 0.1255)  tris=68",
+    "hatch_stay_detent_housing  world_origin=(0.0000, 0.7620, 0.0000)  tris=112",
+    "hatch_stay_detent_plunger  world_origin=(-0.4720, 0.6165, -0.3467)  tris=40",
+    "  hatch_stay_detent_knob  world_origin=(-0.4720, 0.6165, -0.3467)  tris=48",
+    "hatch_frame-colonly  world_origin=(0.0000, 0.7620, 0.0000)  tris=192"
    ],
    "floor_y": 0.762,
    "clip": {
     "closed_dogged": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "closed_seal_inflated": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "undogged_lever_up": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_52deg": {
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_104deg": {
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "open_105deg": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
@@ -2071,14 +3538,22 @@
    },
    "sweeps": {
     "leaf_swing_0_105deg": {
-     "depth_m": 0.0001,
+     "depth_m": 0.002,
      "parts": [
-      "hatch_frame",
-      "hatch_leaf_shell"
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
-     "at": 40.0
+     "at": 80.0
     },
-    "struts_stay_vs_all": {
+    "stay_arm_slider_detent_1deg": {
+     "depth_m": 0.0,
+     "parts": [
+      null,
+      null
+     ],
+     "at": 105.0
+    },
+    "detent_table_interp_100_105_0p1deg": {
      "depth_m": 0.0,
      "parts": [
       null,
@@ -2087,10 +3562,10 @@
      "at": 105.0
     },
     "dogs_throw": {
-     "depth_m": 0.0,
+     "depth_m": 0.002,
      "parts": [
-      null,
-      null
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
      "at": 1.0
     }
@@ -2103,7 +3578,7 @@
     "flush_ok": true,
     "liner_clear_xz": {
      "throat_-0.15": {
-      "x": 0.9,
+      "x": 0.932,
       "z": 0.9
      },
      "well_-0.30": {
@@ -2112,139 +3587,604 @@
      }
     },
     "liner_ok": true,
-    "hardware_inside_clear_prism": {
-     "closed": {
-      "hatch_frame_strut_clevis": {
-       "n": 793,
-       "x": [
-        -0.364,
-        0.364
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+    "column_sweep": {
+     "step_deg": 0.5,
+     "column": "|x|,|z| < 0.450 m, well floor top .. floor + 2.0 m",
+     "fixed": {
+      "min_clearance_mm": 2.0,
+      "part": "hatch_Keeper",
+      "at_deg": 0.0
+     },
+     "mechanism": {
+      "min_clearance_mm": 1.5,
+      "part": "hatch_stay_arm",
+      "at_deg": 91.0
+     },
+     "liner_boundary": {
+      "min_clearance_mm": -0.0,
+      "part": "hatch_frame",
+      "at_deg": 0.0
+     },
+     "leaf_body_at_105": {
+      "min_clearance_mm": 17.46,
+      "part": "hatch_leaf_shell"
+     },
+     "leaf_body_inside_deg": [
+      0.0,
+      94.5
+     ],
+     "per_5deg": [
+      {
+       "deg": 0.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 362,
-       "x": [
-        -0.449,
-        -0.438
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      {
+       "deg": 5.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 10.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 15.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 20.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 25.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 30.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 35.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 40.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 45.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 50.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 55.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 60.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 65.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 70.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 75.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 80.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 85.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 90.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 95.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 100.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 105.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      }
+     ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 319.69,
+       "at_deg": 4.5,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
      },
-     "open": {
-      "hatch_frame_strut_clevis": {
-       "n": 2789,
-       "x": [
-        -0.366,
-        0.366
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.138
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 325.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 1943,
-       "x": [
-        -0.449,
-        -0.41
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.12
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_L_body": {
-       "n": 2305,
-       "x": [
-        0.32,
-        0.36
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_R_body": {
-       "n": 2305,
-       "x": [
-        -0.36,
-        -0.32
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_arm": {
-       "n": 2331,
-       "x": [
-        -0.426,
-        -0.414
-       ],
-       "z": [
-        -0.449,
-        -0.356
-       ],
-       "y_above_floor": [
-        -0.163,
-        0.162
-       ],
-       "depth_from_hinge_liner_mm": 94.0
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_track_detent": {
-       "n": 24,
-       "x": [
-        -0.436,
-        -0.404
-       ],
-       "z": [
-        -0.449,
-        -0.445
-       ],
-       "y_above_floor": [
-        0.176,
-        0.19
-       ],
-       "depth_from_hinge_liner_mm": 4.8
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
-     }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -2252,22 +4192,17 @@
   "v5": {
    "label": "RH stay, 0.30 m shallow well",
    "glb": "assets/glb/door_lab/floor_hatch/v5.glb",
-   "tris_visual": 4370,
-   "tris_collider": 160,
+   "tris_visual": 4360,
+   "tris_collider": 208,
    "under_budget": true,
    "mirror_deltas": false,
    "nodes": [
-    "hatch_frame  world_origin=(0.0000, 0.3120, 0.0000)  tris=342",
+    "hatch_frame  world_origin=(0.0000, 0.3120, 0.0000)  tris=442",
     "hatch_InflatableSeal  world_origin=(0.0000, 0.1860, 0.0000)  tris=192",
     "hatch_Keeper  world_origin=(0.0000, 0.3120, 0.0000)  tris=64",
-    "hatch_HingeHeavy_frame  world_origin=(0.0000, 0.3120, 0.0000)  tris=224",
-    "hatch_RotaryDamper  world_origin=(0.0000, 0.3120, 0.0000)  tris=128",
-    "hatch_frame_strut_clevis  world_origin=(0.0000, 0.3120, 0.0000)  tris=128",
-    "hatch_stay_pivot_bracket  world_origin=(0.0000, 0.3120, 0.0000)  tris=48",
-    "hatch_leaf (group)  world_origin=(0.0000, 0.2960, -0.5240)",
-    "  hatch_leaf_shell  world_origin=(0.0000, 0.2960, -0.5240)  tris=262",
-    "  hatch_HingeHeavy_leaf  world_origin=(0.0000, 0.2960, -0.5240)  tris=224",
-    "  hatch_Handle  world_origin=(0.0000, 0.2960, -0.5240)  tris=64",
+    "hatch_leaf (group)  world_origin=(0.0000, 0.2800, -0.5240)",
+    "  hatch_leaf_shell  world_origin=(0.0000, 0.2800, -0.5240)  tris=178",
+    "  hatch_Handle  world_origin=(0.0000, 0.2800, -0.5240)  tris=64",
     "  hatch_OverrideOrange_Handwheel  world_origin=(0.0000, 0.2960, 0.0000)  tris=360",
     "  hatch_OverrideOrange_Lever  world_origin=(0.2350, 0.2940, -0.2000)  tris=64",
     "  hatch_LockWheel  world_origin=(0.0000, 0.1830, 0.0000)  tris=168",
@@ -2279,39 +4214,56 @@
     "  hatch_Linkage_03  world_origin=(-0.0625, 0.1970, 0.0577)  local_yaw=180.00deg  tris=64",
     "  hatch_Dog_04  world_origin=(0.4350, 0.1620, 0.3000)  tris=32",
     "  hatch_Linkage_04  world_origin=(0.0625, 0.1970, 0.0577)  tris=64",
-    "  hatch_dog_guides  world_origin=(0.0000, 0.2960, -0.5240)  tris=192",
-    "  hatch_leaf_clevises  world_origin=(0.0000, 0.2960, -0.5240)  tris=128",
-    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.2960, -0.5240)  tris=16",
-    "  hatch_strut_L_rod  world_origin=(-0.3400, 0.1520, 0.1760)  tris=184",
-    "  hatch_strut_R_rod  world_origin=(0.3400, 0.1520, 0.1760)  tris=184",
-    "  hatch_stay_track_detent  world_origin=(0.0000, 0.2960, -0.5240)  tris=134",
-    "hatch_strut_L_body  world_origin=(-0.3400, 0.1520, -0.3800)  tris=352",
-    "hatch_strut_R_body  world_origin=(0.3400, 0.1520, -0.3800)  tris=352",
-    "hatch_stay_arm  world_origin=(0.4200, 0.1620, -0.3700)  tris=192",
-    "hatch_frame-colonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=144"
+    "  hatch_dog_guides  world_origin=(0.0000, 0.2800, -0.5240)  tris=192",
+    "  hatch_leaf-convcolonly  world_origin=(0.0000, 0.2800, -0.5240)  tris=16",
+    "  hatch_HingeTube  world_origin=(0.0000, 0.2800, -0.5240)  tris=608",
+    "  hatch_TorsionAnchor_leaf  world_origin=(0.0000, 0.2800, -0.5240)  tris=400",
+    "  hatch_stay_leaf_lug  world_origin=(0.0000, 0.2800, -0.5240)  tris=68",
+    "  hatch_stay_arm  world_origin=(0.4540, 0.1870, -0.2740)  tris=192",
+    "hatch_TorsionBar  world_origin=(0.0000, 0.3120, 0.0000)  tris=56",
+    "hatch_TorsionAnchor_frame  world_origin=(0.0000, 0.3120, 0.0000)  tris=124",
+    "hatch_HingeBearing_frame  world_origin=(0.0000, 0.3120, 0.0000)  tris=288",
+    "hatch_RotaryDamper  world_origin=(0.0000, 0.3120, 0.0000)  tris=248",
+    "hatch_stay_slider  world_origin=(0.0000, 0.1670, 0.1255)  tris=68",
+    "hatch_stay_detent_housing  world_origin=(0.0000, 0.3120, 0.0000)  tris=112",
+    "hatch_stay_detent_plunger  world_origin=(0.4720, 0.1665, -0.3467)  tris=40",
+    "  hatch_stay_detent_knob  world_origin=(0.4720, 0.1665, -0.3467)  tris=48",
+    "hatch_frame-colonly  world_origin=(0.0000, 0.3120, 0.0000)  tris=192"
    ],
    "floor_y": 0.312,
    "clip": {
     "closed_dogged": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "closed_seal_inflated": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "undogged_lever_up": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_52deg": {
+     "worst_overlap": 0.008,
+     "bad_overlaps": [],
+     "coplanar": [],
+     "open": []
+    },
+    "open_104deg": {
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
     },
     "open_105deg": {
-     "worst_overlap": 0.01,
+     "worst_overlap": 0.008,
      "bad_overlaps": [],
      "coplanar": [],
      "open": []
@@ -2319,14 +4271,22 @@
    },
    "sweeps": {
     "leaf_swing_0_105deg": {
-     "depth_m": 0.0001,
+     "depth_m": 0.002,
      "parts": [
-      "hatch_frame",
-      "hatch_leaf_shell"
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
-     "at": 40.0
+     "at": 80.0
     },
-    "struts_stay_vs_all": {
+    "stay_arm_slider_detent_1deg": {
+     "depth_m": 0.0,
+     "parts": [
+      null,
+      null
+     ],
+     "at": 105.0
+    },
+    "detent_table_interp_100_105_0p1deg": {
      "depth_m": 0.0,
      "parts": [
       null,
@@ -2335,10 +4295,10 @@
      "at": 105.0
     },
     "dogs_throw": {
-     "depth_m": 0.0,
+     "depth_m": 0.002,
      "parts": [
-      null,
-      null
+      "hatch_TorsionBar",
+      "hatch_TorsionAnchor_leaf"
      ],
      "at": 1.0
     }
@@ -2351,144 +4311,609 @@
     "flush_ok": true,
     "liner_clear_xz": {
      "throat_-0.15": {
-      "x": 0.9,
+      "x": 0.932,
       "z": 0.9
      }
     },
     "liner_ok": true,
-    "hardware_inside_clear_prism": {
-     "closed": {
-      "hatch_frame_strut_clevis": {
-       "n": 800,
-       "x": [
-        -0.364,
-        0.364
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+    "column_sweep": {
+     "step_deg": 0.5,
+     "column": "|x|,|z| < 0.450 m, well floor top .. floor + 2.0 m",
+     "fixed": {
+      "min_clearance_mm": 2.0,
+      "part": "hatch_Keeper",
+      "at_deg": 0.0
+     },
+     "mechanism": {
+      "min_clearance_mm": 1.5,
+      "part": "hatch_stay_arm",
+      "at_deg": 91.0
+     },
+     "liner_boundary": {
+      "min_clearance_mm": -0.0,
+      "part": "hatch_frame",
+      "at_deg": 0.0
+     },
+     "leaf_body_at_105": {
+      "min_clearance_mm": 17.5,
+      "part": "hatch_leaf_shell"
+     },
+     "leaf_body_inside_deg": [
+      0.0,
+      94.5
+     ],
+     "per_5deg": [
+      {
+       "deg": 0.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 376,
-       "x": [
-        0.438,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.17
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      {
+       "deg": 5.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 10.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 15.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 20.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 25.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 30.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 35.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 40.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 45.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 50.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 55.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 60.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 65.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 70.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 75.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 80.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 85.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 90.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 95.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 100.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      },
+      {
+       "deg": 105.0,
+       "boundary": -0.0,
+       "fixed": 2.0,
+       "mechanism": 1.5
+      }
+     ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 148.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 262.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
      },
-     "open": {
-      "hatch_frame_strut_clevis": {
-       "n": 2796,
-       "x": [
-        -0.366,
-        0.366
-       ],
-       "z": [
-        -0.449,
-        -0.368
-       ],
-       "y_above_floor": [
-        -0.182,
-        -0.138
-       ],
-       "depth_from_hinge_liner_mm": 82.0
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 148.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       },
-      "hatch_stay_pivot_bracket": {
-       "n": 1946,
-       "x": [
-        0.41,
-        0.449
-       ],
-       "z": [
-        -0.395,
-        -0.345
-       ],
-       "y_above_floor": [
-        -0.18,
-        -0.12
-       ],
-       "depth_from_hinge_liner_mm": 105.0
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_L_body": {
-       "n": 2322,
-       "x": [
-        -0.36,
-        -0.32
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_strut_R_body": {
-       "n": 2322,
-       "x": [
-        0.32,
-        0.36
-       ],
-       "z": [
-        -0.449,
-        -0.364
-       ],
-       "y_above_floor": [
-        -0.176,
-        0.255
-       ],
-       "depth_from_hinge_liner_mm": 85.9
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_arm": {
-       "n": 2311,
-       "x": [
-        0.414,
-        0.426
-       ],
-       "z": [
-        -0.449,
-        -0.356
-       ],
-       "y_above_floor": [
-        -0.163,
-        0.162
-       ],
-       "depth_from_hinge_liner_mm": 94.0
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
       },
-      "hatch_stay_track_detent": {
-       "n": 26,
-       "x": [
-        0.404,
-        0.436
-       ],
-       "z": [
-        -0.449,
-        -0.445
-       ],
-       "y_above_floor": [
-        0.176,
-        0.19
-       ],
-       "depth_from_hinge_liner_mm": 4.8
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
       }
-     }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
