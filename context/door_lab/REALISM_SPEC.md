@@ -725,3 +725,36 @@ I recomputed everything from `qa/door_lab/runC{,_20fps,_15fps}/*/motion.csv` and
   - Not shown: the 2 gas struts, stay arm with detent, rotary damper, seal, dogs, handle or frame flange.
 - **Partial: pocket (§1.6).** Visible: radar head, jamb sensors (3 of 4), leaf pulls and floor guide. Not visible: carriages, anti-lift rollers, belt clamp, end bumpers, solenoid bolt and keeper, and the hex-key plate. There is no access slot or panel.
 - **Fixed: exposure and lamps.** Exposure is good in the heroes, but no detail or jamb cameras were rendered in pass C. The lamp strips now sit on the jambs and mullions, and the floating mid-leaf lines are gone. Pair glazing now reads as a tinted lite with a pattern.
+
+---
+
+## §10 Pass E review (Vance, 2026-11-21, against 6f39e8b / merge da136c5). Verdict: **FAIL** (narrowed)
+I recomputed from `qa/door_lab/runE{,_20fps,_15fps}/*/{motion,cue_log,metrics}` and viewed the renders: the box heroes in `/workspace/door_lab_shots/E` plus the Windows mirror `aegis_shots/doorlab_E/<door>/shots`. The floor hatch GLB is deferred to pass F (Rook rev 2). The N2 pair retime is **blocked** by Patch M-114 (Jared's call) and is not failed here.
+
+**PASS:**
+- **R3 (raw tick).** No interior violations at any rate. All excursions are on accel or settled phase-entry ticks only (worst jerk 3.9× on bay3 Leaf_1 accel entry at 60 Hz). This is consistent with the logged entry exceptions.
+- **R5.** Bay3 is 0/+67/+133 ms on open and on close; pair is +50 ms.
+- **R15.** Pocket 9.81 J at 0.640 m/s; bay3 7.77 J at 50.0°/s; pair 6.84 J at 66.7°/s; bulkhead 9.97 J at 19.4°/s; floor hatch 7.90 J at 33.3°/s. Same at 60/20/15 Hz.
+- **R13, floor hatch.** The torque model is real (passive torque 585 − 687·g·cosθ, actuator ±530 N·m, damper 77.8/33.3°/s); worst 0.00216 against 0.05. Advisory: commit the 0.08 G and 1.45 G CSVs, since the shipped CSVs are g = 1.0 only.
+- **R13, bulkhead.** Accepted by construction: the hinge axis is vertical, so gravity produces no torque about it.
+- **F-STALL-OPEN.** Real PlayerBody, displacement 0.000 m, stop 0.000°/s within 6 ticks, held 2.02 s with no resume (bay3 and pair).
+- **F-OBS-EMERGENCY.** Triggered by `delta_p = 3.0` kPa (no forced flag), 5.0°/s, no reverse, klaxon every 1.0 s (`_klaxon_age`).
+- **N1 cue fixes.** The bulkhead and floor hatch each have 8 close clunks, the floor hatch release clunk is at 0.60, bay3 is 2.80/2.867/2.933, and pair stop_tap is at 1.00.
+- **1a2668c is in pass E.** The bulkhead GLB is the 1a2668c version, and meta base cfc8e95 descends from it. It shows 8 dogs with linkage bars to a spoked central wheel, keepers, a plug liner with R150 corners, and on the jamb a gauge, readout, equalize lever and port grille.
+
+**FAIL:**
+- **Bulkhead and floor-hatch final seat stretched (R2/R4, Jared's 7.80 s).** Decel now runs to zero at 2°, then a separate final_seat move follows:
+  - Bulkhead: 0.483 s, peak 8.46°/s, against §7.4's 0.30 s at ≤ 6.7°/s. Close total is 7.98 s against 7.80 s.
+  - Floor hatch: 0.633 s, peak 6.34°/s, against §7.5's 0.40 s at ≤ 5°/s. Close total is 6.63 s against 6.39 s.
+  - Every downstream cue is late against §7: bulkhead dog whine 6.517 (target 6.33), inflate 7.033 (target 6.84); floor hatch dog whine 5.167 (target 4.92), inflate 5.683 (target 5.43).
+  - seat_thud (6.283 and 4.867) now fires about 0.2 s **before** the leaf actually seats.
+  - R2 and R11 in metrics compare against the shipped profile, not §7.6/§7 timestamps, so they can't catch this.
+- **Pocket cues against §7.1.** roller_rumble_start 0.317 (target 0.28); bolt_clack 2.35 (target 2.31, after bolt_throw ends at 2.333). Minor phase drift: decel 0.65–0.783 (target 0.62–0.88), creep 0.80–0.90 (target 0.88–0.93).
+- **Self-report.** metrics.json logs **V-GAP-PAIR and R8 FAIL on pair at all 3 rates** (measured 0.0001 mm against 2 mm, so the gate logic looks wrong), and V-GAP-HATCH 114 mm on the floor hatch, which is deferred to pass F. That contradicts "fails=0".
+- **Meta stamp.** `dirty: true`, but `tree` 9c0b6a3 is cfc8e95's own tree, not the working tree that actually ran.
+- **Renders.**
+  - `back_closed` and `back_open` for the bulkhead are flat grey (the camera is inside geometry), so the far-face gauge and readout, ribs, hinges, davit, actuator, damper and rams can't be verified.
+  - A hard-edged white quad behind the openings blows out pocket detail_open and threshold_open and the bulkhead detail_open and threshold_open.
+  - The pocket pearl leaves clip to white in jamb_closed.
+  - The bulkhead readout renders blank white.
+- **Pocket §1.6, partly visible.** Seen: exposed track end with carriage at the head, 4 lenses per jamb, hex-key plate, pulls, floor guide. Not seen: anti-lift roller, belt clamp, end bumpers, solenoid bolt and keeper. Re-check once the cameras are fixed.
