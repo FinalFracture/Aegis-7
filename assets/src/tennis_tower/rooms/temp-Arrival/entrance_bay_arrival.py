@@ -68,7 +68,14 @@ def build(q):
             # the bottom rail / stiles (0.062) instead of sharing the 0.060 face (coplanar). 8 mm over the 0.012 saddle flat.
             p.add(f"Leaf_{i}_Sweep", SL, box(a + .005, b - .005, .020, .062, -.006, .006))
         for k, (a0, b0) in enumerate(((lj1, -1.65), (1.65, rj0))):
-            p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .05, TD - .075 + E, 0))
+            # Rev 3.10.2 B4 (Vance 507aef6 14.5): the sidelight lite stands on two EPDM setting blocks at the quarter points, 6 mm over the
+            # 50 mm jamb block (was flush on it); top unchanged (2.529).
+            p.add(f"Side_Scissor_{k}", SCR, pane(a0 + .002, b0 - .002, .056, TD - .075 + E, 0))
+        # B4 blocks: 100 (x) x 25 (z, -1.0825..-1.0575; spec 22 = the glass thickness exactly, which put both block side faces coplanar
+        # with the glass faces, so 1.5 mm proud each side, still inside the 50 mm jamb block), y 0.049-0.057: 7 mm visible (0.050-0.057, 1 mm bedded into the glass) + 1 mm bedded into the jamb
+        # block (sitting exactly on its 0.050 top is coplanar; 14.5 B2 rule: designed contact gets a 1.0-2.0 mm bed). Colliders unchanged.
+        for k, xs in enumerate((((-1.898, -1.798), (-1.767, -1.667)), ((1.677, 1.777), (1.828, 1.928)))):
+            for t, (x0, x1) in zip("ab", xs): p.add(f"Side_SettingBlock_{k}{t}", SL, box(x0, x1, .049, .057, -.0125, .0125))
         for i, (a0, b0) in enumerate(((lj1, -.6), (-.5, .5), (.6, rj0))):
             for r, (y0, y1) in enumerate(((TD + .075, T2 - .075), (T2 + .075, H - .15))):
                 p.add(f"Upper_Scissor_{i}{r}", SCR, pane(a0 + .002, b0 - .002, y0 - E, y1 + E, 0))
