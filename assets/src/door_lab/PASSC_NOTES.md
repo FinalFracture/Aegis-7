@@ -91,3 +91,21 @@ Approach side = -Z for every asset. LH variants are X-mirrors: rotations about l
     Nothing in the first two categories enters the column at any step. The leaf (the lid) crosses the column from 0° to 94.5°, which it must do to open.
   - The stay, slider and detent have 0.0 mm penetration at 1° steps, and through the detent pop-up with Godot-style table interpolation at 0.1° steps from 100° to 105°.
   - The torsion bar ends sit 2 mm into the anchor hubs, as the splined engagement intends.
+  - Lock-gear gaps (Vance, after accepting the leaf crossing the column). `lock_gear_gaps` in `passC_qa.json` and the LOCK GEAR lines in `floor_hatch_column_sweep.txt`. Parts: lock wheel, 4 dogs, 4 linkages, handle, OverrideOrange handwheel and lever. Targets: liner, frame flange, keepers. Swing 0…105° in 0.5° steps (211 poses), dogs retracted as the phases run it. The gap is the exact point-to-triangle distance from every vertex plus 6000 surface samples per part, and reads negative inside a solid. The minima are the same on all 5 variants, except the lock wheel and handwheel, which sit farther away in deeper wells:
+
+| part | min gap | at | against |
+|---|---|---|---|
+| `hatch_Dog_01` / `_02` (far edge) | 9.62 mm | 3.0° | liner (rebate wall as the edge rises); keepers 13.47 mm at 2.0° |
+| `hatch_Dog_03` / `_04` | 15.0 mm | 1.0° | liner; keepers 17.0 mm at 1.0° |
+| `hatch_Linkage_01` / `_02` | 112.5 mm | 3.0° | liner |
+| `hatch_Linkage_03` / `_04` | 117.0 mm | 0° | liner |
+| `hatch_Handle` | 93.9 mm | 0° | liner |
+| `hatch_OverrideOrange_Lever` | 121.0 mm | 0° | frame flange |
+| `hatch_LockWheel` | 298 mm (V5: 148 mm) | 0° | liner |
+| `hatch_OverrideOrange_Handwheel` | 333.4 mm (V5: 262 mm) | 0° | liner |
+
+    Every part is at 3 mm or more, so no geometry changed and the GLBs are byte-identical to 2db8f7b. For reference, in the closed, dogs-thrown state (dogs in the keeper pockets, which is not part of the swing), each dog sits 3.97 mm from its keeper and 8.0 mm from the liner.
+  - Dog retraction (`dog_retraction` in `passC_qa.json`). In `floorhatch.json` the open sequence runs dogs 1.7–2.5 s, then seal_deflate, then the leaf first moves in lurch at 3.0 s, so there is a 0.5 s margin. The close sequence seats the leaf (final_seat) at 8.15 s and starts the dogs at 8.2 s. Both times are before ×0.6 mech_phase_scale. In `mech_door.gd`, `_dog_throw_u` returns 1 − dogs-phase u on open, so dogs and linkages are at 0 throw from the end of the dogs phase onward. The patched Godot run at 60 fps measured the same thing: dogs end at 1.500 s and q first leaves 0 at 1.800 s (lurch); on close q = 0 at 11.000 s and the dogs start at 11.033 s.
+  - Godot findings for the coming incremental patch (Gage-owned files, not edited here):
+    1. `_floor_hatch` tags `_each_named(inst, "hatch_dog_")`. That is a case-insensitive substring match, so it also catches `hatch_dog_guides`, the fixed guide blocks on the leaf. The guides then slide 25 mm in +X with the dogs whenever the dogs are thrown, which includes the closed rest pose. `_tag_hatch` does the same with `bulkhead_dog_guides`. The fix is to match `hatch_dog_0` / `bulkhead_dog_0`.
+    2. A forced pose (`force_q`) with 0 < q ≤ 2% of travel (≤ 2.1°) shows the dogs thrown while the leaf is lifted, because of the `travel_u > 0.02` test in `_dog_throw_u` / `_pose_dog`. The animated sequence never does this, but a static pose would. The fix is to test `travel_u > 0.0`.

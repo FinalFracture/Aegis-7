@@ -1549,6 +1549,443 @@
       }
      ],
      "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -1844,6 +2281,443 @@
        "mechanism": 1.5
       }
      ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 298.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
      "ok": true
     }
    },
@@ -2141,6 +3015,443 @@
       }
      ],
      "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 319.69,
+       "at_deg": 4.5,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 325.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -2437,6 +3748,443 @@
       }
      ],
      "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 319.69,
+       "at_deg": 4.5,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 333.38,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 325.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
+     "ok": true
     }
    },
    "pass": true
@@ -2728,6 +4476,443 @@
        "mechanism": 1.5
       }
      ],
+     "ok": true
+    },
+    "lock_gear_gaps": {
+     "step_deg": 0.5,
+     "n_steps": 211,
+     "swing_dogs_retracted": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 148.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 9.62,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 9.62,
+         "at_deg": 3.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 13.47,
+         "at_deg": 2.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 15.0,
+       "at_deg": 1.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 15.0,
+         "at_deg": 1.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 17.0,
+         "at_deg": 1.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 112.53,
+       "at_deg": 3.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 117.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Handle": {
+       "min_gap_mm": 93.91,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Handwheel": {
+       "min_gap_mm": 262.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_OverrideOrange_Lever": {
+       "min_gap_mm": 121.0,
+       "at_deg": 0.0,
+       "against": "frame flange",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "closed_dogs_thrown": {
+      "hatch_LockWheel": {
+       "min_gap_mm": 148.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Dog_01": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_02": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_03": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Dog_04": {
+       "min_gap_mm": 3.97,
+       "at_deg": 0.0,
+       "against": "keeper",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": 8.0,
+         "at_deg": 0.0
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": 3.97,
+         "at_deg": 0.0
+        }
+       }
+      },
+      "hatch_Linkage_01": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_02": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_03": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      },
+      "hatch_Linkage_04": {
+       "min_gap_mm": 92.0,
+       "at_deg": 0.0,
+       "against": "liner",
+       "by_target": {
+        "liner": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "frame flange": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        },
+        "keeper": {
+         "min_gap_mm": ">=20",
+         "at_deg": null
+        }
+       }
+      }
+     },
+     "min_gap_mm": 9.62,
+     "min_part": "hatch_Dog_01",
+     "min_at_deg": 3.0,
+     "min_against": "liner",
+     "retracted_dogs_vs_keepers_min_mm": 13.47,
+     "ok": true,
+     "all_ge_3mm": true
+    },
+    "dog_retraction": {
+     "open_dogs_span_s": [
+      1.7,
+      2.5
+     ],
+     "open_first_motion_phase": "lurch",
+     "open_first_motion_t0_s": 3.0,
+     "open_between": [
+      "seal_deflate"
+     ],
+     "open_margin_s": 0.5,
+     "close_seated_phase": "final_seat",
+     "close_seated_t1_s": 8.15,
+     "close_dogs_span_s": [
+      8.2,
+      9.0
+     ],
+     "close_margin_s": 0.05,
+     "mech_phase_scale": 0.6,
+     "mech_door_dog_throw_open_is_1_minus_dogs_phase": true,
+     "forced_pose_threshold_travel_u": 0.02,
      "ok": true
     }
    },

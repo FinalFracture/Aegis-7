@@ -155,6 +155,8 @@ def hatch_checks(r, mir):
     out["liner_clear_xz"] = liner
     out["liner_ok"] = all(v["x"] >= .8995 and v["z"] >= .8995 for v in liner.values())
     out["column_sweep"] = column_sweep(r, mir)
+    out["lock_gear_gaps"] = _LG_CACHE.get(r.meta.get("_vid")) or lock_gear_gaps(r, mir)
+    out["dog_retraction"] = dog_phase_check()
     return out
 
 STAY_MECH = ("hatch_stay_arm", "hatch_stay_leaf_lug", "hatch_stay_slider", "hatch_stay_detent_plunger", "hatch_stay_detent_knob", "hatch_HingeTube", "hatch_TorsionAnchor_leaf")
@@ -191,12 +193,113 @@ def column_sweep(r, mir, step=0.5):
                 leaf_body_inside_deg=[float(min(leaf_in)), float(max(leaf_in))] if leaf_in else None, per_5deg=per5,
                 ok=bool(best["fixed"][0] > 0 and best["mechanism"][0] > 0 and best["boundary"][0] > -5e-4 and leaf105[0] > 0))
 OPEN = fh.OPEN_DEG
+LOCK_GEAR = ["hatch_LockWheel"] + [f"hatch_Dog_{i:02d}" for i in range(1, 5)] + [f"hatch_Linkage_{i:02d}" for i in range(1, 5)] + ["hatch_Handle", "hatch_OverrideOrange_Handwheel", "hatch_OverrideOrange_Lever"]
+LG_TARGETS = ("liner", "frame flange", "keeper")
+_LG = {}
+def _lg_measure(S, near=.02):
+    """-> {target: (gap_m, )} for one posed sample cloud. Exact point-triangle distance on KD-prefiltered candidates, negative when inside."""
+    c0 = _LG; d0, _ = c0["tree"].query(S, distance_upper_bound=near)
+    cand = S[d0 < near]; full = not len(cand)
+    if full: dc, _ = c0["coarse"].query(S); cand = S[np.argsort(dc)[:64]]   # nothing within 20 mm: exact distance for the 64 nearest samples
+    out = {}; lo, hi = cand.min(0) - near, cand.max(0) + near
+    for ci, (cn, c) in enumerate(c0["comps"]):
+        fm = np.ones(len(c.faces), bool) if full else np.all((c.vertices[c.faces] >= lo).any(1) & (c.vertices[c.faces] <= hi).any(1), axis=1)
+        if not fm.any(): continue
+        sub = trimesh.Trimesh(c.vertices, c.faces[fm], process=False)
+        cp, dist, _ = trimesh.proximity.closest_point(sub, cand)
+        g = np.where(c0["ins"][ci](cand), -dist, dist)
+        if cn == "hatch_Keeper": lab = np.full(len(g), "keeper", object)
+        else: lab = np.where(cp[:, 1] > c0["fy"] - fh.FLT - .001, "frame flange", "liner")
+        for t in LG_TARGETS:
+            m = lab == t
+            if m.any():
+                k = int(np.argmin(np.where(m, g, np.inf)))
+                if t not in out or g[k] < out[t]: out[t] = float(g[k])
+    return out
+def _lg_step(deg):
+    c0 = _LG; f_dog = 1.0 if deg < 0 else 0.0
+    Wp = c0["r"].pose(fh.deltas(c0["r"], max(deg, 0)/OPEN, f_dog, mirror=c0["mir"]))
+    return deg, {n: _lg_measure((Wp[n] @ np.c_[c0["loc"][n], np.ones(len(c0["loc"][n]))].T).T[:, :3]) for n in c0["parts"]}
+def lock_gear_gaps(r, mir, step=0.5):
+    """Vance: lock gear (lock wheel, 4 dogs, 4 linkages, handle, OverrideOrange handwheel + lever) vs liner / frame flange / keepers over the
+    swing 0-105 deg in 0.5 deg steps with the dogs retracted (the phases retract them before the lurch). Gap = exact point-triangle
+    distance from every vertex + 6000 surface samples of the moving part to the watertight fixed meshes, negative when inside; candidates
+    within 20 mm prefiltered by a KD tree over ~400k samples/m2 of the fixed surfaces. Targets with no sample within 20 mm read as >= 20.
+    Also reports the closed, dogs-THROWN state (dogs in the keeper pockets) separately."""
+    from scipy.spatial import cKDTree
+    fy = r.meta["floor_y"]; P0 = r.world_parts(fh.deltas(r, 0, 0, mirror=mir)); comps = []
+    for n in ("hatch_frame", "hatch_Keeper"):
+        for c in P0[n][1].split(only_watertight=False): comps.append((n, c))
+    def inside_fn(c):            # convex pieces (liner plates, keepers): half-space test on the hull; the boolean frame body: ray containment
+        h = c.convex_hull
+        if abs(h.volume - abs(c.volume)) <= 1e-3*h.volume:
+            A = h.face_normals; b = np.einsum("ij,ij->i", A, h.triangles[:, 0]); return lambda P: np.all(P @ A.T - b <= 1e-7, axis=1)
+        return c.contains
+    FS = np.vstack([np.vstack([c.vertices, trimesh.sample.sample_surface(c, max(2000, int(c.area*400000)), seed=5)[0]]) for _, c in comps])
+    Wc = r.pose(); Pc = r.world_parts(); loc = {}
+    for n in LOCK_GEAR:
+        m = Pc[n][1]; S = np.vstack([m.vertices, trimesh.sample.sample_surface(m, 6000, seed=6)[0]])
+        loc[n] = (np.linalg.inv(Wc[n]) @ np.c_[S, np.ones(len(S))].T).T[:, :3]
+    _LG.clear(); _LG.update(r=r, mir=mir, fy=fy, comps=comps, ins=[inside_fn(c) for _, c in comps], tree=cKDTree(FS), coarse=cKDTree(FS[::50]), loc=loc, parts=LOCK_GEAR)
+    angs = [float(a) for a in np.arange(0, OPEN + 1e-9, step)]
+    rows = [_lg_step(a) for a in angs + [-1.0]]
+    def agg(rows_, parts):
+        res = {}
+        for n in parts:
+            e = dict(min_gap_mm=np.inf, at_deg=None, against=None, by_target={})
+            for t in LG_TARGETS:
+                best = min(((m[n][t], d) for d, m in rows_ if t in m[n]), default=None)
+                e["by_target"][t] = dict(min_gap_mm=round(1000*best[0], 2), at_deg=max(best[1], 0.0)) if best and best[0] < .02 else dict(min_gap_mm=">=20", at_deg=None)
+                if best and 1000*best[0] < e["min_gap_mm"]: e.update(min_gap_mm=round(1000*best[0], 2), at_deg=max(best[1], 0.0), against=t)
+            res[n] = e
+        return res
+    res = agg([x for x in rows if x[0] >= 0], LOCK_GEAR)
+    thrown = agg([x for x in rows if x[0] < 0], [n for n in LOCK_GEAR if n.startswith(("hatch_Dog", "hatch_Linkage", "hatch_LockWheel"))])
+    worst = min(res, key=lambda n: res[n]["min_gap_mm"])
+    dk = [res[n]["by_target"]["keeper"] for n in res if n.startswith("hatch_Dog")]
+    dk_min = min((e["min_gap_mm"] for e in dk if e["min_gap_mm"] != ">=20"), default=">=20")
+    return dict(step_deg=step, n_steps=len(angs), swing_dogs_retracted=res, closed_dogs_thrown=thrown,
+                min_gap_mm=res[worst]["min_gap_mm"], min_part=worst, min_at_deg=res[worst]["at_deg"], min_against=res[worst]["against"],
+                retracted_dogs_vs_keepers_min_mm=dk_min,
+                ok=bool(all(e["min_gap_mm"] >= 0 for e in res.values())), all_ge_3mm=bool(all(e["min_gap_mm"] >= 3 for e in res.values())))
+
+_LG_CACHE = {}
+def _lg_variant(vid):   # fresh-interpreter worker (spawn): one floor-hatch variant's lock-gear sweep
+    r, mir = dict((v, fn) for v, _, fn in VARIANTS["floor_hatch"])[vid](); return vid, lock_gear_gaps(r, mir)
+def precompute_lock_gear():
+    import multiprocessing as mp
+    vids = [v for v, _, _ in VARIANTS["floor_hatch"]]
+    with mp.get_context("spawn").Pool(len(vids)) as pool: _LG_CACHE.update(dict(pool.map(_lg_variant, vids)))
+
+def dog_phase_check():
+    """Vance: dogs fully retracted before the leaf lifts. Reads the door profile (godot/resources/door_lab/floorhatch.json) and
+    mech_door.gd: open = dogs phase must END at or before the first phase that moves q off 0; close = dogs phase must START at or
+    after q is back at 0 (phase scaling in mech_door is monotonic, so the order holds after mech_phase_scale / travel_time_scale)."""
+    import re
+    root = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+    prof = json.load(open(os.path.join(root, "godot/resources/door_lab/floorhatch.json")))
+    md = open(os.path.join(root, "godot/scripts/door_lab/mech_door.gd")).read()
+    op, cl = prof["open_phases"], prof["close_phases"]
+    dog_o = next(p for p in op if p["name"] == "dogs"); move_o = next(p for p in op if p.get("p1", p["p0"]) != p["p0"])
+    dog_c = next(p for p in cl if p["name"] == "dogs"); seat_c = max((p for p in cl if p.get("p1", p["p0"]) != p["p0"]), key=lambda p: p["t1"])
+    pre_o = [p["name"] for p in op if dog_o["t1"] <= p["t0"] < move_o["t0"]]
+    m = re.search(r"func _dog_throw_u\(.*?\n(.*?)\n\n", md, re.S); body = m.group(1) if m else ""
+    src_ok = "1.0 - local_t" in body and '_phase_u(["dogs"])' in body
+    forced = re.search(r"if forced:\s*\n\s*return 0.0 if travel_u > ([0-9.]+) else 1.0", body)
+    return dict(open_dogs_span_s=[dog_o["t0"], dog_o["t1"]], open_first_motion_phase=move_o["name"], open_first_motion_t0_s=move_o["t0"],
+                open_between=pre_o, open_margin_s=round(move_o["t0"] - dog_o["t1"], 4),
+                close_seated_phase=seat_c["name"], close_seated_t1_s=seat_c["t1"], close_dogs_span_s=[dog_c["t0"], dog_c["t1"]],
+                close_margin_s=round(dog_c["t0"] - seat_c["t1"], 4), mech_phase_scale=prof.get("mech_phase_scale"),
+                mech_door_dog_throw_open_is_1_minus_dogs_phase=bool(src_ok),
+                forced_pose_threshold_travel_u=float(forced.group(1)) if forced else None,
+                ok=bool(dog_o["t1"] <= move_o["t0"] and dog_c["t0"] >= seat_c["t1"] and src_ok))
 
 def main(only=None, do_render=True):
     rep = json.load(open(QA_JSON)) if os.path.exists(QA_JSON) and only else {}
     for asset, vars_ in VARIANTS.items():
         if only and asset not in only: continue
         rep[asset] = {}; thumbs = []
+        if asset == "floor_hatch" and not _LG_CACHE: precompute_lock_gear()   # 5 variants x 211 poses in parallel
         for vid, label, fn in vars_:
             t0 = time.time(); r, mir = fn()
             gp = os.path.join(GLB_DIR, asset, f"{vid}.glb"); tris = r.export(gp)
@@ -210,9 +313,9 @@ def main(only=None, do_render=True):
                 e["clip"][lab] = dict(worst_overlap=s["worst_overlap"], bad_overlaps=[list(map(str, o)) for o in s["bad_overlaps"]],
                                       coplanar=[list(map(str, o)) for o in s["coplanar"]], open=[str(o) for o in s["open"]])
             e["sweeps"] = sweeps(asset, r, mir)
-            if asset == "floor_hatch": e["hatch"] = hatch_checks(r, mir)
+            if asset == "floor_hatch": r.meta["_vid"] = vid; e["hatch"] = hatch_checks(r, mir)
             e["pass"] = (e["under_budget"] and all(not c["bad_overlaps"] and not c["coplanar"] and not c["open"] for c in e["clip"].values())
-                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"])))
+                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
             rep[asset][vid] = e
             print(asset, vid, label, "tris", tris["visual"], "pass", e["pass"], "sweeps", {k: v["depth_m"] for k, v in e["sweeps"].items()},
                   f"{time.time() - t0:.0f}s", flush=True)
@@ -295,10 +398,11 @@ def column_figure(r, mir, path, step=0.5):
     fig.tight_layout(); fig.savefig(path, dpi=110); plt.close(fig); return path
 
 def write_sweep_log(fhrep):
-    L = [f"Rook floor hatch column sweep (door_lab_passC.py, {time.strftime('%Y-%m-%d %H:%M %Z')})",
+    L = [f"Rook floor hatch column sweep + lock-gear gaps + dog retraction (door_lab_passC.py, {time.strftime('%Y-%m-%d %H:%M %Z')})",
          "Column: |x|,|z| < 0.450 m from the well-floor top to floor + 2.0 m. Clearance = horizontal distance to the column (negative = inside).",
          "fixed = every non-moving node except the frame/liner (liner faces = the column boundary); mechanism = hinge tube, leaf torsion anchor, stay arm, lug, slider, detent plunger/knob;",
-         "leaf_body = leaf shell + leaf-borne lock gear (the lid itself; it covers the column when closed and swings through it by definition).", ""]
+         "leaf_body = leaf shell + leaf-borne lock gear (the lid itself; it covers the column when closed and swings through it by definition).",
+         "lock gear: exact point-triangle gap from every vertex + 6000 surface samples per part; per-target '>=20' = no sample within 20 mm of that target (the overall min is exact).", ""]
     for vid, e in fhrep.items():
         cs = e["hatch"]["column_sweep"]
         L.append(f"[{vid}] {e['label']}  step {cs['step_deg']} deg  ok={cs['ok']}")
@@ -307,6 +411,17 @@ def write_sweep_log(fhrep):
         L.append(f"  liner      min {cs['liner_boundary']['min_clearance_mm']} mm (frame liner faces = boundary)")
         L.append(f"  leaf body at 105 deg  min {cs['leaf_body_at_105']['min_clearance_mm']} mm ({cs['leaf_body_at_105']['part']}); leaf body crosses the column {cs['leaf_body_inside_deg']} deg")
         L.append("  per 5 deg (mm): " + "  ".join(f"{int(p['deg'])}:{p.get('mechanism')}/{p.get('fixed')}" for p in cs["per_5deg"]) + "   (mechanism/fixed)")
+        lg = e["hatch"]["lock_gear_gaps"]
+        L.append(f"  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ {lg['step_deg']} deg ({lg['n_steps']} poses), dogs retracted: ok={lg['ok']} all>=3mm={lg['all_ge_3mm']}  "
+                 f"min {lg['min_gap_mm']} mm ({lg['min_part']} vs {lg['min_against']} at {lg['min_at_deg']} deg); retracted dogs vs keepers min {lg['retracted_dogs_vs_keepers_min_mm']} mm")
+        for n, g in lg["swing_dogs_retracted"].items():
+            bt = "  ".join(f"{t} {v['min_gap_mm']}" + (f"@{v['at_deg']}" if v["at_deg"] is not None else "") for t, v in g["by_target"].items())
+            L.append(f"    {n:32s} min {g['min_gap_mm']:>8} mm at {g['at_deg']:>5} deg vs {g['against']:12s} | {bt}")
+        L.append("  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): " + "  ".join(f"{n.replace('hatch_', '')} {g['min_gap_mm']} ({g['against']})" for n, g in lg["closed_dogs_thrown"].items()))
+        dr = e["hatch"]["dog_retraction"]
+        L.append(f"  DOG RETRACTION (floorhatch.json + mech_door.gd): ok={dr['ok']}  open: dogs {dr['open_dogs_span_s']} s end {dr['open_margin_s']} s before '{dr['open_first_motion_phase']}' "
+                 f"(t0 {dr['open_first_motion_t0_s']} s; between: {dr['open_between']}); close: '{dr['close_seated_phase']}' seats at {dr['close_seated_t1_s']} s, dogs start {dr['close_dogs_span_s'][0]} s "
+                 f"(+{dr['close_margin_s']} s); profile times before mech_phase_scale {dr['mech_phase_scale']}")
         L.append(f"  sweeps: " + ", ".join(f"{k} {v['depth_m']*1000:.1f} mm" for k, v in e["sweeps"].items()) + f"; flush {e['hatch']['flush_mm']} mm; liner {e['hatch']['liner_clear_xz']}")
         L.append("")
     open(os.path.join(HERE, "floor_hatch_column_sweep.txt"), "w").write("\n".join(L))
