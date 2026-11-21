@@ -29,7 +29,7 @@ def _bh(prm, mir):
     return r, mir
 def _bs(panel, hand):
     r = bs.build(panel); bs.finalize(r)
-    return (bs.swap_lr(r) if hand else r), False
+    return bs.bake_meet_seal(bs.swap_lr(r) if hand else r), False
 def _fh(prm, mir):
     r = fh.build(prm); fh.finalize(r)
     if mir: m = mirror_rig(r); m.meta = dict(r.meta); r = m
@@ -39,9 +39,10 @@ VARIANTS = {
     "bulkhead_hatch": [("v1", "RH 150 mm coaming (placed)", lambda: _bh({}, False)), ("v2", "LH 150 mm coaming", lambda: _bh({}, True)),
                        ("v3", "RH 300 mm marine coaming", lambda: _bh(dict(sill=.30), False)), ("v4", "LH 300 mm marine coaming", lambda: _bh(dict(sill=.30), True)),
                        ("v5", "RH coaming, 6 back ribs + kick plate", lambda: _bh(dict(ribs=6, kick=True), False))],
-    "biparting_slide": [("v1", "access panel shown swung up (placed)", lambda: _bs(2, False)), ("v2", "access panel closed (20 mm carriage slot)", lambda: _bs(1, False)),
-                        ("v3", "no panel - service area, track exposed", lambda: _bs(0, False)), ("v4", "V1 handed (release + solenoid on the right)", lambda: _bs(2, True)),
-                        ("v5", "V2 handed", lambda: _bs(1, True))],
+    # M-122: the placed v1 ships with the access panel CLOSED (the lab used to close it at runtime); the swung-up display pose moved to v2.
+    "biparting_slide": [("v1", "access panel closed (20 mm carriage slot) (placed)", lambda: _bs(1, False)), ("v2", "access panel shown swung up", lambda: _bs(2, False)),
+                        ("v3", "no panel - service area, track exposed", lambda: _bs(0, False)), ("v4", "V1 handed (release + solenoid on the right)", lambda: _bs(1, True)),
+                        ("v5", "V2 handed", lambda: _bs(2, True))],
     "floor_hatch": [("v1", "RH stay, 0.45 m well (placed)", lambda: _fh({}, False)), ("v2", "LH stay, 0.45 m well", lambda: _fh({}, True)),
                     ("v3", "RH stay, 0.75 m step-down well", lambda: _fh(dict(well=.75), False)), ("v4", "LH stay, 0.75 m well", lambda: _fh(dict(well=.75), True)),
                     ("v5", "RH stay, 0.30 m shallow well", lambda: _fh(dict(well=.30), False))],
@@ -132,6 +133,24 @@ def sweeps(asset, r, mir):
             if d[0] >= w[0]: w = (d[0], d[1], d[2], round(float(fd), 2))
         res["dogs_throw"] = w
     return {k: dict(depth_m=round(float(v[0]), 4), parts=[v[1], v[2]], at=v[3]) for k, v in res.items()}
+
+def gear_housed(r, leaf, shell):
+    """Rook M-122: Gage's _clamp_rods criterion, evaluated on the as-built GLB. Every dog / linkage (closed pose, modelled = retracted) must
+    sit inside the leaf shell's bounds shrunk by 4 mm (leaf-local AABB); factor = the scale about the shell centre the lab would have applied
+    (1.0 = untouched). ok when every factor >= 0.999, i.e. the runtime pull-in is a no-op on the shipped GLB."""
+    P = r.world_parts(); inv = np.linalg.inv(r.pose()[leaf])
+    def lb(n):
+        v = P[n][1].vertices @ inv[:3, :3].T + inv[:3, 3]; return v.min(0), v.max(0)
+    slo, shi = lb(shell); lo, hi, c = slo + .004, shi - .004, (slo + shi)/2; out = {}
+    for n in P:
+        l = n.lower()
+        if not (("dog" in l or "linkage" in l) and "guide" not in l and "dogpivot" not in l and "dogpin" not in l) or n not in _desc(r, leaf): continue
+        a, b = lb(n); f = 1.0
+        for k in range(3):
+            for v in (a[k] - c[k], b[k] - c[k]):
+                if abs(v) > 1e-5: f = min(f, ((hi[k] - c[k]) if v > 0 else (c[k] - lo[k]))/abs(v))
+        out[n] = round(float(f), 4)
+    return dict(factors=out, min_factor=min(out.values()), ok=bool(min(out.values()) >= .999))
 
 def _mindist(a, b, n=1500):
     """min surface distance between two meshes (vertex + area samples, both ways; no penetration here, the sweeps cover that)."""
@@ -352,8 +371,9 @@ def main(only=None, do_render=True):
             e["sweeps"] = sweeps(asset, r, mir)
             if asset == "biparting_slide": e["hw_gaps_passG"] = slide_hw_gaps(r)
             if asset == "floor_hatch": r.meta["_vid"] = vid; e["hatch"] = hatch_checks(r, mir)
+            if asset != "biparting_slide": e["gear_housed_M122"] = gear_housed(r, *(("leaf", "bulkhead_leaf_shell") if asset == "bulkhead_hatch" else ("hatch_leaf", "hatch_leaf_shell")))
             e["pass"] = (e["under_budget"] and all(not c["bad_overlaps"] and not c["coplanar"] and not c["open"] for c in e["clip"].values())
-                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "biparting_slide" or e["hw_gaps_passG"]["ok"]) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
+                         and all(sw["depth_m"] <= .010 for sw in e["sweeps"].values()) and (asset != "biparting_slide" or e["hw_gaps_passG"]["ok"]) and (asset == "biparting_slide" or e["gear_housed_M122"]["ok"]) and (asset != "floor_hatch" or (e["hatch"]["flush_ok"] and e["hatch"]["liner_ok"] and e["hatch"]["column_sweep"]["ok"] and e["hatch"]["lock_gear_gaps"]["ok"] and e["hatch"]["dog_retraction"]["ok"])))
             rep[asset][vid] = e
             print(asset, vid, label, "tris", tris["visual"], "pass", e["pass"], "sweeps", {k: v["depth_m"] for k, v in e["sweeps"].items()},
                   f"{time.time() - t0:.0f}s", flush=True)

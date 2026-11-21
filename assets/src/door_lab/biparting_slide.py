@@ -225,6 +225,12 @@ def swap_lr(rig):
     return out
 
 PANEL_OPEN_DEG = 90.0
+
+MEET_SEAL_DZ = .003
+def bake_meet_seal(rig):
+    """Rook M-122: leaf_R's meeting bulb sits 3 mm toward +Z (back) of leaf_L's so the two compressed bulbs never share a face plane
+    (Gage's lab used to move it at runtime). Applied by name after the optional swap_lr, so it is always the node called leaf_R_seal."""
+    rig.N["leaf_R_seal"]["W"] = T((0, 0, MEET_SEAL_DZ)) @ rig.N["leaf_R_seal"]["W"]; return rig
 def deltas(rig=None, f=0.0, f_lock=0.0, f_panel=None, f_hex=0.0, mirror=False):
     """(swap_lr variants use mirror=False: the swapped names keep leaf_L on -X and every node frame is a plain translation.)
     f 0 closed .. 1 open; f_lock 0 retracted .. 1 bolt thrown (only valid when f == 0); f_panel 0 closed .. 1 swung up

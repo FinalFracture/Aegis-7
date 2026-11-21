@@ -41,9 +41,15 @@ CH_ZF = -.488                        # under-flange extension of the channel at 
 OPEN_DEG = 105.0
 WELL = .45; WT = .006
 DOG_THROW = .025
-DOGS = [((-.14, .435), (0, 1)), ((.14, .435), (0, 1)), ((-.435, .30), (-1, 0)), ((.435, .30), (1, 0))]   # retracted tip (x,z), outward dir
+# Rook M-122 (2026-11-21): the lock gear is HOUSED in the lid. Gage's lab used to scale the under-lid dogs / linkages toward the shell
+# centre at runtime (x0.42 / x0.49). Now the dogs run in bores through the lid edge (retracted tip 5 mm inside it), the linkages and the
+# locking wheel sit in an underside pocket inside the seal ring (POCKET, 6 mm inside the bead), and the keepers moved from the liner
+# pockets below the land to pockets in the rebate wall (REB) at the dog height, still above each thrown dog tip (holds the lid down).
+DOGS = [((-.14, .495), (0, 1)), ((.14, .495), (0, 1)), ((-.495, .30), (-1, 0)), ((.495, .30), (1, 0))]   # retracted tip (x,z), outward dir
 KP_D, KP_W = .030, .022
-DOG_Y0, DOG_Y1 = -.160, -.140
+DOG_Y0, DOG_Y1 = -.095, -.075
+GEAR_DY = .065                       # lock wheel + linkages: the pre-M-122 under-lid stack, raised with the dogs
+POCKET = dict(x=.455, z0=-.135, z1=.455, y1=-.040)   # underside pocket (seal bead inner edge 0.461); 4 mm web under the handwheel recess
 SEAL_Y0 = LAND_Y - GRV_D; SEAL_TOP = -LT - .0015
 SEAL_INFLATE_SCALE = ((-LT + .004) - (SEAL_Y0 - .002)) / (SEAL_TOP - (SEAL_Y0 - .002))
 # hinge tube / torsion bar (x layout, RH)
@@ -126,7 +132,7 @@ def frame(rig):
     groove = boolean("difference", [sq_prism(GRV_O, SEAL_Y0, LAND_Y + .01, .02), sq_prism(GRV_I, SEAL_Y0 - .01, LAND_Y + .02, .008)])
     pockets = []
     for (px, pz), (dx, dz) in DOGS:
-        u = np.array([dx, dz]); w = np.abs(np.array([-dz, dx])); c0 = np.array([px, pz]); wall = c0 + u*(OPEN_HALF - c0 @ u)
+        u = np.array([dx, dz]); w = np.abs(np.array([-dz, dx])); c0 = np.array([px, pz]); wall = c0 + u*(REB - c0 @ u)
         a, b = wall - u*.002, wall + u*KP_D; lo, hi = np.minimum(a, b) - w*KP_W, np.maximum(a, b) + w*KP_W
         pockets.append(box(lo[0], hi[0], DOG_Y0 - .008, DOG_Y1 + .010, lo[1], hi[1]))
     zs_min, zs_max, zr_min, zr_max = stay_extent(); zs_open = stay_state(np.radians(OPEN_DEG))[1][1]; zp = plunger_z(zs_open)
@@ -146,7 +152,7 @@ def frame(rig):
     rig.part("hatch_InflatableSeal", None, SEAL, [bead], W=T((0, SEAL_Y0, 0)))
     kp = []
     for (px, pz), (dx, dz) in DOGS:
-        u = np.array([dx, dz]); w = np.abs(np.array([-dz, dx])); c0 = np.array([px, pz]); wall = c0 + u*(OPEN_HALF - c0 @ u)
+        u = np.array([dx, dz]); w = np.abs(np.array([-dz, dx])); c0 = np.array([px, pz]); wall = c0 + u*(REB - c0 @ u)
         a, b = wall + u*.002, wall + u*(KP_D - .002); lo, hi = np.minimum(a, b) - w*(KP_W - .003), np.maximum(a, b) + w*(KP_W - .003)
         k = box(lo[0], hi[0], DOG_Y1 + .002, DOG_Y1 + .0105, lo[1], hi[1])
         k.vertices[:, 1] = np.where((k.vertices[:, 1] < DOG_Y1 + .005) & ((k.vertices[:, [0, 2]] - wall) @ u < .003), DOG_Y1 + .005, k.vertices[:, 1])
@@ -196,7 +202,11 @@ def leaf(rig):
     chamb = xf(box(-.6, .6, -.008, .008, -.008, .008), R=TF.rotation_matrix(np.pi/4, [1, 0, 0]), t=(0, -LT, -LEAF_HALF))  # 6 mm hinge-edge chamfer (underside)
     cuts = [cham, chamb, cap((0, -.0175, 0), .15, .035 + .002, 24, "y"),
             box(-.09, .09, -.035, .01, .365, .435), box(.215, .405, -.030, .01, -.235, -.165),
-            cylx(TUBE_RO + .003, -.52, .52, 16)]                                    # tube scallop along the hinge edge (3 mm clearance)
+            cylx(TUBE_RO + .003, -.52, .52, 16),                                    # tube scallop along the hinge edge (3 mm clearance)
+            box(-POCKET["x"], POCKET["x"], -LT - .01, POCKET["y1"], POCKET["z0"], POCKET["z1"])]   # M-122 lock-gear pocket (underside)
+    for (px, pz), (dx, dz) in DOGS:                                                 # M-122 dog bores through the lid edge (dog 24 x 20 mm, 2 mm clear)
+        ang = np.arctan2(-dz, dx)
+        cuts.append(xf(box(-.07, .02, DOG_Y0 - .002, DOG_Y1 + .002, -.014, .014), R=TF.rotation_matrix(ang, [0, 1, 0]), t=(px, 0, pz)))
     sh = boolean("difference", [shell] + cuts)
     rig.part("hatch_leaf_shell", g, G, [sh])
     hd = [cap((0, -.014, .40), .008, .17, 8, "x"), box(-.093, -.08, -.022, -.006, .392, .408), box(.08, .093, -.022, -.006, .392, .408)]
@@ -208,10 +218,11 @@ def leaf(rig):
     lc = np.array([.235, -.018, -.20])
     lv = [box(.235, .385, -.024, -.012, -.208, -.192), cap(tuple(lc), .007, .05, 8, "z"), box(.36, .385, -.024, -.008, -.212, -.188)]
     rig.part("hatch_OverrideOrange_Lever", g, ORANGE, lv, W=T(lc))
-    wc = np.array([0, -.129, 0])
-    lw = [cap((0, -.129, 0), .125, .012, 16, "y"), cap((0, -.125, 0), .035, .05 - E, 10, "y")]
+    gy = GEAR_DY; hub0, hub1 = DOG_Y0 + .010, POCKET["y1"] - .002   # hub from the dog plane up to 2 mm under the pocket ceiling
+    wc = np.array([0, -.129 + gy, 0])
+    lw = [cap((0, -.129 + gy, 0), .125, .012, 16, "y"), cap((0, (hub0 + hub1)/2, 0), .035, hub1 - hub0, 10, "y")]
     for k in range(4):
-        a = np.radians(45 + 90*k); lw.append(xf(box(.036, .118, -.141, -.135 + E, -.008, .008), R=TF.rotation_matrix(a, [0, 1, 0])))
+        a = np.radians(45 + 90*k); lw.append(xf(box(.036, .118, -.141 + gy, -.135 + gy + E, -.008, .008), R=TF.rotation_matrix(a, [0, 1, 0])))
     rig.part("hatch_LockWheel", g, ST, lw, W=T(wc))
     gd = []
     for i, ((px, pz), (dx, dz)) in enumerate(DOGS):
@@ -220,16 +231,17 @@ def leaf(rig):
         dog = [box(-.12, -.004, -.010, .010, -.012, .012), box(-.004 - E, 0, -.010, .006, -.012, .012)]
         dog = [xf(m, R=Wd) for m in dog]
         rig.part(f"hatch_Dog_{i + 1:02d}", g, ST, dog, W=Wd)
-        for m in (box(-.074, -.058, DOG_Y0 - .006 - (DOG_Y0 + DOG_Y1)/2, -LT + E - (DOG_Y0 + DOG_Y1)/2, .014, .020), box(-.074, -.058, DOG_Y0 - .006 - (DOG_Y0 + DOG_Y1)/2, -LT + E - (DOG_Y0 + DOG_Y1)/2, -.020, -.014),
-                  box(-.074, -.058, DOG_Y0 - .006 - (DOG_Y0 + DOG_Y1)/2, DOG_Y0 - .002 - (DOG_Y0 + DOG_Y1)/2, -.020, .020)):
-            gd.append(xf(m, R=Wd))
+        # guide (in the pocket): strap under the dog (1.5 mm clear, 0.5 mm above the lid underside) + two cheeks up to the pocket ceiling
+        ym = (DOG_Y0 + DOG_Y1)/2; yb, ys, yt = -LT + .0005 - ym, DOG_Y0 - .0015 - ym, POCKET["y1"] + E - ym
+        gd.append(xf(prism_x([(yb, -.020), (yb, .020), (yt, .020), (yt, .014), (ys, .014), (ys, -.014), (yt, -.014), (yt, -.020)], -.074, -.058), R=Wd))
         inner = np.array([px, pz]) - np.array([dx, dz])*.110
         pin = inner/np.linalg.norm(inner)*.085
-        Lw = np.array(T((pin[0], -.115, pin[1])) @ TF.rotation_matrix(ang, [0, 1, 0]))
+        gy = GEAR_DY
+        Lw = np.array(T((pin[0], -.115 + gy, pin[1])) @ TF.rotation_matrix(ang, [0, 1, 0]))
         v = inner - pin; L = np.linalg.norm(v); th = np.arctan2(-v[1], v[0])
-        bar = xf(box(0, L, -.005, .005, -.008, .008), R=TF.rotation_matrix(th, [0, 1, 0]), t=(pin[0], -.115, pin[1]))
-        riser = box(inner[0] - .008, inner[0] + .008, DOG_Y1 - E, -.112 + E, inner[1] - .008, inner[1] + .008)
-        pinm = cap((pin[0], (-.121 - .112)/2, pin[1]), .007, .009, 8, "y")
+        bar = xf(box(0, L, -.005, .005, -.008, .008), R=TF.rotation_matrix(th, [0, 1, 0]), t=(pin[0], -.115 + gy, pin[1]))
+        riser = box(inner[0] - .008, inner[0] + .008, DOG_Y1 - E, -.112 + gy + E, inner[1] - .008, inner[1] + .008)
+        pinm = cap((pin[0], (-.121 - .112)/2 + gy, pin[1]), .007, .009, 8, "y")
         rig.part(f"hatch_Linkage_{i + 1:02d}", g, ALY, [bar, riser, pinm], W=Lw)
     rig.part("hatch_dog_guides", g, ALY, gd)
     rig.part("hatch_leaf-convcolonly", g, G, [box(-LEAF_HALF, LEAF_HALF, -LT, 0, -LEAF_HALF, LEAF_HALF)])

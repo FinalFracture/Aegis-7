@@ -1,120 +1,120 @@
-Rook floor hatch column sweep + lock-gear gaps + dog retraction (door_lab_passC.py, 2026-11-21 09:20 CST)
+Rook floor hatch column sweep + lock-gear gaps + dog retraction (door_lab_passC.py, 2026-11-21 10:01 CST)
 Column: |x|,|z| < 0.450 m from the well-floor top to floor + 2.0 m. Clearance = horizontal distance to the column (negative = inside).
 fixed = every non-moving node except the frame/liner (liner faces = the column boundary); mechanism = hinge tube, leaf torsion anchor, stay arm, lug, slider, detent plunger/knob;
 leaf_body = leaf shell + leaf-borne lock gear (the lid itself; it covers the column when closed and swings through it by definition).
 lock gear: exact point-triangle gap from every vertex + 6000 surface samples per part; per-target '>=20' = no sample within 20 mm of that target (the overall min is exact).
 
 [v1] RH stay, 0.45 m well (placed)  step 0.5 deg  ok=True
-  fixed      min 2.0 mm (hatch_Keeper)
+  fixed      min 10.8 mm (hatch_InflatableSeal)
   mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
   liner      min -0.0 mm (frame liner faces = boundary)
-  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
-  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
-  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.62 mm (hatch_Dog_01 vs liner at 3.0 deg); retracted dogs vs keepers min 13.47 mm
-    hatch_LockWheel                  min    298.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Dog_01                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_02                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_03                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Dog_04                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Linkage_01                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_02                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_03                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_04                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+  leaf body at 105 deg  min 17.57 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 89.5] deg
+  per 5 deg (mm): 0:1.5/10.8  5:1.5/10.8  10:1.5/10.8  15:1.5/10.8  20:1.5/10.8  25:1.5/10.8  30:1.5/10.8  35:1.5/10.8  40:1.5/10.8  45:1.5/10.8  50:1.5/10.8  55:1.5/10.8  60:1.5/10.8  65:1.5/10.8  70:1.5/10.8  75:1.5/10.8  80:1.5/10.8  85:1.5/10.8  90:1.5/10.8  95:1.5/10.8  100:1.5/10.8  105:1.5/10.8   (mechanism/fixed)
+  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.05 mm (hatch_Dog_01 vs liner at 3.5 deg); retracted dogs vs keepers min 11.7 mm
+    hatch_LockWheel                  min   326.99 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Dog_01                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_02                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_03                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Dog_04                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Linkage_01                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_02                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_03                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_04                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_Handle                     min    93.91 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Handwheel   min   333.38 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Lever       min    121.0 mm at   0.0 deg vs frame flange | liner >=20  frame flange >=20  keeper >=20
-  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 298.0 (liner)  Dog_01 3.97 (keeper)  Dog_02 3.97 (keeper)  Dog_03 3.97 (keeper)  Dog_04 3.97 (keeper)  Linkage_01 92.0 (liner)  Linkage_02 92.0 (liner)  Linkage_03 92.0 (liner)  Linkage_04 92.0 (liner)
+  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 326.99 (liner)  Dog_01 3.1 (keeper)  Dog_02 3.1 (keeper)  Dog_03 3.1 (keeper)  Dog_04 3.1 (keeper)  Linkage_01 41.87 (liner)  Linkage_02 41.87 (liner)  Linkage_03 41.87 (liner)  Linkage_04 41.87 (liner)
   DOG RETRACTION (floorhatch.json + mech_door.gd): ok=True  open: dogs [1.7, 2.5] s end 0.5 s before 'lurch' (t0 3.0 s; between: ['seal_deflate']); close: 'final_seat' seats at 8.15 s, dogs start 8.2 s (+0.05 s); profile times before mech_phase_scale 0.6
   sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
 
 [v2] LH stay, 0.45 m well  step 0.5 deg  ok=True
-  fixed      min 2.0 mm (hatch_Keeper)
+  fixed      min 10.8 mm (hatch_InflatableSeal)
   mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
   liner      min -0.0 mm (frame liner faces = boundary)
-  leaf body at 105 deg  min 17.46 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
-  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
-  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.62 mm (hatch_Dog_01 vs liner at 3.0 deg); retracted dogs vs keepers min 13.47 mm
-    hatch_LockWheel                  min    298.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Dog_01                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_02                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_03                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Dog_04                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Linkage_01                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_02                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_03                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_04                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+  leaf body at 105 deg  min 17.75 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 89.5] deg
+  per 5 deg (mm): 0:1.5/10.8  5:1.5/10.8  10:1.5/10.8  15:1.5/10.8  20:1.5/10.8  25:1.5/10.8  30:1.5/10.8  35:1.5/10.8  40:1.5/10.8  45:1.5/10.8  50:1.5/10.8  55:1.5/10.8  60:1.5/10.8  65:1.5/10.8  70:1.5/10.8  75:1.5/10.8  80:1.5/10.8  85:1.5/10.8  90:1.5/10.8  95:1.5/10.8  100:1.5/10.8  105:1.5/10.8   (mechanism/fixed)
+  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.05 mm (hatch_Dog_01 vs liner at 3.5 deg); retracted dogs vs keepers min 11.7 mm
+    hatch_LockWheel                  min   326.99 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Dog_01                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_02                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_03                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Dog_04                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Linkage_01                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_02                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_03                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_04                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_Handle                     min    93.91 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Handwheel   min   333.38 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Lever       min    121.0 mm at   0.0 deg vs frame flange | liner >=20  frame flange >=20  keeper >=20
-  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 298.0 (liner)  Dog_01 3.97 (keeper)  Dog_02 3.97 (keeper)  Dog_03 3.97 (keeper)  Dog_04 3.97 (keeper)  Linkage_01 92.0 (liner)  Linkage_02 92.0 (liner)  Linkage_03 92.0 (liner)  Linkage_04 92.0 (liner)
+  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 326.99 (liner)  Dog_01 3.12 (keeper)  Dog_02 3.12 (keeper)  Dog_03 3.12 (keeper)  Dog_04 3.12 (keeper)  Linkage_01 41.87 (liner)  Linkage_02 41.87 (liner)  Linkage_03 41.87 (liner)  Linkage_04 41.87 (liner)
   DOG RETRACTION (floorhatch.json + mech_door.gd): ok=True  open: dogs [1.7, 2.5] s end 0.5 s before 'lurch' (t0 3.0 s; between: ['seal_deflate']); close: 'final_seat' seats at 8.15 s, dogs start 8.2 s (+0.05 s); profile times before mech_phase_scale 0.6
   sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
 
 [v3] RH stay, 0.75 m step-down well  step 0.5 deg  ok=True
-  fixed      min 2.0 mm (hatch_Keeper)
+  fixed      min 10.8 mm (hatch_InflatableSeal)
   mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
   liner      min -0.0 mm (frame liner faces = boundary)
-  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
-  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
-  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.62 mm (hatch_Dog_01 vs liner at 3.0 deg); retracted dogs vs keepers min 13.47 mm
-    hatch_LockWheel                  min   319.69 mm at   4.5 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Dog_01                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_02                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_03                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Dog_04                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Linkage_01                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_02                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_03                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_04                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+  leaf body at 105 deg  min 17.57 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 89.5] deg
+  per 5 deg (mm): 0:1.5/10.8  5:1.5/10.8  10:1.5/10.8  15:1.5/10.8  20:1.5/10.8  25:1.5/10.8  30:1.5/10.8  35:1.5/10.8  40:1.5/10.8  45:1.5/10.8  50:1.5/10.8  55:1.5/10.8  60:1.5/10.8  65:1.5/10.8  70:1.5/10.8  75:1.5/10.8  80:1.5/10.8  85:1.5/10.8  90:1.5/10.8  95:1.5/10.8  100:1.5/10.8  105:1.5/10.8   (mechanism/fixed)
+  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.05 mm (hatch_Dog_01 vs liner at 3.5 deg); retracted dogs vs keepers min 11.7 mm
+    hatch_LockWheel                  min   326.99 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Dog_01                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_02                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_03                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Dog_04                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Linkage_01                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_02                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_03                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_04                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_Handle                     min    93.91 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Handwheel   min   333.38 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Lever       min    121.0 mm at   0.0 deg vs frame flange | liner >=20  frame flange >=20  keeper >=20
-  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 325.0 (liner)  Dog_01 3.97 (keeper)  Dog_02 3.97 (keeper)  Dog_03 3.97 (keeper)  Dog_04 3.97 (keeper)  Linkage_01 92.0 (liner)  Linkage_02 92.0 (liner)  Linkage_03 92.0 (liner)  Linkage_04 92.0 (liner)
+  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 326.99 (liner)  Dog_01 3.1 (keeper)  Dog_02 3.1 (keeper)  Dog_03 3.1 (keeper)  Dog_04 3.1 (keeper)  Linkage_01 41.87 (liner)  Linkage_02 41.87 (liner)  Linkage_03 41.87 (liner)  Linkage_04 41.87 (liner)
   DOG RETRACTION (floorhatch.json + mech_door.gd): ok=True  open: dogs [1.7, 2.5] s end 0.5 s before 'lurch' (t0 3.0 s; between: ['seal_deflate']); close: 'final_seat' seats at 8.15 s, dogs start 8.2 s (+0.05 s); profile times before mech_phase_scale 0.6
   sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
 
 [v4] LH stay, 0.75 m well  step 0.5 deg  ok=True
-  fixed      min 2.0 mm (hatch_Keeper)
+  fixed      min 10.8 mm (hatch_InflatableSeal)
   mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
   liner      min -0.0 mm (frame liner faces = boundary)
-  leaf body at 105 deg  min 17.46 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
-  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
-  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.62 mm (hatch_Dog_01 vs liner at 3.0 deg); retracted dogs vs keepers min 13.47 mm
-    hatch_LockWheel                  min   319.69 mm at   4.5 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Dog_01                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_02                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_03                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Dog_04                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Linkage_01                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_02                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_03                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_04                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+  leaf body at 105 deg  min 17.75 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 89.5] deg
+  per 5 deg (mm): 0:1.5/10.8  5:1.5/10.8  10:1.5/10.8  15:1.5/10.8  20:1.5/10.8  25:1.5/10.8  30:1.5/10.8  35:1.5/10.8  40:1.5/10.8  45:1.5/10.8  50:1.5/10.8  55:1.5/10.8  60:1.5/10.8  65:1.5/10.8  70:1.5/10.8  75:1.5/10.8  80:1.5/10.8  85:1.5/10.8  90:1.5/10.8  95:1.5/10.8  100:1.5/10.8  105:1.5/10.8   (mechanism/fixed)
+  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.05 mm (hatch_Dog_01 vs liner at 3.5 deg); retracted dogs vs keepers min 11.7 mm
+    hatch_LockWheel                  min   326.99 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Dog_01                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_02                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_03                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Dog_04                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Linkage_01                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_02                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_03                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_04                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_Handle                     min    93.91 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Handwheel   min   333.38 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Lever       min    121.0 mm at   0.0 deg vs frame flange | liner >=20  frame flange >=20  keeper >=20
-  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 325.0 (liner)  Dog_01 3.97 (keeper)  Dog_02 3.97 (keeper)  Dog_03 3.97 (keeper)  Dog_04 3.97 (keeper)  Linkage_01 92.0 (liner)  Linkage_02 92.0 (liner)  Linkage_03 92.0 (liner)  Linkage_04 92.0 (liner)
+  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 326.99 (liner)  Dog_01 3.12 (keeper)  Dog_02 3.12 (keeper)  Dog_03 3.12 (keeper)  Dog_04 3.12 (keeper)  Linkage_01 41.87 (liner)  Linkage_02 41.87 (liner)  Linkage_03 41.87 (liner)  Linkage_04 41.87 (liner)
   DOG RETRACTION (floorhatch.json + mech_door.gd): ok=True  open: dogs [1.7, 2.5] s end 0.5 s before 'lurch' (t0 3.0 s; between: ['seal_deflate']); close: 'final_seat' seats at 8.15 s, dogs start 8.2 s (+0.05 s); profile times before mech_phase_scale 0.6
   sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}, 'well_-0.30': {'x': 0.9, 'z': 0.9}}
 
 [v5] RH stay, 0.30 m shallow well  step 0.5 deg  ok=True
-  fixed      min 2.0 mm (hatch_Keeper)
+  fixed      min 10.8 mm (hatch_InflatableSeal)
   mechanism  min 1.5 mm (hatch_stay_arm at 91.0 deg)
   liner      min -0.0 mm (frame liner faces = boundary)
-  leaf body at 105 deg  min 17.5 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 94.5] deg
-  per 5 deg (mm): 0:1.5/2.0  5:1.5/2.0  10:1.5/2.0  15:1.5/2.0  20:1.5/2.0  25:1.5/2.0  30:1.5/2.0  35:1.5/2.0  40:1.5/2.0  45:1.5/2.0  50:1.5/2.0  55:1.5/2.0  60:1.5/2.0  65:1.5/2.0  70:1.5/2.0  75:1.5/2.0  80:1.5/2.0  85:1.5/2.0  90:1.5/2.0  95:1.5/2.0  100:1.5/2.0  105:1.5/2.0   (mechanism/fixed)
-  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.62 mm (hatch_Dog_01 vs liner at 3.0 deg); retracted dogs vs keepers min 13.47 mm
-    hatch_LockWheel                  min    148.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Dog_01                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_02                     min     9.62 mm at   3.0 deg vs liner        | liner 9.62@3.0  frame flange >=20  keeper 13.47@2.0
-    hatch_Dog_03                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Dog_04                     min     15.0 mm at   1.0 deg vs liner        | liner 15.0@1.0  frame flange >=20  keeper 17.0@1.0
-    hatch_Linkage_01                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_02                 min   112.53 mm at   3.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_03                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
-    hatch_Linkage_04                 min    117.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+  leaf body at 105 deg  min 17.57 mm (hatch_leaf_shell); leaf body crosses the column [0.0, 89.5] deg
+  per 5 deg (mm): 0:1.5/10.8  5:1.5/10.8  10:1.5/10.8  15:1.5/10.8  20:1.5/10.8  25:1.5/10.8  30:1.5/10.8  35:1.5/10.8  40:1.5/10.8  45:1.5/10.8  50:1.5/10.8  55:1.5/10.8  60:1.5/10.8  65:1.5/10.8  70:1.5/10.8  75:1.5/10.8  80:1.5/10.8  85:1.5/10.8  90:1.5/10.8  95:1.5/10.8  100:1.5/10.8  105:1.5/10.8   (mechanism/fixed)
+  LOCK GEAR vs liner / frame flange / keepers, swing 0-105 deg @ 0.5 deg (211 poses), dogs retracted: ok=True all>=3mm=True  min 9.05 mm (hatch_Dog_01 vs liner at 3.5 deg); retracted dogs vs keepers min 11.7 mm
+    hatch_LockWheel                  min    211.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Dog_01                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_02                     min     9.05 mm at   3.5 deg vs liner        | liner 9.05@3.5  frame flange 9.35@4.5  keeper 11.7@1.5
+    hatch_Dog_03                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Dog_04                     min     11.0 mm at   5.0 deg vs frame flange | liner 11.0@1.0  frame flange 11.0@5.0  keeper 13.0@1.0
+    hatch_Linkage_01                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_02                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_03                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
+    hatch_Linkage_04                 min    63.07 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_Handle                     min    93.91 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Handwheel   min    262.0 mm at   0.0 deg vs liner        | liner >=20  frame flange >=20  keeper >=20
     hatch_OverrideOrange_Lever       min    121.0 mm at   0.0 deg vs frame flange | liner >=20  frame flange >=20  keeper >=20
-  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 148.0 (liner)  Dog_01 3.97 (keeper)  Dog_02 3.97 (keeper)  Dog_03 3.97 (keeper)  Dog_04 3.97 (keeper)  Linkage_01 92.0 (liner)  Linkage_02 92.0 (liner)  Linkage_03 92.0 (liner)  Linkage_04 92.0 (liner)
+  closed, dogs THROWN (in the keeper pockets, 0 deg; not part of the swing): LockWheel 211.0 (liner)  Dog_01 3.1 (keeper)  Dog_02 3.1 (keeper)  Dog_03 3.1 (keeper)  Dog_04 3.1 (keeper)  Linkage_01 41.87 (liner)  Linkage_02 41.87 (liner)  Linkage_03 41.87 (liner)  Linkage_04 41.87 (liner)
   DOG RETRACTION (floorhatch.json + mech_door.gd): ok=True  open: dogs [1.7, 2.5] s end 0.5 s before 'lurch' (t0 3.0 s; between: ['seal_deflate']); close: 'final_seat' seats at 8.15 s, dogs start 8.2 s (+0.05 s); profile times before mech_phase_scale 0.6
   sweeps: leaf_swing_0_105deg 2.0 mm, stay_arm_slider_detent_1deg 0.0 mm, detent_table_interp_100_105_0p1deg 0.0 mm, dogs_throw 2.0 mm; flush 0.0 mm; liner {'throat_-0.15': {'x': 0.932, 'z': 0.9}}
