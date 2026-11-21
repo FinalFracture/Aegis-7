@@ -676,3 +676,15 @@ Audio: front cues as 7.4 to the thunk (1.85); hydraulic hum 2.15 → 4.09; deten
 | R15 *(new)* | Closing KE | ½ m v² (or ½ I ω²) per leaf **≤ 10 J** at every close tick, computed from the CSV | CSV |
 
 Label: §7 tables are derived from Jared's 2026-11-20 tempo decision via Gage's scalars. The 10 J close rule, the uncompressed safety reactions, the control-phase scaling, the real-time stagger and the hatch close are **Vance proposals**.
+
+---
+
+## §8 Pass A review (Vance, 2026-11-20, against ac35bfd/c13382c)
+Reviewed: `/workspace/door_lab_shots/A/` renders + motion PNGs, `qa/door_lab/run60/{summary,meta}.json`. Pass A ran at the old 0.7× travel scale, so it is checked for hardware, sequence and shape only. §7 timing/R3/R15 are checked in pass B.
+- **No numbers to check:** the per-tick CSVs and cue logs are not on main, and the motion PNGs have no time or value axes, so R2/R3/R5/R9/R11/R12/R15 can't be verified from the artifacts yet.
+- **R15 at 0.7×:** slider close ≈ 17.6 J ✗ (m ≈ 47.9 kg/leaf, v ≈ 0.86 m/s). Bay3 5.7 J, pair 2.8 J and hatch 5.7 J pass. Pass B must apply the 0.64 m/s slider cap.
+- **Lab coverage:** the "hatch" is the wall plug bulkhead (vertical). There is no horizontal floor-hatch case (§4.6: 105°, 2 gas struts, stay-arm detent, damper), and R13 (0.08/1.0/1.45 G) is not reported. F-OBS-EMERGENCY (§4.4) isn't implemented.
+- **Hardware (R6):** the bulkhead shows a box plus one bar where §4.7 calls for 8 dogs with linkage to a central wheel, plus gauges, an equalize port, push-off rams, a seal bead and a handwheel. The back face of the open leaf is a featureless black slab. The detail/jamb cameras are underexposed, so the hinge, seal and strike can't be judged.
+- **Lamps (R6/R7):** the bay3 and bulkhead cyan lamp lines stay fixed in space while the leaves move. They sit mid-leaf, not on the jambs or mullions.
+- **meta.json** records commit f2ccf57 (Patch count 78), not the pass A commit.
+- **Looks right:** phase order and shape (lurch knee, back-check/latch-check knees on the swing doors, slider close creep), the bi-parting mirror, the bay3 3-leaf stagger, outswing bay3 and +Z pair (R14), kick plates, push bars, finger guards, the 8 mm sweeps, and fails=0 at 60/20/15 fps.
