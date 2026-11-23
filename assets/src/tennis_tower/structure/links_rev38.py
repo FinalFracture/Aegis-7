@@ -24,7 +24,13 @@ def door_pair():
           [box(h - E if zs < 0 else h + SWING_JAMB, h + .08, 0, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)] + \
           [box(-h - .08 + E, h + .08 - E, DH - E, DH + .08, zs - .025, zs) for zs in (-WT/2, WT/2 + .025)]
     P.append(("Door_Casing", ALY, cas)); C.append(("Frame-colonly", cas))
-    P.append(("Head_Court_Line", AM, [box(-h + .05, h - .05, DH - .045, DH - .005, WT/2 - .02, WT/2 + .002), box(-h + .05, h - .05, DH - .045, DH - .005, -WT/2 - .002, -WT/2 + .02)]))
+    # Rook M-123 (Patch 664c231; Vance ruling 2026-11-23: fix the strip, not the leaf). The strips hung 35 mm below the 2.39 leaf top
+    # (y 2.355..2.395), so the +Z one sat in the leaf sweep (24.9 mm containment near 69 deg). Trimmed in place: underside DH - .006 =
+    # 2.394 (4 mm over the leaf top, 3.5 3-5 mm band, same at every swing angle since the leaf top is level); top DH + .0015 = 1.5 mm
+    # bedded into the wall soffit (Walls_F1/F2 opening head at 2.40); outer edge WT/2 + .0015 = 1.5 mm bedded into the casing head
+    # (was a 1 mm flush gap under it = the Door_Casing coplanar pair). Not a door stop: nothing reaches it at 0 deg. Both faces alike.
+    P.append(("Head_Court_Line", AM, [box(-h + .05, h - .05, DH - .006, DH + .0015, WT/2 - .02, WT/2 + .0015),
+                                      box(-h + .05, h - .05, DH - .006, DH + .0015, -WT/2 - .0015, -WT/2 + .02)]))
     for tag, a, b in (("L", -h + .005, -MEET), ("R", MEET, h - .005)):
         P.append((f"Leaf_{tag}_Panel", WH, [box(a, b, .01, 1.0, -.025, .025), box(a, b, 2.0, DH - .01, -.025, .025),
                                              box(a, a + .2, 1.0 - E, 2.0 + E, -.025, .025), box(b - .2, b, 1.0 - E, 2.0 + E, -.025, .025)]))
