@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-23T04:35:00-06:00",
+ "updated_at": "2026-11-23T07:30:00-06:00",
  "continuity_rule": "Every replacement bot must follow the exact same role purpose as its predecessor and read both its handoff file and all reference files listed in reference_files on its first turn.",
  "team": {
   "Vance": {
@@ -174,8 +174,8 @@
    "rotated_at": "2026-11-22T17:00:00-06:00"
   },
   "Scribe": {
-   "id": "61a860b0-0159-406a-af8c-a969dff4722b",
-   "previous_id": "3b011c08-32f8-434e-8285-6cd66198bf29",
+   "id": "11c9f413-e23c-4d2d-abb9-3160f0beefb6",
+   "previous_id": "61a860b0-0159-406a-af8c-a969dff4722b",
    "previous_name": "delete-Scribe",
    "role": "Context & Handoff Manager",
    "purpose": "Monitor all 7 teammates' conversation transcript sizes and token load (120k warning / 150k rotation cap) plus the team's Usage Credit (UC) budget meter (1 UC = 1% Account Usage = 27,024 cumulative team context tokens), distill each predecessor's exact purpose and reference file manifest into clean Markdown handoff files, spawn replacement bots via CreateAgent seeded with those exact reference files, rename retired bots to delete-<name>, and cast post-render votes in VOTE_LOG.md.",
@@ -200,9 +200,9 @@
     "/workspace/game-project/context/scribe-handoff-v5.md",
     "/workspace/game-project/context/scribe-handoff-v6.md"
    ],
-   "status": "active (rotated 2026-10-30 pre-rebuild)",
+   "status": "active (rotated 2026-11-23 at 500-message cap)",
    "replaces": "3b011c08-32f8-434e-8285-6cd66198bf29",
-   "rotated_at": "2026-10-30T04:03:00-05:00"
+   "rotated_at": "2026-11-23T07:30:00-06:00"
   },
   "Quinn": {
    "id": "0359c20f-c476-48f7-99c2-c49637950351",
