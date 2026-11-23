@@ -1,9 +1,9 @@
-# Vance — Sci-Fi Architect, Movie Prop & Set Design Specialist Handoff (`vance-handoff-v3.md` — 2026-10-30 pre-rebuild rotation)
+# Vance — Sci-Fi Architect, Movie Prop & Set Design Specialist Handoff (`vance-handoff-v4.md` — 2026-11-23 rotation, predecessor 242c8419)
 
 ## 1. Predecessor Purpose & Mandatory Reference Files Manifest (READ ON FIRST TURN)
 - **Role:** Sci-Fi Architect, Movie Prop & Set Design Specialist
 - **Exact Purpose (roster.json):** Design hard sci-fi architectural blueprints, movie-set silhouettes, human-scale greebling specs, and district placement layouts under the Aegis-7 Standard, and cast post-render architectural votes in VOTE_LOG.md.
-- **Previous handoff:** `/workspace/game-project/context/vance-handoff-v2.md`
+- **Previous handoff:** `/workspace/game-project/context/vance-handoff-v3.md`
 - **Reference files** (verified 2026-10-30; MISSING = path not found):
   - `/workspace/game-project/PROJECT.md`
   - `/workspace/game-project/MASTER_ARCHITECTURE_10_ROOMS.md`
@@ -33,23 +33,43 @@
   - `/workspace/game-project/design/residential_stair_core_v1.md`
   - `/workspace/game-project/context/vance-handoff-v2.md`
   - `/workspace/game-project/context/vance-handoff-v3.md`
+  - `/workspace/game-project/context/vance-handoff-v4.md`
+  - `/workspace/game-project/context/door_lab/REALISM_SPEC.md` (Vance owns; §0–§14)
+  - `/workspace/game-project/design/strip5_tennis_tower_v1.md` (Vance owns; Rev 3.10–3.10.2)
+  - `/workspace/game-project/context/ROTATION_RULE.md`
+  - `/workspace/game-project/context/BUGFIX_FLOW.md`
+  - `/workspace/game-project/AESTHETIC_SPEC.md` (Sloane) and `QUALITY_BAR.md` (Patch)
 
 ## 2. Standing Rules
-- **CODING RULE (NEW 2026-10-30):** All coding now runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`, to save Grok Bot usage. Do not write/edit .gd/.tscn/.py code directly in Grok Bot sessions; drive it via that CLI.
-- **Usage:** Weekly hard cap: 93% account usage. Reported weekly usage ~59% (Atlas, Fri 2026-10-30). Stop all work before 93%.
-- Aegis-7 Standard; <1.2% micro-noise PBR; alphaMode BLEND glass; <6,000 tris; bottom-center (0,0,0) pivot, +Z facing; 5 iterations per asset; post-render votes in VOTE_LOG.md.
+- **Questions to Jared:** every question must be a tappable card/widget with options, never prose (Jared, 2026-11-20 1:49 PM CT: "anytime you guys ask me a question I need you to output it with a card and UI so I can tap the answer").
+- **Approval:** only Jared approves, in his own words. An agent's say-so is never approval. Label your own design calls "Vance proposal".
+- **Coding rule:** all .gd/.tscn/.py coding runs through the Grok Build CLI (grok 1.0.70, `C:\Users\upchu\.grok\bin\grok.exe`) on Jared's Windows machine `5ed7f5f0-bf59-4493-b9fe-629e65457357`. Never edit code directly in Grok Bot sessions. Markdown specs may be edited on the box.
+- **Git:** main only. Commit named files only (`git commit -- <file>`), identity Jared Upchurch <jared@finalfracture.dev>. Never commit -a, stash or reset; never commit renders (`godot/renders/`), logs or .import files; leave others' files alone. The box checkout `/workspace/game-project` has others' dirty files and untracked door_lab .import files that block rebase, so work in a temp `git worktree add --detach /tmp/x origin/main`, push `HEAD:main`, then remove it.
+- **Usage:** weekly hard cap 93%; stop all work before it.
+- **Rotation rule (verbatim reference):** At 500 messages, self-rotate per context/ROTATION_RULE.md. Atlas is retired (Jared, 2026-11-23: "Atlas is dead."); the "wait for Atlas's go-ahead" clause is obsolete. Send new ids to Scribe (61a860b0-0159-406a-af8c-a969dff4722b), who maintains roster.json.
+- **Bug-fix flow:** follow context/BUGFIX_FLOW.md (stage checklists in qa/checklists/; last to check messages next party once, priority false, then deletes the file). Include both the rotation and bug-fix rules in every handoff and in every handoff message to agents (two "Handoff rule:" lines).
+- Sports are story decoration only (no real-rules accuracy needed). Reuse shared assets/material slots (AESTHETIC_SPEC §1). Aegis-7 Standard, post-render votes in VOTE_LOG.md.
+- Before handing off or voting on 3D props, use the skills 3d-part-clipping-check and game-first-pass-check.
 
-## 3. Project State (git HEAD a229af9, 2026-10-30 03:50 CDT)
-- Residential interior (rev C) models all done incl. #53 Frame Crate (d7f6c43, a229af9). Remaining rev C 'still to model': #6, #54 — Sloane texture/decal jobs.
-- Rev C.2 layouts APPROVED by Jared 2026-10-29.
-- Exterior asset list v1: DRAFT, next up.
-- Pending Gage rebuild: baked-animation triggers #38/#39/#42/#43; workbench/objective re-pointing; review stray playtest_bug_report.md edits in 495e4ce.
-- Untracked: `godot/assets/models/lab_crate_frame_204.glb`.
+## 3. Team (ids as of 2026-11-23)
+- Rook 0e05a2c3-418b-4ba6-9d9f-cdc3900cd505 (GLBs). Gage 5fa99149-4fdf-4ed5-97d0-db31bd2302e2 (Godot dev / door lab; was f00a0b4e). Scribe 61a860b0-0159-406a-af8c-a969dff4722b (roster, handoffs). Sloane 0fc258d4-0dea-4cf3-ab06-338f21756ae6 (materials, aesthetics). Patch a5010790-2c81-497b-9869-aec9934cdfd6 (QA, QUALITY_BAR.md). Quinn, Tidy also on the team.
 
-## 4. Completed Deliverables (this role)
-- Rev C.2 layout approved by Jared 2026-10-29 (`design/residential_apartment_layout_v2.md` §Rev C.2, commits 519cc5d, 759f4c8, f8565da).
-- Exterior v1 plan approved 2026-10-29; exterior asset list v1 readiness pass (DRAFT).
+## 4. OPEN — waiting on Jared (carry over; ask via card only)
+- **Tennis tower Rev 3.10.1, 12 mm sloped sill** for the 11 west entrance bays (`tt_entrance_bay_3l`). Problem: the frame's 50 mm bottom rail made feet visibly sink ~46 mm against the flush walk collider. Vance proposal: a 12 mm sill with 1:2 bevels in each leaf opening, brush sweeps on the leaves, a 4-piece walk collider matching the visible top (max step 4 mm). Specced in de5561f; Rook already built it (49d6505). Alternative Jared can pick: keep the 50 mm rail with a step-up collider. Asked by widget on 2026-11-21 (no answer yet). If Jared declines: Rook reverts 49d6505 (do not patch); 60f32db setting blocks and 66fc9af brush seals survive with minor note conflicts. Re-ask Jared with a card: "Approve the 12 mm sill" / "Keep the 50 mm rail, add a step".
 
-## 5. Next Tasks
-- Finalize exterior asset list v1 for modeling.
-- Objective/tutorial anchors TBD (layout doc l.151) - coordinate with Gage at rebuild.
+## 5. Door lab realism (REALISM_SPEC.md, Vance owns)
+- Checks R1–R15 (§5); game-tempo §7; §7.6 targets: slider 1.08/2.40 s, bay3 1.54/2.85, pair_18 1.21/2.05, bulkhead 4.64/7.80 (Jared chose the 7.8 s close), floor hatch 4.09/6.39. R15 closing energy ≤10 J.
+- Reviews: pass A §8 (a603953), C §9 (a84b576), E §10 (c5fe054), torsion-bar hatch amendment §11 (a1a426c, 4 dogs decided), pass F §12 (572c4c6, conditional 9.6), pocket slider rulings §13 (de5561f), pass G §14 (507aef6, conditional 9.6).
+- Pass G findings: Gage ran on stale b530847 with uncommitted changes; the clip rows were lab artefacts (4.0 mm mounting beds; the lab's 2x handle scale; proud lamps). Pass H list (11 items) sent to Gage 2026-11-21: clean re-run on main with commit/dirty stamp and godot_tree check, true clip-depth method, `_dress_floor_lid` fixes, skip the duplicate bay3 sweep, §13.1 end-stop QA, G2/G3 framing, animated push-off rams, live ΔP readouts, handwheel to lit Mat_Hub_OverrideOrange (confirm with Sloane), tower 11-bay re-probe, R3 table + 20/15 Hz CSVs.
+- NEXT: when Gage's pass H arrives, review it against §5/§7/§10–§14 (independent recompute from CSVs; view shots in /workspace/door_lab_shots/<pass>/ and the Windows mirror C:\Users\upchu\aegis_shots\doorlab_<pass>), append §15, send Gage the verdict (priority true).
+- N2 pair retime is blocked by Patch's M-114 hold (Jared's call); not scored.
+- Patch still needs to add R15 and the per-tick R3 rule to QUALITY_BAR.
+
+## 6. Rook items
+- Built and verified: d855824 (§13 end stops/solenoid), 49d6505 (Rev 3.10.1 sill, pending Jared), 60f32db (Rev 3.10.2 sidelight setting blocks), 66fc9af (Leaf_*_BrushSeal). All deviations accepted (§14.5).
+- M-123 (Patch): pair leaves clip Head_Court_Line by 21.5–24.2 mm at 22.5–67.5°. Ruled 2026-11-23: fix the head strip, not the leaf; underside ≥3 mm (target 4) above the leaf top across the swing; stop lip only on the closed side. Await Rook's build, then verify.
+- Materials: Sloane ruled VOTE_LOG #87 (bc70ada): BumperRubber→SealRubber, PolishedSteel and YellowZincPlate→TT_BrushedAlloy, AcetalWhite→TT_WhiteComposite, SolenoidRed stays.
+
+## 7. Older open items (Tennis Tower / Strip 5)
+- F2 door schedule; F3 rake soffit; aquatics hatch header; leisure vendor footprints; fountain typology; accessible aquarium maintenance access.
+- Terrace corner stairs (a8f463d): the drum has no collider, flagged to Gage.

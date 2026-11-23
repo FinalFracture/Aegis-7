@@ -1,12 +1,12 @@
 {
- "updated_at": "2026-11-23T04:21:00-06:00",
+ "updated_at": "2026-11-23T04:35:00-06:00",
  "continuity_rule": "Every replacement bot must follow the exact same role purpose as its predecessor and read both its handoff file and all reference files listed in reference_files on its first turn.",
  "team": {
   "Vance": {
-   "id": "242c8419-7b14-4f27-9cdc-e87328eff983",
+   "id": "4d57ba4e-950b-4b79-8f04-3218836a4efa",
    "role": "Sci-Fi Architect, Movie Prop & Set Design Specialist",
    "purpose": "Design hard sci-fi architectural blueprints, movie-set silhouettes, human-scale greebling specs, and district placement layouts under the Aegis-7 Standard, and cast post-render architectural votes in VOTE_LOG.md.",
-   "handoff_file": "/workspace/game-project/context/vance-handoff-v3.md",
+   "handoff_file": "/workspace/game-project/context/vance-handoff-v4.md",
    "reference_files": [
     "/workspace/game-project/PROJECT.md",
     "/workspace/game-project/MASTER_ARCHITECTURE_10_ROOMS.md",
@@ -33,12 +33,17 @@
     "/workspace/game-project/design/residential_exterior_tiered_steps_fit.py",
     "/workspace/game-project/design/residential_stair_core_v1.md",
     "/workspace/game-project/context/vance-handoff-v2.md",
-    "/workspace/game-project/context/vance-handoff-v3.md"
+    "/workspace/game-project/context/vance-handoff-v3.md",
+    "/workspace/game-project/context/vance-handoff-v4.md",
+    "/workspace/game-project/context/door_lab/REALISM_SPEC.md",
+    "/workspace/game-project/design/strip5_tennis_tower_v1.md",
+    "/workspace/game-project/context/ROTATION_RULE.md",
+    "/workspace/game-project/context/BUGFIX_FLOW.md"
    ],
-   "status": "active (rotated 2026-10-30 pre-rebuild)",
-   "replaces": "245e93a0-6301-45d6-b371-ad1e37a0dfd1",
-   "rotated_at": "2026-10-30T04:03:00-05:00",
-   "previous_id": "245e93a0-6301-45d6-b371-ad1e37a0dfd1",
+   "status": "active (rotated 2026-11-23, Jared go-ahead via Scribe card; Atlas retired)",
+   "replaces": "242c8419-7b14-4f27-9cdc-e87328eff983",
+   "rotated_at": "2026-11-23T04:35:00-06:00",
+   "previous_id": "242c8419-7b14-4f27-9cdc-e87328eff983",
    "previous_name": "delete-Vance"
   },
   "Sloane": {
